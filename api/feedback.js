@@ -9,13 +9,13 @@ Respond with ONLY a raw JSON object (no markdown, no code fences, no text before
 {
   "wellDone": "one short sentence naming something the student did well (a word, phrase, or structure)",
   "suggestion": "one short sentence phrased as 'Instead of X, try Y' pointing to one richer or more natural expression",
-  "targetPhrase": "just the suggested phrase Y itself, 1-4 words, exactly as it should be used",
+  "targetPhrase": "just the suggested phrase Y itself, exactly as it should be used, in the exact grammatical form the gapFill sentence requires (correct verb form, correct preposition, etc.)",
   "example": "one short example sentence using targetPhrase in a new, similar context",
-  "gapFill": "a different short sentence, in a new context again, with targetPhrase removed and replaced by ____",
-  "distractors": ["a plausible but wrong 1-4 word option for the same blank", "a second plausible but wrong 1-4 word option for the same blank"]
+  "gapFill": "a different short sentence, in a new context again, with targetPhrase removed and replaced by ____ — write the surrounding sentence so that only ONE grammatical form is correct there",
+  "distractors": ["the same expression as targetPhrase but in a different, grammatically WRONG form for this exact blank (e.g. wrong verb form, wrong preposition, wrong tense)", "the same expression as targetPhrase in a second, different grammatically WRONG form for this exact blank"]
 }
 
-Keep every field warm, concise, and natural. gapFill must be answerable with exactly targetPhrase (matching its grammatical form as written). The two distractors must be the same part of speech and roughly the same length as targetPhrase, plausible enough to require thought, but clearly wrong once you consider the sentence's meaning — not synonyms of targetPhrase. Do not include anything beyond these six fields.`;
+Keep every field warm, concise, and natural. The two distractors must use the SAME core expression as targetPhrase, not a different word or idea — only the grammatical form should differ, and each distractor must sound clearly wrong once inserted into gapFill. Do not include anything beyond these six fields.`;
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
