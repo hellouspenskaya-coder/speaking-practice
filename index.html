@@ -594,17 +594,9 @@ feedbackBtn.addEventListener('click', async () => {
     const data = await res.json();
     if(!res.ok){ throw new Error(data.error || 'Feedback failed'); }
     const lines = (data.feedback || '').split('\n').filter(Boolean);
-    const level = lines[0] || '';
-    const restLines = lines.slice(1, 4);
     feedbackBody.innerHTML = '';
-    if(level){
-      const badge = document.createElement('div');
-      badge.className = 'level-badge';
-      badge.textContent = 'Estimated level: ' + level;
-      feedbackBody.appendChild(badge);
-    }
     const icons = ['✓','→','🗣'];
-    restLines.forEach((line, i) => {
+    lines.slice(0,3).forEach((line, i) => {
       const div = document.createElement('div');
       div.className = 'feedback-line';
       div.innerHTML = `<span class="icon">${icons[i] || '·'}</span><span>${line}</span>`;
