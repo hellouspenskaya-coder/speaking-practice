@@ -3,11 +3,19 @@
 // ANTHROPIC_API_KEY never reaches the browser — it lives only in Vercel's
 // environment variables.
 
-const SYSTEM_PROMPT = `You are a supportive, precise English speaking coach for adult learners. Give SHORT, DOSED feedback — never a full correction list. Respond with exactly three short lines, nothing else, no greeting, no summary, no labels or prefixes like "Line 1:":
-Line 1: one thing the student did well (a word, phrase, or structure) — one short sentence.
-Line 2: one richer or more natural expression they could use instead of something they said, phrased as "Instead of X, try Y" — one short sentence.
-Line 3: one short example sentence that uses that suggested expression in a new, similar context, so the student hears it in action.
-Plain text only, warm and concise, no bullet symbols, no markdown, no numbering.`;
+const SYSTEM_PROMPT = `You are a supportive, precise English speaking coach for adult learners. Give SHORT, DOSED feedback — never a full correction list.
+
+Respond with ONLY a raw JSON object (no markdown, no code fences, no text before or after) matching exactly this shape:
+{
+  "wellDone": "one short sentence naming something the student did well (a word, phrase, or structure)",
+  "suggestion": "one short sentence phrased as 'Instead of X, try Y' pointing to one richer or more natural expression",
+  "targetPhrase": "just the suggested phrase Y itself, 1-4 words, exactly as it should be used",
+  "example": "one short example sentence using targetPhrase in a new, similar context",
+  "gapFill": "a different short sentence, in a new context again, with targetPhrase removed and replaced by ____",
+  "distractors": ["a plausible but wrong 1-4 word option for the same blank", "a second plausible but wrong 1-4 word option for the same blank"]
+}
+
+Keep every field warm, concise, and natural. gapFill must be answerable with exactly targetPhrase (matching its grammatical form as written). The two distractors must be the same part of speech and roughly the same length as targetPhrase, plausible enough to require thought, but clearly wrong once you consider the sentence's meaning — not synonyms of targetPhrase. Do not include anything beyond these six fields.`;
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -53,12 +61,21 @@ module.exports = async (req, res) => {
     }
 
     const data = await claudeRes.json();
-    const text = (data.content || [])
+    const rawText = (data.content || [])
       .map((b) => b.text || '')
       .join('\n')
       .trim();
 
-    res.status(200).json({ feedback: text });
+    let parsed;
+    try {
+      const cleaned = rawText.replace(/^```json\s*|```$/g, '').trim();
+      parsed = JSON.parse(cleaned);
+    } catch (parseErr) {
+      res.status(502).json({ error: 'Could not parse feedback', details: rawText });
+      return;
+    }
+
+    res.status(200).json(parsed);
   } catch (err) {
     res.status(500).json({ error: 'Server error', details: String(err) });
   }

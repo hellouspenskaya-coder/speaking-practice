@@ -284,6 +284,37 @@
     gap:8px;
     margin-top:14px;
   }
+  .exercise-options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .option-btn{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    text-align:left;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:15px;
+    color:var(--ink);
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px 16px;
+    cursor:pointer;
+    transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .option-btn:hover{ border-color:var(--feedback); }
+  .option-btn .letter{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+    width:20px;
+    flex-shrink:0;
+  }
+  .option-btn.correct{ background:var(--feedback-bg); border-color:var(--feedback); }
+  .option-btn.wrong{ background:#f3dede; border-color:var(--record); }
+  .option-btn:disabled{ cursor:default; }
   .loading.show{ display:flex; }
   .spinner{
     width:14px;height:14px;border-radius:50%;
@@ -380,6 +411,13 @@
     <div id="feedbackBody"></div>
   </div>
 
+  <div class="feedback-card" id="exerciseCard" style="background:var(--paper-card); border:1px solid var(--line);">
+    <div class="feedback-label" style="color:var(--record)">Practice it</div>
+    <div class="question-text" id="gapFillSentence" style="font-size:16px; margin-bottom:18px;"></div>
+    <div class="exercise-options" id="exerciseOptions"></div>
+    <div class="hint" id="exerciseResult" style="text-align:left; margin-top:14px;"></div>
+  </div>
+
   <div class="card">
     <div class="journal-toggle" id="journalToggle">
       <div class="question-label" style="margin-bottom:0">Journal</div>
@@ -411,6 +449,10 @@ const loading = document.getElementById('loading');
 const loadingText = document.getElementById('loadingText');
 const feedbackCard = document.getElementById('feedbackCard');
 const feedbackBody = document.getElementById('feedbackBody');
+const exerciseCard = document.getElementById('exerciseCard');
+const gapFillSentence = document.getElementById('gapFillSentence');
+const exerciseOptions = document.getElementById('exerciseOptions');
+const exerciseResult = document.getElementById('exerciseResult');
 const journalToggle = document.getElementById('journalToggle');
 const journalList = document.getElementById('journalList');
 const journalCount = document.getElementById('journalCount');
@@ -474,6 +516,7 @@ let startTime, timerInterval;
 function resetStage(){
   transcriptBox.style.display = 'none';
   feedbackCard.classList.remove('show');
+  exerciseCard.classList.remove('show');
   transcriptText.textContent = '';
   transcriptEdit.style.display = 'none';
   transcriptText.style.display = 'block';
@@ -593,17 +636,27 @@ feedbackBtn.addEventListener('click', async () => {
     });
     const data = await res.json();
     if(!res.ok){ throw new Error(data.error || 'Feedback failed'); }
-    const lines = (data.feedback || '').split('\n').filter(Boolean);
+
     feedbackBody.innerHTML = '';
     const icons = ['✓','→','🗣'];
-    lines.slice(0,3).forEach((line, i) => {
+    const lines = [data.wellDone, data.suggestion, data.example].filter(Boolean);
+    lines.forEach((line, i) => {
       const div = document.createElement('div');
       div.className = 'feedback-line';
       div.innerHTML = `<span class="icon">${icons[i] || '·'}</span><span>${line}</span>`;
       feedbackBody.appendChild(div);
     });
     feedbackCard.classList.add('show');
-    saveEntry(questionText.textContent, answer, data.feedback || '');
+
+    if(data.gapFill && data.targetPhrase && Array.isArray(data.distractors) && data.distractors.length >= 2){
+      gapFillSentence.textContent = data.gapFill;
+      renderExerciseOptions(data.targetPhrase, data.distractors.slice(0,2));
+      exerciseCard.classList.add('show');
+    } else {
+      exerciseCard.classList.remove('show');
+    }
+
+    saveEntry(questionText.textContent, answer, [data.wellDone, data.suggestion, data.example].filter(Boolean).join('\n'));
   }catch(e){
     feedbackBody.innerHTML = '<div class="feedback-line">Couldn\'t reach the feedback service — try again in a moment.</div>';
     feedbackCard.classList.add('show');
@@ -642,6 +695,44 @@ function loadJournal(){
       journalList.appendChild(el);
     });
   }catch(e){ /* storage unavailable */ }
+}
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderExerciseOptions(target, distractors){
+  const letters = ['A','B','C'];
+  const options = shuffle([target, ...distractors]);
+  exerciseOptions.innerHTML = '';
+  exerciseResult.textContent = '';
+
+  options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => {
+      exerciseOptions.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+      if(opt === target){
+        btn.classList.add('correct');
+        exerciseResult.textContent = '✓ Exactly right.';
+        exerciseResult.style.color = 'var(--feedback)';
+      } else {
+        btn.classList.add('wrong');
+        exerciseOptions.querySelectorAll('.option-btn').forEach(b => {
+          if(b.textContent.includes(target)) b.classList.add('correct');
+        });
+        exerciseResult.textContent = 'Not quite — the right answer is highlighted.';
+        exerciseResult.style.color = 'var(--muted)';
+      }
+    });
+    exerciseOptions.appendChild(btn);
+  });
 }
 
 journalToggle.addEventListener('click', () => {
