@@ -38,6 +38,11 @@
     color:var(--ink); background:#fff; border:1px solid var(--line);
     border-radius:10px; padding:10px 12px; margin-bottom:20px;
   }
+  select{
+    width:100%; font-family:'IBM Plex Sans', sans-serif; font-size:15px;
+    color:var(--ink); background:#fff; border:1px solid var(--line);
+    border-radius:10px; padding:10px 12px; margin-bottom:20px;
+  }
   textarea{
     width:100%; font-family:'IBM Plex Sans', sans-serif; font-size:15px; line-height:1.6;
     color:var(--ink); background:#fff; border:1px solid var(--line);
@@ -73,7 +78,30 @@
   <h1>Link builder</h1>
 
   <div class="card">
-    <label for="topic">Topic (shown at the top of the page)</label>
+    <label for="genLevel">Student level (CEFR)</label>
+    <select id="genLevel">
+      <option value="">— not specified —</option>
+      <option value="A1">A1</option>
+      <option value="A2">A2</option>
+      <option value="B1">B1</option>
+      <option value="B2">B2</option>
+      <option value="C1">C1</option>
+      <option value="C2">C2</option>
+    </select>
+
+    <label for="genWords">Target words (comma or line separated)</label>
+    <textarea id="genWords" style="min-height:70px" placeholder="purpose, meaningful, curiosity, drained, worrying"></textarea>
+
+    <label for="genCount">Number of questions</label>
+    <input type="text" id="genCount" value="6" style="max-width:80px" />
+
+    <div class="hint">Uses the Topic field below as the subject, and writes reflective, discussion-style questions — not yes/no questions — weaving in the target words where natural.</div>
+    <button id="genQuestionsBtn">Generate questions</button>
+    <span class="copied" id="genLoading" style="display:none">Writing questions…</span>
+  </div>
+
+  <div class="card">
+    <label for="topic">Topic (shown at the top of the page, and used above to generate questions)</label>
     <input type="text" id="topic" placeholder="Purpose of Life. Soul." />
 
     <label for="questions">Questions — one per line, paste straight from Notion</label>
@@ -101,6 +129,47 @@ const result = document.getElementById('result');
 const resultLink = document.getElementById('resultLink');
 const copyBtn = document.getElementById('copyBtn');
 const copiedMsg = document.getElementById('copiedMsg');
+
+const genLevel = document.getElementById('genLevel');
+const genWords = document.getElementById('genWords');
+const genCount = document.getElementById('genCount');
+const genQuestionsBtn = document.getElementById('genQuestionsBtn');
+const genLoading = document.getElementById('genLoading');
+
+genQuestionsBtn.addEventListener('click', async () => {
+  const topic = topicInput.value.trim();
+  if(!topic){
+    topicInput.focus();
+    topicInput.style.borderColor = '#a63446';
+    setTimeout(() => { topicInput.style.borderColor = ''; }, 1500);
+    return;
+  }
+
+  genQuestionsBtn.disabled = true;
+  genLoading.style.display = 'inline';
+  try{
+    const res = await fetch('/api/generate-questions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topic,
+        level: genLevel.value,
+        words: genWords.value.trim(),
+        count: genCount.value.trim() || 6,
+      }),
+    });
+    const data = await res.json();
+    if(!res.ok){ throw new Error(data.error || 'Failed to generate questions'); }
+    questionsInput.value = data.questions || '';
+  }catch(e){
+    genLoading.textContent = "Couldn't generate questions — try again.";
+    setTimeout(() => { genLoading.style.display = 'none'; genLoading.textContent = 'Writing questions…'; }, 2500);
+    genQuestionsBtn.disabled = false;
+    return;
+  }
+  genLoading.style.display = 'none';
+  genQuestionsBtn.disabled = false;
+});
 
 generateBtn.addEventListener('click', () => {
   const topic = topicInput.value.trim();
