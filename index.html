@@ -265,6 +265,17 @@
   }
   .feedback-line:last-child{ margin-bottom:0; }
   .feedback-line .icon{ flex-shrink:0; }
+  .level-badge{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.04em;
+    color:#fdf9f4;
+    background:var(--feedback);
+    border-radius:999px;
+    padding:4px 12px;
+    margin-bottom:14px;
+  }
   .loading{
     font-size:13.5px;
     color:var(--muted);
@@ -583,9 +594,17 @@ feedbackBtn.addEventListener('click', async () => {
     const data = await res.json();
     if(!res.ok){ throw new Error(data.error || 'Feedback failed'); }
     const lines = (data.feedback || '').split('\n').filter(Boolean);
+    const level = lines[0] || '';
+    const restLines = lines.slice(1, 4);
     feedbackBody.innerHTML = '';
-    const icons = ['✓','→'];
-    lines.slice(0,2).forEach((line, i) => {
+    if(level){
+      const badge = document.createElement('div');
+      badge.className = 'level-badge';
+      badge.textContent = 'Estimated level: ' + level;
+      feedbackBody.appendChild(badge);
+    }
+    const icons = ['✓','→','🗣'];
+    restLines.forEach((line, i) => {
       const div = document.createElement('div');
       div.className = 'feedback-line';
       div.innerHTML = `<span class="icon">${icons[i] || '·'}</span><span>${line}</span>`;
