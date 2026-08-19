@@ -327,12 +327,7 @@
   <div class="card">
     <div class="question-label">Question</div>
     <div class="question-text" id="questionText">What kinds of situations make people feel jealous?</div>
-    <select class="question-picker" id="questionPicker">
-      <option value="What kinds of situations make people feel jealous?" selected>3. Jealous — What kinds of situations make people feel jealous?</option>
-      <option value="How do you deal with jealousy — yours or other people's?">3. Jealous — How do you deal with jealousy?</option>
-      <option value="Are you competitive in sports, school, or work? Give an example.">4. Competitive — Are you competitive? Give an example.</option>
-      <option value="Is being competitive more helpful or more stressful for you?">4. Competitive — Helpful or stressful?</option>
-    </select>
+    <select class="question-picker" id="questionPicker"></select>
 
     <div class="stage">
       <div class="waveform" id="waveform"></div>
@@ -401,6 +396,35 @@ for(let i=0;i<BAR_COUNT;i++){
   waveform.appendChild(bar);
 }
 const bars = waveform.querySelectorAll('span');
+
+// Questions come from the link itself (?topic=...&q=Question1|Question2|...),
+// so a new lesson just means a new link — no code editing needed.
+const DEFAULT_QUESTIONS = [
+  'What kinds of situations make people feel jealous?',
+  "How do you deal with jealousy — yours or other people's?",
+];
+
+function loadQuestionsFromUrl(){
+  const params = new URLSearchParams(window.location.search);
+  const topicParam = params.get('topic');
+  const qParam = params.get('q');
+  const questions = qParam
+    ? qParam.split('|').map(s => s.trim()).filter(Boolean)
+    : DEFAULT_QUESTIONS;
+
+  document.querySelector('.eyebrow').textContent = 'Topic · ' + (topicParam || 'Practice');
+
+  questionPicker.innerHTML = '';
+  questions.forEach((q, i) => {
+    const opt = document.createElement('option');
+    opt.value = q;
+    opt.textContent = q;
+    if(i === 0) opt.selected = true;
+    questionPicker.appendChild(opt);
+  });
+  questionText.textContent = questions[0] || '';
+}
+loadQuestionsFromUrl();
 
 questionPicker.addEventListener('change', () => {
   questionText.textContent = questionPicker.value;
@@ -537,8 +561,8 @@ feedbackBtn.addEventListener('click', async () => {
     if(!res.ok){ throw new Error(data.error || 'Feedback failed'); }
     const lines = (data.feedback || '').split('\n').filter(Boolean);
     feedbackBody.innerHTML = '';
-    const icons = ['✓','→','🗣'];
-    lines.slice(0,3).forEach((line, i) => {
+    const icons = ['✓','→'];
+    lines.slice(0,2).forEach((line, i) => {
       const div = document.createElement('div');
       div.className = 'feedback-line';
       div.innerHTML = `<span class="icon">${icons[i] || '·'}</span><span>${line}</span>`;
