@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Speaking Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1f2a24;
+    --paper:#eeeae1;
+    --paper-card:#f5f2ea;
+    --line: rgba(31,42,36,0.14);
+    --muted:#6b675f;
+    --record:#a63446;
+    --record-dark:#8a2b3a;
+    --feedback:#4c7a6e;
+    --feedback-bg:#dfe8e2;
+    --radius: 18px;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:32px 16px 80px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{ width:100%; max-width:560px; }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:22px;
+    margin:0 0 28px;
+    color:var(--ink);
+  }
+
+  .card{
+    background:var(--paper-card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px 24px;
+    margin-bottom:16px;
+  }
+
+  .question-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:10px;
+  }
+  .question-text{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:22px;
+    line-height:1.35;
+    margin:0 0 22px;
+    color:var(--ink);
+  }
+  select.question-picker{
+    width:100%;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    color:var(--ink);
+    background:transparent;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    margin-bottom:22px;
+    appearance:none;
+    cursor:pointer;
+  }
+
+  .stage{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:8px 0 4px;
+  }
+
+  .waveform{
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    gap:4px;
+    height:56px;
+    margin-bottom:18px;
+    width:100%;
+  }
+  .waveform span{
+    display:block;
+    width:4px;
+    min-height:4px;
+    border-radius:2px;
+    background:var(--record);
+    opacity:0.35;
+    transition:height 0.08s ease, opacity 0.2s ease;
+  }
+  .waveform.active span{ opacity:0.9; }
+
+  .record-btn{
+    width:76px;
+    height:76px;
+    border-radius:50%;
+    border:none;
+    background:var(--record);
+    color:#fdf9f4;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(166,52,70,0.28);
+    transition:transform 0.15s ease, background 0.15s ease;
+    position:relative;
+  }
+  .record-btn:hover{ transform:scale(1.03); }
+  .record-btn:active{ transform:scale(0.97); }
+  .record-btn.recording{
+    background:var(--record-dark);
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  .record-btn .dot{
+    width:20px; height:20px; border-radius:4px; background:currentColor;
+  }
+  .record-btn.recording .dot{ border-radius:4px; width:16px; height:16px; }
+  @keyframes pulse{
+    0%,100%{ box-shadow:0 6px 18px rgba(166,52,70,0.28); }
+    50%{ box-shadow:0 6px 26px rgba(166,52,70,0.48); }
+  }
+
+  .timer{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--muted);
+    margin-top:12px;
+    min-height:18px;
+  }
+
+  .hint{
+    font-size:12.5px;
+    color:var(--muted);
+    text-align:center;
+    margin-top:6px;
+    line-height:1.5;
+  }
+
+  .transcript-box{
+    margin-top:20px;
+    padding-top:18px;
+    border-top:1px dashed var(--line);
+    display:none;
+  }
+  .transcript-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+  .transcript-text{
+    font-size:15px;
+    line-height:1.6;
+    color:var(--ink);
+    min-height:24px;
+  }
+  textarea.transcript-edit{
+    width:100%;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:15px;
+    line-height:1.6;
+    color:var(--ink);
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    min-height:70px;
+    resize:vertical;
+    display:none;
+  }
+
+  .actions{
+    display:flex;
+    gap:10px;
+    margin-top:16px;
+  }
+  .btn-secondary{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13.5px;
+    font-weight:500;
+    color:var(--ink);
+    background:transparent;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:9px 16px;
+    cursor:pointer;
+  }
+  .btn-primary{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13.5px;
+    font-weight:500;
+    color:#fdf9f4;
+    background:var(--feedback);
+    border:none;
+    border-radius:10px;
+    padding:9px 16px;
+    cursor:pointer;
+  }
+  .btn-primary:disabled{ opacity:0.5; cursor:default; }
+
+  .feedback-card{
+    background:var(--feedback-bg);
+    border-radius:var(--radius);
+    padding:22px 24px;
+    margin-top:4px;
+    display:none;
+  }
+  .feedback-card.show{ display:block; animation:rise 0.35s ease; }
+  @keyframes rise{
+    from{ opacity:0; transform:translateY(6px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .feedback-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--feedback);
+    margin-bottom:12px;
+  }
+  .feedback-line{
+    font-size:15px;
+    line-height:1.6;
+    margin-bottom:10px;
+    display:flex;
+    gap:10px;
+  }
+  .feedback-line:last-child{ margin-bottom:0; }
+  .feedback-line .icon{ flex-shrink:0; }
+  .loading{
+    font-size:13.5px;
+    color:var(--muted);
+    display:none;
+    align-items:center;
+    gap:8px;
+    margin-top:14px;
+  }
+  .loading.show{ display:flex; }
+  .spinner{
+    width:14px;height:14px;border-radius:50%;
+    border:2px solid var(--line);
+    border-top-color:var(--feedback);
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .journal-toggle{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+    user-select:none;
+  }
+  .journal-toggle .count{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .journal-list{
+    display:none;
+    margin-top:18px;
+    padding-top:18px;
+    border-top:1px dashed var(--line);
+  }
+  .journal-list.show{ display:block; }
+  .journal-entry{
+    padding:14px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .journal-entry:last-child{ border-bottom:none; }
+  .journal-q{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:15px;
+    margin-bottom:6px;
+  }
+  .journal-date{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+  .journal-fb{ font-size:13.5px; color:var(--muted); line-height:1.5; }
+  .journal-empty{ font-size:13.5px; color:var(--muted); }
+
+  .note{
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+    margin-top:24px;
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="eyebrow">Topic · Personality</div>
+  <h1>Speaking practice</h1>
+
+  <div class="card">
+    <div class="question-label">Question</div>
+    <div class="question-text" id="questionText">What kinds of situations make people feel jealous?</div>
+    <select class="question-picker" id="questionPicker">
+      <option value="What kinds of situations make people feel jealous?" selected>3. Jealous — What kinds of situations make people feel jealous?</option>
+      <option value="How do you deal with jealousy — yours or other people's?">3. Jealous — How do you deal with jealousy?</option>
+      <option value="Are you competitive in sports, school, or work? Give an example.">4. Competitive — Are you competitive? Give an example.</option>
+      <option value="Is being competitive more helpful or more stressful for you?">4. Competitive — Helpful or stressful?</option>
+    </select>
+
+    <div class="stage">
+      <div class="waveform" id="waveform"></div>
+      <button class="record-btn" id="recordBtn" aria-label="Record answer">
+        <span class="dot"></span>
+      </button>
+      <div class="timer" id="timer"></div>
+      <div class="hint" id="hint">Tap to answer out loud. Works on phone and computer.</div>
+    </div>
+
+    <div class="transcript-box" id="transcriptBox">
+      <div class="transcript-label">What we heard</div>
+      <div class="transcript-text" id="transcriptText"></div>
+      <textarea class="transcript-edit" id="transcriptEdit"></textarea>
+      <div class="actions">
+        <button class="btn-secondary" id="editBtn">Edit text</button>
+        <button class="btn-primary" id="feedbackBtn">Get feedback</button>
+      </div>
+      <div class="loading" id="loading"><span class="spinner"></span> <span id="loadingText">Listening to your answer…</span></div>
+    </div>
+  </div>
+
+  <div class="feedback-card" id="feedbackCard">
+    <div class="feedback-label">Feedback</div>
+    <div id="feedbackBody"></div>
+  </div>
+
+  <div class="card">
+    <div class="journal-toggle" id="journalToggle">
+      <div class="question-label" style="margin-bottom:0">Journal</div>
+      <div class="count" id="journalCount">0 entries</div>
+    </div>
+    <div class="journal-list" id="journalList">
+      <div class="journal-empty" id="journalEmpty">No answers recorded yet — they'll show up here.</div>
+    </div>
+  </div>
+
+  <div class="note">Journal is saved on this device only for now — a shared journal across devices is a planned next step.</div>
+</div>
+
+<script>
+const questionText = document.getElementById('questionText');
+const questionPicker = document.getElementById('questionPicker');
+const recordBtn = document.getElementById('recordBtn');
+const waveform = document.getElementById('waveform');
+const timerEl = document.getElementById('timer');
+const hint = document.getElementById('hint');
+const transcriptBox = document.getElementById('transcriptBox');
+const transcriptText = document.getElementById('transcriptText');
+const transcriptEdit = document.getElementById('transcriptEdit');
+const editBtn = document.getElementById('editBtn');
+const feedbackBtn = document.getElementById('feedbackBtn');
+const loading = document.getElementById('loading');
+const loadingText = document.getElementById('loadingText');
+const feedbackCard = document.getElementById('feedbackCard');
+const feedbackBody = document.getElementById('feedbackBody');
+const journalToggle = document.getElementById('journalToggle');
+const journalList = document.getElementById('journalList');
+const journalCount = document.getElementById('journalCount');
+const journalEmpty = document.getElementById('journalEmpty');
+
+const BAR_COUNT = 28;
+for(let i=0;i<BAR_COUNT;i++){
+  const bar = document.createElement('span');
+  bar.style.height = '4px';
+  waveform.appendChild(bar);
+}
+const bars = waveform.querySelectorAll('span');
+
+questionPicker.addEventListener('change', () => {
+  questionText.textContent = questionPicker.value;
+  resetStage();
+});
+
+let recording = false;
+let mediaRecorder = null;
+let recordedChunks = [];
+let audioCtx, analyser, micStream, rafId;
+let startTime, timerInterval;
+
+function resetStage(){
+  transcriptBox.style.display = 'none';
+  feedbackCard.classList.remove('show');
+  transcriptText.textContent = '';
+  transcriptEdit.style.display = 'none';
+  transcriptText.style.display = 'block';
+}
+
+function formatTime(ms){
+  const s = Math.floor(ms/1000);
+  const mm = String(Math.floor(s/60)).padStart(2,'0');
+  const ss = String(s%60).padStart(2,'0');
+  return mm+':'+ss;
+}
+
+async function startRecording(){
+  resetStage();
+  recording = true;
+  recordedChunks = [];
+  recordBtn.classList.add('recording');
+  waveform.classList.add('active');
+  hint.textContent = 'Listening… tap again to stop.';
+
+  startTime = Date.now();
+  timerInterval = setInterval(()=>{ timerEl.textContent = formatTime(Date.now()-startTime); }, 200);
+
+  try{
+    micStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+  }catch(e){
+    hint.textContent = 'Microphone access denied — check your browser settings and try again.';
+    stopRecording(false);
+    return;
+  }
+
+  // waveform visualization
+  try{
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioCtx.createMediaStreamSource(micStream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 64;
+    source.connect(analyser);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    const draw = () => {
+      analyser.getByteFrequencyData(data);
+      bars.forEach((bar, i) => {
+        const v = data[i % data.length] || 0;
+        bar.style.height = Math.max(4, (v/255)*52) + 'px';
+      });
+      rafId = requestAnimationFrame(draw);
+    };
+    draw();
+  }catch(e){ /* visualization is optional */ }
+
+  const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+  mediaRecorder = new MediaRecorder(micStream, mimeType ? { mimeType } : undefined);
+  mediaRecorder.ondataavailable = (e) => { if(e.data && e.data.size > 0) recordedChunks.push(e.data); };
+  mediaRecorder.start();
+}
+
+function stopRecording(shouldTranscribe = true){
+  recording = false;
+  recordBtn.classList.remove('recording');
+  waveform.classList.remove('active');
+  clearInterval(timerInterval);
+  if(rafId) cancelAnimationFrame(rafId);
+  bars.forEach(bar => bar.style.height = '4px');
+  if(micStream){ micStream.getTracks().forEach(t=>t.stop()); }
+  if(audioCtx){ audioCtx.close(); }
+  hint.textContent = 'Tap to answer out loud. Works on phone and computer.';
+
+  if(mediaRecorder && mediaRecorder.state !== 'inactive'){
+    mediaRecorder.onstop = () => { if(shouldTranscribe) sendForTranscription(); };
+    mediaRecorder.stop();
+  }
+}
+
+recordBtn.addEventListener('click', () => {
+  if(!recording){ startRecording(); } else { stopRecording(true); }
+});
+
+async function sendForTranscription(){
+  const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+  if(!blob.size){ return; }
+
+  transcriptBox.style.display = 'block';
+  loadingText.textContent = 'Listening to your answer…';
+  loading.classList.add('show');
+
+  try{
+    const res = await fetch('/api/transcribe', { method: 'POST', body: blob });
+    const data = await res.json();
+    if(!res.ok){ throw new Error(data.error || 'Transcription failed'); }
+    transcriptText.textContent = data.text || '(no speech detected — try again or type below)';
+  }catch(e){
+    transcriptText.textContent = "Couldn't transcribe — you can type your answer instead.";
+    editBtn.click();
+  }finally{
+    loading.classList.remove('show');
+  }
+}
+
+editBtn.addEventListener('click', () => {
+  transcriptEdit.value = transcriptText.textContent;
+  transcriptText.style.display = 'none';
+  transcriptEdit.style.display = 'block';
+});
+
+feedbackBtn.addEventListener('click', async () => {
+  const answer = transcriptEdit.style.display === 'block' ? transcriptEdit.value.trim() : transcriptText.textContent.trim();
+  if(!answer){ return; }
+  feedbackBtn.disabled = true;
+  loadingText.textContent = 'Reading your answer…';
+  loading.classList.add('show');
+  feedbackCard.classList.remove('show');
+  try{
+    const res = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: questionText.textContent, answer }),
+    });
+    const data = await res.json();
+    if(!res.ok){ throw new Error(data.error || 'Feedback failed'); }
+    const lines = (data.feedback || '').split('\n').filter(Boolean);
+    feedbackBody.innerHTML = '';
+    const icons = ['✓','→'];
+    lines.slice(0,2).forEach((line, i) => {
+      const div = document.createElement('div');
+      div.className = 'feedback-line';
+      div.innerHTML = `<span class="icon">${icons[i] || '·'}</span><span>${line}</span>`;
+      feedbackBody.appendChild(div);
+    });
+    feedbackCard.classList.add('show');
+    saveEntry(questionText.textContent, answer, data.feedback || '');
+  }catch(e){
+    feedbackBody.innerHTML = '<div class="feedback-line">Couldn\'t reach the feedback service — try again in a moment.</div>';
+    feedbackCard.classList.add('show');
+  }finally{
+    loading.classList.remove('show');
+    feedbackBtn.disabled = false;
+  }
+});
+
+// journal via localStorage (this is a real deployed site, not a sandboxed
+// preview, so localStorage works fine here)
+function saveEntry(question, answer, feedback){
+  try{
+    const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+    entries.unshift({ question, answer, feedback, date: new Date().toISOString() });
+    localStorage.setItem('journalEntries', JSON.stringify(entries));
+    loadJournal();
+  }catch(e){ /* storage unavailable — app still works without journal */ }
+}
+
+function loadJournal(){
+  try{
+    const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+    journalCount.textContent = entries.length + (entries.length === 1 ? ' entry' : ' entries');
+    journalEmpty.style.display = entries.length ? 'none' : 'block';
+    journalList.querySelectorAll('.journal-entry').forEach(el => el.remove());
+    entries.forEach(entry => {
+      const el = document.createElement('div');
+      el.className = 'journal-entry';
+      const d = new Date(entry.date);
+      el.innerHTML = `
+        <div class="journal-q">${entry.question}</div>
+        <div class="journal-date">${d.toLocaleDateString()} · ${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+        <div class="journal-fb">${entry.feedback.replace(/\n/g,'<br>')}</div>
+      `;
+      journalList.appendChild(el);
+    });
+  }catch(e){ /* storage unavailable */ }
+}
+
+journalToggle.addEventListener('click', () => {
+  journalList.classList.toggle('show');
+});
+
+loadJournal();
+</script>
+</body>
+</html>
