@@ -537,8 +537,8 @@ feedbackBtn.addEventListener('click', async () => {
     if(!res.ok){ throw new Error(data.error || 'Feedback failed'); }
     const lines = (data.feedback || '').split('\n').filter(Boolean);
     feedbackBody.innerHTML = '';
-    const icons = ['✓','→'];
-    lines.slice(0,2).forEach((line, i) => {
+    const icons = ['✓','→','🗣'];
+    lines.slice(0,3).forEach((line, i) => {
       const div = document.createElement('div');
       div.className = 'feedback-line';
       div.innerHTML = `<span class="icon">${icons[i] || '·'}</span><span>${line}</span>`;
