@@ -141,6 +141,16 @@ const genLoading = document.getElementById('genLoading');
 
 const finalWords = document.getElementById('finalWords');
 
+function toList(val){
+  if(Array.isArray(val)) return val.map(s => String(s).trim()).filter(Boolean);
+  if(typeof val === 'string'){
+    // fallback: model returned one string instead of an array — split on
+    // sentence-ending punctuation followed by a comma, as a best effort.
+    return val.split(/(?<=[.?!])\s*,\s*/).map(s => s.trim()).filter(Boolean);
+  }
+  return [];
+}
+
 genQuestionsBtn.addEventListener('click', async () => {
   const topic = topicInput.value.trim();
   if(!topic){
@@ -165,8 +175,8 @@ genQuestionsBtn.addEventListener('click', async () => {
     });
     const data = await res.json();
     if(!res.ok){ throw new Error(data.error || 'Failed to generate questions'); }
-    questionsInput.value = Array.isArray(data.questions) ? data.questions.join('\n') : (data.questions || '');
-    finalWords.value = Array.isArray(data.words) ? data.words.join('\n') : '';
+    questionsInput.value = toList(data.questions).join('\n');
+    finalWords.value = toList(data.words).join('\n');
   }catch(e){
     genLoading.textContent = "Couldn't generate questions — try again.";
     setTimeout(() => { genLoading.style.display = 'none'; genLoading.textContent = 'Writing questions…'; }, 2500);
