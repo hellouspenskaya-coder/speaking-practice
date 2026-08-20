@@ -710,6 +710,7 @@ feedbackBtn.addEventListener('click', async () => {
 
     saveEntry(questionText.textContent, answer, [data.wellDone, data.suggestion, data.example].filter(Boolean).join('\n'));
   }catch(e){
+    console.error('Feedback request failed:', e);
     feedbackBody.innerHTML = '<div class="feedback-line">Couldn\'t reach the feedback service — try again in a moment.</div>';
     feedbackCard.classList.add('show');
   }finally{
