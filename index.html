@@ -148,9 +148,10 @@
     animation:pulse 1.6s ease-in-out infinite;
   }
   .record-btn .dot{
-    width:20px; height:20px; border-radius:4px; background:currentColor;
+    width:20px; height:20px; border-radius:50%; background:currentColor;
+    transition:border-radius 0.2s ease, width 0.2s ease, height 0.2s ease;
   }
-  .record-btn.recording .dot{ border-radius:4px; width:16px; height:16px; }
+  .record-btn.recording .dot{ border-radius:6px; width:18px; height:18px; }
   @keyframes pulse{
     0%,100%{ box-shadow:0 6px 18px rgba(166,52,70,0.28); }
     50%{ box-shadow:0 6px 26px rgba(166,52,70,0.48); }
@@ -391,7 +392,7 @@
         <span class="dot"></span>
       </button>
       <div class="timer" id="timer"></div>
-      <div class="hint" id="hint">Tap to answer out loud. Works on phone and computer.</div>
+      <div class="hint" id="hint">Up to 5 minutes — shorter is fine. Stop early, and tap record again to add more.</div>
     </div>
 
     <div class="transcript-box" id="transcriptBox">
@@ -486,7 +487,7 @@ function showQuestion(i){
   } else {
     questionNav.style.display = 'none';
   }
-  resetStage();
+  resetStage(true);
 }
 
 function loadQuestionsFromUrl(){
@@ -511,13 +512,18 @@ let recording = false;
 let mediaRecorder = null;
 let recordedChunks = [];
 let audioCtx, analyser, micStream, rafId;
-let startTime, timerInterval;
+let startTime, timerInterval, autoStopTimeout;
+let accumulatedTranscript = '';
+const MAX_RECORDING_MS = 5 * 60 * 1000;
 
-function resetStage(){
-  transcriptBox.style.display = 'none';
+function resetStage(clearTranscript = true){
   feedbackCard.classList.remove('show');
   exerciseCard.classList.remove('show');
-  transcriptText.textContent = '';
+  if(clearTranscript){
+    transcriptBox.style.display = 'none';
+    transcriptText.textContent = '';
+    accumulatedTranscript = '';
+  }
   transcriptEdit.style.display = 'none';
   transcriptText.style.display = 'block';
 }
@@ -530,15 +536,20 @@ function formatTime(ms){
 }
 
 async function startRecording(){
-  resetStage();
+  // If the person had hand-edited the text, keep those edits before adding more
+  if(transcriptEdit.style.display === 'block'){
+    accumulatedTranscript = transcriptEdit.value.trim();
+  }
+  resetStage(false);
   recording = true;
   recordedChunks = [];
   recordBtn.classList.add('recording');
   waveform.classList.add('active');
-  hint.textContent = 'Listening… tap again to stop.';
+  hint.textContent = 'Listening… tap again to stop, or it stops itself at 5 minutes.';
 
   startTime = Date.now();
   timerInterval = setInterval(()=>{ timerEl.textContent = formatTime(Date.now()-startTime); }, 200);
+  autoStopTimeout = setTimeout(() => { stopRecording(true); }, MAX_RECORDING_MS);
 
   try{
     micStream = await navigator.mediaDevices.getUserMedia({ audio:true });
@@ -578,11 +589,12 @@ function stopRecording(shouldTranscribe = true){
   recordBtn.classList.remove('recording');
   waveform.classList.remove('active');
   clearInterval(timerInterval);
+  clearTimeout(autoStopTimeout);
   if(rafId) cancelAnimationFrame(rafId);
   bars.forEach(bar => bar.style.height = '4px');
   if(micStream){ micStream.getTracks().forEach(t=>t.stop()); }
   if(audioCtx){ audioCtx.close(); }
-  hint.textContent = 'Tap to answer out loud. Works on phone and computer.';
+  hint.textContent = 'Up to 5 minutes — shorter is fine. Stop early, and tap record again to add more.';
 
   if(mediaRecorder && mediaRecorder.state !== 'inactive'){
     mediaRecorder.onstop = () => { if(shouldTranscribe) sendForTranscription(); };
@@ -606,7 +618,9 @@ async function sendForTranscription(){
     const res = await fetch('/api/transcribe', { method: 'POST', body: blob });
     const data = await res.json();
     if(!res.ok){ throw new Error(data.error || 'Transcription failed'); }
-    transcriptText.textContent = data.text || '(no speech detected — try again or type below)';
+    const newText = (data.text || '').trim();
+    accumulatedTranscript = (accumulatedTranscript + ' ' + newText).trim();
+    transcriptText.textContent = accumulatedTranscript || '(no speech detected — try again or type below)';
   }catch(e){
     transcriptText.textContent = "Couldn't transcribe — you can type your answer instead.";
     editBtn.click();
