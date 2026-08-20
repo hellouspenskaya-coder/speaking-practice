@@ -319,7 +319,7 @@
     <div id="wordChips"></div>
   </div>
 
-  <button class="manual-toggle" id="manualToggle">✏️ Ввести тему и слова вручную</button>
+  <button class="manual-toggle" id="manualToggle" style="display:none;">✏️ Ввести тему и слова вручную</button>
   <div class="manual-panel" id="manualPanel">
     <label>Тема</label>
     <input type="text" id="manualTopic" placeholder="Architecture">
@@ -367,6 +367,10 @@ document.getElementById('wordChips').innerHTML = words
   .join('');
 document.getElementById('manualTopic').value = topic;
 document.getElementById('manualWords').value = words.join(', ');
+
+if (!words.length) {
+  document.getElementById('manualToggle').style.display = 'inline';
+}
 
 let currentTopic = topic;
 let currentWords = words;
