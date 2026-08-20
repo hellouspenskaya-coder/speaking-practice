@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writing Practice</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --paper: #f6f5f1;
+    --panel: #ffffff;
+    --ink: #262521;
+    --ink-soft: #6b6a63;
+    --line: #e2e0d8;
+    --accent: #3d4f66;
+    --accent-soft: #e8ecf1;
+    --amber: #b6802f;
+    --amber-soft: #f5ecdb;
+    --good: #4a7a5c;
+    --good-soft: #e4efe7;
+    --bad: #b5493f;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  main {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: 'Lora', serif;
+    font-weight: 600;
+    font-size: 24px;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .intro {
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .words-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+  }
+
+  .words-card .label {
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+
+  .word-chip {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 13.5px;
+    font-weight: 500;
+    margin: 0 6px 6px 0;
+  }
+
+  .manual-toggle {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-size: 12.5px;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 18px;
+  }
+
+  .manual-panel {
+    display: none;
+    background: var(--panel);
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+
+  .manual-panel label {
+    display: block;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+    margin-top: 10px;
+    font-weight: 500;
+  }
+  .manual-panel label:first-of-type { margin-top: 0; }
+
+  .manual-panel input[type=text] {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 8px 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    background: var(--paper);
+  }
+
+  button#applyManual {
+    margin-top: 12px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  textarea {
+    width: 100%;
+    min-height: 200px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+    background: var(--paper);
+    resize: vertical;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+
+  textarea::placeholder { color: #a8a69c; }
+
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .answer-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px 4px;
+    margin-bottom: 6px;
+  }
+
+  .answer-card .label {
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+
+  .answer-card textarea {
+    border: none;
+    background: var(--paper);
+    padding: 12px;
+  }
+
+  .hint {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin: 8px 0 18px;
+  }
+
+  button#check {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  button#check:disabled { opacity: 0.6; cursor: default; }
+
+  .feedback {
+    margin-top: 20px;
+    display: none;
+  }
+
+  .pair {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .pair .orig {
+    flex: 1 1 220px;
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+
+  .pair .arrow {
+    color: var(--ink-soft);
+    font-size: 16px;
+    flex: 0 0 auto;
+  }
+
+  .pair .corr {
+    flex: 1 1 220px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--good);
+    font-weight: 500;
+  }
+
+  .row-correct {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .row-correct .check {
+    color: var(--good);
+    font-size: 16px;
+    flex: 0 0 auto;
+  }
+
+  .row-correct .text {
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+
+  .all-good {
+    background: var(--good-soft);
+    color: var(--good);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 14.5px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .err {
+    color: var(--bad);
+    text-decoration: underline wavy var(--bad);
+    background: rgba(181,73,63,0.08);
+    padding: 0 2px;
+    border-radius: 3px;
+  }
+
+  .again {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+
+  .error-box {
+    background: #fbeceb;
+    color: var(--bad);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+    margin-top: 14px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="eyebrow">Writing practice</div>
+  <h1 id="topicTitle">Sentence practice</h1>
+  <p class="intro">Write your own sentences using the words below. Then check — each sentence gets a ✓ if it's correct, or the mistake highlighted next to its fix if not.</p>
+
+  <div class="words-card">
+    <div class="label">Words to use</div>
+    <div id="wordChips"></div>
+  </div>
+
+  <button class="manual-toggle" id="manualToggle">✏️ Ввести тему и слова вручную</button>
+  <div class="manual-panel" id="manualPanel">
+    <label>Тема</label>
+    <input type="text" id="manualTopic" placeholder="Architecture">
+    <label>Слова (через запятую)</label>
+    <input type="text" id="manualWords" placeholder="aspect, multifaceted, to grasp">
+    <button id="applyManual">Применить</button>
+  </div>
+
+  <div class="answer-card">
+    <div class="label">Your sentences</div>
+    <textarea id="answer" placeholder="Write your sentences here — one per line works well."></textarea>
+  </div>
+  <div class="hint">Try to use most of the words above. It's fine if a sentence or two feels a bit unnatural — that's what practice is for.</div>
+
+  <button id="check">Check my sentences</button>
+  <div class="error-box" id="errorBox">Something went wrong — please try again.</div>
+
+  <div class="feedback" id="feedback">
+    <div id="pairsContainer"></div>
+    <button class="again" id="again">Try another attempt</button>
+  </div>
+</main>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const topic = params.get('topic') || '';
+const wordsParam = params.get('words') || '';
+const words = wordsParam.split('|').map(w => w.trim()).filter(Boolean);
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function renderAnnotated(raw) {
+  return escapeHtml(raw)
+    .split('§ERR§').join('<span class="err">')
+    .split('§/ERR§').join('</span>');
+}
+
+if (topic) {
+  document.getElementById('topicTitle').textContent = topic;
+}
+document.getElementById('wordChips').innerHTML = words
+  .map(w => `<span class="word-chip">${w}</span>`)
+  .join('');
+document.getElementById('manualTopic').value = topic;
+document.getElementById('manualWords').value = words.join(', ');
+
+let currentTopic = topic;
+let currentWords = words;
+
+document.getElementById('manualToggle').addEventListener('click', () => {
+  const panel = document.getElementById('manualPanel');
+  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+});
+
+document.getElementById('applyManual').addEventListener('click', () => {
+  currentTopic = document.getElementById('manualTopic').value.trim();
+  currentWords = document.getElementById('manualWords').value
+    .split(',').map(w => w.trim()).filter(Boolean);
+
+  document.getElementById('topicTitle').textContent = currentTopic || 'Sentence practice';
+  document.getElementById('wordChips').innerHTML = currentWords
+    .map(w => `<span class="word-chip">${w}</span>`)
+    .join('');
+  document.getElementById('manualPanel').style.display = 'none';
+});
+
+document.getElementById('check').addEventListener('click', async () => {
+  const btn = document.getElementById('check');
+  const errorBox = document.getElementById('errorBox');
+  const feedback = document.getElementById('feedback');
+  const answer = document.getElementById('answer').value.trim();
+
+  errorBox.style.display = 'none';
+  feedback.style.display = 'none';
+
+  if (!answer) {
+    alert('Write a few sentences first.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+
+  try {
+    const response = await fetch('/api/check-writing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answer, words: currentWords, topic: currentTopic })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'request failed');
+
+    const items = data.items || [];
+    const container = document.getElementById('pairsContainer');
+
+    if (!items.length) {
+      container.innerHTML = '<div class="all-good">Looks correct — nice work.</div>';
+    } else {
+      container.innerHTML = items.map(item => {
+        if (item.status === 'correct') {
+          return `
+            <div class="row-correct">
+              <span class="check">✓</span>
+              <div class="text">${escapeHtml(item.text || '')}</div>
+            </div>`;
+        }
+        return `
+          <div class="pair">
+            <div class="orig">${renderAnnotated(item.text || '')}</div>
+            <div class="arrow">→</div>
+            <div class="corr">${escapeHtml(item.corrected || '')}</div>
+          </div>`;
+      }).join('');
+    }
+
+    feedback.style.display = 'block';
+    feedback.scrollIntoView({ behavior: 'smooth' });
+  } catch (e) {
+    errorBox.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Check my sentences';
+});
+
+document.getElementById('again').addEventListener('click', () => {
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('answer').focus();
+});
+</script>
+
+</body>
+</html>
