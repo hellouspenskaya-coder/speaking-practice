@@ -1,33 +1,40 @@
-# Speaking Practice — deployment notes
+# Speaking Practice — what's inside & how to deploy
 
-This folder contains the whole tool:
-- `index.html` — the page students see (question, record button, feedback, journal)
-- `api/transcribe.js` — talks to Groq (Whisper) to turn speech into text
-- `api/feedback.js` — talks to Claude to generate the dosed feedback
+## Files
+- `index.html` — the page students open (target words, question, record button,
+  transcription, dosed feedback, gap-fill exercise, personal journal). Questions
+  and words are passed in through the link, so a new lesson is just a new link.
+- `builder.html` — YOUR private page for building lessons. Enter a topic, level,
+  and (optionally) target words; it generates reflective discussion questions and
+  a word list, then builds the ready-to-share link. Do not share this page.
+- `api/transcribe.js` — sends recorded audio to Groq (Whisper) → text.
+- `api/feedback.js` — sends question + answer to Claude → 3-line feedback plus a
+  grammar-form gap-fill exercise (structured JSON).
+- `api/generate-questions.js` — sends topic/level/words to Claude → questions +
+  vocabulary (structured JSON). Used by builder.html only.
 
-Your API keys are **not** in these files. They get added separately as
-"environment variables" in Vercel's dashboard, so they stay private.
+Your API keys are NOT in these files. They live as environment variables in
+Vercel: ANTHROPIC_API_KEY and GROQ_API_KEY.
 
-## Deploy steps (no coding required)
+## Deploy / update
+1. Upload the files to your GitHub repo (Add file → Upload files; same-named
+   files are replaced automatically). Keep the three api/*.js files inside the
+   `api` folder, not in the root.
+2. Vercel redeploys automatically from GitHub.
+3. Environment variables (set once, in Vercel → Settings → Environment Variables):
+   - ANTHROPIC_API_KEY — your Claude key (starts with sk-ant-)
+   - GROQ_API_KEY — your Groq key
+   After adding or changing them, redeploy once.
 
-1. Create a free account at github.com if you don't have one.
-2. Create a new repository (name it e.g. `speaking-practice`), and upload
-   this whole folder to it (GitHub's "Add file → Upload files" page lets you
-   drag the folder in).
-3. Go to vercel.com, sign up (you can use your GitHub account to sign in —
-   this also connects the two automatically).
-4. Click "Add New Project", pick the `speaking-practice` repository you just
-   created, and click Deploy. No settings need to change.
-5. Once deployed, go to the project's Settings → Environment Variables and
-   add two entries:
-   - `ANTHROPIC_API_KEY` → your Claude API key (starts with `sk-ant-`)
-   - `GROQ_API_KEY` → your Groq API key
-6. Redeploy (Vercel will prompt you, or use the "Redeploy" button) so the new
-   keys take effect.
-7. Your tool is now live at a Vercel address like
-   `speaking-practice.vercel.app`. Test it there first.
-8. Once it works, point your subdomain (e.g.
-   `practice.wetalktodevelop.com`) at this Vercel project — this is done in
-   two places:
-   - In Vercel: Project → Settings → Domains → add the subdomain
-   - In Hostinger: DNS settings → add the CNAME record Vercel shows you
+## Using it
+1. Open builder.html on your live site (e.g. speaking-practice-ruby.vercel.app/builder.html).
+2. Enter topic + level, optionally your target words, click Generate questions.
+3. Adjust questions/words by hand if you like, click Generate link, copy it.
+4. Paste the link into your Notion lesson as a normal link (NOT an embed —
+   embeds block the microphone and the journal).
+
+## Notes
+- Journal is stored per-device in the browser for now (each student sees only
+  their own; a shared journal across devices is a planned next step).
+- Audio is never stored — only the text transcript and feedback.
+- Cost at ~10-15 students is a couple of dollars a month at most.

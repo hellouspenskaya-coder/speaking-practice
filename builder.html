@@ -196,7 +196,9 @@ generateBtn.addEventListener('click', () => {
 
   if(!questions.length){ return; }
 
-  const base = window.location.origin + window.location.pathname.replace('builder.html', 'index.html');
+  const path = window.location.pathname;
+  const dir = path.substring(0, path.lastIndexOf('/') + 1);
+  const base = window.location.origin + dir + 'index.html';
   const params = new URLSearchParams();
   if(topic) params.set('topic', topic);
   params.set('q', questions.join('|'));

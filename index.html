@@ -452,6 +452,14 @@
 
 <script>
 const questionText = document.getElementById('questionText');
+let recording = false;
+let mediaRecorder = null;
+let recordedChunks = [];
+let audioCtx, analyser, micStream, rafId;
+let startTime, timerInterval, autoStopTimeout;
+let accumulatedTranscript = '';
+const MAX_RECORDING_MS = 5 * 60 * 1000;
+
 const questionNav = document.getElementById('questionNav');
 const questionProgress = document.getElementById('questionProgress');
 const nextQuestionBtn = document.getElementById('nextQuestionBtn');
@@ -543,14 +551,6 @@ nextQuestionBtn.addEventListener('click', () => {
   const next = (currentIndex + 1) % questions.length;
   showQuestion(next);
 });
-
-let recording = false;
-let mediaRecorder = null;
-let recordedChunks = [];
-let audioCtx, analyser, micStream, rafId;
-let startTime, timerInterval, autoStopTimeout;
-let accumulatedTranscript = '';
-const MAX_RECORDING_MS = 5 * 60 * 1000;
 
 function resetStage(clearTranscript = true){
   feedbackCard.classList.remove('show');
@@ -673,7 +673,9 @@ editBtn.addEventListener('click', () => {
 
 feedbackBtn.addEventListener('click', async () => {
   const answer = transcriptEdit.style.display === 'block' ? transcriptEdit.value.trim() : transcriptText.textContent.trim();
-  if(!answer){ return; }
+  if(!answer || answer.startsWith('(no speech detected') || answer.startsWith("Couldn't transcribe")){
+    return;
+  }
   feedbackBtn.disabled = true;
   loadingText.textContent = 'Reading your answer…';
   loading.classList.add('show');
