@@ -475,6 +475,7 @@ const DEFAULT_QUESTIONS = [
 
 let questions = DEFAULT_QUESTIONS;
 let currentIndex = 0;
+let accessKey = '';
 
 function showQuestion(i){
   currentIndex = i;
@@ -493,6 +494,7 @@ function loadQuestionsFromUrl(){
   const params = new URLSearchParams(window.location.search);
   const topicParam = params.get('topic');
   const qParam = params.get('q');
+  accessKey = params.get('key') || '';
   questions = qParam
     ? qParam.split('|').map(s => s.trim()).filter(Boolean)
     : DEFAULT_QUESTIONS;
@@ -603,7 +605,7 @@ async function sendForTranscription(){
   loading.classList.add('show');
 
   try{
-    const res = await fetch('/api/transcribe', { method: 'POST', body: blob });
+    const res = await fetch('/api/transcribe', { method: 'POST', headers: { 'x-access-key': accessKey }, body: blob });
     const data = await res.json();
     if(!res.ok){ throw new Error(data.error || 'Transcription failed'); }
     transcriptText.textContent = data.text || '(no speech detected — try again or type below)';
@@ -631,7 +633,7 @@ feedbackBtn.addEventListener('click', async () => {
   try{
     const res = await fetch('/api/feedback', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-access-key': accessKey },
       body: JSON.stringify({ question: questionText.textContent, answer }),
     });
     const data = await res.json();

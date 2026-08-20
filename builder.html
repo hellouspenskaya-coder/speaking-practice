@@ -78,6 +78,12 @@
   <h1>Link builder</h1>
 
   <div class="card">
+    <label for="accessKey">Access key (set once — must match SITE_ACCESS_KEY in Vercel)</label>
+    <input type="text" id="accessKey" placeholder="e.g. a random word only your students' links will have" />
+    <div class="hint" style="margin-bottom:0">Saved in this browser so you only type it once. It gets added to every link you generate below, invisibly to students — they just click the link as normal.</div>
+  </div>
+
+  <div class="card">
     <label for="genLevel">Student level (CEFR)</label>
     <select id="genLevel">
       <option value="">— not specified —</option>
@@ -130,6 +136,12 @@ const resultLink = document.getElementById('resultLink');
 const copyBtn = document.getElementById('copyBtn');
 const copiedMsg = document.getElementById('copiedMsg');
 
+const accessKeyInput = document.getElementById('accessKey');
+accessKeyInput.value = localStorage.getItem('builderAccessKey') || '';
+accessKeyInput.addEventListener('input', () => {
+  localStorage.setItem('builderAccessKey', accessKeyInput.value.trim());
+});
+
 const genLevel = document.getElementById('genLevel');
 const genWords = document.getElementById('genWords');
 const genCount = document.getElementById('genCount');
@@ -150,7 +162,7 @@ genQuestionsBtn.addEventListener('click', async () => {
   try{
     const res = await fetch('/api/generate-questions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-access-key': accessKeyInput.value.trim() },
       body: JSON.stringify({
         topic,
         level: genLevel.value,
@@ -184,6 +196,8 @@ generateBtn.addEventListener('click', () => {
   const params = new URLSearchParams();
   if(topic) params.set('topic', topic);
   params.set('q', questions.join('|'));
+  const key = accessKeyInput.value.trim();
+  if(key) params.set('key', key);
 
   resultLink.textContent = base + '?' + params.toString();
   result.classList.add('show');

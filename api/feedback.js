@@ -10,16 +10,30 @@ Respond with ONLY a raw JSON object (no markdown, no code fences, no text before
   "wellDone": "one short sentence naming something the student did well (a word, phrase, or structure)",
   "suggestion": "one short sentence phrased as 'Instead of X, try Y' pointing to one richer or more natural expression",
   "targetPhrase": "just the suggested phrase Y itself, exactly as it should be used, in the exact grammatical form the gapFill sentence requires (correct verb form, correct preposition, etc.)",
-  "example": "one short example sentence using targetPhrase in a new, similar context",
+  "example": "one short example sentence using the same core expression as targetPhrase, but in a NOTICEABLY DIFFERENT grammatical form/tense than the one targetPhrase uses (different tense, different aspect, singular vs plural subject, etc.) — the student must not be able to just copy this sentence's wording to answer gapFill correctly",
   "gapFill": "a different short sentence, in a new context again, with targetPhrase removed and replaced by ____ — write the surrounding sentence so that only ONE grammatical form is correct there",
-  "distractors": ["the same expression as targetPhrase but in a different, grammatically WRONG form for this exact blank (e.g. wrong verb form, wrong preposition, wrong tense)", "the same expression as targetPhrase in a second, different grammatically WRONG form for this exact blank"]
+  "distractors": ["a wrong option for this exact blank, built using the rule below", "a second wrong option for this exact blank, built using the rule below"]
 }
 
-Keep every field warm, concise, and natural. The two distractors must use the SAME core expression as targetPhrase, not a different word or idea — only the grammatical form should differ, and each distractor must sound clearly wrong once inserted into gapFill. Do not include anything beyond these six fields.`;
+How to build the two distractors — first decide what kind of expression targetPhrase is, then apply the matching rule:
+- Phrasal verb (verb + particle/preposition, e.g. "look after", "give up", "come across"): keep the same verb but swap in a different, wrong particle/preposition for this context (e.g. "look for" or "look into" when the correct one is "look after"). Use a wrong grammatical form for the second distractor if a second wrong preposition isn't natural.
+- Multi-word idiom or fixed collocation (e.g. "kill two birds with one stone", "a piece of cake"): swap ONE word inside the idiom for a plausible but wrong word (e.g. "kill two birds with one rock") for at least one distractor.
+- Single word or simple phrase with no fixed preposition/particle: use the same expression in two different, grammatically WRONG forms for this exact blank (wrong tense, missing "-ing", wrong number, etc.).
+
+Keep every field warm, concise, and natural. Each distractor must sound clearly wrong once inserted into gapFill, for a specific, sayable reason — not just "different" from targetPhrase.
+
+Before finalizing your answer, mentally insert targetPhrase into gapFill in place of ____ and check that the result is a complete, correct English sentence — targetPhrase must include every word the blank needs (articles, prepositions, "-ing" endings, etc.), not just be correct in isolation. If it doesn't fit perfectly, revise gapFill or targetPhrase until it does. Do the same check for each distractor: inserting it must sound clearly wrong for a specific, sayable reason, not just "different". Also double-check that example does NOT use targetPhrase in the same form gapFill requires — if it does, rewrite example in a different tense/form.
+
+Do not include anything beyond these six fields.`;
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+
+  if (process.env.SITE_ACCESS_KEY && req.headers['x-access-key'] !== process.env.SITE_ACCESS_KEY) {
+    res.status(401).json({ error: 'Invalid or missing access key' });
     return;
   }
 
