@@ -89,7 +89,7 @@
       <option value="C2">C2</option>
     </select>
 
-    <label for="genWords">Target words (comma or line separated)</label>
+    <label for="genWords">Target words you want included (optional — leave blank to let Claude pick all of them)</label>
     <textarea id="genWords" style="min-height:70px" placeholder="purpose, meaningful, curiosity, drained, worrying"></textarea>
 
     <label for="genCount">Number of questions</label>
@@ -103,6 +103,9 @@
   <div class="card">
     <label for="topic">Topic (shown at the top of the page, and used above to generate questions)</label>
     <input type="text" id="topic" placeholder="Purpose of Life. Soul." />
+
+    <label for="finalWords">Target words shown to the student (one per line — filled in automatically after generating)</label>
+    <textarea id="finalWords" style="min-height:60px" placeholder="Will fill in after you click Generate questions — or type your own list here directly."></textarea>
 
     <label for="questions">Questions — one per line, paste straight from Notion</label>
     <textarea id="questions" placeholder="What small things make life meaningful for you?
@@ -136,6 +139,8 @@ const genCount = document.getElementById('genCount');
 const genQuestionsBtn = document.getElementById('genQuestionsBtn');
 const genLoading = document.getElementById('genLoading');
 
+const finalWords = document.getElementById('finalWords');
+
 genQuestionsBtn.addEventListener('click', async () => {
   const topic = topicInput.value.trim();
   if(!topic){
@@ -160,7 +165,8 @@ genQuestionsBtn.addEventListener('click', async () => {
     });
     const data = await res.json();
     if(!res.ok){ throw new Error(data.error || 'Failed to generate questions'); }
-    questionsInput.value = data.questions || '';
+    questionsInput.value = Array.isArray(data.questions) ? data.questions.join('\n') : (data.questions || '');
+    finalWords.value = Array.isArray(data.words) ? data.words.join('\n') : '';
   }catch(e){
     genLoading.textContent = "Couldn't generate questions — try again.";
     setTimeout(() => { genLoading.style.display = 'none'; genLoading.textContent = 'Writing questions…'; }, 2500);
@@ -184,6 +190,8 @@ generateBtn.addEventListener('click', () => {
   const params = new URLSearchParams();
   if(topic) params.set('topic', topic);
   params.set('q', questions.join('|'));
+  const words = finalWords.value.split('\n').map(w => w.trim()).filter(Boolean);
+  if(words.length) params.set('words', words.join('|'));
 
   resultLink.textContent = base + '?' + params.toString();
   result.classList.add('show');

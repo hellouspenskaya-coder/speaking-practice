@@ -93,6 +93,19 @@
     justify-content:space-between;
     margin-bottom:22px;
   }
+  .words-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .word-chip{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13.5px;
+    color:var(--ink);
+    background:var(--feedback-bg);
+    border-radius:999px;
+    padding:6px 14px;
+  }
   .question-progress{
     font-family:'IBM Plex Mono', monospace;
     font-size:12px;
@@ -378,6 +391,11 @@
   <div class="eyebrow">Topic · Personality</div>
   <h1>Speaking practice</h1>
 
+  <div class="card" id="wordsCard" style="display:none; padding:20px 24px;">
+    <div class="question-label" style="margin-bottom:10px">Target words for this lesson</div>
+    <div class="words-list" id="wordsList"></div>
+  </div>
+
   <div class="card">
     <div class="question-label">Question</div>
     <div class="question-text" id="questionText">What kinds of situations make people feel jealous?</div>
@@ -437,6 +455,8 @@ const questionText = document.getElementById('questionText');
 const questionNav = document.getElementById('questionNav');
 const questionProgress = document.getElementById('questionProgress');
 const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+const wordsCard = document.getElementById('wordsCard');
+const wordsList = document.getElementById('wordsList');
 const recordBtn = document.getElementById('recordBtn');
 const waveform = document.getElementById('waveform');
 const timerEl = document.getElementById('timer');
@@ -494,11 +514,27 @@ function loadQuestionsFromUrl(){
   const params = new URLSearchParams(window.location.search);
   const topicParam = params.get('topic');
   const qParam = params.get('q');
+  const wordsParam = params.get('words');
   questions = qParam
     ? qParam.split('|').map(s => s.trim()).filter(Boolean)
     : DEFAULT_QUESTIONS;
 
   document.querySelector('.eyebrow').textContent = 'Topic · ' + (topicParam || 'Practice');
+
+  const words = wordsParam ? wordsParam.split('|').map(s => s.trim()).filter(Boolean) : [];
+  if(words.length){
+    wordsList.innerHTML = '';
+    words.forEach(w => {
+      const chip = document.createElement('span');
+      chip.className = 'word-chip';
+      chip.textContent = w;
+      wordsList.appendChild(chip);
+    });
+    wordsCard.style.display = 'block';
+  } else {
+    wordsCard.style.display = 'none';
+  }
+
   showQuestion(0);
 }
 loadQuestionsFromUrl();
