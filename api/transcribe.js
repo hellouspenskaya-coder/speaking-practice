@@ -8,11 +8,6 @@ module.exports = async (req, res) => {
     return;
   }
 
-  if (process.env.SITE_ACCESS_KEY && req.headers['x-access-key'] !== process.env.SITE_ACCESS_KEY) {
-    res.status(401).json({ error: 'Invalid or missing access key' });
-    return;
-  }
-
   try {
     const chunks = [];
     for await (const chunk of req) chunks.push(chunk);
