@@ -1,15 +1,12 @@
 // api/find-resources.js
-// Finds TWO authentic English-language sources on a topic — one article and one
-// video — via web search, then extracts vocabulary separately from each.
+// Finds two authentic English-language sources on a topic — one article and one
+// video — via web search. Vocabulary with real example sentences is extracted
+// from the ARTICLE ONLY (fast, no transcript needed). The video is just found
+// by topic/duration relevance — Anna pulls video vocabulary manually via Twee,
+// so there's no need to verify captions or read the video's transcript here,
+// which used to be the main cost/time driver (repeated search-and-reject
+// cycles hunting for a video with a real, findable transcript).
 // Requires ANTHROPIC_API_KEY in Vercel environment variables (already set up).
-//
-// IMPORTANT LIMITATION (be upfront about this with Anna): the "video must have
-// subtitles" rule is enforced by instructing the model to only choose videos it
-// can find a real transcript/caption text for, and to quote actual subtitle
-// lines as proof — not by a separate YouTube captions-API check. It's a strong
-// instruction, not a hard technical guarantee. If no video with a real,
-// findable transcript exists for the topic, the model is told to return
-// materials.video as null rather than invent one.
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -37,14 +34,12 @@ module.exports = async (req, res) => {
   const materialsPrompt = `You are finding authentic English-language teaching material for an adult ${lvl} English learner.
 Topic: "${topic}"
 
-Use web search to find TWO real, currently-live, authentic English-language sources on this topic:
+Use web search to find real, currently-live, authentic English-language sources on this topic:
 (a) ONE article, roughly 500-900 words, from a reputable source (news outlet, established publication, well-known site).
-(b) ONE video, roughly 3-6 minutes long, from a reputable source (official channel, news outlet, educational/media site).
-Both must be real URLs you found via search. Do not invent a URL.
+(b) THREE candidate videos, each roughly 3-6 minutes long, from reputable sources (official channel, news outlet, educational/media site) — give a few different options since not every video works in every downstream tool. Prefer well-known channels that reliably publish real captions/transcripts — e.g. TED / TED-Ed, BBC Learning English, VOA Learning English, official news channel explainer series (BBC News, Vox, etc.) — but any real, relevant video is fine. Just find relevant, real video URLs — you do NOT need to read their transcripts or verify captions for this step.
+All URLs must be real ones you found via search. Do not invent a URL.
 
-CRITICAL RULE FOR THE VIDEO: only pick it if you can actually find and read its transcript or subtitle/caption text via search (a transcript page, a captions file, or a site publishing the script). If, after real effort, you cannot find any video with genuine transcript text, set "video" to null rather than guessing or inventing content — never reconstruct what a video "probably" says.
-
-From the actual text content of EACH source separately (the article body; the video's real transcript), pick 5-7 vocabulary words or expressions that genuinely appear in THAT source. For each, give a short English definition and quote the actual short sentence (under 20 words) where it appears. Keep the article's vocabulary and the video's vocabulary as two separate lists — do not merge them.
+From the actual text content of the ARTICLE ONLY (the article body), pick 5-7 vocabulary words or expressions that genuinely appear in it. For each, give a short English definition and quote the actual short sentence (under 20 words) where it appears. Do not extract vocabulary from the video — that part is handled separately by the teacher.
 
 ${vocabRule}
 
@@ -54,11 +49,12 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
 {
   "materials": {
     "article": {"title": "real title", "url": "real URL", "type": "article", "length": "e.g. '6 min read'", "summary": "2-3 sentence English summary"},
-    "video": {"title": "real title", "url": "real URL", "type": "video", "length": "e.g. '5 min video'", "summary": "2-3 sentence English summary"} or null
+    "video_options": [
+      {"title": "real title", "url": "real URL", "type": "video", "length": "e.g. '5 min video'", "summary": "2-3 sentence English summary"}
+    ]
   },
   "vocabulary": {
-    "article": [{"word": "...", "definition": "...", "example_from_material": "..."}],
-    "video": [{"word": "...", "definition": "...", "example_from_material": "..."}]
+    "article": [{"word": "...", "definition": "...", "example_from_material": "..."}]
   }
 }`;
 
@@ -73,7 +69,7 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 3000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 6 }],
         messages: [{ role: 'user', content: materialsPrompt }]
       })
     });
@@ -117,7 +113,7 @@ Respond with STRICT JSON only (no markdown fences, no commentary, no trailing co
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1200,
         messages: [{ role: 'user', content: introPrompt }]
       })
