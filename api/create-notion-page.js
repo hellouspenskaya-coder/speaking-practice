@@ -107,50 +107,67 @@ module.exports = async (req, res) => {
 
   const children = [];
 
-  if (target) children.push(calloutBlock('🎯', level ? `[${level}] ${target}` : target));
+  if (target) children.push(calloutBlock('🎯', target));
 
   if (warmup) {
-    children.push(todoBlock('Warm-up done'));
     children.push(...paragraphBlocks(warmup));
     children.push(calloutBlock('✍️', ''));
+    children.push(todoBlock('Warm-up done'));
   }
 
   if (videoLink) {
-    children.push(todoBlock('Video task done'));
     children.push(bookmarkBlock(videoLink));
+    children.push(todoBlock('Video task done'));
   }
 
   if (material) {
-    children.push(todoBlock(material.type === 'video' ? 'Video done' : 'Reading done'));
     children.push(bookmarkBlock(material.url));
     if (material.summary) children.push(...paragraphBlocks(material.summary));
+    children.push(todoBlock(material.type === 'video' ? 'Video done' : 'Reading done'));
   }
 
   if (Array.isArray(vocabulary) && vocabulary.length) {
     children.push(...bulletedList(
       vocabulary.map(v => `${v.word} — ${v.definition} ("${v.example_from_material}")`)
     ));
+    children.push({
+      object: 'block',
+      type: 'paragraph',
+      paragraph: {
+        rich_text: [
+          { type: 'text', text: { content: 'For Twee: ' }, annotations: { italic: true } },
+          { type: 'text', text: { content: vocabulary.map(v => v.word).join(', ') } }
+        ]
+      }
+    });
   }
 
   if (writingLink) {
-    children.push(todoBlock('Writing done'));
     children.push(bookmarkBlock(writingLink));
+    children.push(todoBlock('Writing done'));
   }
 
   if (speakingLink || modelAnswer) {
-    children.push(todoBlock('Discussion done'));
     if (speakingLink) children.push(bookmarkBlock(speakingLink));
     if (Array.isArray(discussionQuestions) && discussionQuestions.length) {
       children.push(...bulletedList(discussionQuestions));
     }
     if (modelAnswer) children.push(bookmarkBlock(modelAnswer));
+    children.push(todoBlock('Discussion done'));
   }
 
   if (Array.isArray(exitTicket) && exitTicket.length) {
     children.push(dividerBlock());
+    children.push({
+      object: 'block',
+      type: 'heading_3',
+      heading_3: { rich_text: [{ type: 'text', text: { content: 'Exit ticket' } }] }
+    });
     for (const q of exitTicket) {
-      children.push(calloutBlock('🎫', q));
+      children.push(...paragraphBlocks(q));
+      children.push(calloutBlock('✍️', ''));
     }
+    children.push(todoBlock('Exit ticket done'));
   }
 
   const payload = {
