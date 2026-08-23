@@ -92,8 +92,7 @@ Propose, in ENGLISH ONLY:
 - "title": a short lesson title (5-8 words), suitable as a Notion page title.
 - "target": ONE short sentence (under 15 words) describing what the student will be able to do by the end of the lesson, starting with "By the end of this lesson, you'll be able to...".
 - "warmup_question": one standalone opening discussion question about the general topic (not about a specific source) to ask before the material is introduced.
-- "discussion_questions": 6-8 open-ended discussion questions connecting to the material and the student's own life/views. Avoid yes/no questions.
-- "exit_ticket": exactly 3 short self-reflection prompts for the end of the lesson, tied to this specific topic and material (not generic).
+- "discussion_questions": 6-8 open-ended discussion questions connecting to the material and the student's own life/views. Avoid yes/no questions. Make the LAST 1-2 questions in the list reflective/wrap-up ones about the lesson itself (e.g. what they'll remember, what stood out, how their view changed) rather than about the source material directly.
 
 Respond with STRICT JSON only (no markdown fences, no commentary, no trailing commas):
 {
@@ -101,8 +100,7 @@ Respond with STRICT JSON only (no markdown fences, no commentary, no trailing co
   "title": "...",
   "target": "...",
   "warmup_question": "...",
-  "discussion_questions": ["...", "...", "...", "...", "...", "..."],
-  "exit_ticket": ["...", "...", "..."]
+  "discussion_questions": ["...", "...", "...", "...", "...", "..."]
 }`;
 
     const introResp = await fetch('https://api.anthropic.com/v1/messages', {
