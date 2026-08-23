@@ -80,6 +80,16 @@ function dividerBlock() {
   return { object: 'block', type: 'divider', divider: {} };
 }
 
+function labeledLinkBlock(label, url) {
+  const blocks = [{
+    object: 'block',
+    type: 'paragraph',
+    paragraph: { rich_text: [{ type: 'text', text: { content: label }, annotations: { bold: true } }] }
+  }];
+  blocks.push(url ? bookmarkBlock(url) : calloutBlock('🔗', ''));
+  return blocks;
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -115,10 +125,8 @@ module.exports = async (req, res) => {
     children.push(todoBlock('Warm-up done'));
   }
 
-  if (videoLink) {
-    children.push(bookmarkBlock(videoLink));
-    children.push(todoBlock('Video task done'));
-  }
+  children.push(...labeledLinkBlock('Video task (Twee):', videoLink));
+  children.push(todoBlock('Video task done'));
 
   const art = materials && materials.article;
   const vid = materials && materials.video;
@@ -162,14 +170,15 @@ module.exports = async (req, res) => {
     children.push(todoBlock('Writing done'));
   }
 
-  if (speakingLink || modelAnswer) {
+  if (speakingLink || (Array.isArray(discussionQuestions) && discussionQuestions.length)) {
     if (speakingLink) children.push(bookmarkBlock(speakingLink));
     if (Array.isArray(discussionQuestions) && discussionQuestions.length) {
       children.push(...bulletedList(discussionQuestions));
     }
-    if (modelAnswer) children.push(bookmarkBlock(modelAnswer));
     children.push(todoBlock('Discussion done'));
   }
+
+  children.push(...labeledLinkBlock('Model answer (video):', modelAnswer));
 
   if (Array.isArray(exitTicket) && exitTicket.length) {
     children.push(dividerBlock());
