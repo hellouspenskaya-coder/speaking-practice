@@ -96,7 +96,7 @@ module.exports = async (req, res) => {
 
   const {
     icon, title, level, target, warmup, videoLink,
-    material, vocabulary, discussionQuestions, speakingLink, modelAnswer,
+    materials, vocabulary, discussionQuestions, speakingLink, modelAnswer,
     writingLink, exitTicket
   } = req.body || {};
 
@@ -120,23 +120,38 @@ module.exports = async (req, res) => {
     children.push(todoBlock('Video task done'));
   }
 
-  if (material) {
-    children.push(bookmarkBlock(material.url));
-    if (material.summary) children.push(...paragraphBlocks(material.summary));
-    children.push(todoBlock(material.type === 'video' ? 'Video done' : 'Reading done'));
+  const art = materials && materials.article;
+  const vid = materials && materials.video;
+  const artVocab = (vocabulary && vocabulary.article) || [];
+  const vidVocab = (vocabulary && vocabulary.video) || [];
+
+  if (art) {
+    children.push(bookmarkBlock(art.url));
+    if (art.summary) children.push(...paragraphBlocks(art.summary));
+    if (artVocab.length) {
+      children.push(...bulletedList(artVocab.map(v => `${v.word} — ${v.definition} ("${v.example_from_material}")`)));
+    }
+    children.push(todoBlock('Reading done'));
   }
 
-  if (Array.isArray(vocabulary) && vocabulary.length) {
-    children.push(...bulletedList(
-      vocabulary.map(v => `${v.word} — ${v.definition} ("${v.example_from_material}")`)
-    ));
+  if (vid) {
+    children.push(bookmarkBlock(vid.url));
+    if (vid.summary) children.push(...paragraphBlocks(vid.summary));
+    if (vidVocab.length) {
+      children.push(...bulletedList(vidVocab.map(v => `${v.word} — ${v.definition} ("${v.example_from_material}")`)));
+    }
+    children.push(todoBlock('Video done'));
+  }
+
+  const allWords = [...new Set([...artVocab, ...vidVocab].map(v => v.word).filter(Boolean))];
+  if (allWords.length) {
     children.push({
       object: 'block',
       type: 'paragraph',
       paragraph: {
         rich_text: [
           { type: 'text', text: { content: 'For Twee: ' }, annotations: { italic: true } },
-          { type: 'text', text: { content: vocabulary.map(v => v.word).join(', ') } }
+          { type: 'text', text: { content: allWords.join(', ') } }
         ]
       }
     });
