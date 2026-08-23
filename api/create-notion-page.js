@@ -129,9 +129,8 @@ module.exports = async (req, res) => {
   children.push(todoBlock('Video task done'));
 
   const art = materials && materials.article;
-  const vid = materials && materials.video;
+  const videoOptions = (materials && materials.video_options) || [];
   const artVocab = (vocabulary && vocabulary.article) || [];
-  const vidVocab = (vocabulary && vocabulary.video) || [];
 
   if (art) {
     children.push(bookmarkBlock(art.url));
@@ -142,24 +141,28 @@ module.exports = async (req, res) => {
     children.push(todoBlock('Reading done'));
   }
 
-  if (vid) {
-    children.push(bookmarkBlock(vid.url));
-    if (vid.summary) children.push(...paragraphBlocks(vid.summary));
-    if (vidVocab.length) {
-      children.push(...bulletedList(vidVocab.map(v => `${v.word} — ${v.definition} ("${v.example_from_material}")`)));
-    }
+  if (videoOptions.length) {
+    children.push({
+      object: 'block',
+      type: 'paragraph',
+      paragraph: { rich_text: [{ type: 'text', text: { content: 'Video options — try each in Twee, keep the one that works:' }, annotations: { bold: true } }] }
+    });
+    videoOptions.forEach(v => {
+      children.push(bookmarkBlock(v.url));
+      if (v.summary) children.push(...paragraphBlocks(v.summary));
+    });
     children.push(todoBlock('Video done'));
   }
 
-  const allWords = [...new Set([...artVocab, ...vidVocab].map(v => v.word).filter(Boolean))];
-  if (allWords.length) {
+  if (artVocab.length) {
+    const words = [...new Set(artVocab.map(v => v.word).filter(Boolean))];
     children.push({
       object: 'block',
       type: 'paragraph',
       paragraph: {
         rich_text: [
           { type: 'text', text: { content: 'For Twee: ' }, annotations: { italic: true } },
-          { type: 'text', text: { content: allWords.join(', ') } }
+          { type: 'text', text: { content: words.join(', ') } }
         ]
       }
     });
