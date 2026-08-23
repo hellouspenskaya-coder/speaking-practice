@@ -44,7 +44,7 @@ STEP 2 — From the actual text content you found (the article body, or the vide
 
 STEP 3 — Also propose, in English:
 - "title": a short lesson title (5-8 words) for this topic, suitable as a Notion page title.
-- "target": one sentence describing what the student will be able to do by the end of the lesson, starting with "By the end of this lesson, you'll be able to...".
+- "target": ONE short sentence (under 15 words) describing what the student will be able to do by the end of the lesson, starting with "By the end of this lesson, you'll be able to...".
 - "warmup_question": one standalone opening discussion question about the general topic (not about the specific source) to ask before the material is introduced.
 
 Respond with your FINAL message containing STRICT JSON only (no markdown fences, no commentary before or after) with this exact shape:
