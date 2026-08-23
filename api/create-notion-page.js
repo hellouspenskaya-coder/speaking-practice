@@ -80,6 +80,11 @@ function dividerBlock() {
   return { object: 'block', type: 'divider', divider: {} };
 }
 
+// Every checkpoint checkbox is followed by a divider to visually close off that section.
+function finish(label) {
+  return [todoBlock(label), dividerBlock()];
+}
+
 function labeledLinkBlock(label, url) {
   const blocks = [{
     object: 'block',
@@ -107,7 +112,7 @@ module.exports = async (req, res) => {
   const {
     icon, title, level, target, warmup, videoLink,
     materials, vocabulary, discussionQuestions, speakingLink, modelAnswer,
-    writingLink, exitTicket
+    writingLink
   } = req.body || {};
 
   if (!title) {
@@ -122,11 +127,11 @@ module.exports = async (req, res) => {
   if (warmup) {
     children.push(...paragraphBlocks(warmup));
     children.push(calloutBlock('✍️', ''));
-    children.push(todoBlock('Warm-up done'));
+    children.push(...finish('Warm-up done'));
   }
 
   children.push(...labeledLinkBlock('Video task (Twee):', videoLink));
-  children.push(todoBlock('Video task done'));
+  children.push(...finish('Video task done'));
 
   const art = materials && materials.article;
   const videoOptions = (materials && materials.video_options) || [];
@@ -138,7 +143,7 @@ module.exports = async (req, res) => {
     if (artVocab.length) {
       children.push(...bulletedList(artVocab.map(v => `${v.word} — ${v.definition} ("${v.example_from_material}")`)));
     }
-    children.push(todoBlock('Reading done'));
+    children.push(...finish('Reading done'));
   }
 
   if (videoOptions.length) {
@@ -151,7 +156,7 @@ module.exports = async (req, res) => {
       children.push(bookmarkBlock(v.url));
       if (v.summary) children.push(...paragraphBlocks(v.summary));
     });
-    children.push(todoBlock('Video done'));
+    children.push(...finish('Video done'));
   }
 
   if (artVocab.length) {
@@ -170,7 +175,7 @@ module.exports = async (req, res) => {
 
   if (writingLink) {
     children.push(bookmarkBlock(writingLink));
-    children.push(todoBlock('Writing done'));
+    children.push(...finish('Writing done'));
   }
 
   if (speakingLink || (Array.isArray(discussionQuestions) && discussionQuestions.length)) {
@@ -178,24 +183,25 @@ module.exports = async (req, res) => {
     if (Array.isArray(discussionQuestions) && discussionQuestions.length) {
       children.push(...bulletedList(discussionQuestions));
     }
-    children.push(todoBlock('Discussion done'));
+    children.push(...finish('Discussion done'));
   }
 
   children.push(...labeledLinkBlock('Model answer (video):', modelAnswer));
+  children.push(dividerBlock());
 
-  if (Array.isArray(exitTicket) && exitTicket.length) {
-    children.push(dividerBlock());
-    children.push({
-      object: 'block',
-      type: 'heading_3',
-      heading_3: { rich_text: [{ type: 'text', text: { content: 'Exit ticket' } }] }
-    });
-    for (const q of exitTicket) {
-      children.push(...paragraphBlocks(q));
-      children.push(calloutBlock('✍️', ''));
-    }
-    children.push(todoBlock('Exit ticket done'));
-  }
+  // Exit ticket is the same on every lesson — feedback for the teacher, not
+  // per-topic reflection questions (those live at the end of the discussion
+  // questions instead).
+  children.push({
+    object: 'block',
+    type: 'heading_3',
+    heading_3: { rich_text: [{ type: 'text', text: { content: 'Exit ticket' } }] }
+  });
+  children.push(...paragraphBlocks(
+    'How was this lesson for you — easy, hard, just right? What\'s one thing you learned or want to remember? Anything you\'d like to tell your teacher — questions, comments, requests for next time?'
+  ));
+  children.push(calloutBlock('✍️', ''));
+  children.push(todoBlock('Exit ticket done'));
 
   const payload = {
     parent: { page_id: parentPageId },
