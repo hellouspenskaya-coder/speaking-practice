@@ -99,15 +99,29 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
     }
 
     const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
-    const jsonStart = text.indexOf('{');
-    const jsonEnd = text.lastIndexOf('}');
-    if (jsonStart === -1 || jsonEnd === -1) throw new Error('No JSON in response');
-
-    const plan = JSON.parse(text.slice(jsonStart, jsonEnd + 1));
+    const plan = JSON.parse(extractJson(text));
     res.status(200).json(plan);
   } catch (err) {
     res.status(500).json({ error: 'Не удалось найти материал: ' + (err.message || 'неизвестная ошибка') + '. Попробуйте другую тему или ещё раз — иногда помогает просто повторить запрос.' });
   }
 };
+
+// Finds the first top-level {...} object in text by tracking brace depth,
+// instead of naively using the last "}" in the whole string — the model
+// sometimes adds a stray brace in trailing commentary despite instructions
+// not to, which broke the old indexOf/lastIndexOf approach.
+function extractJson(text) {
+  const start = text.indexOf('{');
+  if (start === -1) throw new Error('No JSON object found in response');
+  let depth = 0;
+  for (let i = start; i < text.length; i++) {
+    if (text[i] === '{') depth++;
+    else if (text[i] === '}') {
+      depth--;
+      if (depth === 0) return text.slice(start, i + 1);
+    }
+  }
+  throw new Error('JSON object in response was not properly closed');
+}
 
 module.exports.config = { maxDuration: 60 };
