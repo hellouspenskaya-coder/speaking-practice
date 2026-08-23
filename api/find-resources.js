@@ -34,31 +34,23 @@ module.exports = async (req, res) => {
     ? `VOCABULARY DIFFICULTY RULE: level is ${lvl}, so choose ONLY general-register English vocabulary — common words or expressions that show up across many topics and are genuinely useful in everyday/general English. Avoid narrow academic, philosophical, or field-specific jargon tied only to this one topic, even if such a word appears in the source.`
     : `VOCABULARY DIFFICULTY RULE: level is ${lvl}, so you may include AT MOST 3 topic-specific/specialized terms per source (words tied specifically to this topic's field). All remaining words must still be general-register English vocabulary useful beyond this one topic, not a pile of niche jargon.`;
 
-  const prompt = `You are finding authentic English-language teaching material for an adult ${lvl} English learner.
+  const materialsPrompt = `You are finding authentic English-language teaching material for an adult ${lvl} English learner.
 Topic: "${topic}"
 
-STEP 1 — Use web search to find TWO real, currently-live, authentic English-language sources on this topic:
+Use web search to find TWO real, currently-live, authentic English-language sources on this topic:
 (a) ONE article, roughly 500-900 words, from a reputable source (news outlet, established publication, well-known site).
 (b) ONE video, roughly 3-6 minutes long, from a reputable source (official channel, news outlet, educational/media site).
 Both must be real URLs you found via search. Do not invent a URL.
 
-CRITICAL RULE FOR THE VIDEO: only pick it if you can actually find and read its transcript or subtitle/caption text via search (a transcript page, a captions file, or a site publishing the script). If, after real effort, you cannot find any video with genuine transcript text, set "video" to null in the material section below rather than guessing or inventing content — never reconstruct what a video "probably" says.
+CRITICAL RULE FOR THE VIDEO: only pick it if you can actually find and read its transcript or subtitle/caption text via search (a transcript page, a captions file, or a site publishing the script). If, after real effort, you cannot find any video with genuine transcript text, set "video" to null rather than guessing or inventing content — never reconstruct what a video "probably" says.
 
-STEP 2 — From the actual text content of EACH source separately (the article body; the video's real transcript), pick 5-7 vocabulary words or expressions that genuinely appear in THAT source. For each, give a short English definition and quote the actual short sentence (under 20 words) where it appears. Keep the article's vocabulary and the video's vocabulary as two separate lists — do not merge them.
+From the actual text content of EACH source separately (the article body; the video's real transcript), pick 5-7 vocabulary words or expressions that genuinely appear in THAT source. For each, give a short English definition and quote the actual short sentence (under 20 words) where it appears. Keep the article's vocabulary and the video's vocabulary as two separate lists — do not merge them.
 
 ${vocabRule}
 
-STEP 3 — Also propose, in English:
-- "icon": ONE emoji that best represents this topic (just the emoji character, nothing else).
-- "title": a short lesson title (5-8 words) for this topic, suitable as a Notion page title.
-- "target": ONE short sentence (under 15 words) describing what the student will be able to do by the end of the lesson, starting with "By the end of this lesson, you'll be able to...".
-- "warmup_question": one standalone opening discussion question about the general topic (not about a specific source) to ask before the material is introduced.
-- "discussion_questions": 6-8 open-ended discussion questions connecting to the material and the student's own life/views. Avoid yes/no questions.
-- "exit_ticket": exactly 3 short self-reflection prompts for the end of the lesson, tied to this specific topic and material (not generic).
+Write everything in ENGLISH ONLY. No Russian, no other language, anywhere in the output values.
 
-STEP 4 — Write everything in ENGLISH ONLY. No Russian, no other language, anywhere in the output values.
-
-Respond with your FINAL message containing STRICT JSON only (no markdown fences, no commentary before or after) with this exact shape:
+Respond with your FINAL message containing STRICT JSON only (no markdown fences, no commentary before or after, no trailing commas) with this exact shape:
 {
   "materials": {
     "article": {"title": "real title", "url": "real URL", "type": "article", "length": "e.g. '6 min read'", "summary": "2-3 sentence English summary"},
@@ -67,17 +59,11 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
   "vocabulary": {
     "article": [{"word": "...", "definition": "...", "example_from_material": "..."}],
     "video": [{"word": "...", "definition": "...", "example_from_material": "..."}]
-  },
-  "title": "...",
-  "icon": "🎯",
-  "target": "...",
-  "warmup_question": "...",
-  "discussion_questions": ["...", "...", "...", "...", "...", "..."],
-  "exit_ticket": ["...", "...", "..."]
+  }
 }`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const materialsResp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -86,30 +72,72 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 4000,
+        max_tokens: 3000,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: prompt }]
+        messages: [{ role: 'user', content: materialsPrompt }]
       })
     });
-
-    const data = await resp.json();
-    if (!resp.ok) {
-      res.status(resp.status).json({ error: data.error?.message || 'Anthropic API вернул ошибку.' });
+    const materialsData = await materialsResp.json();
+    if (!materialsResp.ok) {
+      res.status(materialsResp.status).json({ error: materialsData.error?.message || 'Anthropic API вернул ошибку (поиск материалов).' });
       return;
     }
+    const materialsText = (materialsData.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+    const materialsPlan = JSON.parse(sanitizeJson(extractJson(materialsText)));
 
-    const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
-    const plan = JSON.parse(extractJson(text));
-    res.status(200).json(plan);
+    // Second, simpler call — no web search, just synthesis from what was found.
+    // Smaller JSON, far less likely to come back malformed.
+    const introPrompt = `You are preparing an adult ${lvl} English lesson on the topic "${topic}".
+Here is the authentic material already found for this lesson:
+${JSON.stringify(materialsPlan.materials)}
+
+Propose, in ENGLISH ONLY:
+- "icon": ONE emoji that best represents this topic.
+- "title": a short lesson title (5-8 words), suitable as a Notion page title.
+- "target": ONE short sentence (under 15 words) describing what the student will be able to do by the end of the lesson, starting with "By the end of this lesson, you'll be able to...".
+- "warmup_question": one standalone opening discussion question about the general topic (not about a specific source) to ask before the material is introduced.
+- "discussion_questions": 6-8 open-ended discussion questions connecting to the material and the student's own life/views. Avoid yes/no questions.
+- "exit_ticket": exactly 3 short self-reflection prompts for the end of the lesson, tied to this specific topic and material (not generic).
+
+Respond with STRICT JSON only (no markdown fences, no commentary, no trailing commas):
+{
+  "icon": "...",
+  "title": "...",
+  "target": "...",
+  "warmup_question": "...",
+  "discussion_questions": ["...", "...", "...", "...", "...", "..."],
+  "exit_ticket": ["...", "...", "..."]
+}`;
+
+    const introResp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1200,
+        messages: [{ role: 'user', content: introPrompt }]
+      })
+    });
+    const introData = await introResp.json();
+    if (!introResp.ok) {
+      res.status(introResp.status).json({ error: introData.error?.message || 'Anthropic API вернул ошибку (сборка заголовка/вопросов).' });
+      return;
+    }
+    const introText = (introData.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+    const introPlan = JSON.parse(sanitizeJson(extractJson(introText)));
+
+    res.status(200).json({ ...materialsPlan, ...introPlan });
   } catch (err) {
     res.status(500).json({ error: 'Не удалось найти материал: ' + (err.message || 'неизвестная ошибка') + '. Попробуйте другую тему или ещё раз — иногда помогает просто повторить запрос.' });
   }
 };
 
 // Finds the first top-level {...} object in text by tracking brace depth,
-// instead of naively using the last "}" in the whole string — the model
-// sometimes adds a stray brace in trailing commentary despite instructions
-// not to, which broke the old indexOf/lastIndexOf approach.
+// instead of naively using the last "}" in the whole string.
 function extractJson(text) {
   const start = text.indexOf('{');
   if (start === -1) throw new Error('No JSON object found in response');
@@ -122,6 +150,13 @@ function extractJson(text) {
     }
   }
   throw new Error('JSON object in response was not properly closed');
+}
+
+// Cheap repair pass for the single most common LLM JSON mistake: a trailing
+// comma right before a closing } or ] — technically invalid JSON, but easy
+// and safe to strip before parsing.
+function sanitizeJson(jsonStr) {
+  return jsonStr.replace(/,(\s*[}\]])/g, '$1');
 }
 
 module.exports.config = { maxDuration: 60 };
