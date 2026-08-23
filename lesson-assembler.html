@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сборщик урока → Notion</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --paper: #f6f5f1;
+    --panel: #ffffff;
+    --ink: #262521;
+    --ink-soft: #6b6a63;
+    --line: #e2e0d8;
+    --accent: #3d4f66;
+    --accent-soft: #e8ecf1;
+    --amber: #b6802f;
+    --amber-soft: #f5ecdb;
+    --good: #4a7a5c;
+    --good-soft: #e7f0ea;
+    --bad: #b5493f;
+    --bad-soft: #fbebe9;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    padding: 28px 20px 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+  }
+
+  header .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  header h1 {
+    font-family: 'Lora', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+
+  header p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.5;
+    max-width: 640px;
+  }
+
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+  }
+
+  section.card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 20px 22px;
+    margin-bottom: 16px;
+  }
+
+  section.card h2 {
+    font-family: 'Lora', serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  section.card h2 .n {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    flex-shrink: 0;
+  }
+
+  section.card .hint {
+    color: var(--ink-soft);
+    font-size: 12.5px;
+    margin: 0 0 14px 28px;
+    line-height: 1.4;
+  }
+
+  label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin: 12px 0 5px;
+  }
+  label:first-of-type { margin-top: 0; }
+
+  input[type="text"], input[type="url"], textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 9px 11px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    resize: vertical;
+  }
+  input[type="text"]:focus, input[type="url"]:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--panel);
+  }
+  textarea { min-height: 64px; line-height: 1.45; }
+  textarea.tall { min-height: 110px; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 520px) { .row3 { grid-template-columns: 1fr; } }
+
+  .icon-input { display: flex; gap: 10px; align-items: flex-start; }
+  .icon-input input[type="text"]:first-child { width: 64px; text-align: center; font-size: 20px; flex-shrink: 0; }
+
+  .foot-note {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  .sticky-bar {
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent, var(--paper) 30%);
+    padding: 18px 0 4px;
+    margin-top: 8px;
+  }
+
+  button.primary {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 15px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(61, 79, 102, 0.25);
+  }
+  button.primary:disabled { opacity: 0.6; cursor: default; box-shadow: none; }
+  button.primary:not(:disabled):active { transform: translateY(1px); }
+
+  button.secondary {
+    width: 100%;
+    background: none;
+    color: var(--accent);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  .result-box {
+    margin-top: 12px;
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    font-size: 14px;
+    line-height: 1.5;
+    display: none;
+  }
+  .result-box.show { display: block; }
+  .result-box.ok { background: var(--good-soft); border: 1px solid #c6dccd; color: var(--ink); }
+  .result-box.err { background: var(--bad-soft); border: 1px solid #ecc7c2; color: var(--ink); }
+  .result-box a { color: var(--accent); font-weight: 600; }
+  .result-box .status { font-weight: 600; margin-bottom: 3px; }
+  .result-box.ok .status { color: var(--good); }
+  .result-box.err .status { color: var(--bad); }
+
+  details.paste-fallback {
+    margin-top: 18px;
+  }
+  details.paste-fallback summary {
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  details.paste-fallback textarea {
+    margin-top: 10px;
+    min-height: 200px;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+  }
+
+  /* --- Topic picker & resource finder --- */
+  .topic-pool {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    min-height: 44px;
+  }
+  .chip {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 10px 7px 12px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .chip.selected { border-color: var(--accent); background: var(--panel); }
+  .chip.selected::before { content: "●"; color: var(--accent); font-size: 9px; }
+  .chip button {
+    border: none; background: none; color: var(--ink-soft); cursor: pointer;
+    font-size: 14px; line-height: 1; padding: 0; margin-left: 2px;
+  }
+  .chip button:hover { color: var(--bad); }
+  .chip-empty { color: var(--ink-soft); font-size: 13px; padding: 6px 2px; }
+
+  .add-topic-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .add-topic-row input { flex: 1; }
+
+  button.ghost {
+    font-size: 12.5px; color: var(--accent); background: none; border: none;
+    padding: 4px 0; cursor: pointer; font-weight: 600;
+  }
+  button.ghost:disabled { opacity: 0.5; cursor: default; }
+
+  .resource-card {
+    margin-top: 14px;
+    background: var(--amber-soft);
+    border: 1px solid #e6d5ae;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    display: none;
+  }
+  .resource-card.show { display: block; }
+  .resource-card a { color: var(--accent); font-weight: 600; }
+  .resource-card .type-tag {
+    display: inline-block;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 4px;
+  }
+  .resource-card ul { margin: 8px 0 0; padding-left: 18px; }
+  .resource-card li { margin-bottom: 5px; }
+  .resource-card .ex { color: var(--ink-soft); font-style: italic; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">The English Hub · сборщик урока</div>
+  <h1>От темы до страницы в Notion</h1>
+  <p>Заполните блоки урока — тул создаст готовую страницу прямо в Notion со всей структурой, чекбоксами и ссылками на ваши инструменты.</p>
+</header>
+
+<main>
+
+  <section class="card">
+    <h2><span class="n">🔍</span> Материал и слова по теме</h2>
+    <p class="hint">Выберите тему — тул найдёт живое видео (с субтитрами) или статью и вытащит 5-7 слов с реальными примерами.</p>
+
+    <div class="row2">
+      <div>
+        <label>Уровень</label>
+        <select id="resLevel" style="width:100%; border:1px solid var(--line); border-radius:7px; padding:9px 11px; font-family:'Inter',sans-serif; font-size:14px; background:var(--paper); color:var(--ink);">
+          <option value="A2">A2</option>
+          <option value="B1">B1</option>
+          <option value="B2" selected>B2</option>
+          <option value="C1">C1</option>
+          <option value="C2">C2</option>
+        </select>
+      </div>
+      <div>
+        <label>Тип источника</label>
+        <select id="resType" style="width:100%; border:1px solid var(--line); border-radius:7px; padding:9px 11px; font-family:'Inter',sans-serif; font-size:14px; background:var(--paper); color:var(--ink);">
+          <option value="any" selected>Любой (видео или статья)</option>
+          <option value="video">Только видео (с субтитрами)</option>
+          <option value="article">Только статья</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Тема</label>
+    <div class="topic-pool" id="topicPool"></div>
+    <div class="add-topic-row">
+      <input type="text" id="newTopicInput" placeholder="Добавить свою тему…">
+      <button class="secondary" id="addTopicBtn" type="button" style="width:auto; margin-top:0; padding:9px 14px;">Добавить</button>
+    </div>
+    <button class="ghost" id="suggestBtn" type="button">✦ Предложить 3 новые темы</button>
+    <p class="hint" id="topicHint" style="margin-left:0;">Список сохраняется в этом браузере между визитами.</p>
+
+    <button class="secondary" id="findResourceBtn" type="button" disabled style="margin-top:12px; color:#fff; background:var(--accent); border-color:var(--accent);">Найти материал и слова</button>
+
+    <div class="resource-card" id="resourceCard"></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">•</span> Заголовок и цель</h2>
+    <p class="hint" style="margin-left:0;">Подставляются автоматически после поиска материала выше — можно поправить вручную.</p>
+    <div class="icon-input">
+      <input type="text" id="icon" placeholder="🏠" maxlength="2">
+      <input type="text" id="title" placeholder="More Than Genes, You're M...">
+    </div>
+    <label>Тема для ссылок (если короче заголовка)</label>
+    <input type="text" id="topicOverride" placeholder="genes and identity">
+    <label>Speaking target</label>
+    <textarea id="target" placeholder="By the end of this lesson you'll be able to discuss..."></textarea>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">1</span> Warm-up</h2>
+    <p class="hint">Подставляется автоматически вместе с материалом. Пустая цветная коробка для ответа ученика добавится под вопросом автоматически.</p>
+    <textarea id="warmup" placeholder="Why do we measure things? Write your answer in the box below."></textarea>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">2</span> Видео-задание из Twee</h2>
+    <p class="hint">Отдельно от найденного материала выше — это задание, которое вы собрали в Twee.</p>
+    <input type="url" id="videoLink" placeholder="https://twee.com/...">
+  </section>
+
+  <section class="card">
+    <h2><span class="n">3</span> Письменная альтернатива</h2>
+    <p class="hint">Тот же словарь, отработка в письме — не опция, а второй способ практики. Ссылка на writing-тул со словами из найденного материала соберётся автоматически. Проверка написанного — через writing feedback тул.</p>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">4</span> Дискуссия и модель</h2>
+    <p class="hint">По одному вопросу на строку — тул сам соберёт ссылку на спикинг-тул с этими вопросами и словами из найденного материала.</p>
+    <textarea id="questions" placeholder="What role does...?
+Do you think...?"></textarea>
+    <label>Ссылка на model answer (видео, необязательно)</label>
+    <input type="url" id="modelAnswer" placeholder="https://...">
+  </section>
+
+  <section class="card">
+    <h2><span class="n">5</span> Exit ticket</h2>
+    <p class="hint">Три коротких поля — каждое станет пустой коробкой для ответа.</p>
+    <label>1</label>
+    <input type="text" id="exit1" placeholder="One thing I learned today is...">
+    <label>2</label>
+    <input type="text" id="exit2" placeholder="One question I still have is...">
+    <label>3</label>
+    <input type="text" id="exit3" placeholder="Write one sentence using today's vocabulary.">
+  </section>
+
+  <div class="sticky-bar">
+    <button class="primary" id="createBtn">✨ Создать страницу в Notion</button>
+    <div class="result-box" id="result"></div>
+  </div>
+
+  <details class="paste-fallback">
+    <summary>Резервный вариант: собрать текст для вставки вручную</summary>
+    <button class="secondary" id="buildTextBtn" type="button">Собрать текст</button>
+    <textarea id="pasteOutput" readonly placeholder="Текст появится здесь после нажатия «Собрать текст»..."></textarea>
+    <button class="secondary" id="copyTextBtn" type="button">Скопировать</button>
+  </details>
+
+</main>
+
+<script>
+const SPEAKING_BASE = 'https://speaking-practice-ruby.vercel.app/index.html';
+const WRITING_BASE = 'https://speaking-practice-ruby.vercel.app/writing-practice.html';
+
+// ---- Topic picker (persisted in localStorage — this page isn't a Claude artifact,
+// so window.storage isn't available here) ----
+const DEFAULT_TOPICS = [
+  "Free Will — Robert Sapolsky (biology of behavior, determinism)",
+  "Goodhart's Law — what happens when a measure becomes a target",
+  "Somatic Markers — Antonio Damasio (emotion and decision-making)",
+  "The Selfish Gene — Richard Dawkins (genes, altruism, cooperation)",
+  "The Trolley Problem — ethics of hard choices",
+  "Obedience to Authority — Stanley Milgram",
+  "The Overview Effect — how astronauts describe seeing Earth from space",
+  "Sunk Cost Fallacy — why we keep going with a bad decision",
+  "The Paradox of Choice — Barry Schwartz (too many options)",
+  "Dunbar's Number — limits on stable social relationships",
+  "The Bystander Effect — why groups react slower than individuals",
+  "Loss Aversion — why losing feels worse than winning feels good",
+];
+
+let topicState = { topics: [...DEFAULT_TOPICS], selected: null };
+
+function loadTopics() {
+  try {
+    const raw = localStorage.getItem('lesson-topic-pool');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length) topicState.topics = parsed;
+    }
+  } catch (e) { /* use defaults */ }
+  renderTopics();
+}
+function saveTopics() {
+  try { localStorage.setItem('lesson-topic-pool', JSON.stringify(topicState.topics)); } catch (e) {}
+}
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function renderTopics() {
+  const pool = document.getElementById('topicPool');
+  pool.innerHTML = '';
+  if (!topicState.topics.length) {
+    pool.innerHTML = '<div class="chip-empty">Список пуст — добавьте тему ниже.</div>';
+  }
+  topicState.topics.forEach((t, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (topicState.selected === i ? ' selected' : '');
+    chip.innerHTML = `<span>${escapeHtml(t.split(' — ')[0])}</span>`;
+    chip.title = t;
+    chip.onclick = (e) => {
+      if (e.target.tagName === 'BUTTON') return;
+      topicState.selected = i;
+      renderTopics();
+      document.getElementById('findResourceBtn').disabled = false;
+    };
+    const rm = document.createElement('button');
+    rm.type = 'button';
+    rm.textContent = '✕';
+    rm.title = 'Убрать тему';
+    rm.onclick = (e) => {
+      e.stopPropagation();
+      topicState.topics.splice(i, 1);
+      if (topicState.selected === i) topicState.selected = null;
+      else if (topicState.selected > i) topicState.selected--;
+      renderTopics();
+      saveTopics();
+      document.getElementById('findResourceBtn').disabled = topicState.selected === null;
+    };
+    chip.appendChild(rm);
+    pool.appendChild(chip);
+  });
+}
+
+document.getElementById('addTopicBtn').addEventListener('click', () => {
+  const v = document.getElementById('newTopicInput').value.trim();
+  if (!v) return;
+  topicState.topics.push(v);
+  topicState.selected = topicState.topics.length - 1;
+  document.getElementById('newTopicInput').value = '';
+  renderTopics();
+  saveTopics();
+  document.getElementById('findResourceBtn').disabled = false;
+});
+document.getElementById('newTopicInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('addTopicBtn').click();
+});
+
+document.getElementById('suggestBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('suggestBtn');
+  const hint = document.getElementById('topicHint');
+  btn.disabled = true;
+  hint.textContent = 'Подбираю новые темы…';
+  try {
+    const res = await fetch('/api/suggest-topics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ existing: topicState.topics })
+    });
+    const out = await res.json();
+    if (!res.ok || !Array.isArray(out.topics)) throw new Error(out.error || 'Пустой ответ.');
+    topicState.topics.push(...out.topics);
+    renderTopics();
+    saveTopics();
+    hint.textContent = 'Добавлено новых тем: ' + out.topics.length + '.';
+  } catch (e) {
+    hint.textContent = 'Не удалось получить новые темы — попробуйте ещё раз.';
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// ---- Resource finder ----
+// Holds the found authentic material + vocabulary — this replaces the old
+// manual "Активная лексика" / "Текст для чтения" / "Gap-fill" fields entirely.
+let resourceState = { material: null, vocabulary: [] };
+
+document.getElementById('findResourceBtn').addEventListener('click', async () => {
+  if (topicState.selected === null) return;
+  const btn = document.getElementById('findResourceBtn');
+  const card = document.getElementById('resourceCard');
+  const topic = topicState.topics[topicState.selected];
+  const level = document.getElementById('resLevel').value;
+  const sourceType = document.getElementById('resType').value;
+
+  btn.disabled = true;
+  btn.textContent = 'Ищу материал и слова...';
+  card.className = 'resource-card';
+
+  try {
+    const res = await fetch('/api/find-resources', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic, level, sourceType })
+    });
+    const out = await res.json();
+    if (!res.ok || !out.material) throw new Error(out.error || 'Не удалось найти материал.');
+
+    resourceState.material = out.material;
+    resourceState.vocabulary = Array.isArray(out.vocabulary) ? out.vocabulary : [];
+
+    // Auto-fill title, target and warm-up to match the search
+    if (out.title) document.getElementById('title').value = out.title;
+    if (out.target) document.getElementById('target').value = out.target;
+    if (out.warmup_question) document.getElementById('warmup').value = out.warmup_question;
+    if (!document.getElementById('topicOverride').value) {
+      document.getElementById('topicOverride').value = topic.split(' — ')[0];
+    }
+
+    const vocabHtml = resourceState.vocabulary.map(v =>
+      `<li><strong>${escapeHtml(v.word)}</strong> — ${escapeHtml(v.definition)}<br><span class="ex">"${escapeHtml(v.example_from_material)}"</span></li>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="type-tag">${escapeHtml(out.material.type)} · ${escapeHtml(out.material.length)}</div>
+      <a href="${escapeHtml(out.material.url)}" target="_blank" rel="noopener">${escapeHtml(out.material.title)}</a>
+      <p style="margin:6px 0 0;">${escapeHtml(out.material.summary)}</p>
+      <ul>${vocabHtml}</ul>
+      <p style="margin:10px 0 0; color:var(--ink-soft); font-size:12px;">Заголовок, цель и warm-up ниже подставлены автоматически — проверьте перед сборкой.</p>
+    `;
+    card.classList.add('show');
+  } catch (e) {
+    card.innerHTML = `<div class="type-tag" style="color:var(--bad);">Не получилось</div>${e.message || 'Попробуйте другую тему.'}`;
+    card.classList.add('show');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Найти материал и слова';
+  }
+});
+
+loadTopics();
+
+function val(id) { return document.getElementById(id).value.trim(); }
+function wordsList() {
+  return resourceState.vocabulary.map(v => v.word).filter(Boolean);
+}
+function topicForLinks() {
+  return val('topicOverride') || val('title') || 'lesson';
+}
+
+function buildSpeakingLink() {
+  const lines = questionsList();
+  if (!lines.length) return '';
+  const p = new URLSearchParams();
+  p.set('topic', topicForLinks());
+  p.set('q', lines.join('|'));
+  const words = wordsList().join('|');
+  if (words) p.set('words', words);
+  return SPEAKING_BASE + '?' + p.toString();
+}
+
+function buildWritingLink() {
+  const words = wordsList().join('|');
+  if (!words) return '';
+  const p = new URLSearchParams();
+  p.set('topic', topicForLinks());
+  p.set('words', words);
+  return WRITING_BASE + '?' + p.toString();
+}
+
+function questionsList() {
+  return val('questions').split('\n').map(l => l.trim()).filter(Boolean);
+}
+
+function collectData() {
+  return {
+    icon: val('icon'),
+    title: val('title'),
+    level: document.getElementById('resLevel').value,
+    target: val('target'),
+    warmup: val('warmup'),
+    videoLink: val('videoLink'),
+    material: resourceState.material,
+    vocabulary: resourceState.vocabulary,
+    discussionQuestions: questionsList(),
+    speakingLink: buildSpeakingLink(),
+    modelAnswer: val('modelAnswer'),
+    writingLink: buildWritingLink(),
+    exitTicket: [val('exit1'), val('exit2'), val('exit3')].filter(Boolean)
+  };
+}
+
+// ---- Create in Notion via API ----
+document.getElementById('createBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('createBtn');
+  const resultBox = document.getElementById('result');
+  const data = collectData();
+
+  if (!data.title) {
+    alert('Укажите заголовок урока — без него не из чего сделать название страницы.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Создаю страницу...';
+  resultBox.className = 'result-box';
+
+  try {
+    const res = await fetch('/api/create-notion-page', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const out = await res.json();
+
+    if (!res.ok || !out.url) {
+      throw new Error(out.error || 'Не удалось создать страницу.');
+    }
+
+    resultBox.classList.add('ok', 'show');
+    resultBox.innerHTML = `<div class="status">Страница создана ✓</div><a href="${out.url}" target="_blank" rel="noopener">Открыть в Notion →</a>`;
+  } catch (e) {
+    resultBox.classList.add('err', 'show');
+    resultBox.innerHTML = `<div class="status">Не получилось</div>${e.message || 'Проверьте соединение и попробуйте ещё раз.'}`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✨ Создать страницу в Notion';
+  }
+});
+
+// ---- Fallback: build paste-ready text ----
+document.getElementById('buildTextBtn').addEventListener('click', () => {
+  const d = collectData();
+  const parts = [];
+
+  if (d.target) { parts.push('> 🎯 ' + d.target); parts.push(''); }
+  if (d.warmup) { parts.push(d.warmup); parts.push(''); parts.push('> ✍️ '); parts.push(''); }
+  if (d.videoLink) { parts.push('Video task: ' + d.videoLink); parts.push(''); }
+  if (d.material) {
+    parts.push(`${d.material.title} (${d.material.type}, ${d.material.length})`);
+    parts.push(d.material.url);
+    parts.push(d.material.summary);
+    parts.push('');
+  }
+  if (d.vocabulary && d.vocabulary.length) {
+    parts.push('Vocabulary in context:');
+    d.vocabulary.forEach(v => parts.push(`- ${v.word} — ${v.definition} ("${v.example_from_material}")`));
+    parts.push('');
+  }
+  if (d.writingLink) { parts.push('Practice in writing:'); parts.push(d.writingLink); parts.push(''); }
+  if (d.speakingLink) { parts.push('Practice speaking about this topic:'); parts.push(d.speakingLink); parts.push(''); }
+  if (d.discussionQuestions && d.discussionQuestions.length) {
+    parts.push('Discussion questions:');
+    d.discussionQuestions.forEach(q => parts.push('- ' + q));
+    parts.push('');
+  }
+  if (d.modelAnswer) { parts.push('Model answer: ' + d.modelAnswer); parts.push(''); }
+  if (d.exitTicket.length) {
+    parts.push('Exit ticket:');
+    d.exitTicket.forEach(q => { parts.push('> ✍️ ' + q); });
+  }
+
+  document.getElementById('pasteOutput').value = parts.join('\n');
+});
+
+document.getElementById('copyTextBtn').addEventListener('click', async () => {
+  const ta = document.getElementById('pasteOutput');
+  if (!ta.value) return;
+  try {
+    await navigator.clipboard.writeText(ta.value);
+    const btn = document.getElementById('copyTextBtn');
+    btn.textContent = 'Скопировано ✓';
+    setTimeout(() => { btn.textContent = 'Скопировать'; }, 1800);
+  } catch (e) {
+    alert('Не удалось скопировать — выделите текст вручную.');
+  }
+});
+</script>
+
+</body>
+</html>
