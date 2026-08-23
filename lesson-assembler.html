@@ -367,17 +367,6 @@ Do you think...?"></textarea>
     <input type="url" id="modelAnswer" placeholder="https://...">
   </section>
 
-  <section class="card">
-    <h2><span class="n">6</span> Exit ticket</h2>
-    <p class="hint">Подставляются автоматически вместе с материалом — можно поправить. Три коротких поля — каждое станет пустой коробкой для ответа.</p>
-    <label>1</label>
-    <input type="text" id="exit1" placeholder="One thing I learned today is...">
-    <label>2</label>
-    <input type="text" id="exit2" placeholder="One question I still have is...">
-    <label>3</label>
-    <input type="text" id="exit3" placeholder="Write one sentence using today's vocabulary.">
-  </section>
-
   <div class="sticky-bar">
     <button class="primary" id="createBtn">✨ Создать страницу в Notion</button>
     <div class="result-box" id="result"></div>
@@ -539,11 +528,6 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
     if (Array.isArray(out.discussion_questions) && out.discussion_questions.length) {
       document.getElementById('questions').value = out.discussion_questions.join('\n');
     }
-    if (Array.isArray(out.exit_ticket) && out.exit_ticket.length) {
-      if (out.exit_ticket[0]) document.getElementById('exit1').value = out.exit_ticket[0];
-      if (out.exit_ticket[1]) document.getElementById('exit2').value = out.exit_ticket[1];
-      if (out.exit_ticket[2]) document.getElementById('exit3').value = out.exit_ticket[2];
-    }
     const articleVocab = (out.vocabulary && out.vocabulary.article) || [];
     if (articleVocab.length) {
       document.getElementById('trainerWords').value = articleVocab.map(v => v.word).join(', ');
@@ -637,8 +621,7 @@ function collectData() {
     discussionQuestions: questionsList(),
     speakingLink: buildSpeakingLink(),
     modelAnswer: val('modelAnswer'),
-    writingLink: buildWritingLink(),
-    exitTicket: [val('exit1'), val('exit2'), val('exit3')].filter(Boolean)
+    writingLink: buildWritingLink()
   };
 }
 
@@ -719,10 +702,9 @@ document.getElementById('buildTextBtn').addEventListener('click', () => {
     parts.push('');
   }
   if (d.modelAnswer) { parts.push('Model answer: ' + d.modelAnswer); parts.push(''); }
-  if (d.exitTicket.length) {
-    parts.push('Exit ticket:');
-    d.exitTicket.forEach(q => { parts.push(q); parts.push('> ✍️ '); parts.push(''); });
-  }
+  parts.push('Exit ticket:');
+  parts.push("How was this lesson for you — easy, hard, just right? What's one thing you learned or want to remember? Anything you'd like to tell your teacher — questions, comments, requests for next time?");
+  parts.push('> ✍️ ');
 
   document.getElementById('pasteOutput').value = parts.join('\n');
 });
