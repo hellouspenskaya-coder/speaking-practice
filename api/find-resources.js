@@ -56,6 +56,8 @@ STEP 3 — Also propose, in English:
 - "discussion_questions": 6-8 open-ended discussion questions connecting to the material and the student's own life/views. Avoid yes/no questions.
 - "exit_ticket": exactly 3 short self-reflection prompts for the end of the lesson, tied to this specific topic and material (not generic).
 
+STEP 4 — Write everything in ENGLISH ONLY. No Russian, no other language, anywhere in the output values.
+
 Respond with your FINAL message containing STRICT JSON only (no markdown fences, no commentary before or after) with this exact shape:
 {
   "materials": {
@@ -104,6 +106,8 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
     const plan = JSON.parse(text.slice(jsonStart, jsonEnd + 1));
     res.status(200).json(plan);
   } catch (err) {
-    res.status(500).json({ error: 'Не удалось найти материал — попробуйте другую тему.' });
+    res.status(500).json({ error: 'Не удалось найти материал: ' + (err.message || 'неизвестная ошибка') + '. Попробуйте другую тему или ещё раз — иногда помогает просто повторить запрос.' });
   }
 };
+
+module.exports.config = { maxDuration: 60 };
