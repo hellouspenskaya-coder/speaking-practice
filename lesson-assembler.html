@@ -348,13 +348,19 @@
   </section>
 
   <section class="card">
-    <h2><span class="n">3</span> Письменная альтернатива</h2>
-    <p class="hint">Тот же словарь, отработка в письме — не опция, а второй способ практики. Ссылка на writing-тул со словами из найденного материала соберётся автоматически. Проверка написанного — через writing feedback тул.</p>
+    <h2><span class="n">3</span> Слова для тренажёров</h2>
+    <p class="hint">Предзаполняется словами из найденной статьи после поиска выше — но это обычное текстовое поле, можно править как угодно: дописать слова, которые вытащили из видео в Twee, или заменить целиком. Именно эти слова уйдут в ссылки на устный и письменный тренажёры.</p>
+    <textarea id="trainerWords" placeholder="gene, inherit, trait, evolve, mutation"></textarea>
   </section>
 
   <section class="card">
-    <h2><span class="n">4</span> Дискуссия и модель</h2>
-    <p class="hint">По одному вопросу на строку — тул сам соберёт ссылку на спикинг-тул с этими вопросами и словами из найденного материала.</p>
+    <h2><span class="n">4</span> Письменная альтернатива</h2>
+    <p class="hint">Тот же словарь, отработка в письме — не опция, а второй способ практики. Ссылка на writing-тул со словами из поля выше соберётся автоматически. Проверка написанного — через writing feedback тул.</p>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">5</span> Дискуссия и модель</h2>
+    <p class="hint">По одному вопросу на строку — тул сам соберёт ссылку на спикинг-тул с этими вопросами и словами из поля выше.</p>
     <textarea id="questions" placeholder="What role does...?
 Do you think...?"></textarea>
     <label>Ссылка на model answer (видео, необязательно — можно оставить пустым, блок появится на странице пустым, вставите ссылку позже)</label>
@@ -362,7 +368,7 @@ Do you think...?"></textarea>
   </section>
 
   <section class="card">
-    <h2><span class="n">5</span> Exit ticket</h2>
+    <h2><span class="n">6</span> Exit ticket</h2>
     <p class="hint">Подставляются автоматически вместе с материалом — можно поправить. Три коротких поля — каждое станет пустой коробкой для ответа.</p>
     <label>1</label>
     <input type="text" id="exit1" placeholder="One thing I learned today is...">
@@ -501,7 +507,7 @@ document.getElementById('suggestBtn').addEventListener('click', async () => {
 // ---- Resource finder ----
 // Holds BOTH found materials (article + video) and their separately-extracted
 // vocabulary — replaces the old single-material shape.
-let resourceState = { materials: { article: null, video: null }, vocabulary: { article: [], video: [] } };
+let resourceState = { materials: { article: null, video_options: [] }, vocabulary: { article: [] } };
 
 document.getElementById('findResourceBtn').addEventListener('click', async () => {
   if (topicState.selected === null) return;
@@ -538,26 +544,41 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
       if (out.exit_ticket[1]) document.getElementById('exit2').value = out.exit_ticket[1];
       if (out.exit_ticket[2]) document.getElementById('exit3').value = out.exit_ticket[2];
     }
+    const articleVocab = (out.vocabulary && out.vocabulary.article) || [];
+    if (articleVocab.length) {
+      document.getElementById('trainerWords').value = articleVocab.map(v => v.word).join(', ');
+    }
     if (!document.getElementById('topicOverride').value) {
       document.getElementById('topicOverride').value = topic.split(' — ')[0];
     }
 
     function materialBlock(m, vocab, label) {
       if (!m) return `<p style="margin:10px 0 0; color:var(--ink-soft);">${label}: не нашлось подходящего источника — можно поискать ещё раз позже.</p>`;
-      const vocabHtml = (vocab || []).map(v =>
-        `<li><strong>${escapeHtml(v.word)}</strong> — ${escapeHtml(v.definition)}<br><span class="ex">"${escapeHtml(v.example_from_material)}"</span></li>`
-      ).join('');
+      const vocabHtml = (vocab || []).length
+        ? `<ul>${vocab.map(v => `<li><strong>${escapeHtml(v.word)}</strong> — ${escapeHtml(v.definition)}<br><span class="ex">"${escapeHtml(v.example_from_material)}"</span></li>`).join('')}</ul>`
+        : '';
       return `
         <div class="type-tag" style="margin-top:12px;">${label} · ${escapeHtml(m.length)}</div>
         <a href="${escapeHtml(m.url)}" target="_blank" rel="noopener">${escapeHtml(m.title)}</a>
         <p style="margin:6px 0 0;">${escapeHtml(m.summary)}</p>
-        <ul>${vocabHtml}</ul>
+        ${vocabHtml}
+      `;
+    }
+
+    function videoOptionsBlock(options) {
+      if (!options || !options.length) return `<p style="margin:10px 0 0; color:var(--ink-soft);">Видео: не нашлось подходящих кандидатов — можно поискать ещё раз позже.</p>`;
+      const items = options.map((v, i) =>
+        `<li style="margin-bottom:8px;"><a href="${escapeHtml(v.url)}" target="_blank" rel="noopener">${escapeHtml(v.title)}</a> <span style="color:var(--ink-soft); font-size:12px;">(${escapeHtml(v.length)})</span><br><span style="font-size:12.5px;">${escapeHtml(v.summary)}</span></li>`
+      ).join('');
+      return `
+        <div class="type-tag" style="margin-top:12px;">Видео · ${options.length} варианта — попробуйте каждый в Twee, оставьте рабочий</div>
+        <ul style="margin-top:6px;">${items}</ul>
       `;
     }
 
     card.innerHTML =
       materialBlock(out.materials.article, resourceState.vocabulary.article, 'Статья') +
-      materialBlock(out.materials.video, resourceState.vocabulary.video, 'Видео') +
+      videoOptionsBlock(out.materials.video_options) +
       `<p style="margin:10px 0 0; color:var(--ink-soft); font-size:12px;">Заголовок, цель, warm-up, вопросы и exit ticket ниже подставлены автоматически — проверьте перед сборкой.</p>`;
     card.classList.add('show');
   } catch (e) {
@@ -573,9 +594,7 @@ loadTopics();
 
 function val(id) { return document.getElementById(id).value.trim(); }
 function wordsList() {
-  const a = (resourceState.vocabulary.article || []).map(v => v.word);
-  const v = (resourceState.vocabulary.video || []).map(v => v.word);
-  return [...new Set([...a, ...v])].filter(Boolean);
+  return val('trainerWords').split(',').map(w => w.trim()).filter(Boolean);
 }
 function topicForLinks() {
   return val('topicOverride') || val('title') || 'lesson';
@@ -670,24 +689,26 @@ document.getElementById('buildTextBtn').addEventListener('click', () => {
   if (d.warmup) { parts.push(d.warmup); parts.push(''); parts.push('> ✍️ '); parts.push(''); }
   if (d.videoLink) { parts.push('Video task: ' + d.videoLink); parts.push(''); }
   if (d.materials) {
-    ['article', 'video'].forEach(key => {
-      const m = d.materials[key];
-      const vocab = (d.vocabulary && d.vocabulary[key]) || [];
-      if (!m) return;
-      parts.push(`${m.title} (${m.type}, ${m.length})`);
-      parts.push(m.url);
-      parts.push(m.summary);
+    const art = d.materials.article;
+    if (art) {
+      parts.push(`${art.title} (${art.type}, ${art.length})`);
+      parts.push(art.url);
+      parts.push(art.summary);
       parts.push('');
+      const vocab = (d.vocabulary && d.vocabulary.article) || [];
       if (vocab.length) {
         parts.push('Vocabulary in context:');
         vocab.forEach(v => parts.push(`- ${v.word} — ${v.definition} ("${v.example_from_material}")`));
         parts.push('');
       }
-    });
-    const allWords = [
-      ...((d.vocabulary && d.vocabulary.article) || []).map(v => v.word),
-      ...((d.vocabulary && d.vocabulary.video) || []).map(v => v.word)
-    ];
+    }
+    const videos = d.materials.video_options || [];
+    if (videos.length) {
+      parts.push('Video options (try each in Twee, keep the one that works):');
+      videos.forEach(v => { parts.push(`- ${v.title} (${v.length}) — ${v.url}`); });
+      parts.push('');
+    }
+    const allWords = ((d.vocabulary && d.vocabulary.article) || []).map(v => v.word);
     if (allWords.length) { parts.push('For Twee: ' + [...new Set(allWords)].join(', ')); parts.push(''); }
   }
   if (d.writingLink) { parts.push('Practice in writing:'); parts.push(d.writingLink); parts.push(''); }
