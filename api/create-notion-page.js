@@ -76,6 +76,17 @@ function bookmarkBlock(url) {
   };
 }
 
+function toolButtonBlock(emoji, label, url) {
+  return {
+    object: 'block',
+    type: 'callout',
+    callout: {
+      rich_text: [{ type: 'text', text: { content: label + ' →', link: { url } } }],
+      icon: { type: 'emoji', emoji },
+      color: 'blue_background'
+    }
+  };
+}
 function dividerBlock() {
   return { object: 'block', type: 'divider', divider: {} };
 }
@@ -174,12 +185,12 @@ module.exports = async (req, res) => {
   }
 
   if (writingLink) {
-    children.push(bookmarkBlock(writingLink));
+    children.push(toolButtonBlock('✍️', 'Writing Practice', writingLink));
     children.push(...finish('Writing done'));
   }
 
   if (speakingLink || (Array.isArray(discussionQuestions) && discussionQuestions.length)) {
-    if (speakingLink) children.push(bookmarkBlock(speakingLink));
+    if (speakingLink) children.push(toolButtonBlock('🎤', 'Speaking Practice', speakingLink));
     if (Array.isArray(discussionQuestions) && discussionQuestions.length) {
       children.push(...bulletedList(discussionQuestions));
     }
