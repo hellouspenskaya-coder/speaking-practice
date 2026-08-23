@@ -375,7 +375,7 @@ Do you think...?"></textarea>
 
   <section class="card">
     <h2><span class="n">5</span> Exit ticket</h2>
-    <p class="hint">Три коротких поля — каждое станет пустой коробкой для ответа.</p>
+    <p class="hint">Подставляются автоматически вместе с материалом — можно поправить. Три коротких поля — каждое станет пустой коробкой для ответа.</p>
     <label>1</label>
     <input type="text" id="exit1" placeholder="One thing I learned today is...">
     <label>2</label>
@@ -543,6 +543,14 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
     if (out.title) document.getElementById('title').value = out.title;
     if (out.target) document.getElementById('target').value = out.target;
     if (out.warmup_question) document.getElementById('warmup').value = out.warmup_question;
+    if (Array.isArray(out.discussion_questions) && out.discussion_questions.length) {
+      document.getElementById('questions').value = out.discussion_questions.join('\n');
+    }
+    if (Array.isArray(out.exit_ticket) && out.exit_ticket.length) {
+      if (out.exit_ticket[0]) document.getElementById('exit1').value = out.exit_ticket[0];
+      if (out.exit_ticket[1]) document.getElementById('exit2').value = out.exit_ticket[1];
+      if (out.exit_ticket[2]) document.getElementById('exit3').value = out.exit_ticket[2];
+    }
     if (!document.getElementById('topicOverride').value) {
       document.getElementById('topicOverride').value = topic.split(' — ')[0];
     }
@@ -676,6 +684,8 @@ document.getElementById('buildTextBtn').addEventListener('click', () => {
     parts.push('Vocabulary in context:');
     d.vocabulary.forEach(v => parts.push(`- ${v.word} — ${v.definition} ("${v.example_from_material}")`));
     parts.push('');
+    parts.push('For Twee: ' + d.vocabulary.map(v => v.word).join(', '));
+    parts.push('');
   }
   if (d.writingLink) { parts.push('Practice in writing:'); parts.push(d.writingLink); parts.push(''); }
   if (d.speakingLink) { parts.push('Practice speaking about this topic:'); parts.push(d.speakingLink); parts.push(''); }
@@ -687,7 +697,7 @@ document.getElementById('buildTextBtn').addEventListener('click', () => {
   if (d.modelAnswer) { parts.push('Model answer: ' + d.modelAnswer); parts.push(''); }
   if (d.exitTicket.length) {
     parts.push('Exit ticket:');
-    d.exitTicket.forEach(q => { parts.push('> ✍️ ' + q); });
+    d.exitTicket.forEach(q => { parts.push(q); parts.push('> ✍️ '); parts.push(''); });
   }
 
   document.getElementById('pasteOutput').value = parts.join('\n');
