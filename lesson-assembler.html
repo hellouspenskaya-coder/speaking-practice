@@ -297,28 +297,16 @@
 
   <section class="card">
     <h2><span class="n">🔍</span> Материал и слова по теме</h2>
-    <p class="hint">Выберите тему — тул найдёт живое видео (с субтитрами) или статью и вытащит 5-7 слов с реальными примерами.</p>
+    <p class="hint">Выберите тему — тул найдёт и статью, и видео (с субтитрами) отдельно, вытащит по 5-7 слов из каждого источника.</p>
 
-    <div class="row2">
-      <div>
-        <label>Уровень</label>
-        <select id="resLevel" style="width:100%; border:1px solid var(--line); border-radius:7px; padding:9px 11px; font-family:'Inter',sans-serif; font-size:14px; background:var(--paper); color:var(--ink);">
-          <option value="A2">A2</option>
-          <option value="B1">B1</option>
-          <option value="B2" selected>B2</option>
-          <option value="C1">C1</option>
-          <option value="C2">C2</option>
-        </select>
-      </div>
-      <div>
-        <label>Тип источника</label>
-        <select id="resType" style="width:100%; border:1px solid var(--line); border-radius:7px; padding:9px 11px; font-family:'Inter',sans-serif; font-size:14px; background:var(--paper); color:var(--ink);">
-          <option value="any" selected>Любой (видео или статья)</option>
-          <option value="video">Только видео (с субтитрами)</option>
-          <option value="article">Только статья</option>
-        </select>
-      </div>
-    </div>
+    <label>Уровень</label>
+    <select id="resLevel" style="width:100%; border:1px solid var(--line); border-radius:7px; padding:9px 11px; font-family:'Inter',sans-serif; font-size:14px; background:var(--paper); color:var(--ink);">
+      <option value="A2">A2</option>
+      <option value="B1">B1</option>
+      <option value="B2" selected>B2</option>
+      <option value="C1">C1</option>
+      <option value="C2">C2</option>
+    </select>
 
     <label>Тема</label>
     <div class="topic-pool" id="topicPool"></div>
@@ -511,9 +499,9 @@ document.getElementById('suggestBtn').addEventListener('click', async () => {
 });
 
 // ---- Resource finder ----
-// Holds the found authentic material + vocabulary — this replaces the old
-// manual "Активная лексика" / "Текст для чтения" / "Gap-fill" fields entirely.
-let resourceState = { material: null, vocabulary: [] };
+// Holds BOTH found materials (article + video) and their separately-extracted
+// vocabulary — replaces the old single-material shape.
+let resourceState = { materials: { article: null, video: null }, vocabulary: { article: [], video: [] } };
 
 document.getElementById('findResourceBtn').addEventListener('click', async () => {
   if (topicState.selected === null) return;
@@ -521,26 +509,25 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
   const card = document.getElementById('resourceCard');
   const topic = topicState.topics[topicState.selected];
   const level = document.getElementById('resLevel').value;
-  const sourceType = document.getElementById('resType').value;
 
   btn.disabled = true;
-  btn.textContent = 'Ищу материал и слова...';
+  btn.textContent = 'Ищу материалы и слова...';
   card.className = 'resource-card';
 
   try {
     const res = await fetch('/api/find-resources', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ topic, level, sourceType })
+      body: JSON.stringify({ topic, level })
     });
     const out = await res.json();
-    if (!res.ok || !out.material) throw new Error(out.error || 'Не удалось найти материал.');
+    if (!res.ok || !out.materials) throw new Error(out.error || 'Не удалось найти материалы.');
 
-    resourceState.material = out.material;
-    resourceState.vocabulary = Array.isArray(out.vocabulary) ? out.vocabulary : [];
+    resourceState.materials = out.materials;
+    resourceState.vocabulary = out.vocabulary || { article: [], video: [] };
 
-    // Auto-fill title, target and warm-up to match the search
     if (out.title) document.getElementById('title').value = out.title;
+    if (out.icon) document.getElementById('icon').value = out.icon;
     if (out.target) document.getElementById('target').value = out.target;
     if (out.warmup_question) document.getElementById('warmup').value = out.warmup_question;
     if (Array.isArray(out.discussion_questions) && out.discussion_questions.length) {
@@ -555,17 +542,23 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
       document.getElementById('topicOverride').value = topic.split(' — ')[0];
     }
 
-    const vocabHtml = resourceState.vocabulary.map(v =>
-      `<li><strong>${escapeHtml(v.word)}</strong> — ${escapeHtml(v.definition)}<br><span class="ex">"${escapeHtml(v.example_from_material)}"</span></li>`
-    ).join('');
+    function materialBlock(m, vocab, label) {
+      if (!m) return `<p style="margin:10px 0 0; color:var(--ink-soft);">${label}: не нашлось подходящего источника — можно поискать ещё раз позже.</p>`;
+      const vocabHtml = (vocab || []).map(v =>
+        `<li><strong>${escapeHtml(v.word)}</strong> — ${escapeHtml(v.definition)}<br><span class="ex">"${escapeHtml(v.example_from_material)}"</span></li>`
+      ).join('');
+      return `
+        <div class="type-tag" style="margin-top:12px;">${label} · ${escapeHtml(m.length)}</div>
+        <a href="${escapeHtml(m.url)}" target="_blank" rel="noopener">${escapeHtml(m.title)}</a>
+        <p style="margin:6px 0 0;">${escapeHtml(m.summary)}</p>
+        <ul>${vocabHtml}</ul>
+      `;
+    }
 
-    card.innerHTML = `
-      <div class="type-tag">${escapeHtml(out.material.type)} · ${escapeHtml(out.material.length)}</div>
-      <a href="${escapeHtml(out.material.url)}" target="_blank" rel="noopener">${escapeHtml(out.material.title)}</a>
-      <p style="margin:6px 0 0;">${escapeHtml(out.material.summary)}</p>
-      <ul>${vocabHtml}</ul>
-      <p style="margin:10px 0 0; color:var(--ink-soft); font-size:12px;">Заголовок, цель и warm-up ниже подставлены автоматически — проверьте перед сборкой.</p>
-    `;
+    card.innerHTML =
+      materialBlock(out.materials.article, resourceState.vocabulary.article, 'Статья') +
+      materialBlock(out.materials.video, resourceState.vocabulary.video, 'Видео') +
+      `<p style="margin:10px 0 0; color:var(--ink-soft); font-size:12px;">Заголовок, цель, warm-up, вопросы и exit ticket ниже подставлены автоматически — проверьте перед сборкой.</p>`;
     card.classList.add('show');
   } catch (e) {
     card.innerHTML = `<div class="type-tag" style="color:var(--bad);">Не получилось</div>${e.message || 'Попробуйте другую тему.'}`;
@@ -580,7 +573,9 @@ loadTopics();
 
 function val(id) { return document.getElementById(id).value.trim(); }
 function wordsList() {
-  return resourceState.vocabulary.map(v => v.word).filter(Boolean);
+  const a = (resourceState.vocabulary.article || []).map(v => v.word);
+  const v = (resourceState.vocabulary.video || []).map(v => v.word);
+  return [...new Set([...a, ...v])].filter(Boolean);
 }
 function topicForLinks() {
   return val('topicOverride') || val('title') || 'lesson';
@@ -618,7 +613,7 @@ function collectData() {
     target: val('target'),
     warmup: val('warmup'),
     videoLink: val('videoLink'),
-    material: resourceState.material,
+    materials: resourceState.materials,
     vocabulary: resourceState.vocabulary,
     discussionQuestions: questionsList(),
     speakingLink: buildSpeakingLink(),
@@ -674,18 +669,26 @@ document.getElementById('buildTextBtn').addEventListener('click', () => {
   if (d.target) { parts.push('> 🎯 ' + d.target); parts.push(''); }
   if (d.warmup) { parts.push(d.warmup); parts.push(''); parts.push('> ✍️ '); parts.push(''); }
   if (d.videoLink) { parts.push('Video task: ' + d.videoLink); parts.push(''); }
-  if (d.material) {
-    parts.push(`${d.material.title} (${d.material.type}, ${d.material.length})`);
-    parts.push(d.material.url);
-    parts.push(d.material.summary);
-    parts.push('');
-  }
-  if (d.vocabulary && d.vocabulary.length) {
-    parts.push('Vocabulary in context:');
-    d.vocabulary.forEach(v => parts.push(`- ${v.word} — ${v.definition} ("${v.example_from_material}")`));
-    parts.push('');
-    parts.push('For Twee: ' + d.vocabulary.map(v => v.word).join(', '));
-    parts.push('');
+  if (d.materials) {
+    ['article', 'video'].forEach(key => {
+      const m = d.materials[key];
+      const vocab = (d.vocabulary && d.vocabulary[key]) || [];
+      if (!m) return;
+      parts.push(`${m.title} (${m.type}, ${m.length})`);
+      parts.push(m.url);
+      parts.push(m.summary);
+      parts.push('');
+      if (vocab.length) {
+        parts.push('Vocabulary in context:');
+        vocab.forEach(v => parts.push(`- ${v.word} — ${v.definition} ("${v.example_from_material}")`));
+        parts.push('');
+      }
+    });
+    const allWords = [
+      ...((d.vocabulary && d.vocabulary.article) || []).map(v => v.word),
+      ...((d.vocabulary && d.vocabulary.video) || []).map(v => v.word)
+    ];
+    if (allWords.length) { parts.push('For Twee: ' + [...new Set(allWords)].join(', ')); parts.push(''); }
   }
   if (d.writingLink) { parts.push('Practice in writing:'); parts.push(d.writingLink); parts.push(''); }
   if (d.speakingLink) { parts.push('Practice speaking about this topic:'); parts.push(d.speakingLink); parts.push(''); }
