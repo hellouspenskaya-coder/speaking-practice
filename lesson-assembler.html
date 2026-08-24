@@ -373,6 +373,12 @@ Do you think...?"></textarea>
     <input type="url" id="modelAnswer" placeholder="https://...">
   </section>
 
+  <section class="card">
+    <h2><span class="n">👋</span> Personal intro video</h2>
+    <p class="hint">Optional. Unlisted YouTube video (Shorts or regular) — record on your phone, paste the link here. Goes right after the target, before warm-up, with a hidden question the student answers after watching.</p>
+    <input type="url" id="introVideoLink" placeholder="https://youtube.com/shorts/...">
+  </section>
+
   <div class="sticky-bar">
     <button class="primary" id="createBtn">✨ Create page in Notion</button>
     <div class="result-box" id="result"></div>
@@ -608,6 +614,7 @@ function collectData() {
     level: document.getElementById('resLevel').value,
     target: val('target'),
     warmup: val('warmup'),
+    introVideoLink: val('introVideoLink'),
     videoLink: val('videoLink'),
     readingLink: val('readingLink'),
     discussionQuestions: questionsList(),
@@ -661,6 +668,7 @@ document.getElementById('buildTextBtn').addEventListener('click', () => {
   const parts = [];
 
   if (d.target) { parts.push('> 🎯 ' + d.target); parts.push(''); }
+  if (d.introVideoLink) { parts.push('Intro video: ' + d.introVideoLink); parts.push('> 👀 '); parts.push(''); }
   if (d.warmup) { parts.push(d.warmup); parts.push(''); parts.push('> ✍️ '); parts.push(''); }
   if (d.videoLink) { parts.push('Video to work on: ' + d.videoLink); parts.push(''); }
   if (d.readingLink) { parts.push('Reading: ' + d.readingLink); parts.push(''); }
