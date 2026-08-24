@@ -106,6 +106,14 @@ function labeledLinkBlock(label, url) {
   return blocks;
 }
 
+function videoEmbedBlock(url) {
+  return {
+    object: 'block',
+    type: 'video',
+    video: { type: 'external', external: { url } }
+  };
+}
+
 function toolLinkOrPlaceholder(emoji, label, url) {
   if (url) return [toolButtonBlock(emoji, label, url)];
   return labeledLinkBlock(label + ':', null);
@@ -157,30 +165,39 @@ module.exports = async (req, res) => {
     children.push(...finish('Writing done'));
   }
 
-  if (speakingLink || (Array.isArray(discussionQuestions) && discussionQuestions.length)) {
-    if (speakingLink) children.push(toolButtonBlock('🎤', 'Speaking Practice', speakingLink));
-    if (Array.isArray(discussionQuestions) && discussionQuestions.length) {
-      children.push(...bulletedList(discussionQuestions));
-    }
+  if (speakingLink) {
+    children.push(toolButtonBlock('🎤', 'Speaking Practice', speakingLink));
+    children.push({
+      object: 'block',
+      type: 'paragraph',
+      paragraph: { rich_text: [{ type: 'text', text: { content: 'Model answer:' }, annotations: { bold: true } }] }
+    });
+    children.push(modelAnswer ? videoEmbedBlock(modelAnswer) : calloutBlock('🔗', ''));
+    children.push(...finish('Speaking done'));
+  }
+
+  if (Array.isArray(discussionQuestions) && discussionQuestions.length) {
+    children.push({
+      object: 'block',
+      type: 'heading_3',
+      heading_3: { rich_text: [{ type: 'text', text: { content: 'Discussion Questions' } }] }
+    });
+    children.push(...bulletedList(discussionQuestions));
     children.push(...finish('Discussion done'));
   }
 
-  children.push(...labeledLinkBlock('Model answer (video):', modelAnswer));
-  children.push(dividerBlock());
-
-  // Exit ticket is the same on every lesson — feedback for the teacher, not
-  // per-topic reflection questions (those live at the end of the discussion
-  // questions instead).
+  // Exit ticket is the same on every lesson — optional feedback for the
+  // teacher, not per-topic reflection questions (those live at the end of
+  // the discussion questions instead). No checkbox — it's not a required task.
   children.push({
     object: 'block',
     type: 'heading_3',
     heading_3: { rich_text: [{ type: 'text', text: { content: 'Exit ticket' } }] }
   });
   children.push(...paragraphBlocks(
-    'How was this lesson for you — easy, hard, just right? What\'s one thing you learned or want to remember? Anything you\'d like to tell your teacher — questions, comments, requests for next time?'
+    '💬 A quick note (optional) — comments, questions, anything.'
   ));
   children.push(calloutBlock('✍️', ''));
-  children.push(todoBlock('Exit ticket done'));
 
   const payload = {
     parent: { page_id: parentPageId },
