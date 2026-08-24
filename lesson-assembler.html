@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Сборщик урока → Notion</title>
+<title>Lesson Assembler → Notion</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap');
 
@@ -288,18 +288,18 @@
 <body>
 
 <header>
-  <div class="eyebrow">The English Hub · сборщик урока</div>
-  <h1>От темы до страницы в Notion</h1>
-  <p>Заполните блоки урока — тул создаст готовую страницу прямо в Notion со всей структурой, чекбоксами и ссылками на ваши инструменты.</p>
+  <div class="eyebrow">The English Hub · lesson assembler</div>
+  <h1>From topic to a Notion page</h1>
+  <p>Fill in the lesson blocks — the tool will create a ready-made page straight in Notion, with structure, checkboxes, and links to your tools.</p>
 </header>
 
 <main>
 
   <section class="card">
-    <h2><span class="n">🔍</span> Материал и слова по теме</h2>
-    <p class="hint">Выберите тему — тул найдёт и статью, и видео (с субтитрами) отдельно, вытащит по 5-7 слов из каждого источника.</p>
+    <h2><span class="n">🔍</span> Material for the topic</h2>
+    <p class="hint">Pick a topic — the tool will find two videos and two articles for you to review and process in Twee.</p>
 
-    <label>Уровень</label>
+    <label>Level</label>
     <select id="resLevel" style="width:100%; border:1px solid var(--line); border-radius:7px; padding:9px 11px; font-family:'Inter',sans-serif; font-size:14px; background:var(--paper); color:var(--ink);">
       <option value="A2">A2</option>
       <option value="B1">B1</option>
@@ -308,28 +308,28 @@
       <option value="C2">C2</option>
     </select>
 
-    <label>Тема</label>
+    <label>Topic</label>
     <div class="topic-pool" id="topicPool"></div>
     <div class="add-topic-row">
-      <input type="text" id="newTopicInput" placeholder="Добавить свою тему…">
-      <button class="secondary" id="addTopicBtn" type="button" style="width:auto; margin-top:0; padding:9px 14px;">Добавить</button>
+      <input type="text" id="newTopicInput" placeholder="Add your own topic…">
+      <button class="secondary" id="addTopicBtn" type="button" style="width:auto; margin-top:0; padding:9px 14px;">Add</button>
     </div>
-    <button class="ghost" id="suggestBtn" type="button">✦ Предложить 3 новые темы</button>
-    <p class="hint" id="topicHint" style="margin-left:0;">Список сохраняется в этом браузере между визитами.</p>
+    <button class="ghost" id="suggestBtn" type="button">✦ Suggest 3 new topics</button>
+    <p class="hint" id="topicHint" style="margin-left:0;">The list is saved in this browser between visits.</p>
 
-    <button class="secondary" id="findResourceBtn" type="button" disabled style="margin-top:12px; color:#fff; background:var(--accent); border-color:var(--accent);">Найти материал и слова</button>
+    <button class="secondary" id="findResourceBtn" type="button" disabled style="margin-top:12px; color:#fff; background:var(--accent); border-color:var(--accent);">Find material</button>
 
     <div class="resource-card" id="resourceCard"></div>
   </section>
 
   <section class="card">
-    <h2><span class="n">•</span> Заголовок и цель</h2>
-    <p class="hint" style="margin-left:0;">Подставляются автоматически после поиска материала выше — можно поправить вручную.</p>
+    <h2><span class="n">•</span> Title & target</h2>
+    <p class="hint" style="margin-left:0;">Auto-filled after the search above — you can edit by hand.</p>
     <div class="icon-input">
       <input type="text" id="icon" placeholder="🏠" maxlength="2">
       <input type="text" id="title" placeholder="More Than Genes, You're M...">
     </div>
-    <label>Тема для ссылок (если короче заголовка)</label>
+    <label>Topic for links (if shorter than the title)</label>
     <input type="text" id="topicOverride" placeholder="genes and identity">
     <label>Speaking target</label>
     <textarea id="target" placeholder="By the end of this lesson you'll be able to discuss..."></textarea>
@@ -337,52 +337,52 @@
 
   <section class="card">
     <h2><span class="n">1</span> Warm-up</h2>
-    <p class="hint">Подставляется автоматически вместе с материалом. Пустая цветная коробка для ответа ученика добавится под вопросом автоматически.</p>
+    <p class="hint">Auto-filled together with the material. An empty colored answer box is added under the question automatically.</p>
     <textarea id="warmup" placeholder="Why do we measure things? Write your answer in the box below."></textarea>
   </section>
 
   <section class="card">
-    <h2><span class="n">2</span> Видео-задание из Twee</h2>
-    <p class="hint">Выбранное видео из блока поиска выше — обработайте в Twee и вставьте сюда ссылку на готовое задание. Можно оставить пустым сейчас: блок под ссылку всё равно появится на странице в Notion, вставите её туда позже.</p>
+    <h2><span class="n">2</span> Video task from Twee</h2>
+    <p class="hint">The video you picked from the search above — process it in Twee and paste the finished task link here. Fine to leave empty for now: the block will still appear on the Notion page, and you can paste the link there later.</p>
     <input type="url" id="videoLink" placeholder="https://twee.com/...">
   </section>
 
   <section class="card">
-    <h2><span class="n">3</span> Чтение из Twee</h2>
-    <p class="hint">Выбранная статья из блока поиска выше — обработайте в Twee и вставьте сюда ссылку на готовое задание. Тоже можно оставить пустым сейчас.</p>
+    <h2><span class="n">3</span> Reading from Twee</h2>
+    <p class="hint">The article you picked from the search above — process it in Twee and paste the finished task link here. Also fine to leave empty for now.</p>
     <input type="url" id="readingLink" placeholder="https://twee.com/...">
   </section>
 
   <section class="card">
-    <h2><span class="n">4</span> Слова для тренажёров</h2>
-    <p class="hint">Слова из статьи/видео больше не вытаскиваются автоматически — заберите их из Twee после обработки и впишите сюда через запятую. Именно эти слова уйдут в ссылки на устный и письменный тренажёры.</p>
+    <h2><span class="n">4</span> Words for the trainers</h2>
+    <p class="hint">Words are no longer auto-extracted from the article/video — pull them from Twee after processing and type them here, comma-separated. These are exactly the words that go into the speaking and writing tool links.</p>
     <textarea id="trainerWords" placeholder="gene, inherit, trait, evolve, mutation"></textarea>
   </section>
 
   <section class="card">
-    <h2><span class="n">5</span> Письменная альтернатива</h2>
-    <p class="hint">Тот же словарь, отработка в письме — не опция, а второй способ практики. Ссылка на writing-тул со словами из поля выше соберётся автоматически. Проверка написанного — через writing feedback тул.</p>
+    <h2><span class="n">5</span> Writing alternative</h2>
+    <p class="hint">Same vocabulary, practiced in writing — not optional, just a second way to practice. The writing-tool link with the words above builds automatically. Checking what's written happens through the writing feedback tool.</p>
   </section>
 
   <section class="card">
-    <h2><span class="n">6</span> Дискуссия и модель</h2>
-    <p class="hint">По одному вопросу на строку — тул сам соберёт ссылку на спикинг-тул с этими вопросами и словами из поля выше.</p>
+    <h2><span class="n">6</span> Discussion & model answer</h2>
+    <p class="hint">One question per line — the tool will build the speaking-tool link with these questions and the words from above.</p>
     <textarea id="questions" placeholder="What role does...?
 Do you think...?"></textarea>
-    <label>Ссылка на model answer (видео, необязательно — можно оставить пустым, блок появится на странице пустым, вставите ссылку позже)</label>
+    <label>Model answer link (video, optional — fine to leave empty, the block will appear empty on the page and you can paste the link later)</label>
     <input type="url" id="modelAnswer" placeholder="https://...">
   </section>
 
   <div class="sticky-bar">
-    <button class="primary" id="createBtn">✨ Создать страницу в Notion</button>
+    <button class="primary" id="createBtn">✨ Create page in Notion</button>
     <div class="result-box" id="result"></div>
   </div>
 
   <details class="paste-fallback">
-    <summary>Резервный вариант: собрать текст для вставки вручную</summary>
-    <button class="secondary" id="buildTextBtn" type="button">Собрать текст</button>
-    <textarea id="pasteOutput" readonly placeholder="Текст появится здесь после нажатия «Собрать текст»..."></textarea>
-    <button class="secondary" id="copyTextBtn" type="button">Скопировать</button>
+    <summary>Fallback: build text to paste manually</summary>
+    <button class="secondary" id="buildTextBtn" type="button">Build text</button>
+    <textarea id="pasteOutput" readonly placeholder="Text will appear here after you click 'Build text'..."></textarea>
+    <button class="secondary" id="copyTextBtn" type="button">Copy</button>
   </details>
 
 </main>
@@ -430,7 +430,7 @@ function renderTopics() {
   const pool = document.getElementById('topicPool');
   pool.innerHTML = '';
   if (!topicState.topics.length) {
-    pool.innerHTML = '<div class="chip-empty">Список пуст — добавьте тему ниже.</div>';
+    pool.innerHTML = '<div class="chip-empty">The list is empty — add a topic below.</div>';
   }
   topicState.topics.forEach((t, i) => {
     const chip = document.createElement('div');
@@ -446,7 +446,7 @@ function renderTopics() {
     const rm = document.createElement('button');
     rm.type = 'button';
     rm.textContent = '✕';
-    rm.title = 'Убрать тему';
+    rm.title = 'Remove topic';
     rm.onclick = (e) => {
       e.stopPropagation();
       topicState.topics.splice(i, 1);
@@ -479,7 +479,7 @@ document.getElementById('suggestBtn').addEventListener('click', async () => {
   const btn = document.getElementById('suggestBtn');
   const hint = document.getElementById('topicHint');
   btn.disabled = true;
-  hint.textContent = 'Подбираю новые темы…';
+  hint.textContent = 'Finding new topics…';
   try {
     const res = await fetch('/api/suggest-topics', {
       method: 'POST',
@@ -487,23 +487,23 @@ document.getElementById('suggestBtn').addEventListener('click', async () => {
       body: JSON.stringify({ existing: topicState.topics })
     });
     const out = await res.json();
-    if (!res.ok || !Array.isArray(out.topics)) throw new Error(out.error || 'Пустой ответ.');
+    if (!res.ok || !Array.isArray(out.topics)) throw new Error(out.error || 'Empty response.');
     topicState.topics.push(...out.topics);
     renderTopics();
     saveTopics();
-    hint.textContent = 'Добавлено новых тем: ' + out.topics.length + '.';
+    hint.textContent = 'Added new topics: ' + out.topics.length + '.';
   } catch (e) {
-    hint.textContent = 'Не удалось получить новые темы — попробуйте ещё раз.';
+    hint.textContent = 'Could not get new topics — try again.';
   } finally {
     btn.disabled = false;
   }
 });
 
 // ---- Resource finder ----
-// Holds found article/video CANDIDATES — Anna picks one of each in the form
-// before assembling; only the selected pair is sent to Notion. No vocabulary
-// is auto-extracted anymore (article and video both dropped that step) — she
-// pulls words from Twee herself into the "Слова для тренажёров" field.
+// Holds found article/video CANDIDATES — Anna reviews them, processes her
+// picks in Twee, and pastes the resulting task links into the fields below.
+// No vocabulary is auto-extracted anymore — she pulls words from Twee
+// herself into the "Words for the trainers" field.
 let resourceState = { materials: { article_options: [], video_options: [] } };
 
 document.getElementById('findResourceBtn').addEventListener('click', async () => {
@@ -514,7 +514,7 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
   const level = document.getElementById('resLevel').value;
 
   btn.disabled = true;
-  btn.textContent = 'Ищу материалы...';
+  btn.textContent = 'Searching for material...';
   card.className = 'resource-card';
 
   try {
@@ -524,7 +524,7 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
       body: JSON.stringify({ topic, level })
     });
     const out = await res.json();
-    if (!res.ok || !out.materials) throw new Error(out.error || 'Не удалось найти материалы.');
+    if (!res.ok || !out.materials) throw new Error(out.error || 'Could not find material.');
 
     resourceState.materials = out.materials;
 
@@ -540,31 +540,30 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
     }
 
     function candidateList(options, label) {
-      if (!options || !options.length) return `<p style="margin:10px 0 0; color:var(--ink-soft);">${label}: не нашлось подходящих кандидатов — можно поискать ещё раз позже.</p>`;
+      if (!options || !options.length) return `<p style="margin:10px 0 0; color:var(--ink-soft);">${label}: no suitable candidates found — try searching again later.</p>`;
       const items = options.map(m => `
         <div style="margin-bottom:10px;">
           <a href="${escapeHtml(m.url)}" target="_blank" rel="noopener">${escapeHtml(m.title)}</a>
-          <span style="color:var(--ink-soft); font-size:12px;">(${escapeHtml(m.length)})</span><br>
-          <span style="font-size:12.5px;">${escapeHtml(m.summary)}</span>
+          ${m.length ? `<span style="color:var(--ink-soft); font-size:12px;">(${escapeHtml(m.length)})</span>` : ''}
         </div>
       `).join('');
       return `
-        <div class="type-tag" style="margin-top:12px;">${label} · ${options.length} — откройте, обработайте в Twee, вставьте готовую ссылку ниже</div>
+        <div class="type-tag" style="margin-top:12px;">${label} · ${options.length} — open, process in Twee, paste the finished link below</div>
         ${items}
       `;
     }
 
     card.innerHTML =
-      candidateList(out.materials.article_options, 'Статья') +
-      candidateList(out.materials.video_options, 'Видео') +
-      `<p style="margin:10px 0 0; color:var(--ink-soft); font-size:12px;">Заголовок, цель, warm-up и вопросы ниже подставлены автоматически — проверьте перед сборкой.</p>`;
+      candidateList(out.materials.video_options, 'Video') +
+      candidateList(out.materials.article_options, 'Article') +
+      `<p style="margin:10px 0 0; color:var(--ink-soft); font-size:12px;">Title, target, warm-up, and questions below are auto-filled — check them before assembling.</p>`;
     card.classList.add('show');
   } catch (e) {
-    card.innerHTML = `<div class="type-tag" style="color:var(--bad);">Не получилось</div>${e.message || 'Попробуйте другую тему.'}`;
+    card.innerHTML = `<div class="type-tag" style="color:var(--bad);">Didn't work</div>${e.message || 'Try a different topic.'}`;
     card.classList.add('show');
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Найти материал и слова';
+    btn.textContent = 'Find material';
   }
 });
 
@@ -625,12 +624,12 @@ document.getElementById('createBtn').addEventListener('click', async () => {
   const data = collectData();
 
   if (!data.title) {
-    alert('Укажите заголовок урока — без него не из чего сделать название страницы.');
+    alert('Enter a lesson title — without it there\'s nothing to name the page.');
     return;
   }
 
   btn.disabled = true;
-  btn.textContent = 'Создаю страницу...';
+  btn.textContent = 'Creating page...';
   resultBox.className = 'result-box';
 
   try {
@@ -642,17 +641,17 @@ document.getElementById('createBtn').addEventListener('click', async () => {
     const out = await res.json();
 
     if (!res.ok || !out.url) {
-      throw new Error(out.error || 'Не удалось создать страницу.');
+      throw new Error(out.error || 'Could not create the page.');
     }
 
     resultBox.classList.add('ok', 'show');
-    resultBox.innerHTML = `<div class="status">Страница создана ✓</div><a href="${out.url}" target="_blank" rel="noopener">Открыть в Notion →</a>`;
+    resultBox.innerHTML = `<div class="status">Page created ✓</div><a href="${out.url}" target="_blank" rel="noopener">Open in Notion →</a>`;
   } catch (e) {
     resultBox.classList.add('err', 'show');
-    resultBox.innerHTML = `<div class="status">Не получилось</div>${e.message || 'Проверьте соединение и попробуйте ещё раз.'}`;
+    resultBox.innerHTML = `<div class="status">Didn't work</div>${e.message || 'Check your connection and try again.'}`;
   } finally {
     btn.disabled = false;
-    btn.textContent = '✨ Создать страницу в Notion';
+    btn.textContent = '✨ Create page in Notion';
   }
 });
 
@@ -688,10 +687,10 @@ document.getElementById('copyTextBtn').addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(ta.value);
     const btn = document.getElementById('copyTextBtn');
-    btn.textContent = 'Скопировано ✓';
-    setTimeout(() => { btn.textContent = 'Скопировать'; }, 1800);
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
   } catch (e) {
-    alert('Не удалось скопировать — выделите текст вручную.');
+    alert('Could not copy — select the text manually.');
   }
 });
 </script>
