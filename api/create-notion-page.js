@@ -106,6 +106,11 @@ function labeledLinkBlock(label, url) {
   return blocks;
 }
 
+function toolLinkOrPlaceholder(emoji, label, url) {
+  if (url) return [toolButtonBlock(emoji, label, url)];
+  return labeledLinkBlock(label + ':', null);
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -121,8 +126,8 @@ module.exports = async (req, res) => {
   }
 
   const {
-    icon, title, level, target, warmup, videoLink,
-    materials, vocabulary, discussionQuestions, speakingLink, modelAnswer,
+    icon, title, level, target, warmup, videoLink, readingLink,
+    discussionQuestions, speakingLink, modelAnswer,
     writingLink
   } = req.body || {};
 
@@ -141,48 +146,11 @@ module.exports = async (req, res) => {
     children.push(...finish('Warm-up done'));
   }
 
-  children.push(...labeledLinkBlock('Video task (Twee):', videoLink));
-  children.push(...finish('Video task done'));
+  children.push(...toolLinkOrPlaceholder('🎬', 'Video to work on', videoLink));
+  children.push(...finish('Video done'));
 
-  const art = materials && materials.article;
-  const videoOptions = (materials && materials.video_options) || [];
-  const artVocab = (vocabulary && vocabulary.article) || [];
-
-  if (art) {
-    children.push(bookmarkBlock(art.url));
-    if (art.summary) children.push(...paragraphBlocks(art.summary));
-    if (artVocab.length) {
-      children.push(...bulletedList(artVocab.map(v => `${v.word} — ${v.definition} ("${v.example_from_material}")`)));
-    }
-    children.push(...finish('Reading done'));
-  }
-
-  if (videoOptions.length) {
-    children.push({
-      object: 'block',
-      type: 'paragraph',
-      paragraph: { rich_text: [{ type: 'text', text: { content: 'Video options — try each in Twee, keep the one that works:' }, annotations: { bold: true } }] }
-    });
-    videoOptions.forEach(v => {
-      children.push(bookmarkBlock(v.url));
-      if (v.summary) children.push(...paragraphBlocks(v.summary));
-    });
-    children.push(...finish('Video done'));
-  }
-
-  if (artVocab.length) {
-    const words = [...new Set(artVocab.map(v => v.word).filter(Boolean))];
-    children.push({
-      object: 'block',
-      type: 'paragraph',
-      paragraph: {
-        rich_text: [
-          { type: 'text', text: { content: 'For Twee: ' }, annotations: { italic: true } },
-          { type: 'text', text: { content: words.join(', ') } }
-        ]
-      }
-    });
-  }
+  children.push(...toolLinkOrPlaceholder('📖', 'Reading', readingLink));
+  children.push(...finish('Reading done'));
 
   if (writingLink) {
     children.push(toolButtonBlock('✍️', 'Writing Practice', writingLink));
