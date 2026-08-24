@@ -343,23 +343,29 @@
 
   <section class="card">
     <h2><span class="n">2</span> Видео-задание из Twee</h2>
-    <p class="hint">Отдельно от найденного материала выше — это задание, которое вы собираете в Twee. Можно оставить пустым сейчас: блок под ссылку всё равно появится на странице в Notion, вставите её туда позже.</p>
+    <p class="hint">Выбранное видео из блока поиска выше — обработайте в Twee и вставьте сюда ссылку на готовое задание. Можно оставить пустым сейчас: блок под ссылку всё равно появится на странице в Notion, вставите её туда позже.</p>
     <input type="url" id="videoLink" placeholder="https://twee.com/...">
   </section>
 
   <section class="card">
-    <h2><span class="n">3</span> Слова для тренажёров</h2>
-    <p class="hint">Предзаполняется словами из найденной статьи после поиска выше — но это обычное текстовое поле, можно править как угодно: дописать слова, которые вытащили из видео в Twee, или заменить целиком. Именно эти слова уйдут в ссылки на устный и письменный тренажёры.</p>
+    <h2><span class="n">3</span> Чтение из Twee</h2>
+    <p class="hint">Выбранная статья из блока поиска выше — обработайте в Twee и вставьте сюда ссылку на готовое задание. Тоже можно оставить пустым сейчас.</p>
+    <input type="url" id="readingLink" placeholder="https://twee.com/...">
+  </section>
+
+  <section class="card">
+    <h2><span class="n">4</span> Слова для тренажёров</h2>
+    <p class="hint">Слова из статьи/видео больше не вытаскиваются автоматически — заберите их из Twee после обработки и впишите сюда через запятую. Именно эти слова уйдут в ссылки на устный и письменный тренажёры.</p>
     <textarea id="trainerWords" placeholder="gene, inherit, trait, evolve, mutation"></textarea>
   </section>
 
   <section class="card">
-    <h2><span class="n">4</span> Письменная альтернатива</h2>
+    <h2><span class="n">5</span> Письменная альтернатива</h2>
     <p class="hint">Тот же словарь, отработка в письме — не опция, а второй способ практики. Ссылка на writing-тул со словами из поля выше соберётся автоматически. Проверка написанного — через writing feedback тул.</p>
   </section>
 
   <section class="card">
-    <h2><span class="n">5</span> Дискуссия и модель</h2>
+    <h2><span class="n">6</span> Дискуссия и модель</h2>
     <p class="hint">По одному вопросу на строку — тул сам соберёт ссылку на спикинг-тул с этими вопросами и словами из поля выше.</p>
     <textarea id="questions" placeholder="What role does...?
 Do you think...?"></textarea>
@@ -494,9 +500,11 @@ document.getElementById('suggestBtn').addEventListener('click', async () => {
 });
 
 // ---- Resource finder ----
-// Holds BOTH found materials (article + video) and their separately-extracted
-// vocabulary — replaces the old single-material shape.
-let resourceState = { materials: { article: null, video_options: [] }, vocabulary: { article: [] } };
+// Holds found article/video CANDIDATES — Anna picks one of each in the form
+// before assembling; only the selected pair is sent to Notion. No vocabulary
+// is auto-extracted anymore (article and video both dropped that step) — she
+// pulls words from Twee herself into the "Слова для тренажёров" field.
+let resourceState = { materials: { article_options: [], video_options: [] } };
 
 document.getElementById('findResourceBtn').addEventListener('click', async () => {
   if (topicState.selected === null) return;
@@ -506,7 +514,7 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
   const level = document.getElementById('resLevel').value;
 
   btn.disabled = true;
-  btn.textContent = 'Ищу материалы и слова...';
+  btn.textContent = 'Ищу материалы...';
   card.className = 'resource-card';
 
   try {
@@ -519,7 +527,6 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
     if (!res.ok || !out.materials) throw new Error(out.error || 'Не удалось найти материалы.');
 
     resourceState.materials = out.materials;
-    resourceState.vocabulary = out.vocabulary || { article: [], video: [] };
 
     if (out.title) document.getElementById('title').value = out.title;
     if (out.icon) document.getElementById('icon').value = out.icon;
@@ -528,42 +535,29 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
     if (Array.isArray(out.discussion_questions) && out.discussion_questions.length) {
       document.getElementById('questions').value = out.discussion_questions.join('\n');
     }
-    const articleVocab = (out.vocabulary && out.vocabulary.article) || [];
-    if (articleVocab.length) {
-      document.getElementById('trainerWords').value = articleVocab.map(v => v.word).join(', ');
-    }
     if (!document.getElementById('topicOverride').value) {
       document.getElementById('topicOverride').value = topic.split(' — ')[0];
     }
 
-    function materialBlock(m, vocab, label) {
-      if (!m) return `<p style="margin:10px 0 0; color:var(--ink-soft);">${label}: не нашлось подходящего источника — можно поискать ещё раз позже.</p>`;
-      const vocabHtml = (vocab || []).length
-        ? `<ul>${vocab.map(v => `<li><strong>${escapeHtml(v.word)}</strong> — ${escapeHtml(v.definition)}<br><span class="ex">"${escapeHtml(v.example_from_material)}"</span></li>`).join('')}</ul>`
-        : '';
+    function candidateList(options, label) {
+      if (!options || !options.length) return `<p style="margin:10px 0 0; color:var(--ink-soft);">${label}: не нашлось подходящих кандидатов — можно поискать ещё раз позже.</p>`;
+      const items = options.map(m => `
+        <div style="margin-bottom:10px;">
+          <a href="${escapeHtml(m.url)}" target="_blank" rel="noopener">${escapeHtml(m.title)}</a>
+          <span style="color:var(--ink-soft); font-size:12px;">(${escapeHtml(m.length)})</span><br>
+          <span style="font-size:12.5px;">${escapeHtml(m.summary)}</span>
+        </div>
+      `).join('');
       return `
-        <div class="type-tag" style="margin-top:12px;">${label} · ${escapeHtml(m.length)}</div>
-        <a href="${escapeHtml(m.url)}" target="_blank" rel="noopener">${escapeHtml(m.title)}</a>
-        <p style="margin:6px 0 0;">${escapeHtml(m.summary)}</p>
-        ${vocabHtml}
-      `;
-    }
-
-    function videoOptionsBlock(options) {
-      if (!options || !options.length) return `<p style="margin:10px 0 0; color:var(--ink-soft);">Видео: не нашлось подходящих кандидатов — можно поискать ещё раз позже.</p>`;
-      const items = options.map((v, i) =>
-        `<li style="margin-bottom:8px;"><a href="${escapeHtml(v.url)}" target="_blank" rel="noopener">${escapeHtml(v.title)}</a> <span style="color:var(--ink-soft); font-size:12px;">(${escapeHtml(v.length)})</span><br><span style="font-size:12.5px;">${escapeHtml(v.summary)}</span></li>`
-      ).join('');
-      return `
-        <div class="type-tag" style="margin-top:12px;">Видео · ${options.length} варианта — попробуйте каждый в Twee, оставьте рабочий</div>
-        <ul style="margin-top:6px;">${items}</ul>
+        <div class="type-tag" style="margin-top:12px;">${label} · ${options.length} — откройте, обработайте в Twee, вставьте готовую ссылку ниже</div>
+        ${items}
       `;
     }
 
     card.innerHTML =
-      materialBlock(out.materials.article, resourceState.vocabulary.article, 'Статья') +
-      videoOptionsBlock(out.materials.video_options) +
-      `<p style="margin:10px 0 0; color:var(--ink-soft); font-size:12px;">Заголовок, цель, warm-up, вопросы и exit ticket ниже подставлены автоматически — проверьте перед сборкой.</p>`;
+      candidateList(out.materials.article_options, 'Статья') +
+      candidateList(out.materials.video_options, 'Видео') +
+      `<p style="margin:10px 0 0; color:var(--ink-soft); font-size:12px;">Заголовок, цель, warm-up и вопросы ниже подставлены автоматически — проверьте перед сборкой.</p>`;
     card.classList.add('show');
   } catch (e) {
     card.innerHTML = `<div class="type-tag" style="color:var(--bad);">Не получилось</div>${e.message || 'Попробуйте другую тему.'}`;
@@ -616,8 +610,7 @@ function collectData() {
     target: val('target'),
     warmup: val('warmup'),
     videoLink: val('videoLink'),
-    materials: resourceState.materials,
-    vocabulary: resourceState.vocabulary,
+    readingLink: val('readingLink'),
     discussionQuestions: questionsList(),
     speakingLink: buildSpeakingLink(),
     modelAnswer: val('modelAnswer'),
@@ -670,30 +663,10 @@ document.getElementById('buildTextBtn').addEventListener('click', () => {
 
   if (d.target) { parts.push('> 🎯 ' + d.target); parts.push(''); }
   if (d.warmup) { parts.push(d.warmup); parts.push(''); parts.push('> ✍️ '); parts.push(''); }
-  if (d.videoLink) { parts.push('Video task: ' + d.videoLink); parts.push(''); }
-  if (d.materials) {
-    const art = d.materials.article;
-    if (art) {
-      parts.push(`${art.title} (${art.type}, ${art.length})`);
-      parts.push(art.url);
-      parts.push(art.summary);
-      parts.push('');
-      const vocab = (d.vocabulary && d.vocabulary.article) || [];
-      if (vocab.length) {
-        parts.push('Vocabulary in context:');
-        vocab.forEach(v => parts.push(`- ${v.word} — ${v.definition} ("${v.example_from_material}")`));
-        parts.push('');
-      }
-    }
-    const videos = d.materials.video_options || [];
-    if (videos.length) {
-      parts.push('Video options (try each in Twee, keep the one that works):');
-      videos.forEach(v => { parts.push(`- ${v.title} (${v.length}) — ${v.url}`); });
-      parts.push('');
-    }
-    const allWords = ((d.vocabulary && d.vocabulary.article) || []).map(v => v.word);
-    if (allWords.length) { parts.push('For Twee: ' + [...new Set(allWords)].join(', ')); parts.push(''); }
-  }
+  if (d.videoLink) { parts.push('Video to work on: ' + d.videoLink); parts.push(''); }
+  if (d.readingLink) { parts.push('Reading: ' + d.readingLink); parts.push(''); }
+  const words = wordsList();
+  if (words.length) { parts.push('For Twee: ' + words.join(', ')); parts.push(''); }
   if (d.writingLink) { parts.push('Practice in writing:'); parts.push(d.writingLink); parts.push(''); }
   if (d.speakingLink) { parts.push('Practice speaking about this topic:'); parts.push(d.speakingLink); parts.push(''); }
   if (d.discussionQuestions && d.discussionQuestions.length) {
