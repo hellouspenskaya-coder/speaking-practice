@@ -27,34 +27,31 @@ module.exports = async (req, res) => {
   }
 
   const lvl = level || 'B2';
-  const vocabRule = ['A2', 'B1', 'B2'].includes(lvl)
-    ? `VOCABULARY DIFFICULTY RULE: level is ${lvl}, so choose ONLY general-register English vocabulary — common words or expressions that show up across many topics and are genuinely useful in everyday/general English. Avoid narrow academic, philosophical, or field-specific jargon tied only to this one topic, even if such a word appears in the source.`
-    : `VOCABULARY DIFFICULTY RULE: level is ${lvl}, so you may include AT MOST 3 topic-specific/specialized terms per source (words tied specifically to this topic's field). All remaining words must still be general-register English vocabulary useful beyond this one topic, not a pile of niche jargon.`;
 
   const materialsPrompt = `You are finding authentic English-language teaching material for an adult ${lvl} English learner.
 Topic: "${topic}"
 
 Use web search to find real, currently-live, authentic English-language sources on this topic:
-(a) ONE article, roughly 500-900 words, from a reputable source (news outlet, established publication, well-known site).
-(b) THREE candidate videos, each roughly 3-6 minutes long, from reputable sources (official channel, news outlet, educational/media site) — give a few different options since not every video works in every downstream tool. Prefer well-known channels that reliably publish real captions/transcripts — e.g. TED / TED-Ed, BBC Learning English, VOA Learning English, official news channel explainer series (BBC News, Vox, etc.) — but any real, relevant video is fine. Just find relevant, real video URLs — you do NOT need to read their transcripts or verify captions for this step.
+
+(a) TWO candidate articles, each one readable in UNDER 10 MINUTES (roughly 400-1100 words — err shorter rather than longer, since 10 minutes is a hard ceiling, not a target), from a reputable source (news outlet, established publication, well-known site). For "length", give an honest estimated reading time based on the ACTUAL word count of that specific article (roughly 200 words/minute), e.g. "4 min read" — never guess or round up to a generic figure.
+
+(b) THREE candidate videos, each roughly 3-6 minutes long. CRITICAL: videos MUST be hosted on YouTube or Vimeo ONLY (a youtube.com/youtu.be or vimeo.com URL) — no other platform, because the downstream tool that processes them only works with those two. For "length", use the video's OWN duration as shown on YouTube/Vimeo for that specific video — NOT the length of a larger talk, playlist, or session the clip may be part of. Double-check you are reporting the duration of the exact URL you are giving, not a related/parent video.
+
 All URLs must be real ones you found via search. Do not invent a URL.
 
-From the actual text content of the ARTICLE ONLY (the article body), pick 5-7 vocabulary words or expressions that genuinely appear in it. For each, give a short English definition and quote the actual short sentence (under 20 words) where it appears. Do not extract vocabulary from the video — that part is handled separately by the teacher.
-
-${vocabRule}
+Do NOT extract vocabulary or quotes from either the articles or the videos — that part is handled separately by the teacher afterwards, so skip it entirely and do not spend effort on it.
 
 Write everything in ENGLISH ONLY. No Russian, no other language, anywhere in the output values.
 
 Respond with your FINAL message containing STRICT JSON only (no markdown fences, no commentary before or after, no trailing commas) with this exact shape:
 {
   "materials": {
-    "article": {"title": "real title", "url": "real URL", "type": "article", "length": "e.g. '6 min read'", "summary": "2-3 sentence English summary"},
+    "article_options": [
+      {"title": "real title", "url": "real URL", "type": "article", "length": "e.g. '4 min read'", "summary": "2-3 sentence English summary"}
+    ],
     "video_options": [
       {"title": "real title", "url": "real URL", "type": "video", "length": "e.g. '5 min video'", "summary": "2-3 sentence English summary"}
     ]
-  },
-  "vocabulary": {
-    "article": [{"word": "...", "definition": "...", "example_from_material": "..."}]
   }
 }`;
 
@@ -80,6 +77,19 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
     }
     const materialsText = (materialsData.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
     const materialsPlan = JSON.parse(sanitizeJson(extractJson(materialsText)));
+
+    // Safety net: drop any video candidate that isn't actually YouTube/Vimeo,
+    // in case the model didn't follow the platform restriction.
+    if (materialsPlan.materials && Array.isArray(materialsPlan.materials.video_options)) {
+      materialsPlan.materials.video_options = materialsPlan.materials.video_options.filter(v => {
+        try {
+          const host = new URL(v.url).hostname.replace(/^www\./, '');
+          return host === 'youtube.com' || host === 'youtu.be' || host === 'vimeo.com' || host === 'm.youtube.com';
+        } catch (e) {
+          return false;
+        }
+      });
+    }
 
     // Second, simpler call — no web search, just synthesis from what was found.
     // Smaller JSON, far less likely to come back malformed.
