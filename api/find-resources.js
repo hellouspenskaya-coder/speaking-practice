@@ -33,24 +33,26 @@ Topic: "${topic}"
 
 Use web search to find real, currently-live, authentic English-language sources on this topic:
 
-(a) TWO candidate articles, each one readable in UNDER 10 MINUTES (roughly 400-1100 words — err shorter rather than longer, since 10 minutes is a hard ceiling, not a target), from a reputable source (news outlet, established publication, well-known site). For "length", give an honest estimated reading time based on the ACTUAL word count of that specific article (roughly 200 words/minute), e.g. "4 min read" — never guess or round up to a generic figure.
+(a) TWO candidate videos, each between 3 and 15 minutes long (this is just a rough search filter — do NOT report or worry about the exact duration in your output). Videos MUST be hosted on YouTube or Vimeo ONLY (a youtube.com/youtu.be or vimeo.com URL) — no other platform. Give two DIFFERENT video URLs — never return the same video twice.
 
-(b) THREE candidate videos, each roughly 3-6 minutes long. CRITICAL: videos MUST be hosted on YouTube or Vimeo ONLY (a youtube.com/youtu.be or vimeo.com URL) — no other platform, because the downstream tool that processes them only works with those two. For "length", use the video's OWN duration as shown on YouTube/Vimeo for that specific video — NOT the length of a larger talk, playlist, or session the clip may be part of. Double-check you are reporting the duration of the exact URL you are giving, not a related/parent video.
+(b) TWO candidate articles, each readable in UNDER 10 MINUTES (roughly 400-1100 words). Give two DIFFERENT article URLs — never return the same article twice. For "length", give an honest estimated reading time based on the actual word count (roughly 200 words/minute), e.g. "4 min read".
+
+Both articles and videos must clearly and directly address this specific topic — not just tangentially related content.
 
 All URLs must be real ones you found via search. Do not invent a URL.
 
-Do NOT extract vocabulary or quotes from either the articles or the videos — that part is handled separately by the teacher afterwards, so skip it entirely and do not spend effort on it.
+Do NOT write a summary, description, or vocabulary/quotes for either the articles or the videos — just the bare title, URL, and (for articles only) the estimated reading time. Skip all explanatory text entirely to keep this fast.
 
 Write everything in ENGLISH ONLY. No Russian, no other language, anywhere in the output values.
 
 Respond with your FINAL message containing STRICT JSON only (no markdown fences, no commentary before or after, no trailing commas) with this exact shape:
 {
   "materials": {
-    "article_options": [
-      {"title": "real title", "url": "real URL", "type": "article", "length": "e.g. '4 min read'", "summary": "2-3 sentence English summary"}
-    ],
     "video_options": [
-      {"title": "real title", "url": "real URL", "type": "video", "length": "e.g. '5 min video'", "summary": "2-3 sentence English summary"}
+      {"title": "real title", "url": "real URL", "type": "video"}
+    ],
+    "article_options": [
+      {"title": "real title", "url": "real URL", "type": "article", "length": "e.g. '4 min read'"}
     ]
   }
 }`;
@@ -66,7 +68,7 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 3000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 6 }],
+        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 5 }],
         messages: [{ role: 'user', content: materialsPrompt }]
       })
     });
@@ -89,6 +91,39 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
           return false;
         }
       });
+
+      // Real existence check via the platforms' own oEmbed endpoints (free,
+      // no API key needed). Drops dead/invented links and replaces the
+      // model's guessed title with the real one straight from the source.
+      const verified = await Promise.all(
+        materialsPlan.materials.video_options.map(async (v) => {
+          const real = await verifyVideoExists(v.url);
+          if (!real) return null;
+          return { ...v, title: real.title || v.title };
+        })
+      );
+      materialsPlan.materials.video_options = verified.filter(Boolean);
+    }
+
+    // Safety net: drop duplicate URLs in either list, in case the model
+    // returned the same source twice despite being told not to.
+    function dedupeByUrl(list) {
+      if (!Array.isArray(list)) return list;
+      const seen = new Set();
+      return list.filter(item => {
+        try {
+          const key = new URL(item.url).href.replace(/\/$/, '');
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        } catch (e) {
+          return true;
+        }
+      });
+    }
+    if (materialsPlan.materials) {
+      materialsPlan.materials.video_options = dedupeByUrl(materialsPlan.materials.video_options);
+      materialsPlan.materials.article_options = dedupeByUrl(materialsPlan.materials.article_options);
     }
 
     // Second, simpler call — no web search, just synthesis from what was found.
@@ -161,6 +196,25 @@ function extractJson(text) {
 // and safe to strip before parsing.
 function sanitizeJson(jsonStr) {
   return jsonStr.replace(/,(\s*[}\]])/g, '$1');
+}
+
+// Confirms a video URL is real using the platform's own oEmbed endpoint —
+// public, free, no API key. Returns { title } on success or null if the
+// video doesn't exist / oEmbed rejects it (private, deleted, wrong URL).
+async function verifyVideoExists(url) {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, '');
+    const isYouTube = host === 'youtube.com' || host === 'youtu.be' || host === 'm.youtube.com';
+    const oembedUrl = isYouTube
+      ? 'https://www.youtube.com/oembed?url=' + encodeURIComponent(url) + '&format=json'
+      : 'https://vimeo.com/api/oembed.json?url=' + encodeURIComponent(url);
+    const r = await fetch(oembedUrl);
+    if (!r.ok) return null;
+    const data = await r.json();
+    return { title: data.title };
+  } catch (e) {
+    return null;
+  }
 }
 
 module.exports.config = { maxDuration: 60 };
