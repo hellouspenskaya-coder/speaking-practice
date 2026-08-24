@@ -106,11 +106,27 @@ function labeledLinkBlock(label, url) {
   return blocks;
 }
 
+// Notion's dedicated `video` block only recognizes YouTube links in the
+// watch/embed format (https://developers.notion.com/reference/block#video) —
+// Shorts URLs (youtube.com/shorts/ID) and Vimeo links are NOT supported by
+// that block type and would make the whole page-create call fail. So: pull
+// the video ID out of any YouTube URL shape and rewrite it as a plain watch
+// URL before using the video block; for anything else (Vimeo, etc.) fall
+// back to the generic `embed` block, which Notion's own docs confirm works
+// for Vimeo specifically.
 function videoEmbedBlock(url) {
+  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,15})/);
+  if (ytMatch) {
+    return {
+      object: 'block',
+      type: 'video',
+      video: { type: 'external', external: { url: `https://www.youtube.com/watch?v=${ytMatch[1]}` } }
+    };
+  }
   return {
     object: 'block',
-    type: 'video',
-    video: { type: 'external', external: { url } }
+    type: 'embed',
+    embed: { url }
   };
 }
 
@@ -129,7 +145,7 @@ module.exports = async (req, res) => {
   const parentPageId = process.env.NOTION_PARENT_PAGE_ID;
 
   if (!token || !parentPageId) {
-    res.status(500).json({ error: 'Notion не настроен: проверьте NOTION_TOKEN и NOTION_PARENT_PAGE_ID в Vercel.' });
+    res.status(500).json({ error: 'Notion is not configured: check NOTION_TOKEN and NOTION_PARENT_PAGE_ID in Vercel.' });
     return;
   }
 
@@ -140,7 +156,7 @@ module.exports = async (req, res) => {
   } = req.body || {};
 
   if (!title) {
-    res.status(400).json({ error: 'Не указан заголовок урока.' });
+    res.status(400).json({ error: 'No lesson title specified.' });
     return;
   }
 
@@ -167,12 +183,25 @@ module.exports = async (req, res) => {
 
   if (speakingLink) {
     children.push(toolButtonBlock('🎤', 'Speaking Practice', speakingLink));
-    children.push({
-      object: 'block',
-      type: 'paragraph',
-      paragraph: { rich_text: [{ type: 'text', text: { content: 'Model answer:' }, annotations: { bold: true } }] }
-    });
-    children.push(modelAnswer ? videoEmbedBlock(modelAnswer) : calloutBlock('🔗', ''));
+    if (modelAnswer) {
+      children.push({
+        object: 'block',
+        type: 'paragraph',
+        paragraph: { rich_text: [{ type: 'text', text: { content: 'Model answer:' }, annotations: { bold: true } }] }
+      });
+      children.push(videoEmbedBlock(modelAnswer));
+    } else {
+      children.push({
+        object: 'block',
+        type: 'paragraph',
+        paragraph: {
+          rich_text: [
+            { type: 'text', text: { content: 'Model answer: ' }, annotations: { bold: true } },
+            { type: 'text', text: { content: 'not added yet — paste a video link here later and use Notion\'s /video command to embed it.' }, annotations: { italic: true, color: 'gray' } }
+          ]
+        }
+      });
+    }
     children.push(...finish('Speaking done'));
   }
 
@@ -188,12 +217,8 @@ module.exports = async (req, res) => {
 
   // Exit ticket is the same on every lesson — optional feedback for the
   // teacher, not per-topic reflection questions (those live at the end of
-  // the discussion questions instead). No checkbox — it's not a required task.
-  children.push({
-    object: 'block',
-    type: 'heading_3',
-    heading_3: { rich_text: [{ type: 'text', text: { content: 'Exit ticket' } }] }
-  });
+  // the discussion questions instead). No heading, no checkbox — just the
+  // note and an empty box, since it's not a required task.
   children.push(...paragraphBlocks(
     '💬 A quick note (optional) — comments, questions, anything.'
   ));
@@ -225,12 +250,12 @@ module.exports = async (req, res) => {
     const data = await notionRes.json();
 
     if (!notionRes.ok) {
-      res.status(notionRes.status).json({ error: data.message || 'Notion API вернул ошибку.' });
+      res.status(notionRes.status).json({ error: data.message || 'Notion API returned an error.' });
       return;
     }
 
     res.status(200).json({ url: data.url, id: data.id });
   } catch (err) {
-    res.status(500).json({ error: 'Не удалось связаться с Notion API.' });
+    res.status(500).json({ error: 'Could not connect to the Notion API.' });
   }
 };
