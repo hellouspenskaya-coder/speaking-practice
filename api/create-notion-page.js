@@ -150,7 +150,7 @@ module.exports = async (req, res) => {
   }
 
   const {
-    icon, title, level, target, warmup, videoLink, readingLink,
+    icon, title, level, target, warmup, introVideoLink, videoLink, readingLink,
     discussionQuestions, speakingLink, modelAnswer,
     writingLink
   } = req.body || {};
@@ -164,9 +164,15 @@ module.exports = async (req, res) => {
 
   if (target) children.push(calloutBlock('🎯', target));
 
-  if (warmup) {
-    children.push(...paragraphBlocks(warmup));
-    children.push(calloutBlock('✍️', ''));
+  if (introVideoLink || warmup) {
+    if (introVideoLink) {
+      children.push(videoEmbedBlock(introVideoLink));
+      children.push(calloutBlock('👀', ''));
+    }
+    if (warmup) {
+      children.push(...paragraphBlocks(warmup));
+      children.push(calloutBlock('✍️', ''));
+    }
     children.push(...finish('Warm-up done'));
   }
 
