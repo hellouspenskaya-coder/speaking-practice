@@ -16,13 +16,13 @@ module.exports = async (req, res) => {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    res.status(500).json({ error: 'ANTHROPIC_API_KEY не настроен в Vercel.' });
+    res.status(500).json({ error: 'ANTHROPIC_API_KEY is not set in Vercel.' });
     return;
   }
 
   const { topic, level } = req.body || {};
   if (!topic) {
-    res.status(400).json({ error: 'Не указана тема.' });
+    res.status(400).json({ error: 'No topic specified.' });
     return;
   }
 
@@ -74,7 +74,7 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
     });
     const materialsData = await materialsResp.json();
     if (!materialsResp.ok) {
-      res.status(materialsResp.status).json({ error: materialsData.error?.message || 'Anthropic API вернул ошибку (поиск материалов).' });
+      res.status(materialsResp.status).json({ error: materialsData.error?.message || 'Anthropic API returned an error (finding materials).' });
       return;
     }
     const materialsText = (materialsData.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
@@ -135,7 +135,7 @@ ${JSON.stringify(materialsPlan.materials)}
 Propose, in ENGLISH ONLY:
 - "icon": ONE emoji that best represents this topic.
 - "title": a short lesson title (5-8 words), suitable as a Notion page title.
-- "target": ONE short sentence (under 15 words) describing what the student will be able to do by the end of the lesson, starting with "By the end of this lesson, you'll be able to...".
+- "target": a SHORT phrase in the exact format "You will speak about [specific topic phrase]." — just that, nothing longer. Example: "You will speak about market economy and market society."
 - "warmup_question": one standalone opening discussion question about the general topic (not about a specific source) to ask before the material is introduced.
 - "discussion_questions": 6-8 open-ended discussion questions connecting to the material and the student's own life/views. Avoid yes/no questions. Make the LAST 1-2 questions in the list reflective/wrap-up ones about the lesson itself (e.g. what they'll remember, what stood out, how their view changed) rather than about the source material directly.
 
@@ -163,7 +163,7 @@ Respond with STRICT JSON only (no markdown fences, no commentary, no trailing co
     });
     const introData = await introResp.json();
     if (!introResp.ok) {
-      res.status(introResp.status).json({ error: introData.error?.message || 'Anthropic API вернул ошибку (сборка заголовка/вопросов).' });
+      res.status(introResp.status).json({ error: introData.error?.message || 'Anthropic API returned an error (building title/questions).' });
       return;
     }
     const introText = (introData.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
@@ -171,7 +171,7 @@ Respond with STRICT JSON only (no markdown fences, no commentary, no trailing co
 
     res.status(200).json({ ...materialsPlan, ...introPlan });
   } catch (err) {
-    res.status(500).json({ error: 'Не удалось найти материал: ' + (err.message || 'неизвестная ошибка') + '. Попробуйте другую тему или ещё раз — иногда помогает просто повторить запрос.' });
+    res.status(500).json({ error: 'Could not find material: ' + (err.message || 'unknown error') + '. Try a different topic or try again — sometimes just retrying helps.' });
   }
 };
 
