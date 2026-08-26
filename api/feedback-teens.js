@@ -150,6 +150,7 @@ module.exports = async (req, res) => {
       });
     } catch (e) {
       notionError = String(e);
+      console.error('Notion write failed:', notionError);
     }
 
     res.status(200).json({ ...result, notionError });
