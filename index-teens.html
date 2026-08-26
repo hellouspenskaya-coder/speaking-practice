@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Speaking Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1f2a24; --paper:#eeeae1; --paper-card:#f5f2ea;
+    --line: rgba(31,42,36,0.14); --muted:#6b675f;
+    --record:#a63446; --record-dark:#8a2b3a;
+    --feedback:#4c7a6e; --feedback-bg:#dfe8e2; --radius:18px;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh; display:flex; justify-content:center;
+    padding:32px 16px 80px; -webkit-font-smoothing:antialiased;
+  }
+  .app{ width:100%; max-width:560px; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--muted); margin-bottom:6px;
+  }
+  h1{ font-family:'Fraunces', serif; font-weight:500; font-size:22px; margin:0 0 28px; }
+  .card{
+    background:var(--paper-card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:28px 24px; margin-bottom:16px;
+  }
+  .question-label{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--muted); margin-bottom:10px;
+  }
+  .question-text{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500; font-size:22px;
+    line-height:1.35; margin:0 0 22px;
+  }
+  .question-nav{ display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+  .question-progress{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--muted); }
+  .words-list{ display:flex; flex-wrap:wrap; gap:8px; }
+  .word-chip{
+    font-family:'IBM Plex Sans', sans-serif; font-size:13.5px; color:var(--ink);
+    background:var(--feedback-bg); border-radius:999px; padding:6px 14px;
+  }
+  .stage{ display:flex; flex-direction:column; align-items:center; padding:8px 0 4px; }
+  .waveform{ display:flex; align-items:flex-end; justify-content:center; gap:4px; height:56px; margin-bottom:18px; width:100%; }
+  .waveform span{ display:block; width:4px; min-height:4px; border-radius:2px; background:var(--record); opacity:0.35; transition:height 0.08s ease, opacity 0.2s ease; }
+  .waveform.active span{ opacity:0.9; }
+  .record-btn{
+    width:76px; height:76px; border-radius:50%; border:none; background:var(--record); color:#fdf9f4;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    box-shadow:0 6px 18px rgba(166,52,70,0.28); transition:transform 0.15s ease, background 0.15s ease; position:relative;
+  }
+  .record-btn:hover{ transform:scale(1.03); }
+  .record-btn:active{ transform:scale(0.97); }
+  .record-btn.recording{ background:var(--record-dark); animation:pulse 1.6s ease-in-out infinite; }
+  .record-btn .dot{ width:20px; height:20px; border-radius:50%; background:currentColor; transition:border-radius 0.2s ease, width 0.2s ease, height 0.2s ease; }
+  .record-btn.recording .dot{ border-radius:6px; width:18px; height:18px; }
+  @keyframes pulse{ 0%,100%{ box-shadow:0 6px 18px rgba(166,52,70,0.28); } 50%{ box-shadow:0 6px 26px rgba(166,52,70,0.48); } }
+  .timer{ font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--muted); margin-top:12px; min-height:18px; }
+  .hint{ font-size:12.5px; color:var(--muted); text-align:center; margin-top:6px; line-height:1.5; }
+  .transcript-box{ margin-top:20px; padding-top:18px; border-top:1px dashed var(--line); display:none; }
+  .transcript-label{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--muted); margin-bottom:8px;
+  }
+  .transcript-text{ font-size:15px; line-height:1.6; color:var(--ink); min-height:24px; }
+  .actions{ display:flex; gap:10px; margin-top:16px; }
+  .btn-secondary{
+    font-family:'IBM Plex Sans', sans-serif; font-size:13.5px; font-weight:500; color:var(--ink);
+    background:transparent; border:1px solid var(--line); border-radius:10px; padding:9px 16px; cursor:pointer;
+  }
+  .btn-primary{
+    font-family:'IBM Plex Sans', sans-serif; font-size:13.5px; font-weight:500; color:#fdf9f4;
+    background:var(--feedback); border:none; border-radius:10px; padding:9px 16px; cursor:pointer;
+  }
+  .btn-primary:disabled{ opacity:0.5; cursor:default; }
+  .loading{ font-size:13.5px; color:var(--muted); display:none; align-items:center; gap:8px; margin-top:14px; }
+  .loading.show{ display:flex; }
+  .spinner{ width:14px;height:14px;border-radius:50%; border:2px solid var(--line); border-top-color:var(--feedback); animation:spin 0.8s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .score-row{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+  .score-badge{ flex:1; min-width:140px; background:var(--feedback-bg); border-radius:14px; padding:14px 16px; text-align:center; }
+  .score-badge .num{ font-family:'IBM Plex Mono', monospace; font-size:26px; color:var(--feedback); }
+  .score-badge .label{ font-size:12px; color:var(--muted); margin-top:2px; }
+  .relevance-list{ margin-bottom:18px; }
+  .relevance-item{ font-size:13.5px; line-height:1.6; margin-bottom:6px; display:flex; gap:8px; }
+  .keyword-note, .overall-note{ font-size:14px; line-height:1.6; margin-bottom:12px; }
+  .exercise-options{ display:flex; flex-direction:column; gap:10px; }
+  .option-btn{
+    display:flex; align-items:center; gap:12px; text-align:left; font-family:'IBM Plex Sans', sans-serif;
+    font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:12px;
+    padding:12px 16px; cursor:pointer; transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .option-btn:hover{ border-color:var(--feedback); }
+  .option-btn .letter{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--muted); width:20px; flex-shrink:0; }
+  .option-btn.correct{ background:var(--feedback-bg); border-color:var(--feedback); }
+  .option-btn.wrong{ background:#f3dede; border-color:var(--record); }
+  .option-btn:disabled{ cursor:default; }
+  .note{ font-size:12px; color:var(--muted); text-align:center; margin-top:24px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="eyebrow">Topic · Practice</div>
+  <h1>Speaking practice</h1>
+
+  <div class="card" id="wordsCard" style="display:none; padding:20px 24px;">
+    <div class="question-label" style="margin-bottom:10px">Target words for this session</div>
+    <div class="words-list" id="wordsList"></div>
+  </div>
+
+  <div class="card" id="questionCard">
+    <div class="question-label">Question</div>
+    <div class="question-text" id="questionText"></div>
+    <div class="question-nav">
+      <span class="question-progress" id="questionProgress"></span>
+      <button class="btn-primary" id="nextQuestionBtn">Next question →</button>
+    </div>
+
+    <div class="stage">
+      <div class="waveform" id="waveform"></div>
+      <button class="record-btn" id="recordBtn" aria-label="Record answer"><span class="dot"></span></button>
+      <div class="timer" id="timer"></div>
+      <div class="hint" id="hint">Up to 3 minutes — shorter is fine if your answer is complete and shows what you can do with the language.</div>
+    </div>
+
+    <div class="transcript-box" id="transcriptBox">
+      <div class="transcript-label">What we heard</div>
+      <div class="transcript-text" id="transcriptText"></div>
+      <div class="loading" id="loading"><span class="spinner"></span> Listening to your answer…</div>
+    </div>
+  </div>
+
+  <div class="card" id="resultsCard" style="display:none;">
+    <div class="question-label" style="margin-bottom:16px">Your session results</div>
+    <div class="score-row">
+      <div class="score-badge"><div class="num" id="scoreCoherence"></div><div class="label">Fluency &amp; Coherence</div></div>
+      <div class="score-badge"><div class="num" id="scoreVocabulary"></div><div class="label">Vocabulary</div></div>
+      <div class="score-badge"><div class="num" id="scoreGrammar"></div><div class="label">Grammar</div></div>
+      <div class="score-badge"><div class="num" id="scoreAverage"></div><div class="label">Average</div></div>
+    </div>
+    <div class="overall-note" id="overallNote"></div>
+    <div class="keyword-note" id="keywordNote"></div>
+    <div class="relevance-list" id="relevanceList"></div>
+  </div>
+
+  <div class="card" id="exerciseCard" style="display:none;">
+    <div class="question-label" style="color:var(--record); margin-bottom:16px">Practice it</div>
+    <div class="question-text" id="gapFillSentence" style="font-size:16px; margin-bottom:18px;"></div>
+    <div class="exercise-options" id="exerciseOptions"></div>
+    <div class="hint" id="exerciseResult" style="text-align:left; margin-top:14px;"></div>
+  </div>
+
+  <div class="note">This session score follows IELTS Speaking's scoring logic (Fluency &amp; Coherence, Lexical Resource, Grammar) as a practice estimate — not an official IELTS result, and Pronunciation isn't included since this tool works from text, not audio quality.</div>
+</div>
+
+<script>
+const questionText = document.getElementById('questionText');
+const questionCard = document.getElementById('questionCard');
+const questionNav = document.getElementById('questionNav');
+const questionProgress = document.getElementById('questionProgress');
+const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+const wordsCard = document.getElementById('wordsCard');
+const wordsList = document.getElementById('wordsList');
+const recordBtn = document.getElementById('recordBtn');
+const waveform = document.getElementById('waveform');
+const timerEl = document.getElementById('timer');
+const hint = document.getElementById('hint');
+const transcriptBox = document.getElementById('transcriptBox');
+const transcriptText = document.getElementById('transcriptText');
+const loading = document.getElementById('loading');
+const resultsCard = document.getElementById('resultsCard');
+const exerciseCard = document.getElementById('exerciseCard');
+const gapFillSentence = document.getElementById('gapFillSentence');
+const exerciseOptions = document.getElementById('exerciseOptions');
+const exerciseResult = document.getElementById('exerciseResult');
+
+let recording = false;
+let mediaRecorder = null;
+let recordedChunks = [];
+let audioCtx, analyser, micStream, rafId;
+let startTime, timerInterval, autoStopTimeout;
+let accumulatedTranscript = '';
+const MAX_RECORDING_MS = 3 * 60 * 1000;
+
+let questions = [];
+let words = [];
+let student = '';
+let topic = '';
+let currentIndex = 0;
+let answers = [];
+
+const BAR_COUNT = 28;
+for(let i=0;i<BAR_COUNT;i++){
+  const bar = document.createElement('span');
+  bar.style.height = '4px';
+  waveform.appendChild(bar);
+}
+const bars = waveform.querySelectorAll('span');
+
+function formatCountdown(remainingMs){
+  const s = Math.max(0, Math.ceil(remainingMs/1000));
+  const mm = String(Math.floor(s/60)).padStart(2,'0');
+  const ss = String(s%60).padStart(2,'0');
+  return mm+':'+ss;
+}
+
+function resetStage(){
+  transcriptBox.style.display = 'none';
+  transcriptText.textContent = '';
+  accumulatedTranscript = '';
+}
+
+function showQuestion(i){
+  currentIndex = i;
+  questionText.textContent = questions[currentIndex];
+  questionProgress.textContent = `Question ${currentIndex + 1} of ${questions.length}`;
+  nextQuestionBtn.textContent = currentIndex === questions.length - 1 ? 'Finish & get my score' : 'Next question →';
+  resetStage();
+}
+
+function loadFromUrl(){
+  const params = new URLSearchParams(window.location.search);
+  const topicParam = params.get('topic');
+  const qParam = params.get('q');
+  const wordsParam = params.get('words');
+  student = params.get('student') || 'Student';
+  topic = topicParam || 'Practice';
+
+  questions = qParam ? qParam.split('|').map(s => s.trim()).filter(Boolean) : ['What did you do last weekend?'];
+  answers = new Array(questions.length).fill('');
+
+  document.querySelector('.eyebrow').textContent = 'Topic · ' + topic;
+
+  words = wordsParam ? wordsParam.split('|').map(s => s.trim()).filter(Boolean) : [];
+  if(words.length){
+    wordsList.innerHTML = '';
+    words.forEach(w => {
+      const chip = document.createElement('span');
+      chip.className = 'word-chip';
+      chip.textContent = w;
+      wordsList.appendChild(chip);
+    });
+    wordsCard.style.display = 'block';
+  }
+
+  showQuestion(0);
+}
+
+async function startRecording(){
+  resetStage();
+  recording = true;
+  recordedChunks = [];
+  recordBtn.classList.add('recording');
+  waveform.classList.add('active');
+  hint.textContent = 'Listening… tap again to stop, or it stops itself at 3 minutes.';
+
+  startTime = Date.now();
+  timerInterval = setInterval(()=>{
+    timerEl.textContent = formatCountdown(MAX_RECORDING_MS - (Date.now()-startTime));
+  }, 200);
+  autoStopTimeout = setTimeout(() => { stopRecording(true); }, MAX_RECORDING_MS);
+
+  try{
+    micStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+  }catch(e){
+    hint.textContent = 'Microphone access denied — check your browser settings and try again.';
+    stopRecording(false);
+    return;
+  }
+
+  try{
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioCtx.createMediaStreamSource(micStream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 64;
+    source.connect(analyser);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    const draw = () => {
+      analyser.getByteFrequencyData(data);
+      bars.forEach((bar, i) => {
+        const v = data[i % data.length] || 0;
+        bar.style.height = Math.max(4, (v/255)*52) + 'px';
+      });
+      rafId = requestAnimationFrame(draw);
+    };
+    draw();
+  }catch(e){ /* visualization optional */ }
+
+  const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+  mediaRecorder = new MediaRecorder(micStream, mimeType ? { mimeType } : undefined);
+  mediaRecorder.ondataavailable = (e) => { if(e.data && e.data.size > 0) recordedChunks.push(e.data); };
+  mediaRecorder.start();
+}
+
+function stopRecording(shouldTranscribe = true){
+  recording = false;
+  recordBtn.classList.remove('recording');
+  waveform.classList.remove('active');
+  clearInterval(timerInterval);
+  clearTimeout(autoStopTimeout);
+  if(rafId) cancelAnimationFrame(rafId);
+  bars.forEach(bar => bar.style.height = '4px');
+  if(micStream){ micStream.getTracks().forEach(t=>t.stop()); }
+  if(audioCtx){ audioCtx.close(); }
+  hint.textContent = 'Up to 3 minutes — shorter is fine if your answer is complete and shows what you can do with the language.';
+
+  if(mediaRecorder && mediaRecorder.state !== 'inactive'){
+    mediaRecorder.onstop = () => { if(shouldTranscribe) sendForTranscription(); };
+    mediaRecorder.stop();
+  }
+}
+
+recordBtn.addEventListener('click', () => {
+  if(!recording){ startRecording(); } else { stopRecording(true); }
+});
+
+async function sendForTranscription(){
+  const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+  if(!blob.size){ return; }
+
+  transcriptBox.style.display = 'block';
+  loading.classList.add('show');
+
+  try{
+    const res = await fetch('/api/transcribe', { method: 'POST', body: blob });
+    const data = await res.json();
+    if(!res.ok){ throw new Error(data.error || 'Transcription failed'); }
+    const newText = (data.text || '').trim();
+    accumulatedTranscript = (accumulatedTranscript + ' ' + newText).trim();
+    transcriptText.textContent = accumulatedTranscript || '(no speech detected — try recording again)';
+    answers[currentIndex] = accumulatedTranscript;
+  }catch(e){
+    transcriptText.textContent = "Couldn't transcribe — try recording again.";
+  }finally{
+    loading.classList.remove('show');
+  }
+}
+
+async function finishSession(){
+  nextQuestionBtn.disabled = true;
+  nextQuestionBtn.textContent = 'Scoring your session…';
+  questionCard.style.display = 'none';
+  resultsCard.style.display = 'block';
+  resultsCard.innerHTML = '<div class="loading show"><span class="spinner"></span> Reading through your session…</div>';
+
+  try{
+    const qas = questions.map((q, i) => ({ question: q, answer: answers[i] || '' }));
+    const res = await fetch('/api/feedback-teens', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ student, topic, words, qas }),
+    });
+    const data = await res.json();
+    if(!res.ok){ throw new Error(data.error || 'Scoring failed'); }
+    renderResults(data);
+  }catch(e){
+    resultsCard.innerHTML = '<div class="overall-note">Couldn\'t score this session — please try again in a moment.</div>';
+  }
+}
+
+function renderResults(data){
+  resultsCard.innerHTML = `
+    <div class="question-label" style="margin-bottom:16px">Your session results</div>
+    <div class="score-row">
+      <div class="score-badge"><div class="num">${data.scores.coherence}</div><div class="label">Fluency &amp; Coherence</div></div>
+      <div class="score-badge"><div class="num">${data.scores.vocabulary}</div><div class="label">Vocabulary</div></div>
+      <div class="score-badge"><div class="num">${data.scores.grammar}</div><div class="label">Grammar</div></div>
+      <div class="score-badge"><div class="num">${(Math.round(((data.scores.coherence+data.scores.vocabulary+data.scores.grammar)/3)*10)/10).toFixed(1)}</div><div class="label">Average</div></div>
+    </div>
+    <div class="overall-note">${data.overallNote || ''}</div>
+    <div class="keyword-note">${data.keywordNote || ''}</div>
+    <div class="relevance-list" id="relevanceList"></div>
+  `;
+  const relevanceList = document.getElementById('relevanceList');
+  (data.perQuestion || []).forEach((pq, i) => {
+    const div = document.createElement('div');
+    div.className = 'relevance-item';
+    const icon = pq.relevant ? '✓' : '→';
+    const text = pq.relevant ? `Q${i+1}: on topic` : `Q${i+1}: ${pq.note || 'drifted from the question'}`;
+    div.innerHTML = `<span>${icon}</span><span>${text}</span>`;
+    relevanceList.appendChild(div);
+  });
+
+  if(data.exercise && data.exercise.gapFill && data.exercise.targetPhrase && Array.isArray(data.exercise.distractors)){
+    gapFillSentence.textContent = data.exercise.gapFill;
+    renderExerciseOptions(data.exercise.targetPhrase, data.exercise.distractors.slice(0,2));
+    exerciseCard.style.display = 'block';
+  }
+}
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderExerciseOptions(target, distractors){
+  const letters = ['A','B','C'];
+  const options = shuffle([target, ...distractors]);
+  exerciseOptions.innerHTML = '';
+  exerciseResult.textContent = '';
+
+  options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => {
+      exerciseOptions.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+      if(opt === target){
+        btn.classList.add('correct');
+        exerciseResult.textContent = '✓ Exactly right.';
+        exerciseResult.style.color = 'var(--feedback)';
+      } else {
+        btn.classList.add('wrong');
+        exerciseOptions.querySelectorAll('.option-btn').forEach(b => {
+          if(b.textContent.includes(target)) b.classList.add('correct');
+        });
+        exerciseResult.textContent = 'Not quite — the right answer is highlighted.';
+        exerciseResult.style.color = 'var(--muted)';
+      }
+    });
+    exerciseOptions.appendChild(btn);
+  });
+}
+
+nextQuestionBtn.addEventListener('click', () => {
+  if(currentIndex === questions.length - 1){
+    finishSession();
+  } else {
+    showQuestion(currentIndex + 1);
+  }
+});
+
+loadFromUrl();
+</script>
+</body>
+</html>
