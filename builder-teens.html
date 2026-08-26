@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Link builder — Teens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1f2a24; --paper:#eeeae1; --paper-card:#f5f2ea;
+    --line: rgba(31,42,36,0.14); --muted:#6b675f;
+    --feedback:#4c7a6e; --feedback-bg:#dfe8e2; --radius:18px;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh; display:flex; justify-content:center;
+    padding:32px 16px 80px; -webkit-font-smoothing:antialiased;
+  }
+  .app{ width:100%; max-width:560px; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:11px;
+    letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:6px;
+  }
+  h1{ font-family:'Fraunces', serif; font-weight:500; font-size:22px; margin:0 0 28px; }
+  .card{
+    background:var(--paper-card); border:1px solid var(--line);
+    border-radius:var(--radius); padding:28px 24px; margin-bottom:16px;
+  }
+  label{
+    display:block; font-family:'IBM Plex Mono', monospace; font-size:11px;
+    letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:8px;
+  }
+  input[type=text]{
+    width:100%; font-family:'IBM Plex Sans', sans-serif; font-size:15px;
+    color:var(--ink); background:#fff; border:1px solid var(--line);
+    border-radius:10px; padding:10px 12px; margin-bottom:20px;
+  }
+  select{
+    width:100%; font-family:'IBM Plex Sans', sans-serif; font-size:15px;
+    color:var(--ink); background:#fff; border:1px solid var(--line);
+    border-radius:10px; padding:10px 12px; margin-bottom:20px;
+  }
+  textarea{
+    width:100%; font-family:'IBM Plex Sans', sans-serif; font-size:15px; line-height:1.6;
+    color:var(--ink); background:#fff; border:1px solid var(--line);
+    border-radius:10px; padding:10px 12px; min-height:160px; resize:vertical; margin-bottom:8px;
+  }
+  .hint{ font-size:12.5px; color:var(--muted); margin-bottom:20px; line-height:1.5; }
+  button{
+    font-family:'IBM Plex Sans', sans-serif; font-size:13.5px; font-weight:500;
+    color:#fdf9f4; background:var(--feedback); border:none; border-radius:10px;
+    padding:11px 20px; cursor:pointer;
+  }
+  .result{
+    background:var(--feedback-bg); border-radius:var(--radius);
+    padding:22px 24px; margin-top:16px; display:none;
+  }
+  .result.show{ display:block; }
+  .result-label{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--feedback); margin-bottom:10px;
+  }
+  .result-link{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; word-break:break-all;
+    background:#fff; border:1px solid var(--line); border-radius:10px;
+    padding:10px 12px; margin-bottom:12px;
+  }
+  .copy-btn{ background:var(--feedback); }
+  .copied{ font-size:12.5px; color:var(--feedback); margin-left:10px; display:none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="eyebrow">Speaking practice · Teens</div>
+  <h1>Link builder — Teens</h1>
+
+  <div class="card">
+    <label for="genLevel">Student level (CEFR)</label>
+    <select id="genLevel">
+      <option value="">— not specified —</option>
+      <option value="A1">A1</option>
+      <option value="A2">A2</option>
+      <option value="B1">B1</option>
+      <option value="B2">B2</option>
+      <option value="C1">C1</option>
+      <option value="C2">C2</option>
+    </select>
+
+    <label for="genWords">Target words you want included (optional — leave blank to let Claude pick all of them)</label>
+    <textarea id="genWords" style="min-height:70px" placeholder="purpose, meaningful, curiosity, drained, worrying"></textarea>
+
+    <label for="genCount">Number of questions</label>
+    <input type="text" id="genCount" value="5" style="max-width:80px" />
+
+    <div class="hint">Uses the Topic field below as the subject, and writes reflective, discussion-style questions — not yes/no questions — weaving in the target words where natural.</div>
+    <button id="genQuestionsBtn">Generate questions</button>
+    <span class="copied" id="genLoading" style="display:none">Writing questions…</span>
+  </div>
+
+  <div class="card">
+    <label for="topic">Topic (shown at the top of the page, and used above to generate questions)</label>
+    <input type="text" id="topic" placeholder="Sport" />
+
+    <label for="finalWords">Target words shown to the student (one per line — filled in automatically after generating)</label>
+    <textarea id="finalWords" style="min-height:60px" placeholder="Will fill in after you click Generate questions — or type your own list here directly."></textarea>
+
+    <label for="questions">Questions — one per line, paste straight from Notion</label>
+    <textarea id="questions" placeholder="What is your favorite sport to watch or play, and why?"></textarea>
+    <div class="hint">Blank lines are ignored, so you can paste a whole block and not worry about tidying it up first.</div>
+
+    <button id="generateBtn">Generate link</button>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result-label">Your link</div>
+    <div class="result-link" id="resultLink"></div>
+    <button class="copy-btn" id="copyBtn">Copy link</button>
+    <span class="copied" id="copiedMsg">Copied!</span>
+    <div class="hint" style="margin-top:14px; margin-bottom:0">
+      This link has a placeholder — <strong>STUDENT_NAME</strong> — instead of a real name.
+      Paste it into your Notion lesson template as-is. When you duplicate the lesson for an
+      actual student, edit just that one word in the pasted link (click the link in Notion →
+      edit URL) and replace STUDENT_NAME with their real name. Everything else in the link stays the same.
+    </div>
+  </div>
+</div>
+
+<script>
+const topicInput = document.getElementById('topic');
+const questionsInput = document.getElementById('questions');
+const generateBtn = document.getElementById('generateBtn');
+const result = document.getElementById('result');
+const resultLink = document.getElementById('resultLink');
+const copyBtn = document.getElementById('copyBtn');
+const copiedMsg = document.getElementById('copiedMsg');
+
+const genLevel = document.getElementById('genLevel');
+const genWords = document.getElementById('genWords');
+const genCount = document.getElementById('genCount');
+const genQuestionsBtn = document.getElementById('genQuestionsBtn');
+const genLoading = document.getElementById('genLoading');
+const finalWords = document.getElementById('finalWords');
+
+function toList(val){
+  if(Array.isArray(val)) return val.map(s => String(s).trim()).filter(Boolean);
+  if(typeof val === 'string'){
+    return val.split(/(?<=[.?!])\s*,\s*/).map(s => s.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+genQuestionsBtn.addEventListener('click', async () => {
+  const topic = topicInput.value.trim();
+  if(!topic){
+    topicInput.focus();
+    topicInput.style.borderColor = '#a63446';
+    setTimeout(() => { topicInput.style.borderColor = ''; }, 1500);
+    return;
+  }
+
+  genQuestionsBtn.disabled = true;
+  genLoading.style.display = 'inline';
+  try{
+    const res = await fetch('/api/generate-questions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topic,
+        level: genLevel.value,
+        words: genWords.value.trim(),
+        count: genCount.value.trim() || 5,
+      }),
+    });
+    const data = await res.json();
+    if(!res.ok){ throw new Error(data.error || 'Failed to generate questions'); }
+    questionsInput.value = toList(data.questions).join('\n');
+    finalWords.value = toList(data.words).join('\n');
+  }catch(e){
+    genLoading.textContent = "Couldn't generate questions — try again.";
+    setTimeout(() => { genLoading.style.display = 'none'; genLoading.textContent = 'Writing questions…'; }, 2500);
+    genQuestionsBtn.disabled = false;
+    return;
+  }
+  genLoading.style.display = 'none';
+  genQuestionsBtn.disabled = false;
+});
+
+generateBtn.addEventListener('click', () => {
+  const topic = topicInput.value.trim();
+  const questions = questionsInput.value
+    .split('\n')
+    .map(q => q.trim())
+    .filter(Boolean);
+
+  if(!questions.length){ return; }
+
+  const path = window.location.pathname;
+  const dir = path.substring(0, path.lastIndexOf('/') + 1);
+  const base = window.location.origin + dir + 'index-teens.html';
+
+  const params = new URLSearchParams();
+  if(topic) params.set('topic', topic);
+  params.set('q', questions.join('|'));
+  const words = finalWords.value.split('\n').map(w => w.trim()).filter(Boolean);
+  if(words.length) params.set('words', words.join('|'));
+  params.set('student', 'STUDENT_NAME');
+
+  resultLink.textContent = base + '?' + params.toString();
+  result.classList.add('show');
+  copiedMsg.style.display = 'none';
+});
+
+copyBtn.addEventListener('click', async () => {
+  try{
+    await navigator.clipboard.writeText(resultLink.textContent);
+    copiedMsg.style.display = 'inline';
+  }catch(e){
+    const range = document.createRange();
+    range.selectNode(resultLink);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  }
+});
+</script>
+</body>
+</html>
