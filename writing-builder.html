@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writing Practice — Builder</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --paper: #f6f5f1;
+    --panel: #ffffff;
+    --ink: #262521;
+    --ink-soft: #6b6a63;
+    --line: #e2e0d8;
+    --accent: #3d4f66;
+    --accent-soft: #e8ecf1;
+    --amber: #b6802f;
+    --amber-soft: #f5ecdb;
+    --good: #4a7a5c;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  main {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: 'Lora', serif;
+    font-weight: 600;
+    font-size: 24px;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .intro {
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 22px;
+  }
+
+  label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+    margin-top: 14px;
+    font-weight: 500;
+  }
+  label:first-of-type { margin-top: 0; }
+
+  input[type=text], textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14.5px;
+    color: var(--ink);
+    background: var(--panel);
+    resize: vertical;
+  }
+  input[type=text]:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { min-height: 70px; line-height: 1.5; }
+
+  button#build {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 13px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+
+  .result {
+    margin-top: 20px;
+    display: none;
+  }
+
+  .result-box {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    word-break: break-all;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  button#copy {
+    width: 100%;
+    background: var(--amber-soft);
+    color: var(--amber);
+    border: none;
+    border-radius: 8px;
+    padding: 11px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  button#copy.copied { background: #e4efe7; color: var(--good); }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="eyebrow">Writing practice · builder</div>
+  <h1>Ссылка для письменной практики</h1>
+  <p class="intro">Тема + слова → готовая ссылка на проверку предложений. Для отдельной практики вне полного урока.</p>
+
+  <label>Тема</label>
+  <input type="text" id="topic" placeholder="Hiking and camping">
+  <label>Слова (через запятую)</label>
+  <textarea id="words" placeholder="trail, campsite, gear, wilderness, navigate"></textarea>
+
+  <button id="build">Собрать ссылку</button>
+
+  <div class="result" id="result">
+    <div class="result-box" id="link"></div>
+    <button id="copy">Скопировать</button>
+  </div>
+</main>
+
+<script>
+const BASE = 'https://speaking-practice-ruby.vercel.app/writing-practice.html';
+
+document.getElementById('build').addEventListener('click', () => {
+  const topic = document.getElementById('topic').value.trim();
+  const wordsRaw = document.getElementById('words').value.trim();
+  const words = wordsRaw.split(',').map(w => w.trim()).filter(Boolean).join('|');
+
+  if (!words) {
+    alert('Добавьте хотя бы одно слово.');
+    return;
+  }
+
+  const p = new URLSearchParams();
+  if (topic) p.set('topic', topic);
+  p.set('words', words);
+
+  const url = BASE + '?' + p.toString();
+  document.getElementById('link').textContent = url;
+  document.getElementById('result').style.display = 'block';
+});
+
+document.getElementById('copy').addEventListener('click', async () => {
+  const url = document.getElementById('link').textContent;
+  try {
+    await navigator.clipboard.writeText(url);
+    const btn = document.getElementById('copy');
+    btn.textContent = 'Скопировано ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Скопировать'; btn.classList.remove('copied'); }, 1800);
+  } catch (e) {
+    alert('Не удалось скопировать — выделите ссылку вручную.');
+  }
+});
+</script>
+
+</body>
+</html>
