@@ -358,6 +358,7 @@ async function finishSession(){
     });
     const data = await res.json();
     if(!res.ok){ throw new Error(data.error || 'Scoring failed'); }
+    if(data.notionError){ console.error('Notion write failed:', data.notionError); }
     renderResults(data);
   }catch(e){
     resultsCard.innerHTML = '<div class="overall-note">Couldn\'t score this session — please try again in a moment.</div>';
