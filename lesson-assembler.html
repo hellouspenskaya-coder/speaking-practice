@@ -481,16 +481,43 @@ function renderTopics() {
     rm.title = 'Remove topic';
     rm.onclick = (e) => {
       e.stopPropagation();
+      const removed = topicState.topics[i];
       topicState.topics.splice(i, 1);
       if (topicState.selected === i) topicState.selected = null;
       else if (topicState.selected > i) topicState.selected--;
       renderTopics();
       saveTopics();
       document.getElementById('findResourceBtn').disabled = topicState.selected === null;
+      replenishOneTopic(removed);
     };
     chip.appendChild(rm);
     pool.appendChild(chip);
   });
+}
+
+async function replenishOneTopic(removedTopic) {
+  const hint = document.getElementById('topicHint');
+  const prevHint = hint.textContent;
+  hint.textContent = 'Finding a replacement topic…';
+  try {
+    // Send the removed topic too, so the model doesn't just suggest it right back.
+    const excludeList = [...topicState.topics, removedTopic].filter(Boolean);
+    const res = await fetch('/api/suggest-topics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ existing: excludeList, count: 1 })
+    });
+    const out = await res.json();
+    if (!res.ok || !Array.isArray(out.topics) || !out.topics.length) throw new Error(out.error || 'Empty response.');
+    topicState.topics.push(out.topics[0]);
+    renderTopics();
+    saveTopics();
+    hint.textContent = 'Replaced with a new topic.';
+  } catch (e) {
+    hint.textContent = 'Removed — could not fetch a replacement, add one manually if you like.';
+  } finally {
+    setTimeout(() => { hint.textContent = prevHint; }, 3000);
+  }
 }
 
 document.getElementById('addTopicBtn').addEventListener('click', () => {
