@@ -138,10 +138,15 @@ Propose, in ENGLISH ONLY:
 - "target": a SHORT phrase in the exact format "You will speak about [specific topic phrase]." — just that, nothing longer. Example: "You will speak about market economy and market society."
 - "warmup_question": one standalone opening discussion question about the general topic (not about a specific source) to ask before the material is introduced.
 - "discussion_questions": 6-8 open-ended discussion questions connecting to the material and the student's own life/views. Avoid yes/no questions. Make the LAST 1-2 questions in the list reflective/wrap-up ones about the lesson itself (e.g. what they'll remember, what stood out, how their view changed) rather than about the source material directly.
-- "group_discussion_questions": 9-11 questions for a small group class (people talk in pairs, this is casual self-expression and reflection, NOT formal debate or public speaking). These must be DIFFERENT from discussion_questions, not reworded duplicates — assume some students already answered discussion_questions individually and would find repeats boring. Critical constraints:
-  (a) NEVER use the specific name of the study/theory/person/technical term from the material (e.g. don't say "hedonic treadmill" or "Sapolsky's argument") — someone might join late or never have covered the source material, and shouldn't feel lost. Ask about the underlying everyday idea/experience instead, in plain words.
-  (b) Keep it personal and reflective, not a debate — "have you ever...", "what's your experience with...", "do you agree that...", "how do you feel about..." rather than "argue for/against..." or framing it as taking opposing sides.
-  (c) Simple, accessible phrasing — someone unfamiliar with the topic should still be able to answer from their own life.
+- "group_discussion_question_sets": an array of exactly 3 rounds, each round an array of exactly 5 questions, for a group class where pairs rotate partners between rounds (so each round needs its own fresh mini-arc). Rules that apply to EVERY question in every round:
+  (a) Each question must be fully SELF-CONTAINED — no "this", "it", "that pattern", or any reference to a previous question. Someone reading only that one question, out of order, must understand it completely on its own.
+  (b) NEVER use the specific name of the study/theory/person/technical term from the material — ask about the underlying everyday idea in plain words instead, so someone who joined late or skipped the material isn't lost.
+  (c) Personal and reflective, not formal debate — "have you ever...", "what's your experience with...", "do you agree that..." rather than "argue for/against...".
+  (d) Across the 5 questions in a round, cover genuinely DIFFERENT angles/facets of the topic (not five variations of the same question) — and the 3 rounds should also differ from each other, not just reshuffle the same 15 ideas.
+Within each round of 5:
+  - Question 1: a simple, easy icebreaker — quick to answer, gets the pair talking, no deep thought required.
+  - Questions 2-4: varied personal-reflection questions, each a distinct angle.
+  - Question 5: a deeper question built around a short 1-2 sentence everyday case or dilemma (pitched at the student's level, plain language, no jargon) that the pair discusses together — this is the meatiest question of the round.
 
 Respond with STRICT JSON only (no markdown fences, no commentary, no trailing commas):
 {
@@ -150,7 +155,11 @@ Respond with STRICT JSON only (no markdown fences, no commentary, no trailing co
   "target": "...",
   "warmup_question": "...",
   "discussion_questions": ["...", "...", "...", "...", "...", "..."],
-  "group_discussion_questions": ["...", "...", "...", "...", "...", "...", "...", "...", "...", "..."]
+  "group_discussion_question_sets": [
+    ["...", "...", "...", "...", "..."],
+    ["...", "...", "...", "...", "..."],
+    ["...", "...", "...", "...", "..."]
+  ]
 }`;
 
     const introResp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -162,7 +171,7 @@ Respond with STRICT JSON only (no markdown fences, no commentary, no trailing co
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1200,
+        max_tokens: 3000,
         messages: [{ role: 'user', content: introPrompt }]
       })
     });
