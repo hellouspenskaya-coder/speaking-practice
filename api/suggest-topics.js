@@ -10,11 +10,12 @@ module.exports = async (req, res) => {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    res.status(500).json({ error: 'ANTHROPIC_API_KEY не настроен в Vercel.' });
+    res.status(500).json({ error: 'ANTHROPIC_API_KEY is not configured in Vercel.' });
     return;
   }
 
-  const { existing } = req.body || {};
+  const { existing, count } = req.body || {};
+  const n = Number.isInteger(count) && count > 0 ? count : 3;
   const existingList = Array.isArray(existing) ? existing.join('; ') : '';
 
   try {
@@ -30,14 +31,14 @@ module.exports = async (req, res) => {
         max_tokens: 500,
         messages: [{
           role: 'user',
-          content: `Suggest exactly 3 new discussion-worthy topics for an adult B1-C2 English conversation class, in the same style as this existing pool (a well-known idea/concept/study + short parenthetical on what it's about): ${existingList}. Avoid duplicating themes already covered. Respond ONLY with a JSON array of 3 strings, no markdown, no preamble.`
+          content: `Suggest exactly ${n} new discussion-worthy topic${n > 1 ? 's' : ''} for an adult B1-C2 English conversation class, in the same style as this existing pool (a well-known idea/concept/study + short parenthetical on what it's about): ${existingList}. Avoid duplicating themes already covered. Respond ONLY with a JSON array of ${n} string${n > 1 ? 's' : ''}, no markdown, no preamble.`
         }]
       })
     });
 
     const data = await resp.json();
     if (!resp.ok) {
-      res.status(resp.status).json({ error: data.error?.message || 'Anthropic API вернул ошибку.' });
+      res.status(resp.status).json({ error: data.error?.message || 'Anthropic API returned an error.' });
       return;
     }
 
@@ -48,6 +49,6 @@ module.exports = async (req, res) => {
     if (!Array.isArray(topics)) throw new Error('Unexpected response shape');
     res.status(200).json({ topics });
   } catch (err) {
-    res.status(500).json({ error: 'Не удалось получить новые темы.' });
+    res.status(500).json({ error: 'Could not get new topics.' });
   }
 };
