@@ -135,13 +135,16 @@ function toolLinkOrPlaceholder(emoji, label, url) {
   return labeledLinkBlock(label + ':', null);
 }
 
-function buildChildren({ target, warmup, introVideoLink, videoLink, videoLabel, readingLink, writingLink, speakingLink, modelAnswer, discussionQuestions, questionRounds, presentationLink }) {
+function buildChildren({ target, warmup, introVideoLink, videoLink, videoLabel, readingLink, writingLink, speakingLink, modelAnswer, discussionQuestions, questionRounds, presentationLink, groupDocLink }) {
   const children = [];
 
   if (target) children.push(calloutBlock('🎯', target));
 
   if (presentationLink) {
     children.push(toolButtonBlock('📊', 'Presentation (slides)', presentationLink));
+  }
+  if (groupDocLink) {
+    children.push(toolButtonBlock('📄', 'Discussion Doc — paste this in Zoom chat', groupDocLink));
   }
 
   if (introVideoLink || warmup) {
@@ -318,7 +321,7 @@ module.exports = async (req, res) => {
   const {
     icon, title, level, target, warmup, introVideoLink, videoLink, readingLink,
     discussionQuestions, speakingLink, modelAnswer,
-    writingLink, groupQuestionRounds, groupPracticeLink, presentationLink
+    writingLink, groupQuestionRounds, groupPracticeLink, presentationLink, groupDocLink
   } = req.body || {};
 
   if (!title) {
@@ -345,7 +348,8 @@ module.exports = async (req, res) => {
       videoLabel: isGroup ? 'Practice' : 'Video to work on',
       discussionQuestions: isGroup ? null : discussionQuestions,
       questionRounds: isGroup ? groupQuestionRounds : null,
-      presentationLink: isGroup ? presentationLink : null
+      presentationLink: isGroup ? presentationLink : null,
+      groupDocLink: isGroup ? groupDocLink : null
     });
 
     try {
