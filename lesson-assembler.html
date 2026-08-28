@@ -391,9 +391,8 @@ Do you think...?"></textarea>
     <label>Group discussion questions (casual self-reflection, no jargon — auto-filled with the search, editable)</label>
     <textarea id="groupQuestions" placeholder="Have you ever felt...?
 What's your experience with...?"></textarea>
-    <button class="secondary" id="genDocBtn" type="button" style="margin-top:8px; width:auto; padding:9px 14px;">📄 Generate round doc</button>
-    <p class="hint" id="docHint" style="margin-left:0;"></p>
-    <input type="url" id="groupDocLink" placeholder="Doc link will appear here — or paste your own" style="margin-top:8px;">
+    <label style="margin-top:8px;">Discussion doc link (paste your Google Doc link here — pasted into Zoom chat during the round-switch)</label>
+    <input type="url" id="groupDocLink" placeholder="https://docs.google.com/document/...">
 
     <label>Group practice link from Twee (optional — words, video, whatever's ready; leave empty to skip this block on the group page)</label>
     <input type="url" id="groupPracticeLink" placeholder="https://twee.com/...">
@@ -725,38 +724,6 @@ function collectData() {
 }
 
 // ---- Create in Notion via API ----
-document.getElementById('genDocBtn').addEventListener('click', async () => {
-  const btn = document.getElementById('genDocBtn');
-  const hint = document.getElementById('docHint');
-  const title = val('title');
-  if (!title) {
-    hint.textContent = 'Enter a lesson title first (in section 1).';
-    return;
-  }
-  const rounds = groupQuestionRounds();
-  if (!rounds.length) {
-    hint.textContent = 'No group questions to put in the doc yet — fill them in above first.';
-    return;
-  }
-  btn.disabled = true;
-  hint.textContent = 'Building the doc…';
-  try {
-    const res = await fetch('/api/create-round-doc', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, rounds })
-    });
-    const out = await res.json();
-    if (!res.ok || !out.url) throw new Error(out.error || 'Could not generate the doc.');
-    document.getElementById('groupDocLink').value = out.url;
-    hint.textContent = 'Doc created — link filled in below. Paste it into Zoom chat during the round-switch.';
-  } catch (e) {
-    hint.textContent = 'Failed: ' + e.message;
-  } finally {
-    btn.disabled = false;
-  }
-});
-
 document.getElementById('createBtn').addEventListener('click', async () => {
   const btn = document.getElementById('createBtn');
   const resultBox = document.getElementById('result');
