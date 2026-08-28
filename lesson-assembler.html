@@ -599,6 +599,9 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
         .map((round, i) => `Round ${i + 1}\n` + round.map(q => `- ${q}`).join('\n'))
         .join('\n\n');
       document.getElementById('groupQuestions').value = text;
+    } else if (document.getElementById('fmtGroup').checked) {
+      document.getElementById('topicHint').textContent =
+        'Heads up: no group questions came back from the search — write them in manually below, or try searching again.';
     }
     if (!document.getElementById('topicOverride').value) {
       document.getElementById('topicOverride').value = topic.split(' — ')[0];
