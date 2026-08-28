@@ -271,10 +271,18 @@ async function createAssignmentRow({ token, level, format, title, lessonUrl }) {
   const properties = {
     'Assignment Title': { title: [{ type: 'text', text: { content: title } }] },
     'Platform': { select: { name: 'notion' } },
-    'URL': { url: lessonUrl }
+    'URL': { url: lessonUrl },
+    // Notion doesn't auto-fill custom Date properties from page creation time —
+    // only its own built-in "Created time" metadata does that. This property is
+    // a real column the teacher can see/sort/filter on, so it's set explicitly.
+    'created': { date: { start: new Date().toISOString().slice(0, 10) } }
   };
   if (level) properties['Level'] = { multi_select: [{ name: level }] };
-  if (format) properties['Format'] = { select: { name: format } };
+  // The select options in the live database are capitalized ("Individual"/"Group"),
+  // not the lowercase values used internally (format === 'group' etc.) — sending
+  // the lowercase value verbatim would silently create a duplicate option instead
+  // of matching the existing one.
+  if (format) properties['Format'] = { select: { name: format === 'group' ? 'Group' : 'Individual' } };
 
   const notionRes = await fetch('https://api.notion.com/v1/pages', {
     method: 'POST',
