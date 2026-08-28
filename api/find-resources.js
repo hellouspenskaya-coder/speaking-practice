@@ -138,7 +138,10 @@ Propose, in ENGLISH ONLY:
 - "target": a SHORT phrase in the exact format "You will speak about [specific topic phrase]." — just that, nothing longer. Example: "You will speak about market economy and market society."
 - "warmup_question": one standalone opening discussion question about the general topic (not about a specific source) to ask before the material is introduced.
 - "discussion_questions": 6-8 open-ended discussion questions connecting to the material and the student's own life/views. Avoid yes/no questions. Make the LAST 1-2 questions in the list reflective/wrap-up ones about the lesson itself (e.g. what they'll remember, what stood out, how their view changed) rather than about the source material directly.
-- "group_discussion_questions": 4-6 DIFFERENT questions for a group class discussing the same material in pairs — lean into debate/disagreement and personal-experience contrast rather than the personal-reflection angle above (e.g. "Argue for/against...", "Where do you and your partner disagree about...", present a short dilemma or case tied to the topic). These must be genuinely different questions from discussion_questions, not just reworded — assume some students already saw discussion_questions individually and would find repeats boring.
+- "group_discussion_questions": 9-11 questions for a small group class (people talk in pairs, this is casual self-expression and reflection, NOT formal debate or public speaking). These must be DIFFERENT from discussion_questions, not reworded duplicates — assume some students already answered discussion_questions individually and would find repeats boring. Critical constraints:
+  (a) NEVER use the specific name of the study/theory/person/technical term from the material (e.g. don't say "hedonic treadmill" or "Sapolsky's argument") — someone might join late or never have covered the source material, and shouldn't feel lost. Ask about the underlying everyday idea/experience instead, in plain words.
+  (b) Keep it personal and reflective, not a debate — "have you ever...", "what's your experience with...", "do you agree that...", "how do you feel about..." rather than "argue for/against..." or framing it as taking opposing sides.
+  (c) Simple, accessible phrasing — someone unfamiliar with the topic should still be able to answer from their own life.
 
 Respond with STRICT JSON only (no markdown fences, no commentary, no trailing commas):
 {
@@ -147,7 +150,7 @@ Respond with STRICT JSON only (no markdown fences, no commentary, no trailing co
   "target": "...",
   "warmup_question": "...",
   "discussion_questions": ["...", "...", "...", "...", "...", "..."],
-  "group_discussion_questions": ["...", "...", "...", "...."]
+  "group_discussion_questions": ["...", "...", "...", "...", "...", "...", "...", "...", "...", "..."]
 }`;
 
     const introResp = await fetch('https://api.anthropic.com/v1/messages', {
