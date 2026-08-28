@@ -138,6 +138,7 @@ Propose, in ENGLISH ONLY:
 - "target": a SHORT phrase in the exact format "You will speak about [specific topic phrase]." — just that, nothing longer. Example: "You will speak about market economy and market society."
 - "warmup_question": one standalone opening discussion question about the general topic (not about a specific source) to ask before the material is introduced.
 - "discussion_questions": 6-8 open-ended discussion questions connecting to the material and the student's own life/views. Avoid yes/no questions. Make the LAST 1-2 questions in the list reflective/wrap-up ones about the lesson itself (e.g. what they'll remember, what stood out, how their view changed) rather than about the source material directly.
+- "group_discussion_questions": 4-6 DIFFERENT questions for a group class discussing the same material in pairs — lean into debate/disagreement and personal-experience contrast rather than the personal-reflection angle above (e.g. "Argue for/against...", "Where do you and your partner disagree about...", present a short dilemma or case tied to the topic). These must be genuinely different questions from discussion_questions, not just reworded — assume some students already saw discussion_questions individually and would find repeats boring.
 
 Respond with STRICT JSON only (no markdown fences, no commentary, no trailing commas):
 {
@@ -145,7 +146,8 @@ Respond with STRICT JSON only (no markdown fences, no commentary, no trailing co
   "title": "...",
   "target": "...",
   "warmup_question": "...",
-  "discussion_questions": ["...", "...", "...", "...", "...", "..."]
+  "discussion_questions": ["...", "...", "...", "...", "...", "..."],
+  "group_discussion_questions": ["...", "...", "...", "...."]
 }`;
 
     const introResp = await fetch('https://api.anthropic.com/v1/messages', {
