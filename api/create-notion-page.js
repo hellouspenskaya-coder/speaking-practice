@@ -135,34 +135,14 @@ function toolLinkOrPlaceholder(emoji, label, url) {
   return labeledLinkBlock(label + ':', null);
 }
 
-module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
-  }
-
-  const token = process.env.NOTION_TOKEN;
-  const parentPageId = process.env.NOTION_PARENT_PAGE_ID;
-
-  if (!token || !parentPageId) {
-    res.status(500).json({ error: 'Notion is not configured: check NOTION_TOKEN and NOTION_PARENT_PAGE_ID in Vercel.' });
-    return;
-  }
-
-  const {
-    icon, title, level, target, warmup, introVideoLink, videoLink, readingLink,
-    discussionQuestions, speakingLink, modelAnswer,
-    writingLink
-  } = req.body || {};
-
-  if (!title) {
-    res.status(400).json({ error: 'No lesson title specified.' });
-    return;
-  }
-
+function buildChildren({ target, warmup, introVideoLink, videoLink, videoLabel, readingLink, writingLink, speakingLink, modelAnswer, discussionQuestions, presentationLink }) {
   const children = [];
 
   if (target) children.push(calloutBlock('🎯', target));
+
+  if (presentationLink) {
+    children.push(toolButtonBlock('📊', 'Presentation (slides)', presentationLink));
+  }
 
   if (introVideoLink || warmup) {
     if (introVideoLink) {
@@ -176,7 +156,7 @@ module.exports = async (req, res) => {
     children.push(...finish('Warm-up done'));
   }
 
-  children.push(...toolLinkOrPlaceholder('🎬', 'Video to work on', videoLink));
+  children.push(...toolLinkOrPlaceholder('🎬', videoLabel || 'Video to work on', videoLink));
   children.push(...finish('Video done'));
 
   children.push(...toolLinkOrPlaceholder('📖', 'Reading', readingLink));
@@ -230,6 +210,11 @@ module.exports = async (req, res) => {
   ));
   children.push(calloutBlock('✍️', ''));
 
+  return children;
+}
+
+// Creates one lesson page in Notion. Returns { url, id }.
+async function createLessonPage({ token, parentPageId, icon, title, children }) {
   const payload = {
     parent: { page_id: parentPageId },
     properties: {
@@ -242,26 +227,121 @@ module.exports = async (req, res) => {
     payload.icon = { type: 'emoji', emoji: icon };
   }
 
-  try {
-    const notionRes = await fetch('https://api.notion.com/v1/pages', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Notion-Version': NOTION_VERSION,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
+  const notionRes = await fetch('https://api.notion.com/v1/pages', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Notion-Version': NOTION_VERSION,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await notionRes.json();
+  if (!notionRes.ok) {
+    throw new Error(data.message || 'Notion API returned an error.');
+  }
+  return { url: data.url, id: data.id };
+}
+
+// Adds one row to the Assignments database, linking back to the lesson page.
+// Non-fatal: if it fails, the caller should keep going and just report a warning —
+// the lesson page itself is the important part.
+async function createAssignmentRow({ token, level, format, title, lessonUrl }) {
+  const assignmentsDbId = process.env.NOTION_ASSIGNMENTS_DATABASE_ID;
+  if (!assignmentsDbId) return { skipped: true };
+
+  const properties = {
+    'Assignment Title': { title: [{ type: 'text', text: { content: title } }] },
+    'Platform': { select: { name: 'notion' } },
+    'URL': { url: lessonUrl }
+  };
+  if (level) properties['Level'] = { multi_select: [{ name: level }] };
+  if (format) properties['Format'] = { select: { name: format } };
+
+  const notionRes = await fetch('https://api.notion.com/v1/pages', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Notion-Version': NOTION_VERSION,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ parent: { database_id: assignmentsDbId }, properties })
+  });
+
+  const data = await notionRes.json();
+  if (!notionRes.ok) {
+    throw new Error(data.message || 'Notion API returned an error while writing to Assignments.');
+  }
+  return { skipped: false };
+}
+
+module.exports = async (req, res) => {
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+
+  const token = process.env.NOTION_TOKEN;
+  const parentPageId = process.env.NOTION_PARENT_PAGE_ID;
+
+  if (!token || !parentPageId) {
+    res.status(500).json({ error: 'Notion is not configured: check NOTION_TOKEN and NOTION_PARENT_PAGE_ID in Vercel.' });
+    return;
+  }
+
+  const {
+    icon, title, level, target, warmup, introVideoLink, videoLink, readingLink,
+    discussionQuestions, speakingLink, modelAnswer,
+    writingLink, groupQuestions, groupPracticeLink, presentationLink
+  } = req.body || {};
+
+  if (!title) {
+    res.status(400).json({ error: 'No lesson title specified.' });
+    return;
+  }
+
+  // Backward compatible: if the form didn't send `formats` (older cached page),
+  // default to a single individual page — same behavior as before.
+  const requestedFormats = Array.isArray(req.body.formats) && req.body.formats.length
+    ? req.body.formats
+    : ['individual'];
+
+  const pages = [];
+  const warnings = [];
+
+  for (const format of requestedFormats) {
+    const isGroup = format === 'group';
+    const pageTitle = isGroup ? `${title} — Group` : title;
+
+    const children = buildChildren({
+      target, warmup, introVideoLink, readingLink, writingLink, speakingLink, modelAnswer,
+      videoLink: isGroup ? groupPracticeLink : videoLink,
+      videoLabel: isGroup ? 'Practice' : 'Video to work on',
+      discussionQuestions: isGroup ? groupQuestions : discussionQuestions,
+      presentationLink: isGroup ? presentationLink : null
     });
 
-    const data = await notionRes.json();
+    try {
+      const page = await createLessonPage({ token, parentPageId, icon, title: pageTitle, children });
+      pages.push({ format, url: page.url, id: page.id });
 
-    if (!notionRes.ok) {
-      res.status(notionRes.status).json({ error: data.message || 'Notion API returned an error.' });
+      try {
+        await createAssignmentRow({ token, level, format, title: pageTitle, lessonUrl: page.url });
+      } catch (assignErr) {
+        warnings.push(`Page for "${format}" was created, but adding it to Assignments failed: ${assignErr.message}`);
+      }
+    } catch (pageErr) {
+      res.status(500).json({ error: `Failed to create the "${format}" page: ${pageErr.message}`, pages, warnings });
       return;
     }
-
-    res.status(200).json({ url: data.url, id: data.id });
-  } catch (err) {
-    res.status(500).json({ error: 'Could not connect to the Notion API.' });
   }
+
+  res.status(200).json({
+    pages,
+    warnings,
+    // kept for backward compatibility with anything still reading a single url/id
+    url: pages[0] && pages[0].url,
+    id: pages[0] && pages[0].id
+  });
 };
