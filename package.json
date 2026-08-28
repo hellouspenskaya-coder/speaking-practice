@@ -1,5 +1,8 @@
 {
   "name": "speaking-practice",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "googleapis": "^144.0.0"
+  }
 }
