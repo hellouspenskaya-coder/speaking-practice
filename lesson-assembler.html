@@ -308,6 +308,17 @@
       <option value="C2">C2</option>
     </select>
 
+    <label>Format</label>
+    <div style="display:flex; gap:14px; margin-bottom:12px;">
+      <label style="display:flex; align-items:center; gap:6px; font-weight:400; cursor:pointer;">
+        <input type="checkbox" id="fmtIndividual" checked> Individual
+      </label>
+      <label style="display:flex; align-items:center; gap:6px; font-weight:400; cursor:pointer;">
+        <input type="checkbox" id="fmtGroup"> Group
+      </label>
+    </div>
+    <p class="hint" style="margin-left:0;">Pick both to build an individual page and a group page from the same search.</p>
+
     <label>Topic</label>
     <div class="topic-pool" id="topicPool"></div>
     <div class="add-topic-row">
@@ -371,6 +382,21 @@
 Do you think...?"></textarea>
     <label>Model answer link (video, optional — fine to leave empty, the block will appear empty on the page and you can paste the link later)</label>
     <input type="url" id="modelAnswer" placeholder="https://...">
+  </section>
+
+  <section class="card" id="groupExtrasCard">
+    <h2><span class="n">7</span> Group extras</h2>
+    <p class="hint">Only used when "Group" is checked above. These become a separate page, so students who already had the individual lesson get something new.</p>
+
+    <label>Group discussion questions (debate angle — auto-filled with the search, editable)</label>
+    <textarea id="groupQuestions" placeholder="Argue for/against...
+Where do you and your partner disagree about...?"></textarea>
+
+    <label>Group practice link from Twee (optional — words, video, whatever's ready; leave empty to skip this block on the group page)</label>
+    <input type="url" id="groupPracticeLink" placeholder="https://twee.com/...">
+
+    <label>Presentation link (Google Slides / Canva — paste manually for now)</label>
+    <input type="url" id="presentationLink" placeholder="https://docs.google.com/presentation/...">
   </section>
 
   <section class="card">
@@ -541,6 +567,9 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
     if (Array.isArray(out.discussion_questions) && out.discussion_questions.length) {
       document.getElementById('questions').value = out.discussion_questions.join('\n');
     }
+    if (Array.isArray(out.group_discussion_questions) && out.group_discussion_questions.length) {
+      document.getElementById('groupQuestions').value = out.group_discussion_questions.join('\n');
+    }
     if (!document.getElementById('topicOverride').value) {
       document.getElementById('topicOverride').value = topic.split(' — ')[0];
     }
@@ -607,11 +636,23 @@ function questionsList() {
   return val('questions').split('\n').map(l => l.trim()).filter(Boolean);
 }
 
+function selectedFormats() {
+  const formats = [];
+  if (document.getElementById('fmtIndividual').checked) formats.push('individual');
+  if (document.getElementById('fmtGroup').checked) formats.push('group');
+  return formats;
+}
+
+function groupQuestionsList() {
+  return val('groupQuestions').split('\n').map(l => l.trim()).filter(Boolean);
+}
+
 function collectData() {
   return {
     icon: val('icon'),
     title: val('title'),
     level: document.getElementById('resLevel').value,
+    formats: selectedFormats(),
     target: val('target'),
     warmup: val('warmup'),
     introVideoLink: val('introVideoLink'),
@@ -620,7 +661,10 @@ function collectData() {
     discussionQuestions: questionsList(),
     speakingLink: buildSpeakingLink(),
     modelAnswer: val('modelAnswer'),
-    writingLink: buildWritingLink()
+    writingLink: buildWritingLink(),
+    groupQuestions: groupQuestionsList(),
+    groupPracticeLink: val('groupPracticeLink'),
+    presentationLink: val('presentationLink')
   };
 }
 
@@ -632,6 +676,10 @@ document.getElementById('createBtn').addEventListener('click', async () => {
 
   if (!data.title) {
     alert('Enter a lesson title — without it there\'s nothing to name the page.');
+    return;
+  }
+  if (!data.formats.length) {
+    alert('Pick at least one format — Individual or Group.');
     return;
   }
 
@@ -647,12 +695,18 @@ document.getElementById('createBtn').addEventListener('click', async () => {
     });
     const out = await res.json();
 
-    if (!res.ok || !out.url) {
+    if (!res.ok || !out.pages || !out.pages.length) {
       throw new Error(out.error || 'Could not create the page.');
     }
 
     resultBox.classList.add('ok', 'show');
-    resultBox.innerHTML = `<div class="status">Page created ✓</div><a href="${out.url}" target="_blank" rel="noopener">Open in Notion →</a>`;
+    const links = out.pages.map(p =>
+      `<a href="${p.url}" target="_blank" rel="noopener">Open ${p.format} page →</a>`
+    ).join('<br>');
+    const warningsHtml = (out.warnings && out.warnings.length)
+      ? `<div class="status" style="color:var(--amber); margin-top:8px;">${out.warnings.join('<br>')}</div>`
+      : '';
+    resultBox.innerHTML = `<div class="status">Page${out.pages.length > 1 ? 's' : ''} created ✓</div>${links}${warningsHtml}`;
   } catch (e) {
     resultBox.classList.add('err', 'show');
     resultBox.innerHTML = `<div class="status">Didn't work</div>${e.message || 'Check your connection and try again.'}`;
