@@ -135,7 +135,7 @@ function toolLinkOrPlaceholder(emoji, label, url) {
   return labeledLinkBlock(label + ':', null);
 }
 
-function buildChildren({ target, warmup, introVideoLink, videoLink, videoLabel, readingLink, writingLink, speakingLink, modelAnswer, discussionQuestions, presentationLink }) {
+function buildChildren({ target, warmup, introVideoLink, videoLink, videoLabel, readingLink, writingLink, speakingLink, modelAnswer, discussionQuestions, questionRounds, presentationLink }) {
   const children = [];
 
   if (target) children.push(calloutBlock('🎯', target));
@@ -191,7 +191,22 @@ function buildChildren({ target, warmup, introVideoLink, videoLink, videoLabel, 
     children.push(...finish('Speaking done'));
   }
 
-  if (Array.isArray(discussionQuestions) && discussionQuestions.length) {
+  if (Array.isArray(questionRounds) && questionRounds.length) {
+    children.push({
+      object: 'block',
+      type: 'heading_3',
+      heading_3: { rich_text: [{ type: 'text', text: { content: 'Discussion Questions — rotate pairs between rounds' } }] }
+    });
+    questionRounds.forEach((round, i) => {
+      children.push({
+        object: 'block',
+        type: 'heading_3',
+        heading_3: { rich_text: [{ type: 'text', text: { content: `Round ${i + 1}` } }] }
+      });
+      children.push(...bulletedList(round));
+    });
+    children.push(...finish('Discussion done'));
+  } else if (Array.isArray(discussionQuestions) && discussionQuestions.length) {
     children.push({
       object: 'block',
       type: 'heading_3',
@@ -295,7 +310,7 @@ module.exports = async (req, res) => {
   const {
     icon, title, level, target, warmup, introVideoLink, videoLink, readingLink,
     discussionQuestions, speakingLink, modelAnswer,
-    writingLink, groupQuestions, groupPracticeLink, presentationLink
+    writingLink, groupQuestionRounds, groupPracticeLink, presentationLink
   } = req.body || {};
 
   if (!title) {
@@ -320,7 +335,8 @@ module.exports = async (req, res) => {
       target, warmup, introVideoLink, readingLink, writingLink, speakingLink, modelAnswer,
       videoLink: isGroup ? groupPracticeLink : videoLink,
       videoLabel: isGroup ? 'Practice' : 'Video to work on',
-      discussionQuestions: isGroup ? groupQuestions : discussionQuestions,
+      discussionQuestions: isGroup ? null : discussionQuestions,
+      questionRounds: isGroup ? groupQuestionRounds : null,
       presentationLink: isGroup ? presentationLink : null
     });
 
