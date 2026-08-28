@@ -594,8 +594,11 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
     if (Array.isArray(out.discussion_questions) && out.discussion_questions.length) {
       document.getElementById('questions').value = out.discussion_questions.join('\n');
     }
-    if (Array.isArray(out.group_discussion_questions) && out.group_discussion_questions.length) {
-      document.getElementById('groupQuestions').value = out.group_discussion_questions.join('\n');
+    if (Array.isArray(out.group_discussion_question_sets) && out.group_discussion_question_sets.length) {
+      const text = out.group_discussion_question_sets
+        .map((round, i) => `Round ${i + 1}\n` + round.map(q => `- ${q}`).join('\n'))
+        .join('\n\n');
+      document.getElementById('groupQuestions').value = text;
     }
     if (!document.getElementById('topicOverride').value) {
       document.getElementById('topicOverride').value = topic.split(' — ')[0];
@@ -670,8 +673,27 @@ function selectedFormats() {
   return formats;
 }
 
-function groupQuestionsList() {
-  return val('groupQuestions').split('\n').map(l => l.trim()).filter(Boolean);
+function groupQuestionRounds() {
+  const text = val('groupQuestions');
+  if (!text) return [];
+  const rounds = [];
+  let current = null;
+  text.split('\n').forEach(line => {
+    const t = line.trim();
+    if (!t) return;
+    const roundMatch = t.match(/^Round\s+\d+/i);
+    if (roundMatch) {
+      current = [];
+      rounds.push(current);
+    } else {
+      const q = t.replace(/^-+\s*/, '').trim();
+      if (q) {
+        if (!current) { current = []; rounds.push(current); }
+        current.push(q);
+      }
+    }
+  });
+  return rounds.filter(r => r.length);
 }
 
 function collectData() {
@@ -689,7 +711,7 @@ function collectData() {
     speakingLink: buildSpeakingLink(),
     modelAnswer: val('modelAnswer'),
     writingLink: buildWritingLink(),
-    groupQuestions: groupQuestionsList(),
+    groupQuestionRounds: groupQuestionRounds(),
     groupPracticeLink: val('groupPracticeLink'),
     presentationLink: val('presentationLink')
   };
