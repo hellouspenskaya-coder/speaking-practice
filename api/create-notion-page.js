@@ -249,7 +249,9 @@ async function createLessonPage({ token, parentPageId, icon, title, children }) 
 // the lesson page itself is the important part.
 async function createAssignmentRow({ token, level, format, title, lessonUrl }) {
   const assignmentsDbId = process.env.NOTION_ASSIGNMENTS_DATABASE_ID;
-  if (!assignmentsDbId) return { skipped: true };
+  if (!assignmentsDbId) {
+    throw new Error('NOTION_ASSIGNMENTS_DATABASE_ID is not set in Vercel — the lesson page was created, but nothing was written to Assignments.');
+  }
 
   const properties = {
     'Assignment Title': { title: [{ type: 'text', text: { content: title } }] },
