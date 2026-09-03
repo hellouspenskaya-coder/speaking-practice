@@ -439,9 +439,33 @@ async function generateContentFor(itemsToGenerate) {
       const body = document.getElementById(`body-${item.id}`);
       if (body) { body.classList.add('open'); renderItemBody(item.id); }
     });
+
+    // Auto-fetch the first image for every item that doesn't have one yet.
+    await autoFetchImages(itemsToGenerate.filter(i => !i.image));
   } catch (err) {
     alert('Content generation failed: ' + err.message);
   }
+}
+
+async function autoFetchImages(itemsNeedingImages) {
+  if (!itemsNeedingImages.length) return;
+  await Promise.all(itemsNeedingImages.map(async (item) => {
+    try {
+      const query = item.type === 'phrase' ? phraseImageQuery(item.text) : item.text;
+      const response = await fetch('/api/vocab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'images', query })
+      });
+      const data = await response.json();
+      if (response.ok && data.images && data.images.length) {
+        item.image = data.images[0].full;
+      }
+    } catch (e) {
+      // Silently skip — user can add image manually via Edit → Find images
+    }
+  }));
+  renderItems();
 }
 
 document.getElementById('generateAllBtn').addEventListener('click', () => {
