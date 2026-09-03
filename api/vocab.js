@@ -171,11 +171,17 @@ async function generateAudio(req, res) {
 }
 
 async function searchImages(req, res) {
-  const query = (req.body.query || '').toString().trim();
-  if (!query) {
+  const rawQuery = (req.body.query || '').toString().trim();
+  if (!rawQuery) {
     res.status(400).json({ error: 'Missing query' });
     return;
   }
+
+  // Prefixing with "single" nudges Pexels toward one clear object per frame,
+  // which works better for vocabulary flashcards than group/pile photos.
+  // For phrases we skip the prefix since "single live in a house" makes no sense.
+  const isPhrase = rawQuery.includes(' ');
+  const query = isPhrase ? rawQuery : `single ${rawQuery}`;
 
   const apiKey = process.env.PEXELS_API_KEY;
   if (!apiKey) {
