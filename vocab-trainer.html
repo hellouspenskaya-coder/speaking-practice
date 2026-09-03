@@ -109,8 +109,48 @@
   .missing-cell.empty { border: 1.5px dashed var(--border); background: #fff; color: var(--muted); }
   .word-choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
   .center-msg { text-align: center; padding: 60px 0; color: var(--muted); }
-  .done-screen { text-align: center; padding: 40px 0; }
-  .done-screen h2 { font-size: 20px; margin-bottom: 8px; }
+  .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; }
+  .score-pill { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-weight: 600; color: var(--teal); }
+  .streak-pill { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 20px; padding: 4px 12px; font-weight: 600; color: #ea580c; }
+  .streak-pill.hidden { visibility: hidden; }
+  .point-pop {
+    position: fixed;
+    left: 50%;
+    top: 40%;
+    transform: translateX(-50%);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--teal);
+    pointer-events: none;
+    animation: floatUp 1s ease-out forwards;
+    z-index: 50;
+  }
+  @keyframes floatUp {
+    0% { opacity: 0; transform: translate(-50%, 10px) scale(0.8); }
+    25% { opacity: 1; transform: translate(-50%, -10px) scale(1.1); }
+    100% { opacity: 0; transform: translate(-50%, -60px) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .point-pop { animation: none; opacity: 0; }
+  }
+  .done-screen { text-align: center; padding: 30px 0; }
+  .done-screen h2 { font-size: 22px; margin-bottom: 4px; }
+  .sticker {
+    font-size: 72px;
+    line-height: 1;
+    margin: 10px 0 6px;
+    display: block;
+  }
+  .stars { font-size: 30px; letter-spacing: 6px; margin: 8px 0; }
+  .star-on { color: #f59e0b; }
+  .star-off { color: #e2e8f0; }
+  .final-score { font-size: 34px; font-weight: 700; color: var(--teal); margin: 4px 0; }
+  .final-label { font-size: 14px; color: var(--muted); margin: 0 0 4px; }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0; }
+  .stat-cell { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
+  .stat-num { font-size: 20px; font-weight: 600; }
+  .stat-label { font-size: 12px; color: var(--muted); }
+  .review-list { font-size: 13px; color: var(--muted); margin-top: 6px; }
 </style>
 </head>
 <body>
@@ -131,6 +171,11 @@ let setData = null;
 let queue = [];
 let stepIndex = 0;
 let wrongItemIds = new Set();
+let score = 0;
+let streak = 0;
+let bestStreak = 0;
+let correctCount = 0;
+let answeredCount = 0;
 
 async function init() {
   if (!setSlug) {
@@ -203,6 +248,10 @@ function renderStep() {
   const percent = Math.round((stepIndex / total) * 100);
 
   app.innerHTML = `
+    <div class="score-row">
+      <span class="score-pill" id="scorePill">${score} points</span>
+      <span class="streak-pill ${streak >= 2 ? '' : 'hidden'}" id="streakPill">&#128293; ${streak} in a row</span>
+    </div>
     <div class="top-row">
       <span>${modeLabel(step.mode)}</span>
       <span>${stepIndex + 1} / ${total}</span>
@@ -214,6 +263,7 @@ function renderStep() {
   const cardArea = document.getElementById('cardArea');
   const onDone = (wasCorrect) => {
     if (step.kind === 'single' && !wasCorrect) wrongItemIds.add(step.item.id);
+    awardPoints(wasCorrect);
     stepIndex += 1;
     renderStep();
   };
@@ -229,6 +279,30 @@ function renderStep() {
     if (step.mode === 'matching') renderMatching(cardArea, step.items, onDone);
     else if (step.mode === 'whatsMissing') renderWhatsMissing(cardArea, step.items, onDone);
   }
+}
+
+function awardPoints(wasCorrect) {
+  answeredCount += 1;
+  if (wasCorrect) {
+    correctCount += 1;
+    streak += 1;
+    if (streak > bestStreak) bestStreak = streak;
+    // Base 10 points, plus a small bonus once a streak of 3+ is running.
+    const bonus = streak >= 3 ? 5 : 0;
+    const gained = 10 + bonus;
+    score += gained;
+    showPointPop(`+${gained}`);
+  } else {
+    streak = 0;
+  }
+}
+
+function showPointPop(text) {
+  const pop = document.createElement('div');
+  pop.className = 'point-pop';
+  pop.textContent = text;
+  document.body.appendChild(pop);
+  setTimeout(() => pop.remove(), 1000);
 }
 
 function modeLabel(mode) {
@@ -682,17 +756,72 @@ function renderWhatsMissing(container, items, onDone) {
   }
 }
 
+const STICKERS = [
+  { min: 0,  emoji: '\u{1F331}', title: 'Good start!',   line: 'Try again to grow.' },
+  { min: 50, emoji: '\u{1F44D}', title: 'Nice work!',    line: 'You are getting better.' },
+  { min: 70, emoji: '\u{1F31F}', title: 'Great job!',    line: 'You know these words well.' },
+  { min: 90, emoji: '\u{1F3C6}', title: 'Excellent!',    line: 'Almost everything correct!' }
+];
+
+function pickSticker(percent) {
+  let chosen = STICKERS[0];
+  STICKERS.forEach(s => { if (percent >= s.min) chosen = s; });
+  return chosen;
+}
+
+function starCount(percent) {
+  if (percent >= 90) return 3;
+  if (percent >= 70) return 2;
+  if (percent >= 40) return 1;
+  return 0;
+}
+
 function renderDone() {
-  const wrongCount = wrongItemIds.size;
+  const percent = answeredCount ? Math.round((correctCount / answeredCount) * 100) : 0;
+  const sticker = pickSticker(percent);
+  const stars = starCount(percent);
+  const starMarkup = [0, 1, 2].map(i =>
+    `<span class="${i < stars ? 'star-on' : 'star-off'}">&#9733;</span>`
+  ).join('');
+
+  const reviewWords = setData.items
+    .filter(i => wrongItemIds.has(i.id))
+    .map(i => i.text);
+
   app.innerHTML = `
     <div class="done-screen">
-      <h2>Well done!</h2>
-      <p class="definition">${wrongCount ? `${wrongCount} word${wrongCount > 1 ? 's' : ''} to review next time` : 'All words done'}</p>
-      <button class="primary wide" id="restartBtn">Practice again</button>
+      <span class="sticker">${sticker.emoji}</span>
+      <h2>${sticker.title}</h2>
+      <p class="final-label">${sticker.line}</p>
+      <div class="stars">${starMarkup}</div>
+      <p class="final-score">${score} points</p>
+
+      <div class="stat-grid">
+        <div class="stat-cell">
+          <div class="stat-num">${correctCount} / ${answeredCount}</div>
+          <div class="stat-label">correct</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">&#128293; ${bestStreak}</div>
+          <div class="stat-label">best streak</div>
+        </div>
+      </div>
+
+      ${reviewWords.length ? `
+        <p class="final-label">Practise these again:</p>
+        <p class="review-list">${reviewWords.map(escapeHtml).join(' &middot; ')}</p>
+      ` : `<p class="final-label">You got every word right!</p>`}
+
+      <button class="primary wide" id="restartBtn">Practise again</button>
     </div>
   `;
   document.getElementById('restartBtn').addEventListener('click', () => {
     wrongItemIds = new Set();
+    score = 0;
+    streak = 0;
+    bestStreak = 0;
+    correctCount = 0;
+    answeredCount = 0;
     queue = buildSession(setData);
     stepIndex = 0;
     renderStep();
