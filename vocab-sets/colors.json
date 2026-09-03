@@ -1,0 +1,77 @@
+{
+  "topic": "Colors",
+  "level": "A1",
+  "modes": [
+    "flashcards",
+    "multipleChoice",
+    "matching",
+    "listening",
+    "fillLetters",
+    "letterScramble",
+    "phraseBuilder",
+    "whatsMissing"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "red",
+      "definition": "a dark warm color like blood",
+      "example": "My apple is red.",
+      "phonetic": "red",
+      "distractors": [
+        "bed",
+        "bread"
+      ],
+      "chunks": [],
+      "image": null,
+      "audio": null
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "blue",
+      "definition": "a cool color like the sky",
+      "example": "The sky is blue.",
+      "phonetic": "bluː",
+      "distractors": [
+        "glue",
+        "blew"
+      ],
+      "chunks": [],
+      "image": null,
+      "audio": null
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "green",
+      "definition": "a color like grass and trees",
+      "example": "The tree is green.",
+      "phonetic": "ɡriːn",
+      "distractors": [
+        "keen",
+        "seen"
+      ],
+      "chunks": [],
+      "image": null,
+      "audio": null
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "yellow",
+      "definition": "a bright color like the sun",
+      "example": "The sun is yellow.",
+      "phonetic": "ˈjeləʊ",
+      "distractors": [
+        "fellow",
+        "mellow"
+      ],
+      "chunks": [],
+      "image": null,
+      "audio": null
+    }
+  ]
+}
