@@ -111,6 +111,7 @@
   .center-msg { text-align: center; padding: 60px 0; color: var(--muted); }
   .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; }
   .score-pill { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-weight: 600; color: var(--teal); }
+  .phase-pill { background: var(--teal-light); border: 1px solid #b8e6da; border-radius: 20px; padding: 4px 12px; font-weight: 600; color: var(--teal); }
   .streak-pill { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 20px; padding: 4px 12px; font-weight: 600; color: #ea580c; }
   .streak-pill.hidden { visibility: hidden; }
   .point-pop {
@@ -163,8 +164,8 @@ const params = new URLSearchParams(window.location.search);
 const setSlug = params.get('set');
 const app = document.getElementById('app');
 
-const SINGLE_WORD_MODES = ['flashcards', 'multipleChoice', 'listening', 'fillLetters', 'letterScramble'];
-const SINGLE_PHRASE_MODES = ['flashcards', 'multipleChoice', 'listening', 'phraseBuilder'];
+const SINGLE_WORD_MODES = ['multipleChoice', 'listening', 'fillLetters', 'letterScramble'];
+const SINGLE_PHRASE_MODES = ['multipleChoice', 'listening', 'phraseBuilder'];
 const GROUP_MODES = ['matching', 'whatsMissing'];
 
 let setData = null;
@@ -214,7 +215,15 @@ function buildSession(data) {
   const items = data.items || [];
   const steps = [];
 
-  // Single-item steps, one per item, avoiding same mode twice in a row.
+  // Phase 1 — study: every word shown as a flashcard first, in set order.
+  if (enabledModes.includes('flashcards')) {
+    items.forEach(item => {
+      steps.push({ kind: 'single', mode: 'flashcards', item, phase: 'study' });
+    });
+  }
+
+  // Phase 2 — practice: everything else, shuffled.
+  const practiceSteps = [];
   let lastMode = null;
   shuffle(items).forEach(item => {
     const options = eligibleSingleModes(item, enabledModes).filter(m => m !== lastMode);
@@ -222,7 +231,7 @@ function buildSession(data) {
     if (!pool.length) return;
     const mode = pool[Math.floor(Math.random() * pool.length)];
     lastMode = mode;
-    steps.push({ kind: 'single', mode, item });
+    practiceSteps.push({ kind: 'single', mode, item, phase: 'practice' });
   });
 
   // Group steps: chunks of items with images, for matching / whatsMissing.
@@ -231,11 +240,11 @@ function buildSession(data) {
     if (!enabledModes.includes(groupMode)) return;
     for (let i = 0; i < withImages.length; i += 5) {
       const chunk = withImages.slice(i, i + 5);
-      if (chunk.length >= 3) steps.push({ kind: 'group', mode: groupMode, items: chunk });
+      if (chunk.length >= 3) practiceSteps.push({ kind: 'group', mode: groupMode, items: chunk, phase: 'practice' });
     }
   });
 
-  return shuffle(steps);
+  return steps.concat(shuffle(practiceSteps));
 }
 
 function renderStep() {
@@ -246,15 +255,24 @@ function renderStep() {
   const step = queue[stepIndex];
   const total = queue.length;
   const percent = Math.round((stepIndex / total) * 100);
+  const isStudy = step.phase === 'study';
+
+  const studyTotal = queue.filter(s => s.phase === 'study').length;
+  const practiceTotal = total - studyTotal;
+  const positionLabel = isStudy
+    ? `${stepIndex + 1} / ${studyTotal}`
+    : `${stepIndex - studyTotal + 1} / ${practiceTotal}`;
 
   app.innerHTML = `
     <div class="score-row">
-      <span class="score-pill" id="scorePill">${score} points</span>
-      <span class="streak-pill ${streak >= 2 ? '' : 'hidden'}" id="streakPill">&#128293; ${streak} in a row</span>
+      ${isStudy
+        ? `<span class="phase-pill">&#128218; Learn the words</span>`
+        : `<span class="score-pill" id="scorePill">${score} points</span>`}
+      <span class="streak-pill ${!isStudy && streak >= 2 ? '' : 'hidden'}" id="streakPill">&#128293; ${streak} in a row</span>
     </div>
     <div class="top-row">
       <span>${modeLabel(step.mode)}</span>
-      <span>${stepIndex + 1} / ${total}</span>
+      <span>${positionLabel}</span>
     </div>
     <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
     <div class="card" id="cardArea"></div>
@@ -263,8 +281,13 @@ function renderStep() {
   const cardArea = document.getElementById('cardArea');
   const onDone = (wasCorrect) => {
     if (step.kind === 'single' && !wasCorrect) wrongItemIds.add(step.item.id);
-    awardPoints(wasCorrect);
+    // The study phase is self-assessment, not a test — no points there.
+    if (!isStudy) awardPoints(wasCorrect);
     stepIndex += 1;
+    if (isStudy && stepIndex === studyTotal && practiceTotal > 0) {
+      renderPracticeIntro();
+      return;
+    }
     renderStep();
   };
 
@@ -279,6 +302,18 @@ function renderStep() {
     if (step.mode === 'matching') renderMatching(cardArea, step.items, onDone);
     else if (step.mode === 'whatsMissing') renderWhatsMissing(cardArea, step.items, onDone);
   }
+}
+
+function renderPracticeIntro() {
+  app.innerHTML = `
+    <div class="done-screen">
+      <span class="sticker">&#127919;</span>
+      <h2>Now let's practise!</h2>
+      <p class="final-label">You have seen all the words. Time to try them.</p>
+      <button class="primary wide" id="startPracticeBtn">Start</button>
+    </div>
+  `;
+  document.getElementById('startPracticeBtn').addEventListener('click', renderStep);
 }
 
 function awardPoints(wasCorrect) {
@@ -359,7 +394,7 @@ function renderFlashcards(container, item, onDone) {
     <p class="example">${escapeHtml(item.example)}</p>
     <div style="margin-top:12px;">${listenButton('listenBtn')}</div>
     <div class="btn-row">
-      <button id="noBtn">I don't know it</button>
+      <button id="noBtn">New for me</button>
       <button class="primary" id="yesBtn">I know it</button>
     </div>
   `;
