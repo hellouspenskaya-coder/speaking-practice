@@ -192,10 +192,7 @@
   </div>
 
   <div class="card">
-    <h2>Items <span id="itemCount" style="color:var(--muted); font-weight:400;"></span></h2>
-    <div class="actions-row" style="margin-bottom:12px;">
-      <button id="generateAllBtn">Generate content for all pending</button>
-    </div>
+    <h2>Items <span id="itemCount" style="color:var(--muted); font-weight:400;"></span> <span id="generatingIndicator" style="font-size:13px; color:var(--muted); display:none;">Generating…</span></h2>
     <div id="itemsList"></div>
     <p class="empty-hint" id="emptyHint">No items yet — add some above.</p>
   </div>
@@ -275,17 +272,21 @@ function addItem(text) {
   renderItems();
 }
 
-document.getElementById('addSingleBtn').addEventListener('click', () => {
+document.getElementById('addSingleBtn').addEventListener('click', async () => {
   const input = document.getElementById('singleInput');
-  addItem(input.value);
+  const text = input.value.trim();
+  if (!text) return;
+  addItem(text);
   input.value = '';
+  await generateContentFor(items.filter(i => !i.definition));
 });
 
-document.getElementById('addBulkBtn').addEventListener('click', () => {
+document.getElementById('addBulkBtn').addEventListener('click', async () => {
   const textarea = document.getElementById('bulkInput');
   const parts = textarea.value.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
   parts.forEach(addItem);
   textarea.value = '';
+  await generateContentFor(items.filter(i => !i.definition));
 });
 
 function renderItems() {
@@ -412,6 +413,13 @@ function escapeAttr(s) { return escapeHtml(s); }
 async function generateContentFor(itemsToGenerate) {
   if (!itemsToGenerate.length) return;
   const level = document.getElementById('levelSelect').value;
+
+  // Disable add buttons and show indicator while generating
+  const addBtns = ['addSingleBtn', 'addBulkBtn'];
+  addBtns.forEach(id => { const b = document.getElementById(id); if (b) b.disabled = true; });
+  const indicator = document.getElementById('generatingIndicator');
+  if (indicator) indicator.style.display = 'inline';
+
   try {
     const response = await fetch('/api/vocab', {
       method: 'POST',
@@ -444,6 +452,9 @@ async function generateContentFor(itemsToGenerate) {
     await autoFetchImages(itemsToGenerate.filter(i => !i.image));
   } catch (err) {
     alert('Content generation failed: ' + err.message);
+  } finally {
+    addBtns.forEach(id => { const b = document.getElementById(id); if (b) b.disabled = false; });
+    if (indicator) indicator.style.display = 'none';
   }
 }
 
@@ -468,11 +479,6 @@ async function autoFetchImages(itemsNeedingImages) {
   renderItems();
 }
 
-document.getElementById('generateAllBtn').addEventListener('click', () => {
-  const pending = items.filter(i => !i.definition);
-  if (!pending.length) { alert('Nothing pending — all items already have content.'); return; }
-  generateContentFor(pending);
-});
 
 async function findImagesFor(item) {
   const errorBox = document.getElementById(`itemError-${item.id}`);
