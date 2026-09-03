@@ -28,6 +28,9 @@
   }
   .wrap { max-width: 440px; margin: 0 auto; }
   .top-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .top-right { display: flex; align-items: center; gap: 10px; }
+  .skip-btn { font-size: 12px; padding: 4px 10px; border-radius: 8px; color: var(--muted); border: 1px solid var(--border); background: #fff; cursor: pointer; }
+  .skip-btn:hover { background: #f1f5f9; color: var(--text); }
   .progress-track { height: 5px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-bottom: 20px; }
   .progress-fill { height: 100%; background: var(--teal); transition: width 0.25s ease; }
   .card {
@@ -272,13 +275,33 @@ function renderStep() {
     </div>
     <div class="top-row">
       <span>${modeLabel(step.mode)}</span>
-      <span>${positionLabel}</span>
+      <span class="top-right">
+        <span>${positionLabel}</span>
+        <button class="skip-btn" id="skipBtn">Skip &rsaquo;</button>
+      </span>
     </div>
     <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
     <div class="card" id="cardArea"></div>
   `;
 
   const cardArea = document.getElementById('cardArea');
+
+  document.getElementById('skipBtn').addEventListener('click', () => {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    // Skipping breaks a streak but costs no points, and flags the word
+    // for review so it still shows up at the end.
+    if (!isStudy) {
+      streak = 0;
+      if (step.kind === 'single') wrongItemIds.add(step.item.id);
+    }
+    stepIndex += 1;
+    if (isStudy && stepIndex === studyTotal && practiceTotal > 0) {
+      renderPracticeIntro();
+      return;
+    }
+    renderStep();
+  });
+
   const onDone = (wasCorrect) => {
     if (step.kind === 'single' && !wasCorrect) wrongItemIds.add(step.item.id);
     // The study phase is self-assessment, not a test — no points there.
@@ -430,7 +453,15 @@ function renderMultipleChoice(container, item, onDone) {
 
 // --- Listening: play example sentence, choose the word heard among phonetic distractors ---
 function renderListening(container, item, onDone) {
-  const distractors = (item.distractors && item.distractors.length ? item.distractors : ['word1', 'word2']).slice(0, 2);
+  // Prefer the AI-generated phonetic distractors; if there are none
+  // (phrases don't get them), fall back to other real items from the set.
+  let distractors = (item.distractors || []).filter(Boolean).slice(0, 2);
+  if (distractors.length < 2) {
+    const others = shuffle(
+      setData.items.filter(i => i.id !== item.id).map(i => i.text)
+    ).filter(t => !distractors.includes(t));
+    distractors = distractors.concat(others).slice(0, 2);
+  }
   const options = shuffle([item.text, ...distractors]);
   container.innerHTML = `
     <button class="play-btn" id="playBtn"><span class="icon">&#128266;</span> Play the sentence</button>
