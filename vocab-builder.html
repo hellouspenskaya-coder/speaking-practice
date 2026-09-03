@@ -201,6 +201,16 @@
   </div>
 
   <div class="card">
+    <h2>Opposites <span id="pairCount" style="color:var(--muted); font-weight:400;"></span></h2>
+    <p class="sub" style="margin-bottom:10px;">Finds pairs of opposites among the words above (big / small). Used for the "Opposites" practice mode.</p>
+    <div class="actions-row">
+      <button id="findAntonymsBtn">Find opposite pairs</button>
+    </div>
+    <div id="pairsList" style="margin-top:12px;"></div>
+    <div class="error-box" id="antonymError"></div>
+  </div>
+
+  <div class="card">
     <h2>Practice modes for this set</h2>
     <div class="modes-grid" id="modesGrid"></div>
   </div>
@@ -232,7 +242,8 @@ const MODES = [
   { id: 'fillLetters', label: 'Fill missing letters' },
   { id: 'letterScramble', label: 'Letter scramble' },
   { id: 'phraseBuilder', label: 'Build the phrase' },
-  { id: 'whatsMissing', label: "What's missing?" }
+  { id: 'whatsMissing', label: "What's missing?" },
+  { id: 'antonyms', label: 'Opposites' }
 ];
 
 let items = []; // { id, text, type, definition, example, phonetic, distractors, chunks, image, audio, status }
@@ -499,6 +510,62 @@ async function generateAudioFor(item) {
   }
 }
 
+let antonymPairs = [];
+
+document.getElementById('findAntonymsBtn').addEventListener('click', async () => {
+  const errorBox = document.getElementById('antonymError');
+  errorBox.classList.remove('open');
+  if (items.length < 2) {
+    errorBox.textContent = 'Add at least two words first.';
+    errorBox.classList.add('open');
+    return;
+  }
+  const btn = document.getElementById('findAntonymsBtn');
+  btn.disabled = true;
+  btn.textContent = 'Looking…';
+  try {
+    const response = await fetch('/api/vocab-find-antonyms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ words: items.map(i => i.text) })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Antonym search failed');
+    antonymPairs = data.pairs || [];
+    renderPairs();
+    if (!antonymPairs.length) {
+      errorBox.textContent = 'No clear opposite pairs found in this set.';
+      errorBox.classList.add('open');
+    }
+  } catch (err) {
+    errorBox.textContent = err.message;
+    errorBox.classList.add('open');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Find opposite pairs';
+  }
+});
+
+function renderPairs() {
+  const list = document.getElementById('pairsList');
+  document.getElementById('pairCount').textContent = antonymPairs.length ? `(${antonymPairs.length})` : '';
+  list.innerHTML = '';
+  antonymPairs.forEach((pair, idx) => {
+    const row = document.createElement('div');
+    row.className = 'item-head';
+    row.style.padding = '6px 0';
+    row.innerHTML = `
+      <span class="item-title">${escapeHtml(pair[0])} &harr; ${escapeHtml(pair[1])}</span>
+      <button class="small danger" data-idx="${idx}">Remove</button>
+    `;
+    row.querySelector('button').addEventListener('click', () => {
+      antonymPairs.splice(idx, 1);
+      renderPairs();
+    });
+    list.appendChild(row);
+  });
+}
+
 // Practice mode toggles
 function renderModes() {
   const grid = document.getElementById('modesGrid');
@@ -523,6 +590,7 @@ function buildSetData() {
     topic: document.getElementById('topicInput').value.trim() || 'Untitled set',
     level: document.getElementById('levelSelect').value,
     modes: getEnabledModes(),
+    antonymPairs: antonymPairs,
     items: items.map(i => ({
       id: i.id,
       type: i.type,
