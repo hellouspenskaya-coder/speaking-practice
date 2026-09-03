@@ -79,7 +79,16 @@
   .img-choice img { width: 100%; height: 100%; object-fit: cover; }
   .img-choice.correct { border-color: var(--success); }
   .img-choice.wrong { border-color: var(--danger); opacity: 0.6; }
-  .play-btn { width: 64px; height: 64px; border-radius: 50%; background: var(--teal); border: none; color: #fff; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; cursor: pointer; font-size: 22px; }
+  .play-btn { width: auto; padding: 14px 28px; border-radius: 12px; background: var(--teal); border: none; color: #fff; display: inline-flex; align-items: center; gap: 10px; margin: 0 auto 6px; cursor: pointer; font-size: 16px; font-weight: 500; }
+  .play-btn:hover { background: #0c8069; }
+  .play-btn .icon { font-size: 14px; }
+  .pair-badge { position: absolute; top: 4px; left: 6px; background: var(--success); color: #fff; font-size: 11px; font-weight: 600; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .match-row { position: relative; }
+  .study-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  .study-cell { border-radius: 10px; height: 76px; overflow: hidden; background: var(--teal-light); position: relative; }
+  .study-cell img { width: 100%; height: 100%; object-fit: cover; }
+  .study-caption { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.92); font-size: 11px; padding: 2px; text-align: center; }
+  .countdown { font-size: 13px; color: var(--muted); margin-top: 6px; }
   .letters-target { display: flex; justify-content: center; gap: 6px; margin: 16px 0; min-height: 44px; flex-wrap: wrap; }
   .letter-slot { width: 36px; height: 44px; border-bottom: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 500; }
   .letter-slot.filled { border-color: var(--teal); }
@@ -245,6 +254,27 @@ function escapeHtml(s) {
   return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+// Plays generated audio if the set has it, otherwise falls back to the
+// browser's built-in speech synthesis so sound always works.
+function speak(item, useSentence) {
+  const text = useSentence ? (item.example || item.text) : item.text;
+  if (item.audio && useSentence) {
+    new Audio(item.audio).play();
+    return;
+  }
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-GB';
+    utterance.rate = 0.85;
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+function listenButton(id, label) {
+  return `<button id="${id}"><span class="icon">&#128266;</span> ${label || 'Listen'}</button>`;
+}
+
 // --- Flashcards ---
 function renderFlashcards(container, item, onDone) {
   container.innerHTML = `
@@ -253,16 +283,13 @@ function renderFlashcards(container, item, onDone) {
     ${item.phonetic ? `<p class="phonetic">${escapeHtml(item.phonetic)}</p>` : ''}
     <p class="definition">${escapeHtml(item.definition)}</p>
     <p class="example">${escapeHtml(item.example)}</p>
-    ${item.audio ? `<button id="listenBtn" style="margin-top:12px;">Listen</button>` : ''}
+    <div style="margin-top:12px;">${listenButton('listenBtn')}</div>
     <div class="btn-row">
       <button id="noBtn">I don't know it</button>
       <button class="primary" id="yesBtn">I know it</button>
     </div>
   `;
-  if (item.audio) {
-    const audio = new Audio(item.audio);
-    document.getElementById('listenBtn').addEventListener('click', () => audio.play());
-  }
+  document.getElementById('listenBtn').addEventListener('click', () => speak(item, true));
   document.getElementById('noBtn').addEventListener('click', () => onDone(false));
   document.getElementById('yesBtn').addEventListener('click', () => onDone(true));
 }
@@ -274,8 +301,10 @@ function renderMultipleChoice(container, item, onDone) {
   container.innerHTML = `
     <p class="word-main">${escapeHtml(item.text)}</p>
     ${item.phonetic ? `<p class="phonetic">${escapeHtml(item.phonetic)}</p>` : ''}
+    <div>${listenButton('listenBtn')}</div>
     <div class="img-grid" id="imgGrid"></div>
   `;
+  document.getElementById('listenBtn').addEventListener('click', () => speak(item, false));
   const grid = document.getElementById('imgGrid');
   options.forEach(opt => {
     const div = document.createElement('div');
@@ -295,15 +324,12 @@ function renderListening(container, item, onDone) {
   const distractors = (item.distractors && item.distractors.length ? item.distractors : ['word1', 'word2']).slice(0, 2);
   const options = shuffle([item.text, ...distractors]);
   container.innerHTML = `
-    <div class="play-btn" id="playBtn">&#9658;</div>
-    <p class="definition">Tap to hear the sentence</p>
+    <button class="play-btn" id="playBtn"><span class="icon">&#128266;</span> Play the sentence</button>
+    <p class="definition">You can listen again</p>
     <p class="mode-label" style="margin-top:16px;">Which word did you hear?</p>
     <div class="word-choice-grid" id="wordGrid"></div>
   `;
-  if (item.audio) {
-    const audio = new Audio(item.audio);
-    document.getElementById('playBtn').addEventListener('click', () => audio.play());
-  }
+  document.getElementById('playBtn').addEventListener('click', () => speak(item, true));
   const grid = document.getElementById('wordGrid');
   options.forEach(word => {
     const btn = document.createElement('button');
@@ -329,10 +355,12 @@ function renderFillLetters(container, item, onDone) {
   container.innerHTML = `
     ${imageBox(item)}
     <p class="definition">${escapeHtml(item.definition)}</p>
+    <div>${listenButton('listenBtn')}</div>
     <div class="fill-boxes" id="fillBoxes"></div>
     <button class="primary wide" id="checkBtn">Check</button>
     <div id="feedback"></div>
   `;
+  document.getElementById('listenBtn').addEventListener('click', () => speak(item, false));
   const boxes = document.getElementById('fillBoxes');
   letters.forEach((ch, i) => {
     if (blanks.has(i)) {
@@ -377,7 +405,7 @@ function renderLetterScramble(container, item, onDone) {
     <div class="letters-pool" id="pool"></div>
     <div class="btn-row">
       <button id="clearBtn">Clear</button>
-      ${item.audio ? '<button id="listenBtn">Listen</button>' : '<div></div>'}
+      ${listenButton('listenBtn')}
     </div>
     <div id="feedback"></div>
   `;
@@ -427,10 +455,7 @@ function renderLetterScramble(container, item, onDone) {
     renderTarget();
   });
 
-  if (item.audio) {
-    const audio = new Audio(item.audio);
-    document.getElementById('listenBtn').addEventListener('click', () => audio.play());
-  }
+  document.getElementById('listenBtn').addEventListener('click', () => speak(item, false));
 
   renderTarget();
 }
@@ -447,7 +472,7 @@ function renderPhraseBuilder(container, item, onDone) {
     <div class="letters-pool" id="pool"></div>
     <div class="btn-row">
       <button id="clearBtn">Clear</button>
-      ${item.audio ? '<button id="listenBtn">Listen</button>' : '<div></div>'}
+      ${listenButton('listenBtn')}
     </div>
     <div id="feedback"></div>
   `;
@@ -498,10 +523,7 @@ function renderPhraseBuilder(container, item, onDone) {
     renderTarget();
   });
 
-  if (item.audio) {
-    const audio = new Audio(item.audio);
-    document.getElementById('listenBtn').addEventListener('click', () => audio.play());
-  }
+  document.getElementById('listenBtn').addEventListener('click', () => speak(item, false));
 
   renderTarget();
 }
@@ -523,20 +545,28 @@ function renderMatching(container, items, onDone) {
   const wordsCol = document.getElementById('wordsCol');
   const imagesCol = document.getElementById('imagesCol');
 
+  let pairNumber = 0;
+
   words.forEach(w => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'match-row';
     const btn = document.createElement('button');
     btn.textContent = w.text;
     btn.dataset.id = w.id;
+    btn.style.width = '100%';
     btn.addEventListener('click', () => {
       if (matched.has(w.id)) return;
       wordsCol.querySelectorAll('button').forEach(b => b.style.outline = 'none');
       selectedWord = w;
       btn.style.outline = `2px solid var(--teal)`;
     });
-    wordsCol.appendChild(btn);
+    wrapper.appendChild(btn);
+    wordsCol.appendChild(wrapper);
   });
 
   images.forEach(im => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'match-row';
     const div = document.createElement('div');
     div.className = 'img-choice';
     div.style.height = '48px';
@@ -545,21 +575,36 @@ function renderMatching(container, items, onDone) {
       if (!selectedWord || matched.has(im.id)) return;
       const correct = selectedWord.id === im.id;
       if (correct) {
+        pairNumber += 1;
         matched.add(im.id);
         div.classList.add('correct');
+        addBadge(wrapper, pairNumber);
         const wordBtn = wordsCol.querySelector(`button[data-id="${selectedWord.id}"]`);
         wordBtn.style.outline = 'none';
         wordBtn.disabled = true;
         wordBtn.classList.add('correct');
+        wordBtn.style.background = 'var(--success-light)';
+        wordBtn.style.borderColor = 'var(--success)';
+        wordBtn.style.color = 'var(--success)';
+        wordBtn.style.opacity = '1';
+        addBadge(wordBtn.parentElement, pairNumber);
       } else {
         div.classList.add('wrong');
         setTimeout(() => div.classList.remove('wrong'), 400);
       }
       selectedWord = null;
-      if (matched.size === items.length) setTimeout(() => onDone(true), 500);
+      if (matched.size === items.length) setTimeout(() => onDone(true), 700);
     });
-    imagesCol.appendChild(div);
+    wrapper.appendChild(div);
+    imagesCol.appendChild(wrapper);
   });
+
+  function addBadge(parent, number) {
+    const badge = document.createElement('div');
+    badge.className = 'pair-badge';
+    badge.textContent = number;
+    parent.appendChild(badge);
+  }
 }
 
 // --- What's missing: show images, hide one, ask which word is missing ---
@@ -569,6 +614,35 @@ function renderWhatsMissing(container, items, onDone) {
   const distractorWords = shuffle(setData.items.filter(i => i.id !== missingItem.id).map(i => i.text)).slice(0, 3);
   const options = shuffle([missingItem.text, ...distractorWords]);
 
+  // Study phase first — the student must see everything before one disappears.
+  let secondsLeft = 5;
+  container.innerHTML = `
+    <p class="mode-label">Look and remember</p>
+    <div class="study-grid">
+      ${items.map(it => `
+        <div class="study-cell">
+          <img src="${it.image}" alt="" />
+          <div class="study-caption">${escapeHtml(it.text)}</div>
+        </div>
+      `).join('')}
+    </div>
+    <p class="countdown" id="countdown">${secondsLeft}</p>
+    <button class="primary wide" id="readyBtn">I'm ready</button>
+  `;
+
+  const countdownEl = document.getElementById('countdown');
+  const timer = setInterval(() => {
+    secondsLeft -= 1;
+    if (countdownEl) countdownEl.textContent = secondsLeft;
+    if (secondsLeft <= 0) { clearInterval(timer); showQuestion(); }
+  }, 1000);
+
+  document.getElementById('readyBtn').addEventListener('click', () => {
+    clearInterval(timer);
+    showQuestion();
+  });
+
+  function showQuestion() {
   container.innerHTML = `
     <div class="missing-grid" id="grid"></div>
     <p class="mode-label">Which word is missing?</p>
@@ -595,10 +669,17 @@ function renderWhatsMissing(container, items, onDone) {
     btn.addEventListener('click', () => {
       const correct = word === missingItem.text;
       btn.classList.add(correct ? 'correct' : 'wrong');
-      setTimeout(() => onDone(correct), 700);
+      if (!correct) {
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback wrong';
+        feedback.textContent = `It was "${missingItem.text}"`;
+        wordGrid.parentElement.appendChild(feedback);
+      }
+      setTimeout(() => onDone(correct), correct ? 700 : 1400);
     });
     wordGrid.appendChild(btn);
   });
+  }
 }
 
 function renderDone() {
