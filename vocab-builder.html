@@ -473,7 +473,7 @@ async function autoFetchImages(itemsNeedingImages) {
       const response = await fetch('/api/vocab', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'images', query })
+        body: JSON.stringify({ action: 'images', query, definition: item.definition || '' })
       });
       const data = await response.json();
       if (response.ok && data.images && data.images.length) {
@@ -495,7 +495,7 @@ async function findImagesFor(item) {
     const response = await fetch('/api/vocab', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'images', query })
+      body: JSON.stringify({ action: 'images', query, definition: item.definition || '' })
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Image search failed');

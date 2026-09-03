@@ -172,16 +172,36 @@ async function generateAudio(req, res) {
 
 async function searchImages(req, res) {
   const rawQuery = (req.body.query || '').toString().trim();
+  const definition = (req.body.definition || '').toString().trim();
   if (!rawQuery) {
     res.status(400).json({ error: 'Missing query' });
     return;
   }
 
-  // Prefixing with "single" nudges Pexels toward one clear object per frame,
-  // which works better for vocabulary flashcards than group/pile photos.
-  // For phrases we skip the prefix since "single live in a house" makes no sense.
   const isPhrase = rawQuery.includes(' ');
-  const query = isPhrase ? rawQuery : `single ${rawQuery}`;
+
+  // Build a disambiguated query using the definition when available.
+  // e.g. "glasses" + "you wear them to see better" → "glasses eyewear"
+  // This avoids picking the wrong sense of homonyms like glasses/bank/bat.
+  let query;
+  if (isPhrase) {
+    query = rawQuery;
+  } else if (definition) {
+    // Extract the first 2-3 meaningful words from the definition as a hint.
+    const hint = definition
+      .toLowerCase()
+      .replace(/[^a-z\s]/g, '')
+      .split(/\s+/)
+      .filter(w => !['a','an','the','to','you','it','is','are','they','that','very','small','large','used','for','of','in','on'].includes(w))
+      .slice(0, 2)
+      .join(' ');
+    query = hint ? `${rawQuery} ${hint}` : `single ${rawQuery}`;
+  } else {
+    query = `single ${rawQuery}`;
+  }
+
+  // Random page (1-3) so repeated clicks return fresh results.
+  const page = Math.floor(Math.random() * 3) + 1;
 
   const apiKey = process.env.PEXELS_API_KEY;
   if (!apiKey) {
@@ -189,7 +209,7 @@ async function searchImages(req, res) {
     return;
   }
 
-  const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=4&orientation=square`;
+  const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=4&orientation=square&page=${page}`;
   const response = await fetch(url, { headers: { Authorization: apiKey } });
 
   if (!response.ok) {
