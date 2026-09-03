@@ -301,10 +301,16 @@ function renderItems() {
     el.className = 'item';
     el.innerHTML = `
       <div class="item-head">
-        <div>
-          <span class="item-title">${escapeHtml(item.text)}</span>
-          <span class="badge">${item.type}</span>
-          <div class="item-status">${statusLabel(item)}</div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          ${item.image
+            ? `<img src="${item.image}" alt="" style="width:44px; height:44px; object-fit:cover; border-radius:6px; flex-shrink:0;" />`
+            : `<div style="width:44px; height:44px; border-radius:6px; background:var(--bg); border:1px dashed var(--border); flex-shrink:0;"></div>`
+          }
+          <div>
+            <span class="item-title">${escapeHtml(item.text)}</span>
+            <span class="badge">${item.type}</span>
+            <div class="item-status">${statusLabel(item)}</div>
+          </div>
         </div>
         <div class="actions-row" style="margin:0;">
           <button class="small toggle-btn" data-id="${item.id}">Edit</button>
