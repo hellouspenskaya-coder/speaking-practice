@@ -172,6 +172,9 @@ const app = document.getElementById('app');
 const SINGLE_WORD_MODES = ['multipleChoice', 'listening', 'fillLetters', 'letterScramble'];
 const SINGLE_PHRASE_MODES = ['multipleChoice', 'listening', 'phraseBuilder'];
 const GROUP_MODES = ['matching', 'whatsMissing'];
+// Most pictures shown at once in matching / what's missing.
+// Kept low so a beginner can actually hold them in mind.
+const MAX_GROUP_SIZE = 6;
 
 let setData = null;
 let queue = [];
@@ -243,8 +246,8 @@ function buildSession(data) {
   const withImages = items.filter(i => i.image);
   GROUP_MODES.forEach(groupMode => {
     if (!enabledModes.includes(groupMode)) return;
-    for (let i = 0; i < withImages.length; i += 5) {
-      const chunk = withImages.slice(i, i + 5);
+    for (let i = 0; i < withImages.length; i += MAX_GROUP_SIZE) {
+      const chunk = withImages.slice(i, i + MAX_GROUP_SIZE);
       if (chunk.length >= 3) practiceSteps.push({ kind: 'group', mode: groupMode, items: chunk, phase: 'practice' });
     }
   });
@@ -858,40 +861,30 @@ function starCount(percent) {
   return 0;
 }
 
-// --- Opposites: show a word, choose the opposite from the set ---
+// --- Opposites: word to word only, so the student must read the words ---
 function renderAntonyms(container, item, answer, onDone) {
   const distractors = shuffle(
     setData.items.filter(i => i.id !== item.id && i.id !== answer.id)
   ).slice(0, 2);
   const options = shuffle([answer, ...distractors]);
-  const useImages = options.every(o => o.image);
 
   container.innerHTML = `
-    ${item.image ? imageBox(item) : ''}
     <p class="word-main">${escapeHtml(item.text)}</p>
     <div>${listenButton('listenBtn')}</div>
-    <p class="mode-label" style="margin-top:14px;">What is the opposite?</p>
-    <div class="${useImages ? 'img-grid' : 'word-choice-grid'}" id="optGrid"></div>
+    <p class="mode-label" style="margin-top:16px;">What is the opposite?</p>
+    <div class="word-choice-grid" id="optGrid"></div>
     <div id="feedback"></div>
   `;
   document.getElementById('listenBtn').addEventListener('click', () => speak(item, false));
 
   const grid = document.getElementById('optGrid');
   options.forEach(opt => {
-    let el;
-    if (useImages) {
-      el = document.createElement('div');
-      el.className = 'img-choice';
-      el.innerHTML = `<img src="${opt.image}" alt="" />
-        <div class="opt-caption">${escapeHtml(opt.text)}</div>`;
-    } else {
-      el = document.createElement('button');
-      el.className = 'word-tile';
-      el.textContent = opt.text;
-    }
-    el.addEventListener('click', () => {
+    const btn = document.createElement('button');
+    btn.className = 'word-tile';
+    btn.textContent = opt.text;
+    btn.addEventListener('click', () => {
       const correct = opt.id === answer.id;
-      el.classList.add(correct ? 'correct' : 'wrong');
+      btn.classList.add(correct ? 'correct' : 'wrong');
       if (!correct) {
         const feedback = document.getElementById('feedback');
         feedback.className = 'feedback wrong';
@@ -899,7 +892,7 @@ function renderAntonyms(container, item, answer, onDone) {
       }
       setTimeout(() => onDone(correct), correct ? 700 : 1600);
     });
-    grid.appendChild(el);
+    grid.appendChild(btn);
   });
 }
 
