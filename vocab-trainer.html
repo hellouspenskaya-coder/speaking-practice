@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vocabulary practice</title>
+<style>
+  :root {
+    --teal: #0f9d80;
+    --teal-light: #e6f7f3;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+    --success: #16a34a;
+    --success-light: #f0fdf4;
+    --bg: #f8fafc;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 20px 16px 60px;
+  }
+  .wrap { max-width: 440px; margin: 0 auto; }
+  .top-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .progress-track { height: 5px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-bottom: 20px; }
+  .progress-fill { height: 100%; background: var(--teal); transition: width 0.25s ease; }
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    text-align: center;
+  }
+  .image-box {
+    background: var(--teal-light);
+    border-radius: 12px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .image-box img { width: 100%; height: 100%; object-fit: cover; }
+  .image-box .placeholder { font-size: 40px; color: var(--teal); }
+  .word-main { font-size: 26px; font-weight: 600; margin: 0 0 4px; }
+  .phonetic { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+  .definition { font-size: 14px; color: var(--muted); margin: 0 0 4px; }
+  .example { font-size: 13px; color: var(--muted); font-style: italic; margin: 0; }
+  button {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+  }
+  button:hover { background: #f1f5f9; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.primary { background: var(--teal); color: #fff; border-color: var(--teal); }
+  button.primary:hover { background: #0c8069; }
+  button.wide { width: 100%; margin-top: 14px; }
+  .btn-row { display: flex; gap: 10px; margin-top: 16px; }
+  .btn-row button { flex: 1; }
+  .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .choice-btn { padding: 14px; font-size: 15px; }
+  .choice-btn.correct { background: var(--success-light); border-color: var(--success); color: var(--success); }
+  .choice-btn.wrong { background: var(--danger-light); border-color: var(--danger); color: var(--danger); }
+  .img-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 16px; }
+  .img-choice { border-radius: 10px; height: 100px; cursor: pointer; overflow: hidden; border: 2px solid var(--border); background: var(--teal-light); display: flex; align-items: center; justify-content: center; }
+  .img-choice img { width: 100%; height: 100%; object-fit: cover; }
+  .img-choice.correct { border-color: var(--success); }
+  .img-choice.wrong { border-color: var(--danger); opacity: 0.6; }
+  .play-btn { width: 64px; height: 64px; border-radius: 50%; background: var(--teal); border: none; color: #fff; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; cursor: pointer; font-size: 22px; }
+  .letters-target { display: flex; justify-content: center; gap: 6px; margin: 16px 0; min-height: 44px; flex-wrap: wrap; }
+  .letter-slot { width: 36px; height: 44px; border-bottom: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 500; }
+  .letter-slot.filled { border-color: var(--teal); }
+  .letters-pool { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .letter-tile { width: 44px; height: 44px; padding: 0; font-size: 18px; font-weight: 500; }
+  .letter-tile.used { visibility: hidden; }
+  .word-tile { padding: 8px 14px; font-size: 15px; font-weight: 500; }
+  .fill-boxes { display: flex; justify-content: center; gap: 6px; margin: 16px 0; }
+  .fill-box { width: 36px; height: 44px; text-align: center; font-size: 18px; border: 1px solid var(--border); border-radius: 8px; }
+  .fill-box.given { display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: var(--muted); font-weight: 500; }
+  .feedback { font-size: 13px; margin-top: 10px; padding: 8px 10px; border-radius: 8px; }
+  .feedback.correct { background: var(--success-light); color: var(--success); }
+  .feedback.wrong { background: var(--danger-light); color: var(--danger); }
+  .mode-label { font-size: 12px; color: var(--muted); text-transform: none; margin-bottom: 6px; }
+  .missing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+  .missing-cell { border-radius: 10px; height: 76px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: var(--teal-light); }
+  .missing-cell img { width: 100%; height: 100%; object-fit: cover; }
+  .missing-cell.empty { border: 1.5px dashed var(--border); background: #fff; color: var(--muted); }
+  .word-choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .center-msg { text-align: center; padding: 60px 0; color: var(--muted); }
+  .done-screen { text-align: center; padding: 40px 0; }
+  .done-screen h2 { font-size: 20px; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="center-msg">Loading…</div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const setSlug = params.get('set');
+const app = document.getElementById('app');
+
+const SINGLE_WORD_MODES = ['flashcards', 'multipleChoice', 'listening', 'fillLetters', 'letterScramble'];
+const SINGLE_PHRASE_MODES = ['flashcards', 'multipleChoice', 'listening', 'phraseBuilder'];
+const GROUP_MODES = ['matching', 'whatsMissing'];
+
+let setData = null;
+let queue = [];
+let stepIndex = 0;
+let wrongItemIds = new Set();
+
+async function init() {
+  if (!setSlug) {
+    app.innerHTML = `<div class="center-msg">No word set specified in the link.</div>`;
+    return;
+  }
+  try {
+    const response = await fetch(`/vocab-sets/${setSlug}.json`);
+    if (!response.ok) throw new Error('not found');
+    setData = await response.json();
+  } catch (err) {
+    app.innerHTML = `<div class="center-msg">Could not load this word set.</div>`;
+    return;
+  }
+  queue = buildSession(setData);
+  stepIndex = 0;
+  renderStep();
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function eligibleSingleModes(item, enabledModes) {
+  const pool = item.type === 'phrase' ? SINGLE_PHRASE_MODES : SINGLE_WORD_MODES;
+  return pool.filter(m => enabledModes.includes(m));
+}
+
+function buildSession(data) {
+  const enabledModes = data.modes && data.modes.length ? data.modes : SINGLE_WORD_MODES.concat(SINGLE_PHRASE_MODES, GROUP_MODES);
+  const items = data.items || [];
+  const steps = [];
+
+  // Single-item steps, one per item, avoiding same mode twice in a row.
+  let lastMode = null;
+  shuffle(items).forEach(item => {
+    const options = eligibleSingleModes(item, enabledModes).filter(m => m !== lastMode);
+    const pool = options.length ? options : eligibleSingleModes(item, enabledModes);
+    if (!pool.length) return;
+    const mode = pool[Math.floor(Math.random() * pool.length)];
+    lastMode = mode;
+    steps.push({ kind: 'single', mode, item });
+  });
+
+  // Group steps: chunks of items with images, for matching / whatsMissing.
+  const withImages = items.filter(i => i.image);
+  GROUP_MODES.forEach(groupMode => {
+    if (!enabledModes.includes(groupMode)) return;
+    for (let i = 0; i < withImages.length; i += 5) {
+      const chunk = withImages.slice(i, i + 5);
+      if (chunk.length >= 3) steps.push({ kind: 'group', mode: groupMode, items: chunk });
+    }
+  });
+
+  return shuffle(steps);
+}
+
+function renderStep() {
+  if (stepIndex >= queue.length) {
+    renderDone();
+    return;
+  }
+  const step = queue[stepIndex];
+  const total = queue.length;
+  const percent = Math.round((stepIndex / total) * 100);
+
+  app.innerHTML = `
+    <div class="top-row">
+      <span>${modeLabel(step.mode)}</span>
+      <span>${stepIndex + 1} / ${total}</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
+    <div class="card" id="cardArea"></div>
+  `;
+
+  const cardArea = document.getElementById('cardArea');
+  const onDone = (wasCorrect) => {
+    if (step.kind === 'single' && !wasCorrect) wrongItemIds.add(step.item.id);
+    stepIndex += 1;
+    renderStep();
+  };
+
+  if (step.kind === 'single') {
+    if (step.mode === 'flashcards') renderFlashcards(cardArea, step.item, onDone);
+    else if (step.mode === 'multipleChoice') renderMultipleChoice(cardArea, step.item, onDone);
+    else if (step.mode === 'listening') renderListening(cardArea, step.item, onDone);
+    else if (step.mode === 'fillLetters') renderFillLetters(cardArea, step.item, onDone);
+    else if (step.mode === 'letterScramble') renderLetterScramble(cardArea, step.item, onDone);
+    else if (step.mode === 'phraseBuilder') renderPhraseBuilder(cardArea, step.item, onDone);
+  } else {
+    if (step.mode === 'matching') renderMatching(cardArea, step.items, onDone);
+    else if (step.mode === 'whatsMissing') renderWhatsMissing(cardArea, step.items, onDone);
+  }
+}
+
+function modeLabel(mode) {
+  return ({
+    flashcards: 'Flashcards',
+    multipleChoice: 'Multiple choice',
+    listening: 'Listen and choose',
+    fillLetters: 'Fill in the letters',
+    letterScramble: 'Build the word',
+    phraseBuilder: 'Build the phrase',
+    matching: 'Matching',
+    whatsMissing: "What's missing?"
+  })[mode] || mode;
+}
+
+function imageBox(item) {
+  return item.image
+    ? `<div class="image-box"><img src="${item.image}" alt="${escapeHtml(item.text)}" /></div>`
+    : `<div class="image-box"><span class="placeholder">?</span></div>`;
+}
+
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// --- Flashcards ---
+function renderFlashcards(container, item, onDone) {
+  container.innerHTML = `
+    ${imageBox(item)}
+    <p class="word-main">${escapeHtml(item.text)}</p>
+    ${item.phonetic ? `<p class="phonetic">${escapeHtml(item.phonetic)}</p>` : ''}
+    <p class="definition">${escapeHtml(item.definition)}</p>
+    <p class="example">${escapeHtml(item.example)}</p>
+    ${item.audio ? `<button id="listenBtn" style="margin-top:12px;">Listen</button>` : ''}
+    <div class="btn-row">
+      <button id="noBtn">I don't know it</button>
+      <button class="primary" id="yesBtn">I know it</button>
+    </div>
+  `;
+  if (item.audio) {
+    const audio = new Audio(item.audio);
+    document.getElementById('listenBtn').addEventListener('click', () => audio.play());
+  }
+  document.getElementById('noBtn').addEventListener('click', () => onDone(false));
+  document.getElementById('yesBtn').addEventListener('click', () => onDone(true));
+}
+
+// --- Multiple choice: word/phrase shown, choose the right image ---
+function renderMultipleChoice(container, item, onDone) {
+  const others = shuffle(setData.items.filter(i => i.id !== item.id && i.image)).slice(0, 3);
+  const options = shuffle([item, ...others]);
+  container.innerHTML = `
+    <p class="word-main">${escapeHtml(item.text)}</p>
+    ${item.phonetic ? `<p class="phonetic">${escapeHtml(item.phonetic)}</p>` : ''}
+    <div class="img-grid" id="imgGrid"></div>
+  `;
+  const grid = document.getElementById('imgGrid');
+  options.forEach(opt => {
+    const div = document.createElement('div');
+    div.className = 'img-choice';
+    div.innerHTML = opt.image ? `<img src="${opt.image}" alt="" />` : '?';
+    div.addEventListener('click', () => {
+      const correct = opt.id === item.id;
+      div.classList.add(correct ? 'correct' : 'wrong');
+      setTimeout(() => onDone(correct), 700);
+    });
+    grid.appendChild(div);
+  });
+}
+
+// --- Listening: play example sentence, choose the word heard among phonetic distractors ---
+function renderListening(container, item, onDone) {
+  const distractors = (item.distractors && item.distractors.length ? item.distractors : ['word1', 'word2']).slice(0, 2);
+  const options = shuffle([item.text, ...distractors]);
+  container.innerHTML = `
+    <div class="play-btn" id="playBtn">&#9658;</div>
+    <p class="definition">Tap to hear the sentence</p>
+    <p class="mode-label" style="margin-top:16px;">Which word did you hear?</p>
+    <div class="word-choice-grid" id="wordGrid"></div>
+  `;
+  if (item.audio) {
+    const audio = new Audio(item.audio);
+    document.getElementById('playBtn').addEventListener('click', () => audio.play());
+  }
+  const grid = document.getElementById('wordGrid');
+  options.forEach(word => {
+    const btn = document.createElement('button');
+    btn.className = 'word-tile';
+    btn.textContent = word;
+    btn.addEventListener('click', () => {
+      const correct = word === item.text;
+      btn.classList.add(correct ? 'correct' : 'wrong');
+      setTimeout(() => onDone(correct), 700);
+    });
+    grid.appendChild(btn);
+  });
+}
+
+// --- Fill in the missing letters ---
+function renderFillLetters(container, item, onDone) {
+  const word = item.text.toLowerCase();
+  const letters = word.split('');
+  const blanks = new Set();
+  const numBlanks = Math.max(1, Math.floor(letters.length / 2));
+  while (blanks.size < numBlanks) blanks.add(Math.floor(Math.random() * letters.length));
+
+  container.innerHTML = `
+    ${imageBox(item)}
+    <p class="definition">${escapeHtml(item.definition)}</p>
+    <div class="fill-boxes" id="fillBoxes"></div>
+    <button class="primary wide" id="checkBtn">Check</button>
+    <div id="feedback"></div>
+  `;
+  const boxes = document.getElementById('fillBoxes');
+  letters.forEach((ch, i) => {
+    if (blanks.has(i)) {
+      const input = document.createElement('input');
+      input.className = 'fill-box';
+      input.maxLength = 1;
+      input.dataset.index = i;
+      boxes.appendChild(input);
+    } else {
+      const div = document.createElement('div');
+      div.className = 'fill-box given';
+      div.textContent = ch;
+      boxes.appendChild(div);
+    }
+  });
+
+  document.getElementById('checkBtn').addEventListener('click', () => {
+    const inputs = boxes.querySelectorAll('input');
+    let correct = true;
+    inputs.forEach(input => {
+      const idx = Number(input.dataset.index);
+      if (input.value.toLowerCase() !== letters[idx]) { correct = false; input.style.borderColor = 'var(--danger)'; }
+      else { input.style.borderColor = 'var(--success)'; }
+    });
+    const feedback = document.getElementById('feedback');
+    feedback.className = `feedback ${correct ? 'correct' : 'wrong'}`;
+    feedback.textContent = correct ? 'Correct!' : `Not quite — it's "${word}"`;
+    document.getElementById('checkBtn').disabled = true;
+    setTimeout(() => onDone(correct), 1000);
+  });
+}
+
+// --- Letter scramble: build the word by tapping shuffled letters ---
+function renderLetterScramble(container, item, onDone) {
+  const word = item.text.toLowerCase();
+  const letters = shuffle(word.split(''));
+  let built = [];
+
+  container.innerHTML = `
+    ${imageBox(item)}
+    <div class="letters-target" id="target"></div>
+    <div class="letters-pool" id="pool"></div>
+    <div class="btn-row">
+      <button id="clearBtn">Clear</button>
+      ${item.audio ? '<button id="listenBtn">Listen</button>' : '<div></div>'}
+    </div>
+    <div id="feedback"></div>
+  `;
+
+  const target = document.getElementById('target');
+  const pool = document.getElementById('pool');
+
+  function renderTarget() {
+    target.innerHTML = '';
+    for (let i = 0; i < word.length; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'letter-slot' + (built[i] ? ' filled' : '');
+      slot.textContent = built[i] || '';
+      target.appendChild(slot);
+    }
+    if (built.length === word.length) checkScramble();
+  }
+
+  function checkScramble() {
+    const guess = built.join('');
+    const correct = guess === word;
+    const feedback = document.getElementById('feedback');
+    feedback.className = `feedback ${correct ? 'correct' : 'wrong'}`;
+    feedback.textContent = correct ? 'Correct!' : `Not quite — it's "${word}"`;
+    setTimeout(() => onDone(correct), 1000);
+  }
+
+  pool.innerHTML = '';
+  letters.forEach((ch, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'letter-tile';
+    btn.textContent = ch;
+    btn.dataset.used = 'false';
+    btn.addEventListener('click', () => {
+      if (btn.dataset.used === 'true' || built.length >= word.length) return;
+      built.push(ch);
+      btn.dataset.used = 'true';
+      btn.classList.add('used');
+      renderTarget();
+    });
+    pool.appendChild(btn);
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    built = [];
+    pool.querySelectorAll('.letter-tile').forEach(t => { t.dataset.used = 'false'; t.classList.remove('used'); });
+    renderTarget();
+  });
+
+  if (item.audio) {
+    const audio = new Audio(item.audio);
+    document.getElementById('listenBtn').addEventListener('click', () => audio.play());
+  }
+
+  renderTarget();
+}
+
+// --- Phrase builder: build a multi-word phrase from shuffled word tiles ---
+function renderPhraseBuilder(container, item, onDone) {
+  const chunks = item.chunks && item.chunks.length ? item.chunks : item.text.split(/\s+/);
+  const pool = shuffle(chunks);
+  let built = [];
+
+  container.innerHTML = `
+    ${imageBox(item)}
+    <div class="letters-target" id="target"></div>
+    <div class="letters-pool" id="pool"></div>
+    <div class="btn-row">
+      <button id="clearBtn">Clear</button>
+      ${item.audio ? '<button id="listenBtn">Listen</button>' : '<div></div>'}
+    </div>
+    <div id="feedback"></div>
+  `;
+
+  const target = document.getElementById('target');
+  const poolEl = document.getElementById('pool');
+
+  function renderTarget() {
+    target.innerHTML = '';
+    chunks.forEach((_, i) => {
+      const slot = document.createElement('div');
+      slot.className = 'letter-slot' + (built[i] ? ' filled' : '');
+      slot.style.minWidth = '50px';
+      slot.textContent = built[i] || '';
+      target.appendChild(slot);
+    });
+    if (built.length === chunks.length) checkPhrase();
+  }
+
+  function checkPhrase() {
+    const guess = built.join(' ');
+    const correct = guess === chunks.join(' ');
+    const feedback = document.getElementById('feedback');
+    feedback.className = `feedback ${correct ? 'correct' : 'wrong'}`;
+    feedback.textContent = correct ? 'Correct!' : `Not quite — it's "${chunks.join(' ')}"`;
+    setTimeout(() => onDone(correct), 1200);
+  }
+
+  poolEl.innerHTML = '';
+  pool.forEach(word => {
+    const btn = document.createElement('button');
+    btn.className = 'word-tile';
+    btn.textContent = word;
+    btn.dataset.used = 'false';
+    btn.addEventListener('click', () => {
+      if (btn.dataset.used === 'true' || built.length >= chunks.length) return;
+      built.push(word);
+      btn.dataset.used = 'true';
+      btn.classList.add('used');
+      renderTarget();
+    });
+    poolEl.appendChild(btn);
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    built = [];
+    poolEl.querySelectorAll('.word-tile').forEach(t => { t.dataset.used = 'false'; t.classList.remove('used'); });
+    renderTarget();
+  });
+
+  if (item.audio) {
+    const audio = new Audio(item.audio);
+    document.getElementById('listenBtn').addEventListener('click', () => audio.play());
+  }
+
+  renderTarget();
+}
+
+// --- Matching: tap a word then its image ---
+function renderMatching(container, items, onDone) {
+  let selectedWord = null;
+  let matched = new Set();
+  const words = shuffle(items);
+  const images = shuffle(items);
+
+  container.innerHTML = `
+    <p class="mode-label">Match the word to the picture</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+      <div id="wordsCol" style="display:flex; flex-direction:column; gap:8px;"></div>
+      <div id="imagesCol" style="display:flex; flex-direction:column; gap:8px;"></div>
+    </div>
+  `;
+  const wordsCol = document.getElementById('wordsCol');
+  const imagesCol = document.getElementById('imagesCol');
+
+  words.forEach(w => {
+    const btn = document.createElement('button');
+    btn.textContent = w.text;
+    btn.dataset.id = w.id;
+    btn.addEventListener('click', () => {
+      if (matched.has(w.id)) return;
+      wordsCol.querySelectorAll('button').forEach(b => b.style.outline = 'none');
+      selectedWord = w;
+      btn.style.outline = `2px solid var(--teal)`;
+    });
+    wordsCol.appendChild(btn);
+  });
+
+  images.forEach(im => {
+    const div = document.createElement('div');
+    div.className = 'img-choice';
+    div.style.height = '48px';
+    div.innerHTML = `<img src="${im.image}" alt="" />`;
+    div.addEventListener('click', () => {
+      if (!selectedWord || matched.has(im.id)) return;
+      const correct = selectedWord.id === im.id;
+      if (correct) {
+        matched.add(im.id);
+        div.classList.add('correct');
+        const wordBtn = wordsCol.querySelector(`button[data-id="${selectedWord.id}"]`);
+        wordBtn.style.outline = 'none';
+        wordBtn.disabled = true;
+        wordBtn.classList.add('correct');
+      } else {
+        div.classList.add('wrong');
+        setTimeout(() => div.classList.remove('wrong'), 400);
+      }
+      selectedWord = null;
+      if (matched.size === items.length) setTimeout(() => onDone(true), 500);
+    });
+    imagesCol.appendChild(div);
+  });
+}
+
+// --- What's missing: show images, hide one, ask which word is missing ---
+function renderWhatsMissing(container, items, onDone) {
+  const missingIdx = Math.floor(Math.random() * items.length);
+  const missingItem = items[missingIdx];
+  const distractorWords = shuffle(setData.items.filter(i => i.id !== missingItem.id).map(i => i.text)).slice(0, 3);
+  const options = shuffle([missingItem.text, ...distractorWords]);
+
+  container.innerHTML = `
+    <div class="missing-grid" id="grid"></div>
+    <p class="mode-label">Which word is missing?</p>
+    <div class="word-choice-grid" id="wordGrid"></div>
+  `;
+  const grid = document.getElementById('grid');
+  items.forEach((it, i) => {
+    const cell = document.createElement('div');
+    if (i === missingIdx) {
+      cell.className = 'missing-cell empty';
+      cell.textContent = '?';
+    } else {
+      cell.className = 'missing-cell';
+      cell.innerHTML = `<img src="${it.image}" alt="" />`;
+    }
+    grid.appendChild(cell);
+  });
+
+  const wordGrid = document.getElementById('wordGrid');
+  options.forEach(word => {
+    const btn = document.createElement('button');
+    btn.className = 'word-tile';
+    btn.textContent = word;
+    btn.addEventListener('click', () => {
+      const correct = word === missingItem.text;
+      btn.classList.add(correct ? 'correct' : 'wrong');
+      setTimeout(() => onDone(correct), 700);
+    });
+    wordGrid.appendChild(btn);
+  });
+}
+
+function renderDone() {
+  const wrongCount = wrongItemIds.size;
+  app.innerHTML = `
+    <div class="done-screen">
+      <h2>Well done!</h2>
+      <p class="definition">${wrongCount ? `${wrongCount} word${wrongCount > 1 ? 's' : ''} to review next time` : 'All words done'}</p>
+      <button class="primary wide" id="restartBtn">Practice again</button>
+    </div>
+  `;
+  document.getElementById('restartBtn').addEventListener('click', () => {
+    wrongItemIds = new Set();
+    queue = buildSession(setData);
+    stepIndex = 0;
+    renderStep();
+  });
+}
+
+init();
+</script>
+</body>
+</html>

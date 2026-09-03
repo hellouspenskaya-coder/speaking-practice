@@ -1,0 +1,67 @@
+{
+  "topic": "Demo test set",
+  "level": "A1",
+  "modes": ["flashcards", "multipleChoice", "matching", "listening", "fillLetters", "letterScramble", "phraseBuilder", "whatsMissing"],
+  "items": [
+    {
+      "id": "demo1",
+      "type": "word",
+      "text": "apple",
+      "definition": "a round fruit, red or green",
+      "example": "I eat an apple every day.",
+      "phonetic": "/ˈæp.əl/",
+      "distractors": ["apply", "ample"],
+      "chunks": [],
+      "image": "https://images.pexels.com/photos/102104/pexels-photo-102104.jpeg?auto=compress&cs=tinysrgb&w=400",
+      "audio": null
+    },
+    {
+      "id": "demo2",
+      "type": "word",
+      "text": "cook",
+      "definition": "to prepare food using heat",
+      "example": "She likes to cook every day.",
+      "phonetic": "/kʊk/",
+      "distractors": ["book", "look"],
+      "chunks": [],
+      "image": "https://images.pexels.com/photos/887827/pexels-photo-887827.jpeg?auto=compress&cs=tinysrgb&w=400",
+      "audio": null
+    },
+    {
+      "id": "demo3",
+      "type": "word",
+      "text": "bread",
+      "definition": "baked food made from flour",
+      "example": "He buys bread every morning.",
+      "phonetic": "/bred/",
+      "distractors": ["bed", "bread"],
+      "chunks": [],
+      "image": "https://images.pexels.com/photos/1387070/pexels-photo-1387070.jpeg?auto=compress&cs=tinysrgb&w=400",
+      "audio": null
+    },
+    {
+      "id": "demo4",
+      "type": "word",
+      "text": "cup",
+      "definition": "a small container for drinks",
+      "example": "I want a cup of tea.",
+      "phonetic": "/kʌp/",
+      "distractors": ["cap", "cut"],
+      "chunks": [],
+      "image": "https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?auto=compress&cs=tinysrgb&w=400",
+      "audio": null
+    },
+    {
+      "id": "demo5",
+      "type": "phrase",
+      "text": "live in a house",
+      "definition": "to have your home in a house",
+      "example": "My family lives in a house.",
+      "phonetic": "",
+      "distractors": [],
+      "chunks": ["live", "in", "a", "house"],
+      "image": "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=400",
+      "audio": null
+    }
+  ]
+}

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vocab Trainer — Builder</title>
+<style>
+  :root {
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+    --success: #16a34a;
+    --bg: #f8fafc;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 24px 16px 80px;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .card h2 { font-size: 15px; font-weight: 600; margin: 0 0 12px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  input[type=text], select, textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--text);
+  }
+  textarea { resize: vertical; min-height: 70px; }
+  .row { display: flex; gap: 12px; }
+  .row > div { flex: 1; }
+  button {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+  }
+  button:hover { background: #f1f5f9; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+  button.primary:hover { background: #1d4ed8; }
+  button.danger { color: var(--danger); }
+  button.small { padding: 5px 10px; font-size: 12px; }
+  .item {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .item-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .item-title { font-size: 15px; font-weight: 500; }
+  .badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--blue-light);
+    color: var(--blue);
+    margin-left: 8px;
+  }
+  .item-status { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .item-body { margin-top: 12px; display: none; }
+  .item-body.open { display: block; }
+  .field-row { display: flex; gap: 10px; margin-bottom: 8px; }
+  .field-row label { flex: 0 0 90px; font-size: 12px; padding-top: 8px; }
+  .field-row input, .field-row textarea { flex: 1; }
+  .images-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .image-cand {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    height: 70px;
+  }
+  .image-cand img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .image-cand.selected { border-color: var(--blue); }
+  .actions-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .modes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .mode-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .mode-check input { width: auto; }
+  .link-box {
+    background: var(--blue-light);
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 12px;
+    display: none;
+  }
+  .link-box.open { display: block; }
+  .link-box input { background: #fff; }
+  .error-box {
+    background: var(--danger-light);
+    color: var(--danger);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    margin-top: 8px;
+    display: none;
+  }
+  .error-box.open { display: block; }
+  .empty-hint { color: var(--muted); font-size: 13px; text-align: center; padding: 20px 0; }
+  .type-toggle { display: flex; gap: 6px; }
+  .type-toggle button { flex: 1; }
+  .type-toggle button.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Vocabulary trainer — builder</h1>
+  <p class="sub">Create a word set: add words or phrases, generate images and audio, choose practice modes, then get a shareable link.</p>
+
+  <div class="card">
+    <h2>Set details</h2>
+    <div class="row">
+      <div>
+        <label for="topicInput">Topic</label>
+        <input type="text" id="topicInput" placeholder="Food & cooking" />
+      </div>
+      <div>
+        <label for="levelSelect">Level</label>
+        <select id="levelSelect">
+          <option value="A1">A1</option>
+          <option value="A2">A2</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Add words / phrases</h2>
+    <div class="field-row">
+      <label>Add one</label>
+      <input type="text" id="singleInput" placeholder="cook  —  or  —  live in a house" />
+    </div>
+    <div class="actions-row">
+      <button id="addSingleBtn">Add item</button>
+    </div>
+    <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:14px;">
+      <label for="bulkInput">Or paste many at once (comma or new line separated)</label>
+      <textarea id="bulkInput" placeholder="apple, bread, cook, cup, egg, live in a house, say sorry"></textarea>
+      <div class="actions-row">
+        <button id="addBulkBtn">Add all</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Items <span id="itemCount" style="color:var(--muted); font-weight:400;"></span></h2>
+    <div class="actions-row" style="margin-bottom:12px;">
+      <button id="generateAllBtn">Generate content for all pending</button>
+    </div>
+    <div id="itemsList"></div>
+    <p class="empty-hint" id="emptyHint">No items yet — add some above.</p>
+  </div>
+
+  <div class="card">
+    <h2>Practice modes for this set</h2>
+    <div class="modes-grid" id="modesGrid"></div>
+  </div>
+
+  <div class="card">
+    <h2>Publish</h2>
+    <p class="sub" style="margin-bottom:12px;">Generates one shared link. Every student uses the same link.</p>
+    <div class="actions-row">
+      <button class="primary" id="publishBtn">Generate link</button>
+      <button id="downloadBtn">Download JSON instead</button>
+    </div>
+    <div class="error-box" id="publishError"></div>
+    <div class="link-box" id="linkBox">
+      <label>Student link</label>
+      <input type="text" id="linkOutput" readonly />
+      <div class="actions-row">
+        <button class="small" id="copyLinkBtn">Copy link</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MODES = [
+  { id: 'flashcards', label: 'Flashcards' },
+  { id: 'multipleChoice', label: 'Multiple choice' },
+  { id: 'matching', label: 'Matching' },
+  { id: 'listening', label: 'Listening' },
+  { id: 'fillLetters', label: 'Fill missing letters' },
+  { id: 'letterScramble', label: 'Letter scramble' },
+  { id: 'phraseBuilder', label: 'Build the phrase' },
+  { id: 'whatsMissing', label: "What's missing?" }
+];
+
+let items = []; // { id, text, type, definition, example, phonetic, distractors, chunks, image, audio, status }
+let idCounter = 0;
+
+function uid() { idCounter += 1; return 'item_' + idCounter; }
+
+function guessType(text) {
+  return text.trim().split(/\s+/).length > 1 ? 'phrase' : 'word';
+}
+
+function addItem(text) {
+  const clean = text.trim();
+  if (!clean) return;
+  items.push({
+    id: uid(),
+    text: clean,
+    type: guessType(clean),
+    definition: '',
+    example: '',
+    phonetic: '',
+    distractors: [],
+    chunks: [],
+    image: null,
+    audio: null,
+    status: 'pending'
+  });
+  renderItems();
+}
+
+document.getElementById('addSingleBtn').addEventListener('click', () => {
+  const input = document.getElementById('singleInput');
+  addItem(input.value);
+  input.value = '';
+});
+
+document.getElementById('addBulkBtn').addEventListener('click', () => {
+  const textarea = document.getElementById('bulkInput');
+  const parts = textarea.value.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+  parts.forEach(addItem);
+  textarea.value = '';
+});
+
+function renderItems() {
+  const list = document.getElementById('itemsList');
+  const emptyHint = document.getElementById('emptyHint');
+  document.getElementById('itemCount').textContent = items.length ? `(${items.length})` : '';
+  emptyHint.style.display = items.length ? 'none' : 'block';
+  list.innerHTML = '';
+
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      <div class="item-head">
+        <div>
+          <span class="item-title">${escapeHtml(item.text)}</span>
+          <span class="badge">${item.type}</span>
+          <div class="item-status">${statusLabel(item)}</div>
+        </div>
+        <div class="actions-row" style="margin:0;">
+          <button class="small toggle-btn" data-id="${item.id}">Edit</button>
+          <button class="small danger delete-btn" data-id="${item.id}">Remove</button>
+        </div>
+      </div>
+      <div class="item-body" id="body-${item.id}"></div>
+    `;
+    list.appendChild(el);
+  });
+
+  list.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => toggleItemBody(btn.dataset.id));
+  });
+  list.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      items = items.filter(i => i.id !== btn.dataset.id);
+      renderItems();
+    });
+  });
+}
+
+function statusLabel(item) {
+  const parts = [];
+  parts.push(item.definition ? 'content ✓' : 'content —');
+  parts.push(item.image ? 'image ✓' : 'image —');
+  parts.push(item.audio ? 'audio ✓' : 'audio —');
+  return parts.join(' · ');
+}
+
+function toggleItemBody(id) {
+  const body = document.getElementById(`body-${id}`);
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.item-body.open').forEach(b => b.classList.remove('open'));
+  if (!isOpen) {
+    body.classList.add('open');
+    renderItemBody(id);
+  }
+}
+
+function renderItemBody(id) {
+  const item = items.find(i => i.id === id);
+  const body = document.getElementById(`body-${id}`);
+  const isPhrase = item.type === 'phrase';
+
+  body.innerHTML = `
+    <div class="field-row">
+      <label>Definition</label>
+      <input type="text" data-field="definition" value="${escapeAttr(item.definition)}" />
+    </div>
+    <div class="field-row">
+      <label>Example</label>
+      <input type="text" data-field="example" value="${escapeAttr(item.example)}" />
+    </div>
+    ${!isPhrase ? `
+    <div class="field-row">
+      <label>Phonetic</label>
+      <input type="text" data-field="phonetic" value="${escapeAttr(item.phonetic)}" />
+    </div>
+    <div class="field-row">
+      <label>Distractors</label>
+      <input type="text" data-field="distractors" value="${escapeAttr((item.distractors || []).join(', '))}" placeholder="book, look" />
+    </div>
+    ` : `
+    <div class="field-row">
+      <label>Word order</label>
+      <input type="text" data-field="chunks" value="${escapeAttr((item.chunks || []).join(' '))}" placeholder="live in a house" />
+    </div>
+    `}
+    <div class="actions-row">
+      <button class="small gen-content-btn">Generate content (AI)</button>
+      <button class="small gen-images-btn">Find images</button>
+      <button class="small gen-audio-btn" ${!item.example ? 'disabled' : ''}>Generate audio</button>
+    </div>
+    <div class="images-grid" id="images-${id}"></div>
+    <div class="error-box" id="itemError-${id}"></div>
+  `;
+
+  body.querySelectorAll('input[data-field]').forEach(input => {
+    input.addEventListener('input', () => {
+      const field = input.dataset.field;
+      if (field === 'distractors') {
+        item.distractors = input.value.split(',').map(s => s.trim()).filter(Boolean);
+      } else if (field === 'chunks') {
+        item.chunks = input.value.split(/\s+/).filter(Boolean);
+      } else {
+        item[field] = input.value;
+      }
+      renderItems();
+      document.getElementById(`body-${id}`).classList.add('open');
+    });
+  });
+
+  body.querySelector('.gen-content-btn').addEventListener('click', () => generateContentFor([item]));
+  body.querySelector('.gen-images-btn').addEventListener('click', () => findImagesFor(item));
+  body.querySelector('.gen-audio-btn').addEventListener('click', () => generateAudioFor(item));
+
+  if (item.image) renderImageCandidates(item, [{ full: item.image, thumb: item.image }], item.image);
+}
+
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) { return escapeHtml(s); }
+
+async function generateContentFor(itemsToGenerate) {
+  if (!itemsToGenerate.length) return;
+  const level = document.getElementById('levelSelect').value;
+  try {
+    const response = await fetch('/api/vocab-generate-content', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        level,
+        items: itemsToGenerate.map(i => ({ text: i.text, type: i.type }))
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Generation failed');
+
+    data.items.forEach((generated, idx) => {
+      const item = itemsToGenerate[idx];
+      item.definition = generated.definition || item.definition;
+      item.example = generated.example || item.example;
+      item.phonetic = generated.phonetic || item.phonetic;
+      if (Array.isArray(generated.distractors)) item.distractors = generated.distractors;
+      if (Array.isArray(generated.chunks)) item.chunks = generated.chunks;
+      item.status = 'generated';
+    });
+    renderItems();
+    itemsToGenerate.forEach(item => {
+      const body = document.getElementById(`body-${item.id}`);
+      if (body) { body.classList.add('open'); renderItemBody(item.id); }
+    });
+  } catch (err) {
+    alert('Content generation failed: ' + err.message);
+  }
+}
+
+document.getElementById('generateAllBtn').addEventListener('click', () => {
+  const pending = items.filter(i => !i.definition);
+  if (!pending.length) { alert('Nothing pending — all items already have content.'); return; }
+  generateContentFor(pending);
+});
+
+async function findImagesFor(item) {
+  const errorBox = document.getElementById(`itemError-${item.id}`);
+  errorBox.classList.remove('open');
+  try {
+    const query = item.type === 'phrase' ? phraseImageQuery(item.text) : item.text;
+    const response = await fetch(`/api/vocab-search-images?query=${encodeURIComponent(query)}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Image search failed');
+    if (!data.images.length) throw new Error('No images found — try editing the definition and picking manually.');
+    renderImageCandidates(item, data.images, item.image);
+  } catch (err) {
+    errorBox.textContent = err.message;
+    errorBox.classList.add('open');
+  }
+}
+
+// Phrases don't search well literally — turn them into a scene description.
+function phraseImageQuery(phrase) {
+  return `person ${phrase}`;
+}
+
+function renderImageCandidates(item, images, selectedUrl) {
+  const grid = document.getElementById(`images-${item.id}`);
+  if (!grid) return;
+  grid.innerHTML = '';
+  images.forEach(img => {
+    const div = document.createElement('div');
+    div.className = 'image-cand' + (img.full === selectedUrl ? ' selected' : '');
+    div.innerHTML = `<img src="${img.thumb}" alt="${escapeAttr(img.alt || item.text)}" />`;
+    div.addEventListener('click', () => {
+      item.image = img.full;
+      renderItems();
+      renderImageCandidates(item, images, img.full);
+    });
+    grid.appendChild(div);
+  });
+}
+
+async function generateAudioFor(item) {
+  const errorBox = document.getElementById(`itemError-${item.id}`);
+  errorBox.classList.remove('open');
+  if (!item.example) {
+    errorBox.textContent = 'Add an example sentence first.';
+    errorBox.classList.add('open');
+    return;
+  }
+  try {
+    const response = await fetch('/api/vocab-generate-audio', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: item.example })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Audio generation failed');
+    item.audio = data.audio;
+    renderItems();
+  } catch (err) {
+    errorBox.textContent = err.message;
+    errorBox.classList.add('open');
+  }
+}
+
+// Practice mode toggles
+function renderModes() {
+  const grid = document.getElementById('modesGrid');
+  grid.innerHTML = '';
+  MODES.forEach(mode => {
+    const label = document.createElement('label');
+    label.className = 'mode-check';
+    label.innerHTML = `<input type="checkbox" data-mode="${mode.id}" checked /> ${mode.label}`;
+    grid.appendChild(label);
+  });
+}
+renderModes();
+
+function getEnabledModes() {
+  return Array.from(document.querySelectorAll('#modesGrid input[type=checkbox]'))
+    .filter(cb => cb.checked)
+    .map(cb => cb.dataset.mode);
+}
+
+function buildSetData() {
+  return {
+    topic: document.getElementById('topicInput').value.trim() || 'Untitled set',
+    level: document.getElementById('levelSelect').value,
+    modes: getEnabledModes(),
+    items: items.map(i => ({
+      id: i.id,
+      type: i.type,
+      text: i.text,
+      definition: i.definition,
+      example: i.example,
+      phonetic: i.phonetic,
+      distractors: i.distractors,
+      chunks: i.chunks,
+      image: i.image,
+      audio: i.audio
+    }))
+  };
+}
+
+function slugify(topic) {
+  return topic.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'set';
+}
+
+document.getElementById('publishBtn').addEventListener('click', async () => {
+  const errorBox = document.getElementById('publishError');
+  errorBox.classList.remove('open');
+  if (!items.length) {
+    errorBox.textContent = 'Add at least one item first.';
+    errorBox.classList.add('open');
+    return;
+  }
+  const data = buildSetData();
+  const slug = slugify(data.topic);
+  try {
+    const response = await fetch('/api/vocab-save-set', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug, data })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Save failed');
+
+    const fullLink = `${window.location.origin}${result.trainerLink}`;
+    document.getElementById('linkOutput').value = fullLink;
+    document.getElementById('linkBox').classList.add('open');
+  } catch (err) {
+    errorBox.innerHTML = `Could not save automatically: ${escapeHtml(err.message)}<br>Use "Download JSON instead" and upload it to <code>vocab-sets/</code> on GitHub manually.`;
+    errorBox.classList.add('open');
+  }
+});
+
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  if (!items.length) { alert('Add at least one item first.'); return; }
+  const data = buildSetData();
+  const slug = slugify(data.topic);
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${slug}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('copyLinkBtn').addEventListener('click', () => {
+  const input = document.getElementById('linkOutput');
+  input.select();
+  navigator.clipboard.writeText(input.value);
+});
+
+renderItems();
+</script>
+</body>
+</html>
