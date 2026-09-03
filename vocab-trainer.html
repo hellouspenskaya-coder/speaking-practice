@@ -171,7 +171,7 @@ const app = document.getElementById('app');
 
 const SINGLE_WORD_MODES = ['multipleChoice', 'listening', 'fillLetters', 'letterScramble'];
 const SINGLE_PHRASE_MODES = ['multipleChoice', 'listening', 'phraseBuilder'];
-const GROUP_MODES = ['matching', 'whatsMissing'];
+const GROUP_MODES = ['matching', 'matchingDef', 'whatsMissing'];
 // Most pictures shown at once in matching / what's missing.
 // Kept low so a beginner can actually hold them in mind.
 const MAX_GROUP_SIZE = 6;
@@ -244,10 +244,12 @@ function buildSession(data) {
 
   // Group steps: chunks of items with images, for matching / whatsMissing.
   const withImages = items.filter(i => i.image);
+  const withDefs = items.filter(i => i.definition);
   GROUP_MODES.forEach(groupMode => {
     if (!enabledModes.includes(groupMode)) return;
-    for (let i = 0; i < withImages.length; i += MAX_GROUP_SIZE) {
-      const chunk = withImages.slice(i, i + MAX_GROUP_SIZE);
+    const pool = groupMode === 'matchingDef' ? withDefs : withImages;
+    for (let i = 0; i < pool.length; i += MAX_GROUP_SIZE) {
+      const chunk = pool.slice(i, i + MAX_GROUP_SIZE);
       if (chunk.length >= 3) practiceSteps.push({ kind: 'group', mode: groupMode, items: chunk, phase: 'practice' });
     }
   });
@@ -341,6 +343,7 @@ function renderStep() {
     renderAntonyms(cardArea, step.item, step.answer, onDone);
   } else {
     if (step.mode === 'matching') renderMatching(cardArea, step.items, onDone);
+    else if (step.mode === 'matchingDef') renderMatchingDef(cardArea, step.items, onDone);
     else if (step.mode === 'whatsMissing') renderWhatsMissing(cardArea, step.items, onDone);
   }
 }
@@ -390,6 +393,7 @@ function modeLabel(mode) {
     letterScramble: 'Build the word',
     phraseBuilder: 'Build the phrase',
     matching: 'Matching',
+    matchingDef: 'Match the definition',
     whatsMissing: "What's missing?",
     antonyms: 'Opposites'
   })[mode] || mode;
@@ -687,7 +691,88 @@ function renderPhraseBuilder(container, item, onDone) {
   renderTarget();
 }
 
-// --- Matching: tap a word then its image ---
+// --- Matching (definition): tap a word then its definition ---
+function renderMatchingDef(container, items, onDone) {
+  let selectedWord = null;
+  let matched = new Set();
+  let pairNumber = 0;
+  const words = shuffle(items);
+  const defs = shuffle(items);
+
+  container.innerHTML = `
+    <p class="mode-label">Match the word to its meaning</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <div id="wordsCol" style="display:flex; flex-direction:column; gap:8px;"></div>
+      <div id="defsCol" style="display:flex; flex-direction:column; gap:8px;"></div>
+    </div>
+  `;
+  const wordsCol = document.getElementById('wordsCol');
+  const defsCol = document.getElementById('defsCol');
+
+  words.forEach(w => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'match-row';
+    const btn = document.createElement('button');
+    btn.textContent = w.text;
+    btn.dataset.id = w.id;
+    btn.style.width = '100%';
+    btn.addEventListener('click', () => {
+      if (matched.has(w.id)) return;
+      wordsCol.querySelectorAll('button').forEach(b => b.style.outline = 'none');
+      selectedWord = w;
+      btn.style.outline = `2px solid var(--teal)`;
+    });
+    wrapper.appendChild(btn);
+    wordsCol.appendChild(wrapper);
+  });
+
+  defs.forEach(d => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'match-row';
+    const btn = document.createElement('button');
+    btn.style.width = '100%';
+    btn.style.fontSize = '12px';
+    btn.style.textAlign = 'left';
+    btn.style.whiteSpace = 'normal';
+    btn.style.lineHeight = '1.4';
+    btn.style.minHeight = '44px';
+    btn.textContent = d.definition;
+    btn.addEventListener('click', () => {
+      if (!selectedWord || matched.has(d.id)) return;
+      const correct = selectedWord.id === d.id;
+      if (correct) {
+        pairNumber += 1;
+        matched.add(d.id);
+        btn.classList.add('correct');
+        addBadge(wrapper, pairNumber);
+        const wordBtn = wordsCol.querySelector(`button[data-id="${selectedWord.id}"]`);
+        wordBtn.style.outline = 'none';
+        wordBtn.disabled = true;
+        wordBtn.style.background = 'var(--success-light)';
+        wordBtn.style.borderColor = 'var(--success)';
+        wordBtn.style.color = 'var(--success)';
+        wordBtn.style.opacity = '1';
+        addBadge(wordBtn.parentElement, pairNumber);
+      } else {
+        btn.classList.add('wrong');
+        setTimeout(() => btn.classList.remove('wrong'), 400);
+      }
+      selectedWord = null;
+      if (matched.size === items.length) setTimeout(() => onDone(true), 700);
+    });
+    wrapper.appendChild(btn);
+    defsCol.appendChild(wrapper);
+  });
+
+  function addBadge(parent, number) {
+    const badge = document.createElement('div');
+    badge.className = 'pair-badge';
+    badge.textContent = number;
+    parent.appendChild(badge);
+  }
+}
+
+// --- Matching (picture) ---
 function renderMatching(container, items, onDone) {
   let selectedWord = null;
   let matched = new Set();
