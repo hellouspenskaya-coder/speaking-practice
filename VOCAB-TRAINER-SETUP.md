@@ -4,12 +4,13 @@ New files added, all self-contained in this repo:
 
 - `vocab-builder.html` — your builder page
 - `vocab-trainer.html` — student practice page (link format: `vocab-trainer.html?set=SLUG`)
-- `api/vocab-search-images.js` — image candidates via Pexels
-- `api/vocab-generate-content.js` — Haiku generates definitions/examples/distractors
-- `api/vocab-generate-audio.js` — Groq Orpheus TTS for sentence audio
-- `api/vocab-save-set.js` — commits a finished set to `vocab-sets/*.json` in this repo
+- `api/vocab.js` — **one** serverless function handling all vocab actions (content, antonyms, audio, images, save)
 - `vocab-sets/demo-test.json` — a small hand-made set so you can test the trainer right away, no API keys needed:
   **https://speaking-practice-ruby.vercel.app/vocab-trainer.html?set=demo-test**
+
+## Important: Vercel's function limit
+
+The Hobby (free) plan allows a maximum of **12 serverless functions** per project. This project already had 8 before the vocab trainer, so all vocab backend actions live in a single `api/vocab.js` file, routed by an `action` field in the POST body. Adding a new capability there is free; adding a new `api/*.js` file risks pushing the project over the limit, which makes the **entire deployment fail silently** and leaves the live site stuck on the previous version.
 
 ## New environment variables needed in Vercel
 

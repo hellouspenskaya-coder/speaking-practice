@@ -412,10 +412,11 @@ async function generateContentFor(itemsToGenerate) {
   if (!itemsToGenerate.length) return;
   const level = document.getElementById('levelSelect').value;
   try {
-    const response = await fetch('/api/vocab-generate-content', {
+    const response = await fetch('/api/vocab', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        action: 'content',
         level,
         items: itemsToGenerate.map(i => ({ text: i.text, type: i.type }))
       })
@@ -453,7 +454,11 @@ async function findImagesFor(item) {
   errorBox.classList.remove('open');
   try {
     const query = item.type === 'phrase' ? phraseImageQuery(item.text) : item.text;
-    const response = await fetch(`/api/vocab-search-images?query=${encodeURIComponent(query)}`);
+    const response = await fetch('/api/vocab', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'images', query })
+    });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Image search failed');
     if (!data.images.length) throw new Error('No images found — try editing the definition and picking manually.');
@@ -495,10 +500,10 @@ async function generateAudioFor(item) {
     return;
   }
   try {
-    const response = await fetch('/api/vocab-generate-audio', {
+    const response = await fetch('/api/vocab', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: item.example })
+      body: JSON.stringify({ action: 'audio', text: item.example })
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Audio generation failed');
@@ -524,10 +529,10 @@ document.getElementById('findAntonymsBtn').addEventListener('click', async () =>
   btn.disabled = true;
   btn.textContent = 'Looking…';
   try {
-    const response = await fetch('/api/vocab-find-antonyms', {
+    const response = await fetch('/api/vocab', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ words: items.map(i => i.text) })
+      body: JSON.stringify({ action: 'antonyms', words: items.map(i => i.text) })
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Antonym search failed');
@@ -621,10 +626,10 @@ document.getElementById('publishBtn').addEventListener('click', async () => {
   const data = buildSetData();
   const slug = slugify(data.topic);
   try {
-    const response = await fetch('/api/vocab-save-set', {
+    const response = await fetch('/api/vocab', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slug, data })
+      body: JSON.stringify({ action: 'save', slug, data })
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Save failed');
