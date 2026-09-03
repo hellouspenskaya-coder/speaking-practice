@@ -18,7 +18,14 @@ Project → Settings → Environment Variables → add these three:
 
 1. **PEXELS_API_KEY** — free, sign up at pexels.com/api, instant key, generous free limit. Powers "Find images" in the builder.
 2. **GITHUB_TOKEN** — a *separate* Personal Access Token from the one you gave me for this one-time push. This one needs to be **long-lived** (e.g. 1 year, or no expiration) since the live app uses it every time you click "Generate link" in the builder. Same steps as before (Settings → Developer settings → Fine-grained tokens → repository `speaking-practice` only → Contents: Read and write). Until this is set, the builder's "Generate link" button will show an error — use "Download JSON instead" and upload manually as a fallback in the meantime.
-3. Nothing new needed for text-to-speech — it reuses your existing **GROQ_API_KEY**. One extra step: visit console.groq.com/playground, open the Orpheus V1 English model, and accept its model terms once — otherwise `vocab-generate-audio` will fail with a permissions error.
+3. Nothing new needed for text-to-speech — it reuses your existing **GROQ_API_KEY**. One extra step: visit console.groq.com/playground, open the Orpheus V1 English model, and accept its model terms once — otherwise the audio action will fail with a permissions error.
+4. **NOTION_VOCAB_PAGE_ID** *(optional)* — the ID of a Notion page where published set links get filed automatically. To get it: open the page in Notion, click Share → the URL ends in a 32-character string, that's the ID. Then in Notion click the "..." menu → Connections → add your existing integration, or the API can't write to it. Reuses your existing `NOTION_TOKEN`. If this isn't set, publishing still works — links just aren't filed in Notion.
+
+## A note on audio and storage
+
+Generated audio is stored as base64 inside each set's JSON, which means it lives in this repo and ships with every deployment. Roughly 20-60 KB per sentence, so a 15-word set with audio is 0.3-0.9 MB. That's fine for dozens of sets; if you ever reach several hundred, deployments will slow down and audio should move to separate storage.
+
+The trainer falls back to the browser's built-in speech synthesis whenever a set has no generated audio, and that costs nothing and takes no space. Generating Orpheus audio is worth it mainly for listening exercises where voice quality matters.
 
 `ANTHROPIC_API_KEY` is already set from your other tools and is reused as-is.
 

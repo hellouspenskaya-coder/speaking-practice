@@ -13,6 +13,7 @@
 
 const OWNER = 'hellouspenskaya-coder';
 const REPO = 'speaking-practice';
+const SITE_ORIGIN = 'https://speaking-practice-ruby.vercel.app';
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -251,11 +252,65 @@ async function saveSet(req, res) {
     return;
   }
 
+  const trainerLink = `/vocab-trainer.html?set=${cleanSlug}`;
+  const fullLink = `${SITE_ORIGIN}${trainerLink}`;
+
+  // Also file the link in the Notion library page, if one is configured.
+  let notion = { attempted: false };
+  if (process.env.NOTION_VOCAB_PAGE_ID && process.env.NOTION_TOKEN) {
+    notion.attempted = true;
+    try {
+      await addToNotionLibrary(data, fullLink);
+      notion.ok = true;
+    } catch (err) {
+      // A Notion failure must never lose the set — it's already committed.
+      notion.ok = false;
+      notion.error = err.message;
+    }
+  }
+
   res.status(200).json({
     ok: true,
     path: `/vocab-sets/${cleanSlug}.json`,
-    trainerLink: `/vocab-trainer.html?set=${cleanSlug}`
+    trainerLink,
+    notion
   });
+}
+
+async function addToNotionLibrary(data, fullLink) {
+  const pageId = process.env.NOTION_VOCAB_PAGE_ID;
+  const wordCount = (data.items || []).length;
+  const label = `${data.topic} (${data.level}) — ${wordCount} words`;
+
+  const response = await fetch(`https://api.notion.com/v1/blocks/${pageId}/children`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      children: [
+        {
+          object: 'block',
+          type: 'bulleted_list_item',
+          bulleted_list_item: {
+            rich_text: [
+              {
+                type: 'text',
+                text: { content: label, link: { url: fullLink } }
+              }
+            ]
+          }
+        }
+      ]
+    })
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Notion error ${response.status}: ${errText}`);
+  }
 }
 
 module.exports.config = { maxDuration: 60 };

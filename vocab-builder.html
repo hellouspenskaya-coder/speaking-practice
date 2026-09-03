@@ -229,6 +229,7 @@
       <div class="actions-row">
         <button class="small" id="copyLinkBtn">Copy link</button>
       </div>
+      <p id="notionNote" style="font-size:12px; margin:8px 0 0;"></p>
     </div>
   </div>
 </div>
@@ -637,6 +638,20 @@ document.getElementById('publishBtn').addEventListener('click', async () => {
     const fullLink = `${window.location.origin}${result.trainerLink}`;
     document.getElementById('linkOutput').value = fullLink;
     document.getElementById('linkBox').classList.add('open');
+
+    const notionNote = document.getElementById('notionNote');
+    if (result.notion && result.notion.attempted) {
+      if (result.notion.ok) {
+        notionNote.textContent = 'Saved to your Notion library page.';
+        notionNote.style.color = 'var(--success)';
+      } else {
+        notionNote.textContent = `Link created, but Notion save failed: ${result.notion.error}`;
+        notionNote.style.color = 'var(--danger)';
+      }
+    } else {
+      notionNote.textContent = 'Tip: set NOTION_VOCAB_PAGE_ID in Vercel to file links in Notion automatically.';
+      notionNote.style.color = 'var(--muted)';
+    }
   } catch (err) {
     errorBox.innerHTML = `Could not save automatically: ${escapeHtml(err.message)}<br>Use "Download JSON instead" and upload it to <code>vocab-sets/</code> on GitHub manually.`;
     errorBox.classList.add('open');
