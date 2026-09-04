@@ -181,19 +181,18 @@ async function searchImages(req, res) {
   const isPhrase = rawQuery.includes(' ');
 
   // Build a disambiguated query using the definition when available.
-  // e.g. "glasses" + "you wear them to see better" → "glasses eyewear"
-  // This avoids picking the wrong sense of homonyms like glasses/bank/bat.
+  // Extract up to 3 meaningful words from the definition as context.
   let query;
   if (isPhrase) {
     query = rawQuery;
   } else if (definition) {
-    // Extract the first 2-3 meaningful words from the definition as a hint.
+    const stopWords = new Set(['a','an','the','to','you','it','is','are','they','that','very','small','large','used','for','of','in','on','with','or','and','have','has','can','we','he','she','use','make','get','do','this','be','at','by','from','as','if','when','which']);
     const hint = definition
       .toLowerCase()
       .replace(/[^a-z\s]/g, '')
       .split(/\s+/)
-      .filter(w => !['a','an','the','to','you','it','is','are','they','that','very','small','large','used','for','of','in','on'].includes(w))
-      .slice(0, 2)
+      .filter(w => w.length > 2 && !stopWords.has(w))
+      .slice(0, 3)
       .join(' ');
     query = hint ? `${rawQuery} ${hint}` : `single ${rawQuery}`;
   } else {

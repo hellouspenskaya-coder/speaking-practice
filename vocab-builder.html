@@ -105,7 +105,7 @@
     overflow: hidden;
     cursor: pointer;
     border: 2px solid transparent;
-    height: 70px;
+    height: 100px;
   }
   .image-cand img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .image-cand.selected { border-color: var(--blue); }
@@ -304,8 +304,8 @@ function renderItems() {
       <div class="item-head">
         <div style="display:flex; align-items:center; gap:10px;">
           ${item.image
-            ? `<img src="${item.image}" alt="" style="width:44px; height:44px; object-fit:cover; border-radius:6px; flex-shrink:0;" />`
-            : `<div style="width:44px; height:44px; border-radius:6px; background:var(--bg); border:1px dashed var(--border); flex-shrink:0;"></div>`
+            ? `<img src="${item.image}" alt="" style="width:80px; height:80px; object-fit:cover; border-radius:8px; flex-shrink:0;" />`
+            : `<div style="width:80px; height:80px; border-radius:8px; background:var(--bg); border:1px dashed var(--border); flex-shrink:0;"></div>`
           }
           <div>
             <span class="item-title">${escapeHtml(item.text)}</span>
@@ -383,10 +383,16 @@ function renderItemBody(id) {
     `}
     <div class="actions-row">
       <button class="small gen-content-btn">Generate content (AI)</button>
-      <button class="small gen-images-btn">Find images</button>
-      <button class="small gen-audio-btn" ${!item.example ? 'disabled' : ''}>Generate audio</button>
+    </div>
+    <div class="field-row" style="margin-top:10px;">
+      <label style="flex:0 0 90px; font-size:12px; padding-top:8px;">Image search</label>
+      <input type="text" class="image-query-input" placeholder="e.g. tablet computer touchscreen" value="${escapeAttr(item.imageQuery || '')}" style="flex:1;" />
+      <button class="small gen-images-btn" style="flex:0 0 auto; margin-left:6px;">Find images</button>
     </div>
     <div class="images-grid" id="images-${id}"></div>
+    <div class="actions-row">
+      <button class="small gen-audio-btn" ${!item.example ? 'disabled' : ''}>Generate audio</button>
+    </div>
     <div class="error-box" id="itemError-${id}"></div>
   `;
 
@@ -406,6 +412,7 @@ function renderItemBody(id) {
   });
 
   body.querySelector('.gen-content-btn').addEventListener('click', () => generateContentFor([item]));
+  body.querySelector('.image-query-input').addEventListener('input', (e) => { item.imageQuery = e.target.value; });
   body.querySelector('.gen-images-btn').addEventListener('click', () => findImagesFor(item));
   body.querySelector('.gen-audio-btn').addEventListener('click', () => generateAudioFor(item));
 
@@ -489,9 +496,12 @@ async function autoFetchImages(itemsNeedingImages) {
 
 async function findImagesFor(item) {
   const errorBox = document.getElementById(`itemError-${item.id}`);
-  errorBox.classList.remove('open');
+  if (errorBox) errorBox.classList.remove('open');
   try {
-    const query = item.type === 'phrase' ? phraseImageQuery(item.text) : item.text;
+    // Use the teacher's manual query if provided, otherwise auto-generate.
+    const manualQuery = (item.imageQuery || '').trim();
+    const autoQuery = item.type === 'phrase' ? phraseImageQuery(item.text) : item.text;
+    const query = manualQuery || autoQuery;
     const response = await fetch('/api/vocab', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
