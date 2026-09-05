@@ -248,13 +248,15 @@ const MODES = [
   { id: 'listening', label: 'Listening' },
   { id: 'fillLetters', label: 'Fill missing letters' },
   { id: 'letterScramble', label: 'Letter scramble' },
+  { id: 'dictation', label: 'Dictation (with picture)' },
+  { id: 'dictationNoImage', label: 'Dictation (no picture)' },
   { id: 'phraseBuilder', label: 'Build the phrase' },
   { id: 'whatsMissing', label: "What's missing?" },
   { id: 'antonyms', label: 'Opposites' }
 ];
 
 let antonymPairs = [];
-let items = []; // { id, text, type, definition, example, phonetic, distractors, chunks, image, audio, status }
+let items = []; // { id, text, type, definition, example, phonetic, chunks, image, audio, status }
 let idCounter = 0;
 
 // Load existing set if builder opened with ?set=slug (e.g. by changing "trainer" to "builder" in the student URL)
@@ -302,7 +304,6 @@ function addItem(text) {
     definition: '',
     example: '',
     phonetic: '',
-    distractors: [],
     chunks: [],
     image: null,
     audio: null,
@@ -408,10 +409,6 @@ function renderItemBody(id) {
       <label>Phonetic</label>
       <input type="text" data-field="phonetic" value="${escapeAttr(item.phonetic)}" />
     </div>
-    <div class="field-row">
-      <label>Distractors</label>
-      <input type="text" data-field="distractors" value="${escapeAttr((item.distractors || []).join(', '))}" placeholder="book, look" />
-    </div>
     ` : `
     <div class="field-row">
       <label>Word order</label>
@@ -436,9 +433,7 @@ function renderItemBody(id) {
   body.querySelectorAll('input[data-field]').forEach(input => {
     input.addEventListener('input', () => {
       const field = input.dataset.field;
-      if (field === 'distractors') {
-        item.distractors = input.value.split(',').map(s => s.trim()).filter(Boolean);
-      } else if (field === 'chunks') {
+      if (field === 'chunks') {
         item.chunks = input.value.split(/\s+/).filter(Boolean);
       } else {
         item[field] = input.value;
@@ -500,20 +495,6 @@ async function generateContentFor(itemsToGenerate) {
       item.definition = generated.definition || item.definition;
       item.example = generated.example || item.example;
       item.phonetic = generated.phonetic || item.phonetic;
-      if (Array.isArray(generated.distractors)) {
-        // The prompt already asks the model not to repeat the word itself,
-        // but it sometimes does anyway — filter it out here so bad data
-        // never reaches the saved set, not just at display time.
-        const targetLower = item.text.toLowerCase();
-        const seen = new Set([targetLower]);
-        item.distractors = generated.distractors.filter(d => {
-          if (!d) return false;
-          const lower = d.toLowerCase();
-          if (seen.has(lower)) return false;
-          seen.add(lower);
-          return true;
-        });
-      }
       if (Array.isArray(generated.chunks)) item.chunks = generated.chunks;
       if (generated.imageHint) {
         const stopWords = new Set(['a','an','the','for','to','of','in','on','with','and','or','is','are','it','as','use','used','make','up','pack','paper','soft']);
@@ -773,7 +754,6 @@ function buildSetData() {
       definition: i.definition,
       example: i.example,
       phonetic: i.phonetic,
-      distractors: i.distractors,
       chunks: i.chunks,
       image: i.image,
       audio: i.audio,
