@@ -199,6 +199,16 @@
       <button id="findAntonymsBtn">Find opposite pairs</button>
     </div>
     <div id="pairsList" style="margin-top:12px;"></div>
+    <div style="margin-top:12px; border-top:1px solid var(--border); padding-top:12px;">
+      <p style="font-size:13px; color:var(--muted); margin:0 0 8px;">Add a pair manually:</p>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <select id="manualPairA" style="flex:1; min-width:100px;"><option value="">Word 1</option></select>
+        <span style="color:var(--muted);">↔</span>
+        <select id="manualPairB" style="flex:1; min-width:100px;"><option value="">Word 2</option></select>
+        <button class="small" id="addManualPairBtn">Add pair</button>
+      </div>
+      <div class="error-box" id="manualPairError" style="margin-top:6px;"></div>
+    </div>
     <div class="error-box" id="antonymError"></div>
   </div>
 
@@ -282,6 +292,7 @@ function renderItems() {
   document.getElementById('itemCount').textContent = items.length ? `(${items.length})` : '';
   emptyHint.style.display = items.length ? 'none' : 'block';
   list.innerHTML = '';
+  updateManualPairDropdowns();
 
   items.forEach(item => {
     const el = document.createElement('div');
@@ -593,18 +604,12 @@ document.getElementById('findAntonymsBtn').addEventListener('click', async () =>
     if (!response.ok) throw new Error(data.error || 'Antonym search failed');
     antonymPairs = data.pairs || [];
     renderPairs();
-    const hasEnough = antonymPairs.length >= 2;
-    const oppCheckbox = document.querySelector('#modesGrid input[data-mode="antonyms"]');
-    if (oppCheckbox) {
-      oppCheckbox.checked = hasEnough;
-      oppCheckbox.disabled = !hasEnough;
-      oppCheckbox.parentElement.style.opacity = hasEnough ? '1' : '0.4';
-    }
+    updateOppositeCheckbox();
     if (!antonymPairs.length) {
       errorBox.textContent = 'No clear opposite pairs found in this set.';
       errorBox.classList.add('open');
-    } else if (!hasEnough) {
-      errorBox.textContent = 'Only 1 pair found — need at least 2 for the Opposites exercise to make sense.';
+    } else if (antonymPairs.length < 2) {
+      errorBox.textContent = 'Only 1 pair found — need at least 2 for the Opposites exercise to make sense. Add more manually below.';
       errorBox.classList.add('open');
     }
   } catch (err) {
@@ -634,6 +639,53 @@ function renderPairs() {
     });
     list.appendChild(row);
   });
+}
+
+function updateManualPairDropdowns() {
+  const selA = document.getElementById('manualPairA');
+  const selB = document.getElementById('manualPairB');
+  if (!selA || !selB) return;
+  const valA = selA.value;
+  const valB = selB.value;
+  [selA, selB].forEach(sel => {
+    sel.innerHTML = '<option value="">— choose —</option>';
+    items.forEach(i => {
+      const opt = document.createElement('option');
+      opt.value = i.text;
+      opt.textContent = i.text;
+      sel.appendChild(opt);
+    });
+  });
+  selA.value = valA;
+  selB.value = valB;
+}
+
+document.getElementById('addManualPairBtn').addEventListener('click', () => {
+  const errorBox = document.getElementById('manualPairError');
+  errorBox.classList.remove('open');
+  const a = document.getElementById('manualPairA').value.trim();
+  const b = document.getElementById('manualPairB').value.trim();
+  if (!a || !b) { errorBox.textContent = 'Choose both words.'; errorBox.classList.add('open'); return; }
+  if (a === b) { errorBox.textContent = 'Choose two different words.'; errorBox.classList.add('open'); return; }
+  const alreadyExists = antonymPairs.some(p =>
+    (p[0] === a && p[1] === b) || (p[0] === b && p[1] === a)
+  );
+  if (alreadyExists) { errorBox.textContent = 'This pair already exists.'; errorBox.classList.add('open'); return; }
+  antonymPairs.push([a, b]);
+  document.getElementById('manualPairA').value = '';
+  document.getElementById('manualPairB').value = '';
+  renderPairs();
+  updateOppositeCheckbox();
+});
+
+function updateOppositeCheckbox() {
+  const hasEnough = antonymPairs.length >= 2;
+  const oppCheckbox = document.querySelector('#modesGrid input[data-mode="antonyms"]');
+  if (oppCheckbox) {
+    if (hasEnough && !oppCheckbox.checked) oppCheckbox.checked = true;
+    oppCheckbox.disabled = !hasEnough;
+    oppCheckbox.parentElement.style.opacity = hasEnough ? '1' : '0.4';
+  }
 }
 
 // Practice mode toggles
