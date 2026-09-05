@@ -372,7 +372,7 @@ function renderItemBody(id) {
     </div>
     <div class="field-row" style="margin-top:10px;">
       <label style="flex:0 0 90px; font-size:12px; padding-top:8px;">Image search</label>
-      <input type="text" class="image-query-input" placeholder="2-3 words, e.g. tissue kleenex" value="${escapeAttr(item.imageQuery || '')}" style="flex:1;" />
+      <input type="text" class="image-query-input" placeholder="2-3 words, e.g. tissue kleenex" value="${escapeAttr(item.imageQuery || item.imageHint || item.text)}" style="flex:1;" />
       <button class="small gen-images-btn" style="flex:0 0 auto; margin-left:6px;">Find images</button>
     </div>
     <div class="images-grid" id="images-${id}"></div>
