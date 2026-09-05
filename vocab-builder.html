@@ -187,7 +187,10 @@
   </div>
 
   <div class="card">
-    <h2>Items <span id="itemCount" style="color:var(--muted); font-weight:400;"></span> <span id="generatingIndicator" style="font-size:13px; color:var(--muted); display:none;">Generating…</span></h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h2 style="margin:0;">Items <span id="itemCount" style="color:var(--muted); font-weight:400;"></span> <span id="generatingIndicator" style="font-size:13px; color:var(--muted); display:none;">Generating…</span></h2>
+      <button class="small" id="copyWordsBtn" style="display:none;">Copy word list</button>
+    </div>
     <div id="itemsList"></div>
     <p class="empty-hint" id="emptyHint">No items yet — add some above.</p>
   </div>
@@ -290,6 +293,8 @@ function renderItems() {
   const list = document.getElementById('itemsList');
   const emptyHint = document.getElementById('emptyHint');
   document.getElementById('itemCount').textContent = items.length ? `(${items.length})` : '';
+  const copyBtn = document.getElementById('copyWordsBtn');
+  copyBtn.style.display = items.length ? 'inline-block' : 'none';
   emptyHint.style.display = items.length ? 'none' : 'block';
   list.innerHTML = '';
   updateManualPairDropdowns();
@@ -791,6 +796,16 @@ document.getElementById('copyLinkBtn').addEventListener('click', () => {
   const input = document.getElementById('linkOutput');
   input.select();
   navigator.clipboard.writeText(input.value);
+});
+
+document.getElementById('copyWordsBtn').addEventListener('click', () => {
+  const list = items.map(i => i.text).join(', ');
+  navigator.clipboard.writeText(list).then(() => {
+    const btn = document.getElementById('copyWordsBtn');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  });
 });
 
 renderItems();
