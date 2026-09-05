@@ -293,6 +293,8 @@ function guessType(text) {
 function addItem(text) {
   const clean = text.trim();
   if (!clean) return;
+  const alreadyExists = items.some(i => i.text.toLowerCase() === clean.toLowerCase());
+  if (alreadyExists) return false; // silently skip — caller reports duplicates
   items.push({
     id: uid(),
     text: clean,
@@ -307,13 +309,18 @@ function addItem(text) {
     status: 'pending'
   });
   renderItems();
+  return true;
 }
 
 document.getElementById('addBulkBtn').addEventListener('click', async () => {
   const textarea = document.getElementById('bulkInput');
   const parts = textarea.value.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
-  parts.forEach(addItem);
+  const skipped = [];
+  parts.forEach(p => { if (!addItem(p)) skipped.push(p); });
   textarea.value = '';
+  if (skipped.length) {
+    alert(`Already in the list, skipped: ${skipped.join(', ')}`);
+  }
   await generateContentFor(items.filter(i => !i.definition));
 });
 

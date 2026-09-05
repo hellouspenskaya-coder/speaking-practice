@@ -294,6 +294,34 @@ function eligibleSingleModes(item, enabledModes) {
 function buildSession(data) {
   const enabledModes = data.modes && data.modes.length ? data.modes : SINGLE_WORD_MODES.concat(SINGLE_PHRASE_MODES, GROUP_MODES);
   const items = data.items || [];
+
+  // --- Warm-up: guarantee at least 4 "choose the picture" and 4 "choose the
+  // word" steps right at the start, before anything else. These are the
+  // easiest recognition tasks, so beginners meet them first.
+  const warmupSteps = [];
+  const usedInWarmup = new Set();
+  const picturedPool = items.filter(item => {
+    const peers = items.filter(i => i.id !== item.id && i.image).length;
+    return Boolean(item.image) && peers >= 3;
+  });
+  if (picturedPool.length && enabledModes.includes('multipleChoice')) {
+    shuffle(picturedPool).slice(0, 4).forEach(item => {
+      warmupSteps.push({ kind: 'single', mode: 'multipleChoice', item, phase: 'practice' });
+      usedInWarmup.add(item.id);
+    });
+  }
+  if (picturedPool.length && enabledModes.includes('multipleChoiceReverse')) {
+    // Prefer words not already used for "choose the picture" so the warm-up
+    // covers more of the set, but fall back to reusing words if the set is small.
+    const fresh = shuffle(picturedPool.filter(i => !usedInWarmup.has(i.id)));
+    const pickFrom = fresh.length ? fresh : shuffle(picturedPool);
+    pickFrom.slice(0, 4).forEach(item => {
+      warmupSteps.push({ kind: 'single', mode: 'multipleChoiceReverse', item, phase: 'practice' });
+    });
+  }
+  const warmupItemIds = new Set(warmupSteps.map(s => s.item.id));
+
+  // --- Everything else, shuffled and mode-balanced as before.
   const singleSteps = [];
   shuffle(items).forEach(item => {
     const pool = eligibleSingleModes(item, enabledModes);
@@ -306,8 +334,10 @@ function buildSession(data) {
   const practiceSteps = [];
 
   // Group steps: chunks of items with images, for matching / whatsMissing.
-  const withImages = items.filter(i => i.image);
-  const withDefs = items.filter(i => i.definition);
+  // Shuffled first so groups don't just mirror the order words were typed in
+  // (e.g. antonym pairs typed next to each other always landing together).
+  const withImages = shuffle(items.filter(i => i.image));
+  const withDefs = shuffle(items.filter(i => i.definition));
   GROUP_MODES.forEach(groupMode => {
     if (!enabledModes.includes(groupMode)) return;
     const pool = groupMode === 'matchingDef' ? withDefs : withImages;
@@ -344,7 +374,7 @@ function buildSession(data) {
   // "no same mode twice in a row" rule meaningless, because the shuffle
   // reordered everything afterwards.
   const merged = shuffle(singleSteps.concat(practiceSteps));
-  let lastMode = null;
+  let lastMode = warmupSteps.length ? warmupSteps[warmupSteps.length - 1].mode : null;
   merged.forEach(step => {
     if (step.kind !== 'single') { lastMode = step.mode; return; }
     const fresh = step.pool.filter(m => m !== lastMode);
@@ -373,7 +403,12 @@ function buildSession(data) {
       }
     }
   }
-  return merged;
+
+  // Warm-up block goes first: all "choose the picture" steps, then all
+  // "choose the word" steps, then the shuffled remainder.
+  const mcWarmup = warmupSteps.filter(s => s.mode === 'multipleChoice');
+  const mcrWarmup = warmupSteps.filter(s => s.mode === 'multipleChoiceReverse');
+  return mcWarmup.concat(mcrWarmup, merged);
 }
 
 function renderStep() {
