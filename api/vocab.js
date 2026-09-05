@@ -93,11 +93,12 @@ For each item below, decide if it is a single "word" or a multi-word "phrase" (e
 - "phonetic": IPA transcription (words only; omit for phrases)
 - "distractors": for "word" items only - exactly 2 other real English words that sound similar (rhyme or near-minimal pairs, for listening practice). Never repeat the item itself. Omit for phrases.
 - "chunks": for "phrase" items only - the phrase split into its individual words in correct order, as an array of strings. Omit for words.
+- "imageHint": 2-4 keywords in English optimised for finding a clear, isolated illustration of this item on a stock image site — as if searching for a teaching visual for beginner English learners. For ambiguous words, add a disambiguating keyword (e.g. "key" → "door key metal", "tablet" → "tablet ipad touchscreen", "glasses" → "glasses eyewear vision", "bat" → "baseball bat sport"). For concrete objects, prefer terms that return a single clean object on a plain background. For abstract words or actions, describe the clearest visual representation.
 
 Items: ${JSON.stringify(items)}
 
 Respond with ONLY a JSON array, one object per item, in the same order as the input, in this exact shape:
-[{"text":"...","type":"word|phrase","definition":"...","example":"...","phonetic":"...","distractors":["...","..."],"chunks":["...","..."]}]
+[{"text":"...","type":"word|phrase","definition":"...","example":"...","phonetic":"...","distractors":["...","..."],"chunks":["...","..."],"imageHint":"..."}]
 No preamble, no markdown fences, no explanation - JSON only.`;
 
   const text = await callHaiku(prompt, 2000);
@@ -224,7 +225,7 @@ async function searchImages(req, res) {
   const data = await response.json();
   let hits = data.hits || [];
 
-  // If no vectors found, fall back to photos for this word
+  // If no vectors found, fall back to photos
   if (!hits.length && imageType === 'vector') {
     const fallback = await fetch(`https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&per_page=4&page=${page}&safesearch=true`);
     const fbData = await fallback.json();

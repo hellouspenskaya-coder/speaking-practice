@@ -440,6 +440,7 @@ async function generateContentFor(itemsToGenerate) {
       item.phonetic = generated.phonetic || item.phonetic;
       if (Array.isArray(generated.distractors)) item.distractors = generated.distractors;
       if (Array.isArray(generated.chunks)) item.chunks = generated.chunks;
+      if (generated.imageHint) item.imageHint = generated.imageHint;
       item.status = 'generated';
     });
     renderItems();
@@ -462,7 +463,7 @@ async function autoFetchImages(itemsNeedingImages) {
   if (!itemsNeedingImages.length) return;
   await Promise.all(itemsNeedingImages.map(async (item) => {
     try {
-      const query = item.type === 'phrase' ? phraseImageQuery(item.text) : item.text;
+      const query = item.imageQuery || item.imageHint || (item.type === 'phrase' ? phraseImageQuery(item.text) : item.text);
       const response = await fetch('/api/vocab', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -486,7 +487,7 @@ async function findImagesFor(item) {
   try {
     // Use the teacher's manual query if provided, otherwise auto-generate.
     const manualQuery = (item.imageQuery || '').trim();
-    const autoQuery = item.type === 'phrase' ? phraseImageQuery(item.text) : item.text;
+    const autoQuery = item.imageHint || (item.type === 'phrase' ? phraseImageQuery(item.text) : item.text);
     const query = manualQuery || autoQuery;
     const response = await fetch('/api/vocab', {
       method: 'POST',
