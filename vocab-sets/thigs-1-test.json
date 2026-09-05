@@ -5,6 +5,7 @@
     "multipleChoice",
     "multipleChoiceReverse",
     "matching",
+    "matchingDef",
     "listening",
     "fillLetters",
     "letterScramble",
@@ -27,151 +28,171 @@
       "id": "item_1",
       "type": "word",
       "text": "cup",
-      "definition": "A small container you drink from",
-      "example": "I drink tea in a cup",
+      "definition": "small container for drinking",
+      "example": "I drink tea in a cup.",
       "phonetic": "kʌp",
       "distractors": [
         "cut",
         "cap"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g40f39706b32763deea786d0ea5855297a364fae96ceeb51259e3659740d8c3722ddc7ac78d2d0a9206bd06b0442c4e423a04dd37634bf211869042c2cae632e2_640.jpg",
-      "audio": null
+      "image": "https://pixabay.com/get/g8da6253dc30740ec84174aa11ede3dec63886708f590574e2738a79379038dc4782d47c1d67db662ec2a9ab960f1a8c3a34e2ddb4e3fddf474661de2e7d8d55d_640.jpg",
+      "audio": null,
+      "imageHint": "ceramic cup tea",
+      "imageQuery": ""
     },
     {
       "id": "item_2",
       "type": "word",
       "text": "dictionary",
-      "definition": "A book with word meanings and translations",
-      "example": "I use a dictionary for new words",
+      "definition": "book with word meanings and translations",
+      "example": "I use a dictionary for words.",
       "phonetic": "ˈdɪkʃəneri",
       "distractors": [
-        "dentist",
-        "delivery"
+        "direction",
+        "decision"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/ga37b4087401dc492aeb9bf15a27ee66c280a1232b02ff2dd7350dc5341df8643c86e3b76fd5fecf31701c7f721b2aa5a41ba88daacd075e443f2170aef655522_640.jpg",
-      "audio": null
+      "image": "https://pixabay.com/get/g8129670b4bb413eba33004912cb8e9f2ee6c43a1d37274cd7a32bf0bb59d4746d793deb70cae8b0a50110bee01df7e03_640.jpg",
+      "audio": null,
+      "imageHint": "dictionary book pages",
+      "imageQuery": ""
     },
     {
       "id": "item_3",
       "type": "word",
       "text": "door",
-      "definition": "You open it to enter a room",
-      "example": "I open the door slowly",
+      "definition": "thing you open to go in or out",
+      "example": "I open the door slowly.",
       "phonetic": "dɔːr",
       "distractors": [
-        "dark",
-        "dear"
+        "more",
+        "pour"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g17737e16b2f102f01e2e2aa8f00569fc854ffc9f75c11ff780e24cafb980cea40940f21d32aa38024e98d2beabd362e98a4b9d45cec905d5ebab316992339319_640.jpg",
-      "audio": null
+      "image": "https://pixabay.com/get/gde3d06ee1ff9588ad24c65218dad4b30c81a721b7a21e44ef57618a9f51d21e77368eef87b0b4f4b62a0e953cfa21b3ef507eec976c7d34b78fe3a12d91177ae_640.jpg",
+      "audio": null,
+      "imageHint": "wooden door entrance",
+      "imageQuery": ""
     },
     {
       "id": "item_4",
       "type": "word",
       "text": "window",
-      "definition": "Glass you look through to see outside",
-      "example": "The window is big and clean",
-      "phonetic": "ˈwɪndoʊ",
+      "definition": "glass opening in a wall for light",
+      "example": "The window is very clean.",
+      "phonetic": "ˈwɪndəʊ",
       "distractors": [
-        "wooden",
-        "winter"
+        "widow",
+        "windmill"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g21d2004d85da9b108118c34bf7520b684c9de6ef57512d515f0f5ce00bd59be27564fc79d040336ea8a4b8d3166a79d174e4333bca69f5f8f17395329c06e562_640.jpg",
-      "audio": null
+      "image": "https://pixabay.com/get/g680a89cd777b1df447c14d8f4fe5315e21667657f6000ffd4f4fdfb79fc12bd130ce3673ca05dd97d4f3e3d79cead192fac388b82c533068066eaa3fc7ace7fd_640.jpg",
+      "audio": null,
+      "imageHint": "window glass house",
+      "imageQuery": ""
     },
     {
       "id": "item_5",
       "type": "word",
       "text": "laptop",
-      "definition": "A small computer you can carry",
-      "example": "I work on my laptop every day",
-      "phonetic": "ˈlæptɑːp",
+      "definition": "small computer you can hold",
+      "example": "I work on my laptop.",
+      "phonetic": "ˈlæptɒp",
       "distractors": [
         "laptop",
-        "lapdog"
+        "desktop"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g7a61e547176426fff260cd281ffaf4b7f23164b6aedd720d8b65d2b8fa09351c3091fc178d9f76fa8b8c58c8d16d6a1e1649416928d929d9dcf0a2c56521e1fd_640.jpg",
-      "audio": null
+      "image": "https://pixabay.com/get/g42f4f471375b89bbd53cf0e94843130ccfb94bbc187f4267090c7d45461295aaeb21a0bedd61a08e2050a2b9096fd5d7073d20391a8f1fe6a7c3fa8c25340c80_640.jpg",
+      "audio": null,
+      "imageHint": "laptop computer technology",
+      "imageQuery": ""
     },
     {
       "id": "item_6",
       "type": "word",
       "text": "table",
-      "definition": "Furniture with legs where you sit",
-      "example": "The table is brown and big",
+      "definition": "flat furniture for eating or working",
+      "example": "The table is brown.",
       "phonetic": "ˈteɪbəl",
       "distractors": [
-        "tablet",
-        "terrible"
+        "able",
+        "label"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g2fe26fb3c7b05157789ed6345b446530e9c89f7b62051d707a93b6ae52dcd3e89d98923e7212bf1accf68691119bb0d55c9662141ec511f7483abbaa99f9a625_640.jpg",
-      "audio": null
+      "image": "https://pixabay.com/get/ga3335941b0b40fdd2bf21b854a8c2fda6f3421d360ff37934453e4a78ed0ec470e5e30ecddf32a36141ae5f40da97117321f222c42d36ace5561b32670211d8d_640.jpg",
+      "audio": null,
+      "imageHint": "wooden table furniture",
+      "imageQuery": ""
     },
     {
       "id": "item_7",
       "type": "word",
       "text": "big",
-      "definition": "Not small, large in size",
-      "example": "The elephant is very big",
+      "definition": "very large in size",
+      "example": "The elephant is very big.",
       "phonetic": "bɪɡ",
       "distractors": [
         "bag",
         "dig"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/gcaf1f87d6ed2ac0e5b8f2979bc8a7ebcb7f316cb7c4119db8892907ac72fae4bdbc8dc746c3e1c7c25da5d229ea3a86342c83d6d41cbe75889ea5894079173f6_640.jpg",
-      "audio": null
+      "image": "https://pixabay.com/get/g141006be54da9467ab00dc016f8ccbb0c064f6548bffa715643e1cbb51d7e27dec2b5e0749e83a8ae8d04fc0f9216f4b_640.jpg",
+      "audio": null,
+      "imageHint": "big large elephant",
+      "imageQuery": ""
     },
     {
       "id": "item_8",
       "type": "word",
       "text": "small",
-      "definition": "Not big, little in size",
-      "example": "A mouse is very small",
+      "definition": "not big, tiny",
+      "example": "The bird is small.",
       "phonetic": "smɔːl",
       "distractors": [
         "smell",
-        "smile"
+        "stall"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g76922ab839a4073eecf313db551b876641a158e4629fef4fad5083e9fb08b5bf43fa6cbd730adf6b1c6850332ea70a49fcaa8d4af5bb14c88b2cf49e29d9f3bb_640.jpg",
-      "audio": null
+      "image": "https://pixabay.com/get/g36f43b3ac33c9d70ab0af8951ea7d68b47da27de6edf6b42b44fb7681e26bda9656667d85c28cfe9947f0a4dbcad74ab2dc7e89d21075d6a829cc666cfaf89b3_640.jpg",
+      "audio": null,
+      "imageHint": "small tiny bird",
+      "imageQuery": ""
     },
     {
       "id": "item_9",
       "type": "word",
       "text": "good",
-      "definition": "Nice, positive, not bad",
-      "example": "This book is very good",
+      "definition": "positive, nice, excellent",
+      "example": "This apple is good.",
       "phonetic": "ɡʊd",
       "distractors": [
-        "God",
-        "good"
+        "food",
+        "wood"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g3b3b0efda465da5d730a8e98c9b5e26b380eb955c5e53bbafe2ffb3dad33962cc94165ec26e1b217782056c86be6cbf0093ea06efb66c186fc684b6264c9a1fc_640.jpg",
-      "audio": null
+      "image": "https://pixabay.com/get/g1dfe507ec38ebe5b203afc6c73e220f604321a79b810e3c6e85fc50f2b7f27471b63cd1d93fd7ca7814e1ecbf0dbc04534e69678853266414cf6e650c6792bcb_640.jpg",
+      "audio": null,
+      "imageHint": "good positive happy",
+      "imageQuery": ""
     },
     {
       "id": "item_10",
       "type": "word",
       "text": "bad",
-      "definition": "Not good, negative, not nice",
-      "example": "The weather is very bad",
+      "definition": "not good, negative, wrong",
+      "example": "This weather is bad.",
       "phonetic": "bæd",
       "distractors": [
-        "bed",
-        "bid"
+        "bag",
+        "bat"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g64c7d3513f0da082575d41c49956cbdef908d598d5f1fbc230e48d0e03eb8b354f1c6bfb712024f3c09947ad766f8eb6_640.jpg",
-      "audio": null
+      "image": "https://pixabay.com/get/ga5af0f4b6a4c53d0264314eaad71f4e42c1b0dbe8d7f5200d09263c229362010e5d2064c52e7e11532e300840a7820d37f0b2a571687c8ddd5713808a30eb51c_640.png",
+      "audio": null,
+      "imageHint": "bad negative sad",
+      "imageQuery": ""
     }
   ]
 }
