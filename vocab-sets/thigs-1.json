@@ -10,158 +10,168 @@
     "fillLetters",
     "letterScramble",
     "phraseBuilder",
-    "whatsMissing"
+    "whatsMissing",
+    "antonyms"
   ],
-  "antonymPairs": [],
+  "antonymPairs": [
+    [
+      "big",
+      "small"
+    ],
+    [
+      "good",
+      "bad"
+    ]
+  ],
   "items": [
     {
       "id": "item_1",
       "type": "word",
-      "text": "key",
-      "definition": "Thing you use to open a door or lock",
-      "example": "I have a key for my house.",
-      "phonetic": "kiː",
+      "text": "cup",
+      "definition": "A small container for drinking",
+      "example": "I drink tea in a cup",
+      "phonetic": "kʌp",
       "distractors": [
-        "tea",
-        "see"
+        "cut",
+        "cub"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g7695f6f008b8b26c2e1d216521f23ee9ea4adf258b01628c82fbf6c331fd4c151ce91811776ec736b75c802e5412355b062b37fb7128de635e39858282d0b87a_640.jpg",
+      "image": "https://pixabay.com/get/g6288f6176ab222a4a2eb7297665f4b78ea062893419b11f54fcadeecac66020744d330052c5d3a3f650e085f99c10964bbafb98e7052a8d33b0f0532dd200cce_640.jpg",
       "audio": null
     },
     {
       "id": "item_2",
       "type": "word",
-      "text": "door",
-      "definition": "You go through this to enter a room",
-      "example": "The door is open.",
-      "phonetic": "dɔːr",
+      "text": "dictionary",
+      "definition": "A book with word meanings",
+      "example": "I read the dictionary every day",
+      "phonetic": "ˈdɪkʃəneri",
       "distractors": [
-        "more",
-        "pour"
+        "library",
+        "diary"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/gc4836ecf71587df602011db98c5473e1d76392c33dee5b88e9e7765fcb6d81e8f988369eba06bd0950bf85dd48139022895df65ed38857721161430ee2a95817_640.png",
+      "image": "https://pixabay.com/get/g5bf6b13d4c9eae41a5d153dfb5ac3b31beca640a2a5156d2c3068330e331b39d9390be628e9b0000ed699044f00e7c7e5ca1b9d2ec6faca2cba4e7a162f10c71_640.jpg",
       "audio": null
     },
     {
       "id": "item_3",
       "type": "word",
-      "text": "tablet",
-      "definition": "Flat computer screen you touch with your hand",
-      "example": "I use a tablet every day.",
-      "phonetic": "ˈtæblət",
+      "text": "door",
+      "definition": "You open it to enter a room",
+      "example": "I open the door now",
+      "phonetic": "dɔːr",
       "distractors": [
-        "goblet",
-        "habit"
+        "floor",
+        "four"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g817db54a85a7f3fb3884084736484391cab7b272be8d447737c4756e3b0ad9002bbccdd0fdfa5c181a33b8f20884a267_640.jpg",
+      "image": "https://pixabay.com/get/g3fbc3c53c58ed8e5b423f1afb7be7e660148a0b76534fbd1e37b62151e9aa04ef8e17b5942b8eb15e5ac818d19ea962dd5f3f2e693ee79bf4318c303c7283a88_640.png",
       "audio": null
     },
     {
       "id": "item_4",
       "type": "word",
-      "text": "tissue",
-      "definition": "Soft paper you use to clean your nose",
-      "example": "I need a tissue please.",
-      "phonetic": "ˈtɪʃuː",
+      "text": "window",
+      "definition": "Glass you look through for outside",
+      "example": "The window is very big",
+      "phonetic": "ˈwɪndoʊ",
       "distractors": [
-        "issue",
-        "rescue"
+        "widow",
+        "wind"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g2ab26db55dae5aaa6acfab06685dc132f9b382f0286125442c174bc8df9a6185266ea008e25ee63547768a534b60b0543e1375f7678879110a9b32d23b06b300_640.jpg",
+      "image": "https://pixabay.com/get/ge8a198d72a9957851b444f53f894be8c7fdaed41f246362310243457441369e942fb57a1f9a635ea27aeaa03a8f5a3080eb6ba36d3966977b0e16fad68c245a5_640.jpg",
       "audio": null
     },
     {
       "id": "item_5",
       "type": "word",
-      "text": "photo",
-      "definition": "Picture you take with a camera",
-      "example": "I take a photo of my family.",
-      "phonetic": "ˈfoʊtoʊ",
+      "text": "laptop",
+      "definition": "A small computer you can carry",
+      "example": "I use my laptop every day",
+      "phonetic": "ˈlæptɒp",
       "distractors": [
-        "quota",
-        "ratio"
+        "desktop",
+        "tabletop"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/gb68ad21fb9a43f3cce179bb5073b538a55aa4e38de2584458cc8daca8158473939b7f132f016ee5e9ce3592c5bebb658c7870478cd05fb87bfed39f1a5885bad_640.jpg",
+      "image": "https://pixabay.com/get/g41771e58a231b0afa3d4c2c098893014b63910246e2b76e4dec91c911c699c1e68b4c7b14253c14b5a39a8ad19f0a989dfd3015a894a0362a010d15618c35649_640.jpg",
       "audio": null
     },
     {
       "id": "item_6",
       "type": "word",
-      "text": "umbrella",
-      "definition": "You hold it when it rains.",
-      "example": "I have an umbrella.",
-      "phonetic": "ʌmˈbrelə",
+      "text": "table",
+      "definition": "Furniture with legs for putting things",
+      "example": "I eat lunch on the table",
+      "phonetic": "ˈteɪbəl",
       "distractors": [
-        "bell",
-        "seller"
+        "tablet",
+        "able"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g6e4b8ad898c789b27a715c1c88204568dd545a3ebf3dfa8fb7279122f75e0a03ad5bc035ec10489c788303fcb235e471_640.png",
+      "image": "https://pixabay.com/get/g77ab839c597585813d37d4064bbba19c5e8c1a0f5e244c764f9f948315e7e1d873018d18221b7f5319d7c9438ee1a11c81faae52e06beaa6a4936b88bd5131e4_640.jpg",
       "audio": null
     },
     {
       "id": "item_7",
       "type": "word",
-      "text": "wallet",
-      "definition": "Small bag for money and cards.",
-      "example": "My wallet is in my bag.",
-      "phonetic": "ˈwɒlɪt",
+      "text": "big",
+      "definition": "Not small; very large",
+      "example": "The elephant is very big",
+      "phonetic": "bɪɡ",
       "distractors": [
-        "ballet",
-        "pallet"
+        "bag",
+        "dig"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g8ca919883020748737eadf428a7004b5c07eb5977708245434f9be3b6efbf93744a78589cda9de8187b602dd7131b511_640.jpg",
+      "image": "https://pixabay.com/get/gecd2a6cd648cde4c46c0351dbff7e7f874a67dbe850956150e6a999335791e0a315b40d107bae13a84666cc02905851f9cbd759a3f9629d0a243fdde39d39401_640.jpg",
       "audio": null
     },
     {
       "id": "item_8",
       "type": "word",
-      "text": "dictionary",
-      "definition": "Book with words and their meanings.",
-      "example": "I use a dictionary.",
-      "phonetic": "ˈdɪkʃəneri",
+      "text": "small",
+      "definition": "Not big; very little",
+      "example": "The mouse is very small",
+      "phonetic": "smɔːl",
       "distractors": [
-        "stationary",
-        "legendary"
+        "smell",
+        "smile"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g1a026e2458ab4010d4d8eab93e57ce015c2738672393babe9dd4e940bd82423de05e9db15254c22c4beaea54247fecd9c2a52e7b7ec1535e0b9343d9862fbf96_640.jpg",
+      "image": "https://pixabay.com/get/gcb80b37d5759df5692662fdc6dd2c87c6b8f97f813199332ac4feece074a725c4e20e2fe2cc89d61c510bbf619605a34f9fe97ae230dd7c7723a34e04b128197_640.jpg",
       "audio": null
     },
     {
       "id": "item_9",
       "type": "word",
-      "text": "cup",
-      "definition": "small container for drinking tea or coffee",
-      "example": "I drink tea in a cup.",
-      "phonetic": "kʌp",
+      "text": "good",
+      "definition": "Nice; positive; not bad",
+      "example": "This apple is very good",
+      "phonetic": "ɡʊd",
       "distractors": [
-        "cut",
-        "cap"
+        "god",
+        "hood"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g3e1ceb243b40f635e94c054e6fb1321933a92563c3e74cb1bd06a6ab96db32531d083eb96f3798503cd02598431888782467607969e71cb684166048882d1068_640.jpg",
+      "image": "https://pixabay.com/get/g2654fd83643767378c9a7e64df7651dd1a659178082c137470947635c3d1068c28d03754c71d441e2c3cb786196c6f40a54cbba525b09cf9965a35f6a6105685_640.jpg",
       "audio": null
     },
     {
       "id": "item_10",
       "type": "word",
-      "text": "laptop",
-      "definition": "small computer you can use anywhere",
-      "example": "I work on my laptop.",
-      "phonetic": "ˈlæptɒp",
+      "text": "bad",
+      "definition": "Not good; negative",
+      "example": "This banana is very bad",
+      "phonetic": "bæd",
       "distractors": [
-        "desktop",
-        "notebook"
+        "bed",
+        "bid"
       ],
       "chunks": [],
-      "image": "https://pixabay.com/get/g1de7938f735151384092fad0762b29b5fd4a3ad96c8e7fb1621f59149da3ae7cb00b544c7ec2d20fed077eefddf0f3e084eaed1598f2c94c30d104151cce4e0c_640.png",
+      "image": "https://pixabay.com/get/gb9cdc133686c1a1d967340a05d79ac05a722419a62214bf353521ded65ae9661b69cbbbbd6e6fdc00b011bc25714edc6_640.jpg",
       "audio": null
     }
   ]
