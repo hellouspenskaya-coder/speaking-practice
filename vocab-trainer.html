@@ -295,7 +295,10 @@ function renderStep() {
       <span>${modeLabel(step.mode)}</span>
       <span class="top-right">
         <span>${positionLabel}</span>
-        <button class="skip-btn" id="skipBtn">Skip &rsaquo;</button>
+        ${isStudy && practiceTotal > 0
+          ? `<button class="skip-btn" id="skipBtn">Skip to practice &rsaquo;</button>`
+          : `<button class="skip-btn" id="skipBtn">Skip &rsaquo;</button>`
+        }
       </span>
     </div>
     <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
@@ -306,18 +309,22 @@ function renderStep() {
 
   document.getElementById('skipBtn').addEventListener('click', () => {
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    // Skipping breaks a streak but costs no points, and flags the word
-    // for review so it still shows up at the end.
-    if (!isStudy) {
-      streak = 0;
-      if (step.kind === 'single') wrongItemIds.add(step.item.id);
-    }
-    stepIndex += 1;
-    if (isStudy && stepIndex === studyTotal && practiceTotal > 0) {
+    if (isStudy && practiceTotal > 0) {
+      // Skip all remaining study cards at once
+      stepIndex = studyTotal;
       renderPracticeIntro();
-      return;
+    } else {
+      if (!isStudy) {
+        streak = 0;
+        if (step.kind === 'single') wrongItemIds.add(step.item.id);
+      }
+      stepIndex += 1;
+      if (isStudy && stepIndex === studyTotal && practiceTotal > 0) {
+        renderPracticeIntro();
+        return;
+      }
+      renderStep();
     }
-    renderStep();
   });
 
   const onDone = (wasCorrect) => {
@@ -439,14 +446,10 @@ function renderFlashcards(container, item, onDone) {
     <p class="definition">${escapeHtml(item.definition)}</p>
     <p class="example">${escapeHtml(item.example)}</p>
     <div style="margin-top:12px;">${listenButton('listenBtn')}</div>
-    <div class="btn-row">
-      <button id="noBtn">New for me</button>
-      <button class="primary" id="yesBtn">I know it</button>
-    </div>
+    <button class="primary wide" id="nextBtn" style="margin-top:14px;">Next</button>
   `;
   document.getElementById('listenBtn').addEventListener('click', () => speak(item, true));
-  document.getElementById('noBtn').addEventListener('click', () => onDone(false));
-  document.getElementById('yesBtn').addEventListener('click', () => onDone(true));
+  document.getElementById('nextBtn').addEventListener('click', () => onDone(true));
 }
 
 // --- Multiple choice: word/phrase shown, choose the right image ---
