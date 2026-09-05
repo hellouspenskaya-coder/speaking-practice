@@ -1,0 +1,177 @@
+{
+  "topic": "Thigs 1 test",
+  "level": "A1",
+  "modes": [
+    "multipleChoice",
+    "multipleChoiceReverse",
+    "matching",
+    "listening",
+    "fillLetters",
+    "letterScramble",
+    "phraseBuilder",
+    "whatsMissing",
+    "antonyms"
+  ],
+  "antonymPairs": [
+    [
+      "big",
+      "small"
+    ],
+    [
+      "good",
+      "bad"
+    ]
+  ],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "cup",
+      "definition": "A small container you drink from",
+      "example": "I drink tea in a cup",
+      "phonetic": "kʌp",
+      "distractors": [
+        "cut",
+        "cap"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/g40f39706b32763deea786d0ea5855297a364fae96ceeb51259e3659740d8c3722ddc7ac78d2d0a9206bd06b0442c4e423a04dd37634bf211869042c2cae632e2_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "dictionary",
+      "definition": "A book with word meanings and translations",
+      "example": "I use a dictionary for new words",
+      "phonetic": "ˈdɪkʃəneri",
+      "distractors": [
+        "dentist",
+        "delivery"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/ga37b4087401dc492aeb9bf15a27ee66c280a1232b02ff2dd7350dc5341df8643c86e3b76fd5fecf31701c7f721b2aa5a41ba88daacd075e443f2170aef655522_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "door",
+      "definition": "You open it to enter a room",
+      "example": "I open the door slowly",
+      "phonetic": "dɔːr",
+      "distractors": [
+        "dark",
+        "dear"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/g17737e16b2f102f01e2e2aa8f00569fc854ffc9f75c11ff780e24cafb980cea40940f21d32aa38024e98d2beabd362e98a4b9d45cec905d5ebab316992339319_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "window",
+      "definition": "Glass you look through to see outside",
+      "example": "The window is big and clean",
+      "phonetic": "ˈwɪndoʊ",
+      "distractors": [
+        "wooden",
+        "winter"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/g21d2004d85da9b108118c34bf7520b684c9de6ef57512d515f0f5ce00bd59be27564fc79d040336ea8a4b8d3166a79d174e4333bca69f5f8f17395329c06e562_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_5",
+      "type": "word",
+      "text": "laptop",
+      "definition": "A small computer you can carry",
+      "example": "I work on my laptop every day",
+      "phonetic": "ˈlæptɑːp",
+      "distractors": [
+        "laptop",
+        "lapdog"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/g7a61e547176426fff260cd281ffaf4b7f23164b6aedd720d8b65d2b8fa09351c3091fc178d9f76fa8b8c58c8d16d6a1e1649416928d929d9dcf0a2c56521e1fd_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_6",
+      "type": "word",
+      "text": "table",
+      "definition": "Furniture with legs where you sit",
+      "example": "The table is brown and big",
+      "phonetic": "ˈteɪbəl",
+      "distractors": [
+        "tablet",
+        "terrible"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/g2fe26fb3c7b05157789ed6345b446530e9c89f7b62051d707a93b6ae52dcd3e89d98923e7212bf1accf68691119bb0d55c9662141ec511f7483abbaa99f9a625_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_7",
+      "type": "word",
+      "text": "big",
+      "definition": "Not small, large in size",
+      "example": "The elephant is very big",
+      "phonetic": "bɪɡ",
+      "distractors": [
+        "bag",
+        "dig"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/gcaf1f87d6ed2ac0e5b8f2979bc8a7ebcb7f316cb7c4119db8892907ac72fae4bdbc8dc746c3e1c7c25da5d229ea3a86342c83d6d41cbe75889ea5894079173f6_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_8",
+      "type": "word",
+      "text": "small",
+      "definition": "Not big, little in size",
+      "example": "A mouse is very small",
+      "phonetic": "smɔːl",
+      "distractors": [
+        "smell",
+        "smile"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/g76922ab839a4073eecf313db551b876641a158e4629fef4fad5083e9fb08b5bf43fa6cbd730adf6b1c6850332ea70a49fcaa8d4af5bb14c88b2cf49e29d9f3bb_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_9",
+      "type": "word",
+      "text": "good",
+      "definition": "Nice, positive, not bad",
+      "example": "This book is very good",
+      "phonetic": "ɡʊd",
+      "distractors": [
+        "God",
+        "good"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/g3b3b0efda465da5d730a8e98c9b5e26b380eb955c5e53bbafe2ffb3dad33962cc94165ec26e1b217782056c86be6cbf0093ea06efb66c186fc684b6264c9a1fc_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_10",
+      "type": "word",
+      "text": "bad",
+      "definition": "Not good, negative, not nice",
+      "example": "The weather is very bad",
+      "phonetic": "bæd",
+      "distractors": [
+        "bed",
+        "bid"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/g64c7d3513f0da082575d41c49956cbdef908d598d5f1fbc230e48d0e03eb8b354f1c6bfb712024f3c09947ad766f8eb6_640.jpg",
+      "audio": null
+    }
+  ]
+}
