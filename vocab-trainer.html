@@ -599,7 +599,16 @@ function renderMultipleChoice(container, item, onDone) {
     div.addEventListener('click', () => {
       const correct = opt.id === item.id;
       div.classList.add(correct ? 'correct' : 'wrong');
-      setTimeout(() => onDone(correct), 700);
+      if (!correct) {
+        const correctDiv = [...grid.children].find((_, idx) => options[idx].id === item.id);
+        if (correctDiv) correctDiv.classList.add('correct');
+        const fb = document.createElement('div');
+        fb.className = 'feedback wrong';
+        fb.textContent = `It's "${item.text}"`;
+        grid.parentElement.appendChild(fb);
+      }
+      grid.querySelectorAll('.img-choice').forEach(c => c.style.pointerEvents = 'none');
+      setTimeout(() => onDone(correct), correct ? 700 : 2500);
     });
     grid.appendChild(div);
   });
@@ -636,7 +645,7 @@ function renderMultipleChoiceReverse(container, item, onDone) {
         fb.textContent = `It's "${item.text}"`;
         grid.parentElement.appendChild(fb);
       }
-      setTimeout(() => onDone(correct), correct ? 700 : 1200);
+      setTimeout(() => onDone(correct), correct ? 700 : 2500);
     });
     grid.appendChild(btn);
   });
@@ -684,7 +693,7 @@ function renderListening(container, item, onDone) {
         feedback.textContent = `It was "${item.text}"`;
       }
       grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
-      setTimeout(() => onDone(correct), correct ? 700 : 1600);
+      setTimeout(() => onDone(correct), correct ? 700 : 2500);
     });
     grid.appendChild(btn);
   });
@@ -735,7 +744,7 @@ function renderFillLetters(container, item, onDone) {
     feedback.className = `feedback ${correct ? 'correct' : 'wrong'}`;
     feedback.textContent = correct ? 'Correct!' : `Not quite — it's "${word}"`;
     document.getElementById('checkBtn').disabled = true;
-    setTimeout(() => onDone(correct), 1000);
+    setTimeout(() => onDone(correct), correct ? 900 : 2500);
   });
 }
 
@@ -766,7 +775,7 @@ function renderDictation(container, item, onDone, withImage) {
     feedback.textContent = correct ? 'Correct!' : `Not quite — it's "${item.text}"`;
     input.disabled = true;
     document.getElementById('checkBtn').disabled = true;
-    setTimeout(() => onDone(correct), 1200);
+    setTimeout(() => onDone(correct), correct ? 900 : 2500);
   }
 
   document.getElementById('checkBtn').addEventListener('click', check);
@@ -810,7 +819,7 @@ function renderLetterScramble(container, item, onDone) {
     const feedback = document.getElementById('feedback');
     feedback.className = `feedback ${correct ? 'correct' : 'wrong'}`;
     feedback.textContent = correct ? 'Correct!' : `Not quite — it's "${word}"`;
-    setTimeout(() => onDone(correct), 1000);
+    setTimeout(() => onDone(correct), correct ? 900 : 2500);
   }
 
   pool.innerHTML = '';
@@ -878,7 +887,7 @@ function renderPhraseBuilder(container, item, onDone) {
     const feedback = document.getElementById('feedback');
     feedback.className = `feedback ${correct ? 'correct' : 'wrong'}`;
     feedback.textContent = correct ? 'Correct!' : `Not quite — it's "${chunks.join(' ')}"`;
-    setTimeout(() => onDone(correct), 1200);
+    setTimeout(() => onDone(correct), correct ? 900 : 2500);
   }
 
   poolEl.innerHTML = '';
@@ -1166,7 +1175,7 @@ function renderWhatsMissing(container, items, onDone) {
         feedback.textContent = `It was "${missingItem.text}"`;
         wordGrid.parentElement.appendChild(feedback);
       }
-      setTimeout(() => onDone(correct), correct ? 700 : 1400);
+      setTimeout(() => onDone(correct), correct ? 700 : 2500);
     });
     wordGrid.appendChild(btn);
   });
@@ -1326,7 +1335,7 @@ function renderAntonyms(container, item, answer, onDone) {
         feedback.className = 'feedback wrong';
         feedback.textContent = `The opposite of "${item.text}" is "${answer.text}"`;
       }
-      setTimeout(() => onDone(correct), correct ? 700 : 1600);
+      setTimeout(() => onDone(correct), correct ? 700 : 2500);
     });
     grid.appendChild(btn);
   });
