@@ -50,7 +50,7 @@
     margin-bottom: 16px;
     overflow: hidden;
   }
-  .image-box img { width: 100%; height: 100%; object-fit: cover; }
+  .image-box img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
   .image-box .placeholder { font-size: 40px; color: var(--teal); }
   .word-main { font-size: 26px; font-weight: 600; margin: 0 0 4px; }
   .phonetic { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
@@ -169,8 +169,8 @@ const params = new URLSearchParams(window.location.search);
 const setSlug = params.get('set');
 const app = document.getElementById('app');
 
-const SINGLE_WORD_MODES = ['multipleChoice', 'listening', 'fillLetters', 'letterScramble'];
-const SINGLE_PHRASE_MODES = ['multipleChoice', 'listening', 'phraseBuilder'];
+const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'fillLetters', 'letterScramble'];
+const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'phraseBuilder'];
 const GROUP_MODES = ['matching', 'matchingDef', 'whatsMissing'];
 // Most pictures shown at once in matching / what's missing.
 // Kept low so a beginner can actually hold them in mind.
@@ -199,9 +199,71 @@ async function init() {
     app.innerHTML = `<div class="center-msg">Could not load this word set.</div>`;
     return;
   }
-  queue = buildSession(setData);
-  stepIndex = 0;
-  renderStep();
+  renderGallery();
+}
+
+function renderGallery() {
+  const items = setData.items || [];
+  app.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div>
+        <p style="font-size:16px;font-weight:600;margin:0;">${escapeHtml(setData.topic||'Word set')}</p>
+        <p style="font-size:13px;color:var(--muted);margin:0;">${items.length} words — tap any to look closer</p>
+      </div>
+      <button class="primary" id="startBtn" style="padding:10px 18px;font-size:14px;">Start practice</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;" id="gallery"></div>
+    <div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;padding:20px;"></div>
+  `;
+  document.getElementById('startBtn').addEventListener('click', () => {
+    queue = buildSession(setData);
+    stepIndex = 0;
+    renderStep();
+  });
+  const gallery = document.getElementById('gallery');
+  items.forEach(item => {
+    const tile = document.createElement('div');
+    tile.style.cssText = 'border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;';
+    tile.innerHTML = `
+      <div style="height:70px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+        ${item.image
+          ? `<img src="${item.image}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
+          : `<span style="font-size:11px;color:var(--muted);padding:4px;text-align:center;">${escapeHtml(item.definition||'')}</span>`}
+      </div>
+      <div style="padding:5px 6px;text-align:center;font-size:13px;font-weight:500;">${escapeHtml(item.text)}</div>
+    `;
+    tile.addEventListener('click', () => openOverlay(item));
+    gallery.appendChild(tile);
+  });
+  const overlay = document.getElementById('overlay');
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+}
+
+function openOverlay(item) {
+  const overlay = document.getElementById('overlay');
+  overlay.style.display = 'flex';
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:24px 20px;max-width:340px;width:100%;position:relative;text-align:center;">
+      <button id="closeOverlayBtn" style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:#fff;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>
+      <div style="height:160px;background:var(--teal-light);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;overflow:hidden;">
+        ${item.image
+          ? `<img src="${item.image}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
+          : `<span style="font-size:13px;color:var(--muted);padding:8px;">${escapeHtml(item.definition||'')}</span>`}
+      </div>
+      <p style="font-size:24px;font-weight:600;margin:0 0 4px;">${escapeHtml(item.text)}</p>
+      ${item.phonetic ? `<p style="font-size:13px;color:var(--muted);margin:0 0 8px;">${escapeHtml(item.phonetic)}</p>` : ''}
+      <p style="font-size:14px;color:var(--muted);margin:0 0 4px;">${escapeHtml(item.definition||'')}</p>
+      <p style="font-size:13px;color:var(--muted);font-style:italic;margin:0 0 14px;">${escapeHtml(item.example||'')}</p>
+      <button id="overlayListenBtn" style="padding:10px 20px;border-radius:10px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:14px;">&#128266; Listen</button>
+    </div>
+  `;
+  document.getElementById('closeOverlayBtn').addEventListener('click', closeOverlay);
+  document.getElementById('overlayListenBtn').addEventListener('click', () => speak(item, false));
+}
+
+function closeOverlay() {
+  const overlay = document.getElementById('overlay');
+  if (overlay) overlay.style.display = 'none';
 }
 
 function shuffle(arr) {
@@ -221,16 +283,6 @@ function eligibleSingleModes(item, enabledModes) {
 function buildSession(data) {
   const enabledModes = data.modes && data.modes.length ? data.modes : SINGLE_WORD_MODES.concat(SINGLE_PHRASE_MODES, GROUP_MODES);
   const items = data.items || [];
-  const steps = [];
-
-  // Phase 1 — study: every word shown as a flashcard first, in set order.
-  if (enabledModes.includes('flashcards')) {
-    items.forEach(item => {
-      steps.push({ kind: 'single', mode: 'flashcards', item, phase: 'study' });
-    });
-  }
-
-  // Phase 2 — practice: everything else, shuffled.
   const practiceSteps = [];
   let lastMode = null;
   shuffle(items).forEach(item => {
@@ -265,7 +317,7 @@ function buildSession(data) {
     });
   }
 
-  return steps.concat(shuffle(practiceSteps));
+  return shuffle(practiceSteps);
 }
 
 function renderStep() {
@@ -276,29 +328,17 @@ function renderStep() {
   const step = queue[stepIndex];
   const total = queue.length;
   const percent = Math.round((stepIndex / total) * 100);
-  const isStudy = step.phase === 'study';
-
-  const studyTotal = queue.filter(s => s.phase === 'study').length;
-  const practiceTotal = total - studyTotal;
-  const positionLabel = isStudy
-    ? `${stepIndex + 1} / ${studyTotal}`
-    : `${stepIndex - studyTotal + 1} / ${practiceTotal}`;
 
   app.innerHTML = `
     <div class="score-row">
-      ${isStudy
-        ? `<span class="phase-pill">&#128218; Learn the words</span>`
-        : `<span class="score-pill" id="scorePill">${score} points</span>`}
-      <span class="streak-pill ${!isStudy && streak >= 2 ? '' : 'hidden'}" id="streakPill">&#128293; ${streak} in a row</span>
+      <span class="score-pill" id="scorePill">${score} points</span>
+      <span class="streak-pill ${streak >= 2 ? '' : 'hidden'}" id="streakPill">&#128293; ${streak} in a row</span>
     </div>
     <div class="top-row">
       <span>${modeLabel(step.mode)}</span>
       <span class="top-right">
-        <span>${positionLabel}</span>
-        ${isStudy && practiceTotal > 0
-          ? `<button class="skip-btn" id="skipBtn">Skip to practice &rsaquo;</button>`
-          : `<button class="skip-btn" id="skipBtn">Skip &rsaquo;</button>`
-        }
+        <span>${stepIndex + 1} / ${total}</span>
+        <button class="skip-btn" id="skipBtn">Skip &rsaquo;</button>
       </span>
     </div>
     <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
@@ -309,39 +349,23 @@ function renderStep() {
 
   document.getElementById('skipBtn').addEventListener('click', () => {
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    if (isStudy && practiceTotal > 0) {
-      // Skip all remaining study cards at once
-      stepIndex = studyTotal;
-      renderPracticeIntro();
-    } else {
-      if (!isStudy) {
-        streak = 0;
-        if (step.kind === 'single') wrongItemIds.add(step.item.id);
-      }
-      stepIndex += 1;
-      if (isStudy && stepIndex === studyTotal && practiceTotal > 0) {
-        renderPracticeIntro();
-        return;
-      }
-      renderStep();
-    }
+    streak = 0;
+    if (step.kind === 'single') wrongItemIds.add(step.item.id);
+    stepIndex += 1;
+    renderStep();
   });
 
   const onDone = (wasCorrect) => {
     if (step.kind === 'single' && !wasCorrect) wrongItemIds.add(step.item.id);
-    // The study phase is self-assessment, not a test — no points there.
-    if (!isStudy) awardPoints(wasCorrect);
+    awardPoints(wasCorrect);
     stepIndex += 1;
-    if (isStudy && stepIndex === studyTotal && practiceTotal > 0) {
-      renderPracticeIntro();
-      return;
-    }
     renderStep();
   };
 
   if (step.kind === 'single') {
     if (step.mode === 'flashcards') renderFlashcards(cardArea, step.item, onDone);
     else if (step.mode === 'multipleChoice') renderMultipleChoice(cardArea, step.item, onDone);
+    else if (step.mode === 'multipleChoiceReverse') renderMultipleChoiceReverse(cardArea, step.item, onDone);
     else if (step.mode === 'listening') renderListening(cardArea, step.item, onDone);
     else if (step.mode === 'fillLetters') renderFillLetters(cardArea, step.item, onDone);
     else if (step.mode === 'letterScramble') renderLetterScramble(cardArea, step.item, onDone);
@@ -353,18 +377,6 @@ function renderStep() {
     else if (step.mode === 'matchingDef') renderMatchingDef(cardArea, step.items, onDone);
     else if (step.mode === 'whatsMissing') renderWhatsMissing(cardArea, step.items, onDone);
   }
-}
-
-function renderPracticeIntro() {
-  app.innerHTML = `
-    <div class="done-screen">
-      <span class="sticker">&#127919;</span>
-      <h2>Now let's practise!</h2>
-      <p class="final-label">You have seen all the words. Time to try them.</p>
-      <button class="primary wide" id="startPracticeBtn">Start</button>
-    </div>
-  `;
-  document.getElementById('startPracticeBtn').addEventListener('click', renderStep);
 }
 
 function awardPoints(wasCorrect) {
@@ -394,7 +406,8 @@ function showPointPop(text) {
 function modeLabel(mode) {
   return ({
     flashcards: 'Flashcards',
-    multipleChoice: 'Multiple choice',
+    multipleChoice: 'Choose the picture',
+    multipleChoiceReverse: 'Choose the word',
     listening: 'Listen and choose',
     fillLetters: 'Fill in the letters',
     letterScramble: 'Build the word',
@@ -437,21 +450,6 @@ function listenButton(id, label) {
   return `<button id="${id}"><span class="icon">&#128266;</span> ${label || 'Listen'}</button>`;
 }
 
-// --- Flashcards ---
-function renderFlashcards(container, item, onDone) {
-  container.innerHTML = `
-    ${imageBox(item)}
-    <p class="word-main">${escapeHtml(item.text)}</p>
-    ${item.phonetic ? `<p class="phonetic">${escapeHtml(item.phonetic)}</p>` : ''}
-    <p class="definition">${escapeHtml(item.definition)}</p>
-    <p class="example">${escapeHtml(item.example)}</p>
-    <div style="margin-top:12px;">${listenButton('listenBtn')}</div>
-    <button class="primary wide" id="nextBtn" style="margin-top:14px;">Next</button>
-  `;
-  document.getElementById('listenBtn').addEventListener('click', () => speak(item, true));
-  document.getElementById('nextBtn').addEventListener('click', () => onDone(true));
-}
-
 // --- Multiple choice: word/phrase shown, choose the right image ---
 function renderMultipleChoice(container, item, onDone) {
   const others = shuffle(setData.items.filter(i => i.id !== item.id && i.image)).slice(0, 3);
@@ -474,6 +472,35 @@ function renderMultipleChoice(container, item, onDone) {
       setTimeout(() => onDone(correct), 700);
     });
     grid.appendChild(div);
+  });
+}
+
+// --- Multiple choice reverse: image shown, choose the right word ---
+function renderMultipleChoiceReverse(container, item, onDone) {
+  const others = shuffle(setData.items.filter(i => i.id !== item.id)).slice(0, 3);
+  const options = shuffle([item, ...others]);
+  container.innerHTML = `
+    ${imageBox(item)}
+    <p class="mode-label" style="margin-top:8px;">Which word is this?</p>
+    <div class="word-choice-grid" id="wordGrid"></div>
+  `;
+  const grid = document.getElementById('wordGrid');
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'word-tile';
+    btn.textContent = opt.text;
+    btn.addEventListener('click', () => {
+      const correct = opt.id === item.id;
+      btn.classList.add(correct ? 'correct' : 'wrong');
+      if (!correct) {
+        const fb = document.createElement('div');
+        fb.className = 'feedback wrong';
+        fb.textContent = `It's "${item.text}"`;
+        grid.parentElement.appendChild(fb);
+      }
+      setTimeout(() => onDone(correct), correct ? 700 : 1200);
+    });
+    grid.appendChild(btn);
   });
 }
 
@@ -817,7 +844,7 @@ function renderMatching(container, items, onDone) {
     const div = document.createElement('div');
     div.className = 'img-choice';
     div.style.height = '48px';
-    div.innerHTML = `<img src="${im.image}" alt="" />`;
+    div.innerHTML = im.image ? `<img src="${im.image}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />` : `<div style="font-size:12px;padding:4px;color:var(--muted);text-align:center;">${escapeHtml(im.definition||im.text)}</div>`;
     div.addEventListener('click', () => {
       if (!selectedWord || matched.has(im.id)) return;
       const correct = selectedWord.id === im.id;
@@ -862,7 +889,7 @@ function renderWhatsMissing(container, items, onDone) {
   const options = shuffle([missingItem.text, ...distractorWords]);
 
   // Study phase first — the student must see everything before one disappears.
-  let secondsLeft = 5;
+  let secondsLeft = 10;
   container.innerHTML = `
     <p class="mode-label">Look and remember</p>
     <div class="study-grid">
@@ -903,7 +930,7 @@ function renderWhatsMissing(container, items, onDone) {
       cell.textContent = '?';
     } else {
       cell.className = 'missing-cell';
-      cell.innerHTML = `<img src="${it.image}" alt="" />`;
+      cell.innerHTML = it.image ? `<img src="${it.image}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />` : `<div style="font-size:11px;padding:4px;color:var(--muted);">${escapeHtml(it.text)}</div>`;
     }
     grid.appendChild(cell);
   });

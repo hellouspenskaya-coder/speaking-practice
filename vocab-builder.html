@@ -241,8 +241,8 @@
 
 <script>
 const MODES = [
-  { id: 'flashcards', label: 'Flashcards' },
-  { id: 'multipleChoice', label: 'Multiple choice' },
+  { id: 'multipleChoice', label: 'Choose the picture (word → image)' },
+  { id: 'multipleChoiceReverse', label: 'Choose the word (image → word)' },
   { id: 'matching', label: 'Matching (picture)' },
   { id: 'matchingDef', label: 'Matching (definition)' },
   { id: 'listening', label: 'Listening' },
@@ -255,6 +255,33 @@ const MODES = [
 
 let items = []; // { id, text, type, definition, example, phonetic, distractors, chunks, image, audio, status }
 let idCounter = 0;
+
+// Load existing set if builder opened with ?set=slug (e.g. by changing "trainer" to "builder" in the student URL)
+async function maybeLoadExistingSet() {
+  const slug = new URLSearchParams(window.location.search).get('set');
+  if (!slug) return;
+  try {
+    const res = await fetch(`/vocab-sets/${slug}.json`);
+    if (!res.ok) return;
+    const data = await res.json();
+    document.getElementById('topicInput').value = data.topic || '';
+    document.getElementById('levelSelect').value = data.level || 'A1';
+    idCounter = 0;
+    items = (data.items || []).map(i => ({ ...i, id: i.id || ('item_' + (++idCounter)), status: 'loaded' }));
+    antonymPairs = data.antonymPairs || [];
+    if (data.modes && data.modes.length) {
+      setTimeout(() => {
+        document.querySelectorAll('#modesGrid input[type=checkbox]').forEach(cb => {
+          cb.checked = data.modes.includes(cb.dataset.mode);
+        });
+        updateOppositeCheckbox();
+        renderPairs();
+      }, 50);
+    }
+    renderItems();
+  } catch (e) { /* not found or not yet created — silent */ }
+}
+maybeLoadExistingSet();
 
 function uid() { idCounter += 1; return 'item_' + idCounter; }
 
