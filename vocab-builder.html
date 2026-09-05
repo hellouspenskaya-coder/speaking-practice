@@ -106,8 +106,12 @@
     cursor: pointer;
     border: 2px solid transparent;
     height: 100px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  .image-cand img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .image-cand img { width: 100%; height: 100%; object-fit: contain; display: block; }
   .image-cand.selected { border-color: var(--blue); }
   .actions-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
   .modes-grid {
@@ -175,19 +179,10 @@
 
   <div class="card">
     <h2>Add words / phrases</h2>
-    <div class="field-row">
-      <label>Add one</label>
-      <input type="text" id="singleInput" placeholder="cook  —  or  —  live in a house" />
-    </div>
-    <div class="actions-row">
-      <button id="addSingleBtn">Add item</button>
-    </div>
-    <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:14px;">
-      <label for="bulkInput">Or paste many at once (comma or new line separated)</label>
-      <textarea id="bulkInput" placeholder="apple, bread, cook, cup, egg, live in a house, say sorry"></textarea>
-      <div class="actions-row">
-        <button id="addBulkBtn">Add all</button>
-      </div>
+    <label for="bulkInput">Paste words (comma or new line separated)</label>
+    <textarea id="bulkInput" placeholder="apple, bread, cook, cup, egg, live in a house, say sorry"></textarea>
+    <div class="actions-row" style="margin-top:10px;">
+      <button id="addBulkBtn">Add all</button>
     </div>
   </div>
 
@@ -273,15 +268,6 @@ function addItem(text) {
   renderItems();
 }
 
-document.getElementById('addSingleBtn').addEventListener('click', async () => {
-  const input = document.getElementById('singleInput');
-  const text = input.value.trim();
-  if (!text) return;
-  addItem(text);
-  input.value = '';
-  await generateContentFor(items.filter(i => !i.definition));
-});
-
 document.getElementById('addBulkBtn').addEventListener('click', async () => {
   const textarea = document.getElementById('bulkInput');
   const parts = textarea.value.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
@@ -304,7 +290,7 @@ function renderItems() {
       <div class="item-head">
         <div style="display:flex; align-items:center; gap:10px;">
           ${item.image
-            ? `<img src="${item.image}" alt="" style="width:80px; height:80px; object-fit:cover; border-radius:8px; flex-shrink:0;" />`
+            ? `<img src="${item.image}" alt="" style="width:80px; height:80px; object-fit:contain; border-radius:8px; flex-shrink:0; background:#fff; padding:2px;" />`
             : `<div style="width:80px; height:80px; border-radius:8px; background:var(--bg); border:1px dashed var(--border); flex-shrink:0;"></div>`
           }
           <div>
@@ -429,7 +415,7 @@ async function generateContentFor(itemsToGenerate) {
   const level = document.getElementById('levelSelect').value;
 
   // Disable add buttons and show indicator while generating
-  const addBtns = ['addSingleBtn', 'addBulkBtn'];
+  const addBtns = ['addBulkBtn'];
   addBtns.forEach(id => { const b = document.getElementById(id); if (b) b.disabled = true; });
   const indicator = document.getElementById('generatingIndicator');
   if (indicator) indicator.style.display = 'inline';
