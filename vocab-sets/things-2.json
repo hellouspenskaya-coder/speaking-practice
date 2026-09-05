@@ -1,0 +1,110 @@
+{
+  "topic": "Things 2",
+  "level": "A1",
+  "modes": [
+    "multipleChoice",
+    "multipleChoiceReverse",
+    "matching",
+    "matchingDef",
+    "listening",
+    "fillLetters",
+    "letterScramble",
+    "dictation",
+    "dictationNoImage",
+    "whatsMissing"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "charger",
+      "definition": "Device that gives power to a phone",
+      "example": "I use a charger for my phone.",
+      "phonetic": "ˈtʃɑːrdʒər",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g9f27b6ebd155065c5380bb9bbac8c751f3fa21824d2df329d76280cd3b4602f148cec1b5e772c8ad0d936286792a4292ceb3213a626a65567f767e990b12e55d_640.jpg",
+      "audio": null,
+      "imageHint": "phone charger cable",
+      "imageQuery": "phone charger "
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "headphones",
+      "definition": "You wear this to listen to music",
+      "example": "She listens to music with headphones.",
+      "phonetic": "ˈhedfəʊnz",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g22f4dda92bf1d8349bc7603bd8db0b822f494393eed99cd1fca2010e452d55f2ff3686ccbe3159da1b25c9679bd121b9582c6ef1995a80d3038c676b2f85b54f_640.jpg",
+      "audio": null,
+      "imageHint": "headphones audio earphones",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "laptop",
+      "definition": "Small computer you can carry and use",
+      "example": "He works on his laptop every day.",
+      "phonetic": "ˈlæptɒp",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g1d7a50f25e528d4a91a20ccb9fa288cd9d134281f820f9e8e35bcbc34bdb18e89f0d98f7a52ab72a541ea2a3e9b771546dd1247e414b302b9c92900b85e5d67b_640.jpg",
+      "audio": null,
+      "imageHint": "laptop computer portable",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "phone",
+      "definition": "Device you use to call and text people",
+      "example": "I have a new phone.",
+      "phonetic": "fəʊn",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g49cce73cd25886b66c98cf21dbd5d2667dec18fccf9bb55296b1058863075efab3c341e53276eaa1a3a80ff4a2d625e2_640.jpg",
+      "audio": null,
+      "imageHint": "phone smartphone device",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_5",
+      "type": "word",
+      "text": "tablet",
+      "definition": "Flat computer device with a screen",
+      "example": "My sister reads on her tablet.",
+      "phonetic": "ˈtæblət",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g2bc9cbbb2df89bea2ad5a7d81b026c73664a7729f5175ff2ff31e2b7c70ce47a78abe9d3711dd8a2c4d89f1d0ba7d4fb_640.jpg",
+      "audio": null,
+      "imageHint": "tablet ipad flat",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_6",
+      "type": "word",
+      "text": "watch",
+      "definition": "Device you wear to see the time",
+      "example": "I look at my watch often.",
+      "phonetic": "wɒtʃ",
+      "chunks": [],
+      "image": "https://pixabay.com/get/gcf402ca3a6db4da5c87b4f921d8b8a49b0c1bc92dbfa0a8b11dface88a333cf4b0cf496ae1531f74345285975373d379a5a68820b0326e52004e1bd4096e9fbe_640.jpg",
+      "audio": null,
+      "imageHint": "watch wristwatch time",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_7",
+      "type": "word",
+      "text": "lamp",
+      "definition": "Device that makes light in a room",
+      "example": "The lamp is on the table.",
+      "phonetic": "læmp",
+      "chunks": [],
+      "image": "https://pixabay.com/get/gdc6ca6a6945270218198d81d51518eb0f6624831534b3932e26b64f0e680c7c349792fca0fcdfa0222cc256987e3613e_640.jpg",
+      "audio": null,
+      "imageHint": "lamp light desk",
+      "imageQuery": "lamp desk"
+    }
+  ]
+}
