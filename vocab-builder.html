@@ -253,6 +253,7 @@ const MODES = [
   { id: 'antonyms', label: 'Opposites' }
 ];
 
+let antonymPairs = [];
 let items = []; // { id, text, type, definition, example, phonetic, distractors, chunks, image, audio, status }
 let idCounter = 0;
 
@@ -613,8 +614,6 @@ async function generateAudioFor(item) {
   }
 }
 
-let antonymPairs = [];
-
 document.getElementById('findAntonymsBtn').addEventListener('click', async () => {
   const errorBox = document.getElementById('antonymError');
   errorBox.classList.remove('open');
@@ -757,7 +756,9 @@ function buildSetData() {
       distractors: i.distractors,
       chunks: i.chunks,
       image: i.image,
-      audio: i.audio
+      audio: i.audio,
+      imageHint: i.imageHint || '',
+      imageQuery: i.imageQuery || ''
     }))
   };
 }

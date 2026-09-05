@@ -185,6 +185,8 @@ let streak = 0;
 let bestStreak = 0;
 let correctCount = 0;
 let answeredCount = 0;
+// Intervals owned by the current step, cleared whenever the step changes.
+let activeTimers = [];
 
 async function init() {
   if (!setSlug) {
@@ -227,7 +229,7 @@ function renderGallery() {
     tile.innerHTML = `
       <div style="height:70px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
         ${item.image
-          ? `<img src="${item.image}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
+          ? `<img src="${escapeAttr(item.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
           : `<span style="font-size:11px;color:var(--muted);padding:4px;text-align:center;">${escapeHtml(item.definition||'')}</span>`}
       </div>
       <div style="padding:5px 6px;text-align:center;font-size:13px;font-weight:500;">${escapeHtml(item.text)}</div>
@@ -247,7 +249,7 @@ function openOverlay(item) {
       <button id="closeOverlayBtn" style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:#fff;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>
       <div style="height:160px;background:var(--teal-light);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;overflow:hidden;">
         ${item.image
-          ? `<img src="${item.image}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
+          ? `<img src="${escapeAttr(item.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
           : `<span style="font-size:13px;color:var(--muted);padding:8px;">${escapeHtml(item.definition||'')}</span>`}
       </div>
       <p style="font-size:24px;font-weight:600;margin:0 0 4px;">${escapeHtml(item.text)}</p>
@@ -276,23 +278,32 @@ function shuffle(arr) {
 }
 
 function eligibleSingleModes(item, enabledModes) {
-  const pool = item.type === 'phrase' ? SINGLE_PHRASE_MODES : SINGLE_WORD_MODES;
-  return pool.filter(m => enabledModes.includes(m));
+  const base = item.type === 'phrase' ? SINGLE_PHRASE_MODES : SINGLE_WORD_MODES;
+  // Picture-based questions need the item itself AND enough other pictured
+  // items to build believable options; otherwise the question is either
+  // unanswerable (a "?" box) or trivially easy (only two choices).
+  const picturedElsewhere = (setData.items || []).filter(i => i.id !== item.id && i.image).length;
+  const canUsePictures = Boolean(item.image) && picturedElsewhere >= 3;
+  return base.filter(m => {
+    if (!enabledModes.includes(m)) return false;
+    if ((m === 'multipleChoice' || m === 'multipleChoiceReverse') && !canUsePictures) return false;
+    return true;
+  });
 }
 
 function buildSession(data) {
   const enabledModes = data.modes && data.modes.length ? data.modes : SINGLE_WORD_MODES.concat(SINGLE_PHRASE_MODES, GROUP_MODES);
   const items = data.items || [];
-  const practiceSteps = [];
-  let lastMode = null;
+  const singleSteps = [];
   shuffle(items).forEach(item => {
-    const options = eligibleSingleModes(item, enabledModes).filter(m => m !== lastMode);
-    const pool = options.length ? options : eligibleSingleModes(item, enabledModes);
+    const pool = eligibleSingleModes(item, enabledModes);
     if (!pool.length) return;
-    const mode = pool[Math.floor(Math.random() * pool.length)];
-    lastMode = mode;
-    practiceSteps.push({ kind: 'single', mode, item, phase: 'practice' });
+    singleSteps.push({ kind: 'single', item, pool, phase: 'practice' });
   });
+
+  // Group and antonym steps keep a fixed mode; only single-item steps have
+  // their mode chosen later, once the running order is known.
+  const practiceSteps = [];
 
   // Group steps: chunks of items with images, for matching / whatsMissing.
   const withImages = items.filter(i => i.image);
@@ -328,10 +339,46 @@ function buildSession(data) {
     }
   }
 
-  return shuffle(practiceSteps);
+  // Shuffle the group/antonym steps in among the single-word ones, THEN pick
+  // each single step's mode. Assigning modes before the shuffle made the
+  // "no same mode twice in a row" rule meaningless, because the shuffle
+  // reordered everything afterwards.
+  const merged = shuffle(singleSteps.concat(practiceSteps));
+  let lastMode = null;
+  merged.forEach(step => {
+    if (step.kind !== 'single') { lastMode = step.mode; return; }
+    const fresh = step.pool.filter(m => m !== lastMode);
+    const pool = fresh.length ? fresh : step.pool;
+    step.mode = pool[Math.floor(Math.random() * pool.length)];
+    delete step.pool;
+    lastMode = step.mode;
+  });
+
+  // Group steps carry a fixed mode, so two of them can still land next to
+  // each other after the shuffle. Walk the list and swap any repeat further
+  // down, so the student doesn't get the same exercise type back to back.
+  for (let i = 1; i < merged.length; i++) {
+    if (merged[i].mode !== merged[i - 1].mode) continue;
+    for (let j = i + 1; j < merged.length; j++) {
+      const candidate = merged[j];
+      const prevOk = candidate.mode !== merged[i - 1].mode;
+      const leftOfJ = merged[j - 1] === merged[i] ? merged[i - 1] : merged[j - 1];
+      const rightOfJ = merged[j + 1];
+      const swapOk = prevOk
+        && (!leftOfJ || leftOfJ.mode !== merged[i].mode)
+        && (!rightOfJ || rightOfJ.mode !== merged[i].mode);
+      if (swapOk) {
+        [merged[i], merged[j]] = [merged[j], merged[i]];
+        break;
+      }
+    }
+  }
+  return merged;
 }
 
 function renderStep() {
+  activeTimers.forEach(clearInterval);
+  activeTimers = [];
   if (stepIndex >= queue.length) {
     renderDone();
     return;
@@ -374,8 +421,7 @@ function renderStep() {
   };
 
   if (step.kind === 'single') {
-    if (step.mode === 'flashcards') renderFlashcards(cardArea, step.item, onDone);
-    else if (step.mode === 'multipleChoice') renderMultipleChoice(cardArea, step.item, onDone);
+    if (step.mode === 'multipleChoice') renderMultipleChoice(cardArea, step.item, onDone);
     else if (step.mode === 'multipleChoiceReverse') renderMultipleChoiceReverse(cardArea, step.item, onDone);
     else if (step.mode === 'listening') renderListening(cardArea, step.item, onDone);
     else if (step.mode === 'fillLetters') renderFillLetters(cardArea, step.item, onDone);
@@ -389,6 +435,13 @@ function renderStep() {
     if (step.mode === 'matching') renderMatching(cardArea, step.items, onDone);
     else if (step.mode === 'matchingDef') renderMatchingDef(cardArea, step.items, onDone);
     else if (step.mode === 'whatsMissing') renderWhatsMissing(cardArea, step.items, onDone);
+  }
+
+  // Safety net: if nothing rendered (unknown mode from an older saved set),
+  // move on rather than leaving the student on a blank card.
+  if (!cardArea.innerHTML.trim()) {
+    stepIndex += 1;
+    renderStep();
   }
 }
 
@@ -418,7 +471,6 @@ function showPointPop(text) {
 
 function modeLabel(mode) {
   return ({
-    flashcards: 'Flashcards',
     multipleChoice: 'Choose the picture',
     multipleChoiceReverse: 'Choose the word',
     listening: 'Listen and choose',
@@ -435,7 +487,7 @@ function modeLabel(mode) {
 
 function imageBox(item) {
   return item.image
-    ? `<div class="image-box"><img src="${item.image}" alt="${escapeHtml(item.text)}" /></div>`
+    ? `<div class="image-box"><img src="${escapeAttr(item.image)}" alt="${escapeHtml(item.text)}" /></div>`
     : `<div class="image-box"><span class="placeholder">?</span></div>`;
 }
 
@@ -479,7 +531,7 @@ function renderMultipleChoice(container, item, onDone) {
   options.forEach(opt => {
     const div = document.createElement('div');
     div.className = 'img-choice';
-    div.innerHTML = opt.image ? `<img src="${opt.image}" alt="" />` : '?';
+    div.innerHTML = opt.image ? `<img src="${escapeAttr(opt.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />` : `<div style="font-size:12px;padding:4px;color:var(--muted);">${escapeHtml(opt.text)}</div>`;
     div.addEventListener('click', () => {
       const correct = opt.id === item.id;
       div.classList.add(correct ? 'correct' : 'wrong');
@@ -491,7 +543,15 @@ function renderMultipleChoice(container, item, onDone) {
 
 // --- Multiple choice reverse: image shown, choose the right word ---
 function renderMultipleChoiceReverse(container, item, onDone) {
-  const others = shuffle(setData.items.filter(i => i.id !== item.id)).slice(0, 3);
+  // Deduplicate by text so the same word can never appear twice as an option.
+  const seenText = new Set([item.text.toLowerCase()]);
+  const others = [];
+  for (const cand of shuffle(setData.items.filter(i => i.id !== item.id))) {
+    if (others.length >= 3) break;
+    if (seenText.has(cand.text.toLowerCase())) continue;
+    seenText.add(cand.text.toLowerCase());
+    others.push(cand);
+  }
   const options = shuffle([item, ...others]);
   container.innerHTML = `
     ${imageBox(item)}
@@ -884,7 +944,7 @@ function renderMatching(container, items, onDone) {
     const div = document.createElement('div');
     div.className = 'img-choice';
     div.style.height = '48px';
-    div.innerHTML = im.image ? `<img src="${im.image}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />` : `<div style="font-size:12px;padding:4px;color:var(--muted);text-align:center;">${escapeHtml(im.definition||im.text)}</div>`;
+    div.innerHTML = im.image ? `<img src="${escapeAttr(im.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />` : `<div style="font-size:12px;padding:4px;color:var(--muted);text-align:center;">${escapeHtml(im.definition||im.text)}</div>`;
     div.addEventListener('click', () => {
       if (!selectedWord || matched.has(im.id)) return;
       const correct = selectedWord.id === im.id;
@@ -925,7 +985,19 @@ function renderMatching(container, items, onDone) {
 function renderWhatsMissing(container, items, onDone) {
   const missingIdx = Math.floor(Math.random() * items.length);
   const missingItem = items[missingIdx];
-  const distractorWords = shuffle(setData.items.filter(i => i.id !== missingItem.id).map(i => i.text)).slice(0, 3);
+  // Distractors must NOT be words still visible in the grid — otherwise the
+  // student sees a pictured "cup" and is also offered "cup" as the answer.
+  const visibleIds = new Set(items.map(i => i.id));
+  const seenText = new Set([missingItem.text.toLowerCase()]);
+  const distractorWords = [];
+  const candidates = shuffle(setData.items.filter(i => !visibleIds.has(i.id)))
+    .concat(shuffle(setData.items.filter(i => visibleIds.has(i.id) && i.id !== missingItem.id)));
+  for (const cand of candidates) {
+    if (distractorWords.length >= 3) break;
+    if (seenText.has(cand.text.toLowerCase())) continue;
+    seenText.add(cand.text.toLowerCase());
+    distractorWords.push(cand.text);
+  }
   const options = shuffle([missingItem.text, ...distractorWords]);
 
   // Study phase first — the student must see everything before one disappears.
@@ -935,7 +1007,9 @@ function renderWhatsMissing(container, items, onDone) {
     <div class="study-grid">
       ${items.map(it => `
         <div class="study-cell">
-          <img src="${it.image}" alt="" />
+          ${it.image
+            ? `<img src="${escapeAttr(it.image)}" alt="" />`
+            : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:12px;color:var(--muted);padding:4px;">${escapeHtml(it.text)}</div>`}
           <div class="study-caption">${escapeHtml(it.text)}</div>
         </div>
       `).join('')}
@@ -946,10 +1020,15 @@ function renderWhatsMissing(container, items, onDone) {
 
   const countdownEl = document.getElementById('countdown');
   const timer = setInterval(() => {
+    // If the student left this step (Skip), the container is no longer on the
+    // page — stop instead of writing into a detached node and firing onDone
+    // for a question that is not on screen any more.
+    if (!document.body.contains(container)) { clearInterval(timer); return; }
     secondsLeft -= 1;
     if (countdownEl) countdownEl.textContent = secondsLeft;
     if (secondsLeft <= 0) { clearInterval(timer); showQuestion(); }
   }, 1000);
+  activeTimers.push(timer);
 
   document.getElementById('readyBtn').addEventListener('click', () => {
     clearInterval(timer);
@@ -970,7 +1049,7 @@ function renderWhatsMissing(container, items, onDone) {
       cell.textContent = '?';
     } else {
       cell.className = 'missing-cell';
-      cell.innerHTML = it.image ? `<img src="${it.image}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />` : `<div style="font-size:11px;padding:4px;color:var(--muted);">${escapeHtml(it.text)}</div>`;
+      cell.innerHTML = it.image ? `<img src="${escapeAttr(it.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />` : `<div style="font-size:11px;padding:4px;color:var(--muted);">${escapeHtml(it.text)}</div>`;
     }
     grid.appendChild(cell);
   });
