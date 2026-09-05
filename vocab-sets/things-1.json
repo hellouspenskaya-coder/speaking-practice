@@ -134,19 +134,6 @@
       "audio": null,
       "imageHint": "sheet white",
       "imageQuery": "sheet white paper"
-    },
-    {
-      "id": "item_10",
-      "type": "word",
-      "text": "ticket",
-      "definition": "A paper that lets you go somewhere",
-      "example": "I have a ticket for the bus.",
-      "phonetic": "/ˈtɪkɪt/",
-      "chunks": [],
-      "image": "https://pixabay.com/get/ge7abe6ec0d3ee546810a6365bf8219b1360b7bbbaa08dd7bf8085a0ff824e3e5c3f0fd791435d28af87af7ce045ef5a7381c0c5279de46867575da00e952ad58_640.jpg",
-      "audio": null,
-      "imageHint": "ticket travel admission",
-      "imageQuery": ""
     }
   ]
 }
