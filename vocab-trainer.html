@@ -315,6 +315,17 @@ function buildSession(data) {
         practiceSteps.push({ kind: 'antonym', mode: 'antonyms', item: first, answer: second, phase: 'practice' });
       }
     });
+    // Also add a group matching step if there are 2+ pairs
+    if (data.antonymPairs.length >= 2) {
+      const pairs = data.antonymPairs.map(p => {
+        const a = items.find(i => i.text.toLowerCase() === String(p[0]).toLowerCase());
+        const b = items.find(i => i.text.toLowerCase() === String(p[1]).toLowerCase());
+        return a && b ? [a, b] : null;
+      }).filter(Boolean);
+      if (pairs.length >= 2) {
+        practiceSteps.push({ kind: 'antonymMatching', mode: 'antonymMatching', pairs, phase: 'practice' });
+      }
+    }
   }
 
   return shuffle(practiceSteps);
@@ -372,6 +383,8 @@ function renderStep() {
     else if (step.mode === 'phraseBuilder') renderPhraseBuilder(cardArea, step.item, onDone);
   } else if (step.kind === 'antonym') {
     renderAntonyms(cardArea, step.item, step.answer, onDone);
+  } else if (step.kind === 'antonymMatching') {
+    renderAntonymMatching(cardArea, step.pairs, onDone);
   } else {
     if (step.mode === 'matching') renderMatching(cardArea, step.items, onDone);
     else if (step.mode === 'matchingDef') renderMatchingDef(cardArea, step.items, onDone);
@@ -415,7 +428,8 @@ function modeLabel(mode) {
     matching: 'Matching',
     matchingDef: 'Match the definition',
     whatsMissing: "What's missing?",
-    antonyms: 'Opposites'
+    antonyms: 'Opposites',
+    antonymMatching: 'Match the opposites'
   })[mode] || mode;
 }
 
@@ -953,6 +967,104 @@ function renderWhatsMissing(container, items, onDone) {
     });
     wordGrid.appendChild(btn);
   });
+  }
+}
+
+// --- Antonym matching: connect each word to its opposite ---
+function renderAntonymMatching(container, pairs, onDone) {
+  let selectedLeft = null;
+  let matched = new Set();
+  let pairNumber = 0;
+
+  // Left column: first word of each pair, shuffled
+  // Right column: second word of each pair, shuffled independently
+  const leftItems = shuffle(pairs.map(p => p[0]));
+  const rightItems = shuffle(pairs.map(p => p[1]));
+
+  container.innerHTML = `
+    <p class="mode-label">Match the opposites</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="antMatchGrid"></div>
+  `;
+  const grid = document.getElementById('antMatchGrid');
+  const leftCol = document.createElement('div');
+  leftCol.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+  const rightCol = document.createElement('div');
+  rightCol.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+  grid.appendChild(leftCol);
+  grid.appendChild(rightCol);
+
+  leftItems.forEach(item => {
+    const wrap = document.createElement('div');
+    wrap.className = 'match-row';
+    wrap.style.position = 'relative';
+    const btn = document.createElement('button');
+    btn.textContent = item.text;
+    btn.dataset.id = item.id;
+    btn.style.width = '100%';
+    btn.addEventListener('click', () => {
+      if (matched.has(item.id)) return;
+      leftCol.querySelectorAll('button').forEach(b => b.style.outline = 'none');
+      selectedLeft = item;
+      btn.style.outline = '2px solid var(--teal)';
+    });
+    wrap.appendChild(btn);
+    leftCol.appendChild(wrap);
+  });
+
+  rightItems.forEach(item => {
+    // Find the correct left partner for this right item
+    const pair = pairs.find(p => p[1].id === item.id);
+    const leftPartner = pair ? pair[0] : null;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'match-row';
+    wrap.style.position = 'relative';
+    const btn = document.createElement('button');
+    btn.textContent = item.text;
+    btn.dataset.id = item.id;
+    btn.style.width = '100%';
+    btn.addEventListener('click', () => {
+      if (!selectedLeft || matched.has(item.id) || !leftPartner) return;
+      const correct = selectedLeft.id === leftPartner.id;
+      if (correct) {
+        pairNumber += 1;
+        matched.add(item.id);
+        matched.add(selectedLeft.id);
+        // Style right button
+        btn.style.background = 'var(--success-light)';
+        btn.style.borderColor = 'var(--success)';
+        btn.style.color = 'var(--success)';
+        btn.style.opacity = '1';
+        btn.disabled = true;
+        addBadge(wrap, pairNumber);
+        // Style left button
+        const leftBtn = leftCol.querySelector(`button[data-id="${selectedLeft.id}"]`);
+        if (leftBtn) {
+          leftBtn.style.outline = 'none';
+          leftBtn.disabled = true;
+          leftBtn.style.background = 'var(--success-light)';
+          leftBtn.style.borderColor = 'var(--success)';
+          leftBtn.style.color = 'var(--success)';
+          leftBtn.style.opacity = '1';
+          addBadge(leftBtn.parentElement, pairNumber);
+        }
+      } else {
+        btn.classList.add('wrong');
+        setTimeout(() => btn.classList.remove('wrong'), 400);
+      }
+      selectedLeft = null;
+      leftCol.querySelectorAll('button').forEach(b => b.style.outline = 'none');
+      if (matched.size === pairs.length * 2) setTimeout(() => onDone(true), 700);
+    });
+    wrap.appendChild(btn);
+    rightCol.appendChild(wrap);
+  });
+
+  function addBadge(parent, number) {
+    const badge = document.createElement('div');
+    badge.className = 'pair-badge';
+    badge.textContent = number;
+    parent.appendChild(badge);
   }
 }
 
