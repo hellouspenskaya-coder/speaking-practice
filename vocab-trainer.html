@@ -520,15 +520,30 @@ function renderMultipleChoiceReverse(container, item, onDone) {
 
 // --- Listening: play example sentence, choose the word heard among phonetic distractors ---
 function renderListening(container, item, onDone) {
-  // Prefer the AI-generated phonetic distractors; if there are none
-  // (phrases don't get them), fall back to other real items from the set.
-  let distractors = (item.distractors || []).filter(Boolean).slice(0, 2);
-  if (distractors.length < 2) {
-    const others = shuffle(
-      setData.items.filter(i => i.id !== item.id).map(i => i.text)
-    ).filter(t => !distractors.includes(t));
-    distractors = distractors.concat(others).slice(0, 2);
+  // Build distractor pool: prefer phonetic distractors, fall back to other
+  // set words. Either way, filter out the target word itself and duplicates.
+  const targetLower = item.text.toLowerCase();
+  const phonetic = (item.distractors || [])
+    .filter(d => d && d.toLowerCase() !== targetLower);
+
+  const others = shuffle(
+    setData.items
+      .filter(i => i.id !== item.id)
+      .map(i => i.text)
+      .filter(t => t.toLowerCase() !== targetLower)
+  );
+
+  // Merge, deduplicate case-insensitively, take 2
+  const seen = new Set([targetLower]);
+  const distractors = [];
+  for (const d of [...phonetic, ...others]) {
+    if (distractors.length >= 2) break;
+    if (!seen.has(d.toLowerCase())) {
+      seen.add(d.toLowerCase());
+      distractors.push(d);
+    }
   }
+
   const options = shuffle([item.text, ...distractors]);
   container.innerHTML = `
     <button class="play-btn" id="playBtn"><span class="icon">&#128266;</span> Play the sentence</button>
