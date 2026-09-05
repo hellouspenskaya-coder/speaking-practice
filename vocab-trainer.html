@@ -663,6 +663,7 @@ function renderListening(container, item, onDone) {
     <p class="definition">You can listen again</p>
     <p class="mode-label" style="margin-top:16px;">Which word did you hear?</p>
     <div class="word-choice-grid" id="wordGrid"></div>
+    <div id="feedback"></div>
   `;
   document.getElementById('playBtn').addEventListener('click', () => speak(item, true));
   const grid = document.getElementById('wordGrid');
@@ -673,7 +674,17 @@ function renderListening(container, item, onDone) {
     btn.addEventListener('click', () => {
       const correct = word === item.text;
       btn.classList.add(correct ? 'correct' : 'wrong');
-      setTimeout(() => onDone(correct), 700);
+      if (!correct) {
+        // Highlight which one was actually correct, and say so in words —
+        // a red flash alone isn't enough for the student to learn from.
+        const correctBtn = [...grid.querySelectorAll('.word-tile')].find(b => b.textContent === item.text);
+        if (correctBtn) correctBtn.classList.add('correct');
+        const feedback = document.getElementById('feedback');
+        feedback.className = 'feedback wrong';
+        feedback.textContent = `It was "${item.text}"`;
+      }
+      grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
+      setTimeout(() => onDone(correct), correct ? 700 : 1600);
     });
     grid.appendChild(btn);
   });
