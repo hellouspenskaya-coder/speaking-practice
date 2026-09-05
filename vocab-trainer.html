@@ -741,7 +741,12 @@ function renderMatchingDef(container, items, onDone) {
   let matched = new Set();
   let pairNumber = 0;
   const words = shuffle(items);
-  const defs = shuffle(items);
+  let defs = shuffle(items);
+  let attempts = 0;
+  while (attempts < 10 && defs.every((d, i) => d.id === words[i].id)) {
+    defs = shuffle(items);
+    attempts++;
+  }
 
   container.innerHTML = `
     <p class="mode-label">Match the word to its meaning</p>
@@ -821,7 +826,13 @@ function renderMatching(container, items, onDone) {
   let selectedWord = null;
   let matched = new Set();
   const words = shuffle(items);
-  const images = shuffle(items);
+  // Shuffle images until at least one is not aligned with its word
+  let images = shuffle(items);
+  let attempts = 0;
+  while (attempts < 10 && images.every((im, i) => im.id === words[i].id)) {
+    images = shuffle(items);
+    attempts++;
+  }
 
   container.innerHTML = `
     <p class="mode-label">Match the word to the picture</p>
@@ -979,7 +990,13 @@ function renderAntonymMatching(container, pairs, onDone) {
   // Left column: first word of each pair, shuffled
   // Right column: second word of each pair, shuffled independently
   const leftItems = shuffle(pairs.map(p => p[0]));
-  const rightItems = shuffle(pairs.map(p => p[1]));
+  let rightItems = shuffle(pairs.map(p => p[1]));
+  // Ensure right column is not perfectly aligned with left
+  let attempts = 0;
+  while (attempts < 10 && pairs.every((p, i) => rightItems[i] && leftItems[i] && p[0].id === leftItems[i].id && p[1].id === rightItems[i].id)) {
+    rightItems = shuffle(pairs.map(p => p[1]));
+    attempts++;
+  }
 
   container.innerHTML = `
     <p class="mode-label">Match the opposites</p>
