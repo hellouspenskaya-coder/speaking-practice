@@ -202,25 +202,39 @@ async function searchImages(req, res) {
   // Random page (1-3) so repeated clicks return fresh results.
   const page = Math.floor(Math.random() * 3) + 1;
 
-  const apiKey = process.env.PEXELS_API_KEY;
+  const apiKey = process.env.PIXABAY_API_KEY;
   if (!apiKey) {
-    res.status(500).json({ error: 'PEXELS_API_KEY is not set in Vercel environment variables' });
+    res.status(500).json({ error: 'PIXABAY_API_KEY is not set in Vercel environment variables' });
     return;
   }
 
-  const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=4&orientation=square&page=${page}`;
-  const response = await fetch(url, { headers: { Authorization: apiKey } });
+  // For single words, prefer vector illustrations — they show one clean object
+  // on a plain background, which is much better for A1 vocabulary cards than
+  // busy stock photos. Phrases fall back to photos since vectors rarely cover them.
+  const imageType = isPhrase ? 'photo' : 'vector';
+
+  const url = `https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=${imageType}&orientation=horizontal&per_page=4&page=${page}&safesearch=true`;
+  const response = await fetch(url);
 
   if (!response.ok) {
-    res.status(502).json({ error: `Pexels error ${response.status}` });
+    res.status(502).json({ error: `Pixabay error ${response.status}` });
     return;
   }
 
   const data = await response.json();
-  const images = (data.photos || []).map((p) => ({
-    thumb: p.src.medium,
-    full: p.src.large,
-    alt: p.alt || query
+  let hits = data.hits || [];
+
+  // If no vectors found, fall back to photos for this word
+  if (!hits.length && imageType === 'vector') {
+    const fallback = await fetch(`https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&per_page=4&page=${page}&safesearch=true`);
+    const fbData = await fallback.json();
+    hits = fbData.hits || [];
+  }
+
+  const images = hits.map(h => ({
+    thumb: h.previewURL,
+    full: h.webformatURL,
+    alt: h.tags || query
   }));
   res.status(200).json({ images });
 }
