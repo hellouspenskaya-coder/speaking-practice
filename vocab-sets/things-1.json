@@ -1,0 +1,152 @@
+{
+  "topic": "Things 1",
+  "level": "A1",
+  "modes": [
+    "multipleChoice",
+    "multipleChoiceReverse",
+    "matching",
+    "listening",
+    "fillLetters",
+    "letterScramble",
+    "dictation",
+    "dictationNoImage",
+    "whatsMissing"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "diary",
+      "definition": "A book where you write about your day",
+      "example": "I write in my diary every day.",
+      "phonetic": "/ˈdaɪəri/",
+      "chunks": [],
+      "image": "https://pixabay.com/get/gb22365200e020618aa8f43b8163e2f0cfeb084bc12041fe08d4693712131ca2ff90a67982d6e3cf92845d417c91d17cf_640.jpg",
+      "audio": null,
+      "imageHint": "diary journal book",
+      "imageQuery": "diary journal book organizer"
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "dictionary",
+      "definition": "A book with words and their meanings",
+      "example": "I use a dictionary to learn words.",
+      "phonetic": "/ˈdɪkʃəneri/",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g22e660d58ca55bbb2e729a80ac24f72928dfd022e10578e33d9b2a5d498264fe21987955dc48061e50abdbc187ed5b3364c16f7b34ca0659a8f9b0166b2dfc58_640.jpg",
+      "audio": null,
+      "imageHint": "dictionary book reference",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "file",
+      "definition": "A container for papers or documents",
+      "example": "I put papers in a file.",
+      "phonetic": "/faɪl/",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g14ae55199bb73a987a786ca5e8ccf2dffa28b8dc2598c18b705b86c38538b5be906b00597a504084a15a34c2b71ce9d6a86d19e1f4e549222f6c64e64aac2832_640.jpg",
+      "audio": null,
+      "imageHint": "file folder documents",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "magazine",
+      "definition": "A thin book with pictures and stories",
+      "example": "She reads a magazine every week.",
+      "phonetic": "/ˌmæɡəˈziːn/",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g8373a2d4410cdf66b2a7cf196d465de8e7e8e2d04a73433b3b0d2ab52bb57583defdd99a28a3bcfa5da40405d8151662_640.jpg",
+      "audio": null,
+      "imageHint": "magazine glossy publication",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_5",
+      "type": "word",
+      "text": "newspaper",
+      "definition": "Papers with news and information",
+      "example": "He reads the newspaper in the morning.",
+      "phonetic": "/ˈnjuːzpeɪpər/",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g1277e2a2433abc0eee6595df4a0b4561a7903a3ad1deeb7f90161e1009a692a45cd253c9f8a819b1f5e3c2a2e9334b38e355f6c3488bcc4f038e2828dab09fea_640.jpg",
+      "audio": null,
+      "imageHint": "newspaper news daily",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_6",
+      "type": "word",
+      "text": "notebook",
+      "definition": "A book for writing notes and ideas",
+      "example": "I write in my notebook at school.",
+      "phonetic": "/ˈnoʊtbʊk/",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g61590cfdc32523739063fdf610fd9cc4a67ccf46455e42fb3c034e29d32d3fd5e6f425862132bf99ce401a257f9ff9b9_640.jpg",
+      "audio": null,
+      "imageHint": "notebook stationery writing",
+      "imageQuery": "notebook school"
+    },
+    {
+      "id": "item_7",
+      "type": "word",
+      "text": "pen",
+      "definition": "A tool for writing with ink",
+      "example": "I write with a pen.",
+      "phonetic": "/pen/",
+      "chunks": [],
+      "image": "https://pixabay.com/get/gc524c7cea3a19666f827551a80be15560ab8806aee18f621ef28e1db7e344c9e54041da0930629eb8542416289bcb716_640.jpg",
+      "audio": null,
+      "imageHint": "pen writing ballpoint",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_8",
+      "type": "word",
+      "text": "pencil",
+      "definition": "A tool for writing and drawing",
+      "example": "I draw with a pencil.",
+      "phonetic": "/ˈpensəl/",
+      "chunks": [],
+      "image": "https://pixabay.com/get/gc22173fc370c654282a3ae8bcd31a22c342c9e0c9543303d1641212e0fce31d1fde60f88443920ecfe9c3084283e1d3e4b1c036fa93027bcfc4fce77ce09d07e_640.jpg",
+      "audio": null,
+      "imageHint": "pencil wooden stationery",
+      "imageQuery": "pencil wooden"
+    },
+    {
+      "id": "item_9",
+      "type": "phrase",
+      "text": "piece of paper",
+      "definition": "A single sheet of white writing paper",
+      "example": "I write on a piece of paper.",
+      "phonetic": "",
+      "chunks": [
+        "piece",
+        "of",
+        "paper"
+      ],
+      "image": "https://pixabay.com/get/ga42891fba5e8f103bcb93f0329b2d40f16d0737543891fd59aa3355aae120157f4c87e07938153949cfd99aa94e6e1290e4bbbdd922c24398b3df0a4b63b9bb9_640.jpg",
+      "audio": null,
+      "imageHint": "sheet white",
+      "imageQuery": "sheet white paper"
+    },
+    {
+      "id": "item_10",
+      "type": "word",
+      "text": "ticket",
+      "definition": "A paper that lets you go somewhere",
+      "example": "I have a ticket for the bus.",
+      "phonetic": "/ˈtɪkɪt/",
+      "chunks": [],
+      "image": "https://pixabay.com/get/ge7abe6ec0d3ee546810a6365bf8219b1360b7bbbaa08dd7bf8085a0ff824e3e5c3f0fd791435d28af87af7ce045ef5a7381c0c5279de46867575da00e952ad58_640.jpg",
+      "audio": null,
+      "imageHint": "ticket travel admission",
+      "imageQuery": ""
+    }
+  ]
+}
