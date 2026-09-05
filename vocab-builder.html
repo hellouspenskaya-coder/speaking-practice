@@ -593,6 +593,12 @@ document.getElementById('findAntonymsBtn').addEventListener('click', async () =>
     if (!response.ok) throw new Error(data.error || 'Antonym search failed');
     antonymPairs = data.pairs || [];
     renderPairs();
+    const oppCheckbox = document.querySelector('#modesGrid input[data-mode="antonyms"]');
+    if (oppCheckbox) {
+      oppCheckbox.checked = antonymPairs.length > 0;
+      oppCheckbox.disabled = antonymPairs.length === 0;
+      oppCheckbox.parentElement.style.opacity = antonymPairs.length ? '1' : '0.4';
+    }
     if (!antonymPairs.length) {
       errorBox.textContent = 'No clear opposite pairs found in this set.';
       errorBox.classList.add('open');
