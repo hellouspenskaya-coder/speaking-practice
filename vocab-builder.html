@@ -700,7 +700,9 @@ function renderModes() {
   MODES.forEach(mode => {
     const label = document.createElement('label');
     label.className = 'mode-check';
-    label.innerHTML = `<input type="checkbox" data-mode="${mode.id}" checked /> ${mode.label}`;
+    const isOpposites = mode.id === 'antonyms';
+    label.innerHTML = `<input type="checkbox" data-mode="${mode.id}" ${isOpposites ? '' : 'checked'} ${isOpposites ? 'disabled' : ''} /> ${mode.label}`;
+    if (isOpposites) label.style.opacity = '0.4';
     grid.appendChild(label);
   });
 }
