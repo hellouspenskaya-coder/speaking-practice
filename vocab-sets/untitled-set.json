@@ -5,72 +5,173 @@
     "flashcards",
     "multipleChoice",
     "matching",
+    "matchingDef",
     "listening",
     "fillLetters",
     "letterScramble",
     "phraseBuilder",
-    "whatsMissing"
+    "whatsMissing",
+    "antonyms"
   ],
-  "antonymPairs": [],
+  "antonymPairs": [
+    [
+      "big",
+      "small"
+    ],
+    [
+      "good",
+      "bad"
+    ]
+  ],
   "items": [
     {
       "id": "item_1",
       "type": "word",
-      "text": "train",
-      "definition": "Vehicle that goes on rails with many cars",
-      "example": "I take the train to work.",
-      "phonetic": "treɪn",
+      "text": "cup",
+      "definition": "A small container for drinking",
+      "example": "I drink tea in a cup",
+      "phonetic": "kʌp",
       "distractors": [
-        "brain",
-        "strain"
+        "cut",
+        "cub"
       ],
       "chunks": [],
-      "image": "https://images.pexels.com/photos/5471182/pexels-photo-5471182.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "image": "https://pixabay.com/get/g6288f6176ab222a4a2eb7297665f4b78ea062893419b11f54fcadeecac66020744d330052c5d3a3f650e085f99c10964bbafb98e7052a8d33b0f0532dd200cce_640.jpg",
       "audio": null
     },
     {
       "id": "item_2",
       "type": "word",
-      "text": "plane",
-      "definition": "Big vehicle that flies in the sky",
-      "example": "She flies on a plane.",
-      "phonetic": "pleɪn",
+      "text": "dictionary",
+      "definition": "A book with word meanings",
+      "example": "I read the dictionary every day",
+      "phonetic": "ˈdɪkʃəneri",
       "distractors": [
-        "plain",
-        "rain"
+        "library",
+        "diary"
       ],
       "chunks": [],
-      "image": "https://images.pexels.com/photos/3801899/pexels-photo-3801899.png?auto=compress&cs=tinysrgb&h=650&w=940",
+      "image": "https://pixabay.com/get/g5bf6b13d4c9eae41a5d153dfb5ac3b31beca640a2a5156d2c3068330e331b39d9390be628e9b0000ed699044f00e7c7e5ca1b9d2ec6faca2cba4e7a162f10c71_640.jpg",
       "audio": null
     },
     {
       "id": "item_3",
       "type": "word",
-      "text": "Tuesday",
-      "definition": "Day of the week after Monday",
-      "example": "Tuesday is my favorite day.",
-      "phonetic": "ˈtjuːzdeɪ",
+      "text": "door",
+      "definition": "You open it to enter a room",
+      "example": "I open the door now",
+      "phonetic": "dɔːr",
       "distractors": [
-        "Monday",
-        "Thursday"
+        "floor",
+        "four"
       ],
       "chunks": [],
-      "image": "https://images.pexels.com/photos/16946736/pexels-photo-16946736.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "image": "https://pixabay.com/get/g3fbc3c53c58ed8e5b423f1afb7be7e660148a0b76534fbd1e37b62151e9aa04ef8e17b5942b8eb15e5ac818d19ea962dd5f3f2e693ee79bf4318c303c7283a88_640.png",
       "audio": null
     },
     {
       "id": "item_4",
       "type": "word",
-      "text": "Monday",
-      "definition": "First day of the work week",
-      "example": "Work starts on Monday.",
-      "phonetic": "ˈmʌndeɪ",
+      "text": "window",
+      "definition": "Glass you look through for outside",
+      "example": "The window is very big",
+      "phonetic": "ˈwɪndoʊ",
       "distractors": [
-        "Tuesday",
-        "Sunday"
+        "widow",
+        "wind"
       ],
       "chunks": [],
-      "image": "https://images.pexels.com/photos/11861959/pexels-photo-11861959.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "image": "https://pixabay.com/get/ge8a198d72a9957851b444f53f894be8c7fdaed41f246362310243457441369e942fb57a1f9a635ea27aeaa03a8f5a3080eb6ba36d3966977b0e16fad68c245a5_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_5",
+      "type": "word",
+      "text": "laptop",
+      "definition": "A small computer you can carry",
+      "example": "I use my laptop every day",
+      "phonetic": "ˈlæptɒp",
+      "distractors": [
+        "desktop",
+        "tabletop"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/g41771e58a231b0afa3d4c2c098893014b63910246e2b76e4dec91c911c699c1e68b4c7b14253c14b5a39a8ad19f0a989dfd3015a894a0362a010d15618c35649_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_6",
+      "type": "word",
+      "text": "table",
+      "definition": "Furniture with legs for putting things",
+      "example": "I eat lunch on the table",
+      "phonetic": "ˈteɪbəl",
+      "distractors": [
+        "tablet",
+        "able"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/g77ab839c597585813d37d4064bbba19c5e8c1a0f5e244c764f9f948315e7e1d873018d18221b7f5319d7c9438ee1a11c81faae52e06beaa6a4936b88bd5131e4_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_7",
+      "type": "word",
+      "text": "big",
+      "definition": "Not small; very large",
+      "example": "The elephant is very big",
+      "phonetic": "bɪɡ",
+      "distractors": [
+        "bag",
+        "dig"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/gecd2a6cd648cde4c46c0351dbff7e7f874a67dbe850956150e6a999335791e0a315b40d107bae13a84666cc02905851f9cbd759a3f9629d0a243fdde39d39401_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_8",
+      "type": "word",
+      "text": "small",
+      "definition": "Not big; very little",
+      "example": "The mouse is very small",
+      "phonetic": "smɔːl",
+      "distractors": [
+        "smell",
+        "smile"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/gcb80b37d5759df5692662fdc6dd2c87c6b8f97f813199332ac4feece074a725c4e20e2fe2cc89d61c510bbf619605a34f9fe97ae230dd7c7723a34e04b128197_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_9",
+      "type": "word",
+      "text": "good",
+      "definition": "Nice; positive; not bad",
+      "example": "This apple is very good",
+      "phonetic": "ɡʊd",
+      "distractors": [
+        "god",
+        "hood"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/g2654fd83643767378c9a7e64df7651dd1a659178082c137470947635c3d1068c28d03754c71d441e2c3cb786196c6f40a54cbba525b09cf9965a35f6a6105685_640.jpg",
+      "audio": null
+    },
+    {
+      "id": "item_10",
+      "type": "word",
+      "text": "bad",
+      "definition": "Not good; negative",
+      "example": "This banana is very bad",
+      "phonetic": "bæd",
+      "distractors": [
+        "bed",
+        "bid"
+      ],
+      "chunks": [],
+      "image": "https://pixabay.com/get/gb9cdc133686c1a1d967340a05d79ac05a722419a62214bf353521ded65ae9661b69cbbbbd6e6fdc00b011bc25714edc6_640.jpg",
       "audio": null
     }
   ]
