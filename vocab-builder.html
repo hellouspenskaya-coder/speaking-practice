@@ -372,7 +372,7 @@ function renderItemBody(id) {
     </div>
     <div class="field-row" style="margin-top:10px;">
       <label style="flex:0 0 90px; font-size:12px; padding-top:8px;">Image search</label>
-      <input type="text" class="image-query-input" placeholder="e.g. tablet computer touchscreen" value="${escapeAttr(item.imageQuery || '')}" style="flex:1;" />
+      <input type="text" class="image-query-input" placeholder="2-3 words, e.g. tissue kleenex" value="${escapeAttr(item.imageQuery || '')}" style="flex:1;" />
       <button class="small gen-images-btn" style="flex:0 0 auto; margin-left:6px;">Find images</button>
     </div>
     <div class="images-grid" id="images-${id}"></div>
@@ -398,7 +398,18 @@ function renderItemBody(id) {
   });
 
   body.querySelector('.gen-content-btn').addEventListener('click', () => generateContentFor([item]));
-  body.querySelector('.image-query-input').addEventListener('input', (e) => { item.imageQuery = e.target.value; });
+  body.querySelector('.image-query-input').addEventListener('input', (e) => {
+    item.imageQuery = e.target.value;
+  });
+  body.querySelector('.image-query-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      // Strip commas before searching
+      item.imageQuery = e.target.value.replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+      e.target.value = item.imageQuery;
+      findImagesFor(item);
+    }
+  });
   body.querySelector('.gen-images-btn').addEventListener('click', () => findImagesFor(item));
   body.querySelector('.gen-audio-btn').addEventListener('click', () => generateAudioFor(item));
 
