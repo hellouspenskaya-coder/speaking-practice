@@ -494,6 +494,7 @@ function imageBox(item) {
 function escapeHtml(s) {
   return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+function escapeAttr(s) { return escapeHtml(s); }
 
 // Plays generated audio if the set has it, otherwise falls back to the
 // browser's built-in speech synthesis so sound always works.
