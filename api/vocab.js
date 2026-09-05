@@ -93,7 +93,7 @@ For each item below, decide if it is a single "word" or a multi-word "phrase" (e
 - "phonetic": IPA transcription (words only; omit for phrases)
 - "distractors": for "word" items only - exactly 2 other real English words that sound similar (rhyme or near-minimal pairs, for listening practice). Never repeat the item itself. Omit for phrases.
 - "chunks": for "phrase" items only - the phrase split into its individual words in correct order, as an array of strings. Omit for words.
-- "imageHint": 2-4 keywords in English optimised for finding a clear, isolated illustration of this item on a stock image site — as if searching for a teaching visual for beginner English learners. For ambiguous words, add a disambiguating keyword (e.g. "key" → "door key metal", "tablet" → "tablet ipad touchscreen", "glasses" → "glasses eyewear vision", "bat" → "baseball bat sport"). For concrete objects, prefer terms that return a single clean object on a plain background. For abstract words or actions, describe the clearest visual representation.
+- "imageHint": exactly 2-3 keywords (no commas, no phrases) for finding a clear isolated illustration on a stock image site for teaching beginner English learners. For ambiguous words add a disambiguating keyword (e.g. "key" → "door key", "tablet" → "tablet ipad", "glasses" → "glasses eyewear", "tissue" → "tissue kleenex", "bat" → "baseball bat"). Keep it short — Pixabay works best with 2-3 simple words.
 
 Items: ${JSON.stringify(items)}
 

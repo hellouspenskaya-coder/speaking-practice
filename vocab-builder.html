@@ -440,7 +440,16 @@ async function generateContentFor(itemsToGenerate) {
       item.phonetic = generated.phonetic || item.phonetic;
       if (Array.isArray(generated.distractors)) item.distractors = generated.distractors;
       if (Array.isArray(generated.chunks)) item.chunks = generated.chunks;
-      if (generated.imageHint) item.imageHint = generated.imageHint;
+      if (generated.imageHint) {
+        const stopWords = new Set(['a','an','the','for','to','of','in','on','with','and','or','is','are','it','as','use','used','make','up','pack','paper','soft']);
+        item.imageHint = generated.imageHint
+          .replace(/[,;.]/g, ' ')
+          .trim()
+          .split(/\s+/)
+          .filter(w => w.length > 1 && !stopWords.has(w.toLowerCase()))
+          .slice(0, 3)
+          .join(' ');
+      }
       item.status = 'generated';
     });
     renderItems();
