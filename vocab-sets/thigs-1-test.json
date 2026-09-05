@@ -99,8 +99,7 @@
       "example": "I work on my laptop.",
       "phonetic": "ˈlæptɑːp",
       "distractors": [
-        "desktop",
-        "laptop"
+        "desktop"
       ],
       "chunks": [],
       "image": "https://pixabay.com/get/g22d09b58ccf5c3415f01f4fd68090e7eade648441932c78263f310d89f214b24aa03435b2f0bf33d42de78951544b2da4bd0b3a23a9638e7d0721aafc0d07d66_640.jpg",

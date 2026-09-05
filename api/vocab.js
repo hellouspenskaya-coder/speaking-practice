@@ -91,7 +91,7 @@ For each item below, decide if it is a single "word" or a multi-word "phrase" (e
 - "definition": one very simple ${cefr}-level definition (max 8 words, no difficult words)
 - "example": one short example sentence, 3-6 words, simple present tense, using only common ${cefr} vocabulary, that contains the item naturally
 - "phonetic": IPA transcription (words only; omit for phrases)
-- "distractors": for "word" items only - exactly 2 other real English words that sound similar (rhyme or near-minimal pairs, for listening practice). Never repeat the item itself. Omit for phrases.
+- "distractors": for "word" items only - exactly 2 other real English words that sound similar (rhyme or near-minimal pairs, for listening practice). CRITICAL: neither distractor may be the item's own word in any form (e.g. for "laptop", never include "laptop" itself). Example: for "laptop", good distractors are ["desktop","lap"], NOT ["desktop","laptop"]. Omit for phrases.
 - "chunks": for "phrase" items only - the phrase split into its individual words in correct order, as an array of strings. Omit for words.
 - "imageHint": exactly 2-3 keywords (no commas, no phrases) for finding a clear isolated illustration on a stock image site for teaching beginner English learners. For ambiguous words add a disambiguating keyword (e.g. "key" → "door key", "tablet" → "tablet ipad", "glasses" → "glasses eyewear", "tissue" → "tissue kleenex", "bat" → "baseball bat"). Keep it short — Pixabay works best with 2-3 simple words.
 

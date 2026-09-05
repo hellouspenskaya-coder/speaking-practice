@@ -500,7 +500,20 @@ async function generateContentFor(itemsToGenerate) {
       item.definition = generated.definition || item.definition;
       item.example = generated.example || item.example;
       item.phonetic = generated.phonetic || item.phonetic;
-      if (Array.isArray(generated.distractors)) item.distractors = generated.distractors;
+      if (Array.isArray(generated.distractors)) {
+        // The prompt already asks the model not to repeat the word itself,
+        // but it sometimes does anyway — filter it out here so bad data
+        // never reaches the saved set, not just at display time.
+        const targetLower = item.text.toLowerCase();
+        const seen = new Set([targetLower]);
+        item.distractors = generated.distractors.filter(d => {
+          if (!d) return false;
+          const lower = d.toLowerCase();
+          if (seen.has(lower)) return false;
+          seen.add(lower);
+          return true;
+        });
+      }
       if (Array.isArray(generated.chunks)) item.chunks = generated.chunks;
       if (generated.imageHint) {
         const stopWords = new Set(['a','an','the','for','to','of','in','on','with','and','or','is','are','it','as','use','used','make','up','pack','paper','soft']);
