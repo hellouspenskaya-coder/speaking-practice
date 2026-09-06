@@ -1,0 +1,349 @@
+{
+  "topic": "Adjectives 1",
+  "level": "A1",
+  "modes": [
+    "multipleChoice",
+    "multipleChoiceReverse",
+    "matching",
+    "listening",
+    "fillLetters",
+    "letterScramble",
+    "dictation",
+    "dictationNoImage",
+    "antonyms"
+  ],
+  "antonymPairs": [
+    [
+      "beautiful",
+      "ugly"
+    ],
+    [
+      "big",
+      "small"
+    ],
+    [
+      "cheap",
+      "expensive"
+    ],
+    [
+      "clean",
+      "dirty"
+    ],
+    [
+      "easy",
+      "difficult"
+    ],
+    [
+      "light",
+      "dark"
+    ],
+    [
+      "fast",
+      "slow"
+    ],
+    [
+      "full",
+      "empty"
+    ],
+    [
+      "good",
+      "bad"
+    ],
+    [
+      "high",
+      "low"
+    ],
+    [
+      "hot",
+      "cold"
+    ]
+  ],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "beautiful",
+      "definition": "very nice to look at",
+      "example": "The flower is beautiful.",
+      "phonetic": "ˈbjuːtɪfl",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g450f5adb432e61f333f68ff17db811be8bba108bf483c0c7b992f8187c9cc973212730e919d905e58c1b6d562b99aed75c97219bc1306d801b4c47c05128b70e_640.jpg",
+      "audio": null,
+      "imageHint": "beautiful flower garden",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "ugly",
+      "definition": "not nice to look at",
+      "example": "The car is ugly.",
+      "phonetic": "ˈʌɡli",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g4a00af50d85d80c3ce052d4136d1d3655a9272746a431e01ae648b2dd4787b405d109d6666063e2b9f8c075e21f4ba722c857f7b4f65e567b1089dce853e10f9_640.jpg",
+      "audio": null,
+      "imageHint": "ugly old car",
+      "imageQuery": "ugly bad-looking"
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "big",
+      "definition": "very large in size",
+      "example": "The elephant is big.",
+      "phonetic": "bɪɡ",
+      "chunks": [],
+      "image": "https://pixabay.com/get/ga450fc56b0937b8b7d1fbc6f61504aeeea7e9d6785ccb133196592165fd5057d6d29caac02de3f16124a451fce02f4f4_640.jpg",
+      "audio": null,
+      "imageHint": "big elephant animal",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "small",
+      "definition": "not large in size",
+      "example": "The mouse is small.",
+      "phonetic": "smɔːl",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g6ea9d3aeb0ca293cb4238c8143b865eb5d1e70fe52156fa51f1f895a45215e8969141c5fa1aede0ddfacb7aefee4241d2c3637b48a0d983e85a933dc5c25ba7a_640.jpg",
+      "audio": null,
+      "imageHint": "small mouse animal",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_5",
+      "type": "word",
+      "text": "cheap",
+      "definition": "costs not much money",
+      "example": "The apple is cheap.",
+      "phonetic": "tʃiːp",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g4b0146f4e59937f3223aee82b8161075570b3f2e2986622e99c1730ed99db4e48c43792f65ff4899741ca69430e0fc6085ebf3487da0efa85bd09a6570bdd170_640.png",
+      "audio": null,
+      "imageHint": "cheap apple fruit",
+      "imageQuery": "cheap"
+    },
+    {
+      "id": "item_6",
+      "type": "word",
+      "text": "expensive",
+      "definition": "costs a lot of money",
+      "example": "The car is expensive.",
+      "phonetic": "ɪkˈspensɪv",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g4691443110faebd0dd81485695ab459d1ef5e8f329fe61e6955f12f50465ca87b35e38cdcb0423bc0058692e26087b1632ae0327b29268beca5f46c523da4f26_640.jpg",
+      "audio": null,
+      "imageHint": "expensive luxury car",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_7",
+      "type": "word",
+      "text": "clean",
+      "definition": "not dirty, very neat",
+      "example": "The room is clean.",
+      "phonetic": "kliːn",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g978ffcabdb39bb358cebf1a243e7b8d8d949b9587376f7b4d8cb7682cacd3878ff17ffab27146ff83a871185b306b9bb71852de13beb92cd529b1bac9ff67363_640.jpg",
+      "audio": null,
+      "imageHint": "clean tidy room",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_8",
+      "type": "word",
+      "text": "dirty",
+      "definition": "has dirt or mud on it",
+      "example": "The shirt is dirty.",
+      "phonetic": "ˈdɜːti",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g42fa445bb1bb624ecc1d48fbf2ce9c618670501f21a0c865dfe21ff827dad5b90228175fbf85a731395f688286567868_640.jpg",
+      "audio": null,
+      "imageHint": "dirty muddy shirt",
+      "imageQuery": "dirty muddy"
+    },
+    {
+      "id": "item_9",
+      "type": "word",
+      "text": "easy",
+      "definition": "not hard, simple to do",
+      "example": "The task is easy.",
+      "phonetic": "ˈiːzi",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g646cebb3200f54754649c22ed81a2b84c6a83a7f71d082943d8b865f615b39812c7e3e875fa21acd89e2ac865f0f5d66ad5a33a60a4d483421da220e6bcc92a0_640.jpg",
+      "audio": null,
+      "imageHint": "easy simple puzzle",
+      "imageQuery": "easy mATH"
+    },
+    {
+      "id": "item_10",
+      "type": "word",
+      "text": "difficult",
+      "definition": "hard to do or understand",
+      "example": "The test is difficult.",
+      "phonetic": "ˈdɪfɪkəlt",
+      "chunks": [],
+      "image": "https://pixabay.com/get/gf795d8bd62dbc6949bee62647bf3dc98fae9e6e1d40ab818f333c0ec20ebcf9a4a2719df6dc3f9d3fddc4776b00bb6bd_640.jpg",
+      "audio": null,
+      "imageHint": "difficult complex puzzle",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_11",
+      "type": "word",
+      "text": "light",
+      "definition": "bright, not dark",
+      "example": "The room is light.",
+      "phonetic": "laɪt",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g98b0039786c57c7693e8e230a6e0b7d0a21fcf65cb82af4401cc1e1d730704d99507fdbdaff12be6f154c881b27451c4b91acd395d5a166fb05245d43456a168_640.jpg",
+      "audio": null,
+      "imageHint": "light bright window",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_12",
+      "type": "word",
+      "text": "dark",
+      "definition": "not light, no sun",
+      "example": "The night is dark.",
+      "phonetic": "dɑːrk",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g19745c37eae6e3846c9ad9d8276efad3d4520f366bb738405ea2adce4139d48bff8eb2ad92848934f7d9ec345e26d2fa05d98518c8035e68b26fc784d32b0bec_640.jpg",
+      "audio": null,
+      "imageHint": "dark night sky",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_13",
+      "type": "word",
+      "text": "fast",
+      "definition": "moves very quickly",
+      "example": "The car is fast.",
+      "phonetic": "fɑːst",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g299a2f674459f5085be59fc5f131dd2c180fd366aa0495d2ebe6bd783dae65894c893bf7947885c5b39b3d69925e09cc8e77db9c9c65c53ea79d2105c0c7291d_640.jpg",
+      "audio": null,
+      "imageHint": "fast racing car",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_14",
+      "type": "word",
+      "text": "slow",
+      "definition": "moves not quickly",
+      "example": "The turtle is slow.",
+      "phonetic": "sləʊ",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g534185f8346f24dfde742741f144d63aa51f4d5cdbb5db79d1589cad9a8b70aeacf63c9438de1e1ca17a2a58e93c33703e2f1d2d708c71da4d059c13421ee15a_640.jpg",
+      "audio": null,
+      "imageHint": "slow turtle animal",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_15",
+      "type": "word",
+      "text": "full",
+      "definition": "has no empty space inside",
+      "example": "The cup is full.",
+      "phonetic": "fʊl",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g203272e822667ff694b1f89bfdabeee7ba626475c4e95f55e0fc6932bc3767ab44104e47e75a6ba5fe2a398325d9bd30_640.jpg",
+      "audio": null,
+      "imageHint": "full cup water",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_16",
+      "type": "word",
+      "text": "empty",
+      "definition": "has nothing inside it",
+      "example": "The box is empty.",
+      "phonetic": "ˈempti",
+      "chunks": [],
+      "image": "https://pixabay.com/get/gc2d0590e9f31a749388b68e266d2ad887e20d92026ea78834fed3c5447e8303424675de76e0459b76e90fede928d236ee320475fbf7f545e461c5e7847a0b694_640.jpg",
+      "audio": null,
+      "imageHint": "empty box container",
+      "imageQuery": "empty cup"
+    },
+    {
+      "id": "item_17",
+      "type": "word",
+      "text": "good",
+      "definition": "nice, positive, the right way",
+      "example": "The food is good.",
+      "phonetic": "ɡʊd",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g96cc2474fd1a556cc24eaee9b9e5c9d87b9112d1fc19d0a94f9603bddd78f67b3ab7b8e2850c48c3f93dcb47d79258c33cee921da37f4e6bd14b0758357b03bf_640.png",
+      "audio": null,
+      "imageHint": "good delicious food",
+      "imageQuery": "good"
+    },
+    {
+      "id": "item_18",
+      "type": "word",
+      "text": "bad",
+      "definition": "not good, negative",
+      "example": "The weather is bad.",
+      "phonetic": "bæd",
+      "chunks": [],
+      "image": "https://pixabay.com/get/gff6b51c8b3fb16ff5a9aa4bf773b4761ee7d1c2792f4cc6e18ded7c8d89d55ada7c790681e1c966e786b85f4de6cbe5a_640.png",
+      "audio": null,
+      "imageHint": "bad stormy weather",
+      "imageQuery": "bad"
+    },
+    {
+      "id": "item_19",
+      "type": "word",
+      "text": "high",
+      "definition": "far up from the ground",
+      "example": "The mountain is high.",
+      "phonetic": "haɪ",
+      "chunks": [],
+      "image": "https://pixabay.com/get/gd803f77939756bd1281674a6934d211480354019b8221cb4a13f0c364244cb3a4e9033d9aba01517e8df1464ad4818a7_640.jpg",
+      "audio": null,
+      "imageHint": "high mountain peak",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_20",
+      "type": "word",
+      "text": "low",
+      "definition": "not far from the ground",
+      "example": "The table is low.",
+      "phonetic": "ləʊ",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g593ebf82b47bef84c37e9cac06e19199021904655e0d08fb9314a6ea3beebbd75bda5092bba7c1f315a478d415cd00a249c79f9f3f24f71114471da170c8c5d0_640.jpg",
+      "audio": null,
+      "imageHint": "low table furniture",
+      "imageQuery": "low bridge"
+    },
+    {
+      "id": "item_21",
+      "type": "word",
+      "text": "hot",
+      "definition": "has high temperature, burns",
+      "example": "The sun is hot.",
+      "phonetic": "hɒt",
+      "chunks": [],
+      "image": "https://pixabay.com/get/g704fd0c6ec5258b17bac0cc17d0017e1235261ee0d10638c5d01789ff5f45b5035c01e888465eb6963903c17a5c7bc50e3104daa9537a6f906254da9db2097fd_640.jpg",
+      "audio": null,
+      "imageHint": "hot sun temperature",
+      "imageQuery": ""
+    },
+    {
+      "id": "item_22",
+      "type": "word",
+      "text": "cold",
+      "definition": "has low temperature, freezing",
+      "example": "The ice is cold.",
+      "phonetic": "kəʊld",
+      "chunks": [],
+      "image": "https://pixabay.com/get/gd0519329c275696d9da3a682d0bc9de66ca83e8d7a7a5ca9f0c7eadb30c0572d21176ae667c7d7cbf575fe9b0f3353fae81fa0b655ad0115866e3090ef73e514_640.jpg",
+      "audio": null,
+      "imageHint": "cold ice winter",
+      "imageQuery": "cold ice"
+    }
+  ]
+}
