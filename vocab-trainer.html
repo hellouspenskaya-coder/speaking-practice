@@ -361,11 +361,19 @@ function buildSession(data) {
   }
 
   // --- Everything else, shuffled and mode-balanced as before.
+  // B1+ specialized exercises (prepositions/wordFormation/collocations/verbForms)
+  // only exist for items where the teacher's set has that specific rich data —
+  // they shouldn't have to compete on equal odds with generic modes like
+  // Listening that are eligible for almost every word. Whenever an item
+  // qualifies for a specialized mode, guarantee it's the one used.
+  const SPECIALIZED_MODES = ['prepositions', 'wordFormation', 'collocations', 'verbForms'];
   const singleSteps = [];
   shuffle(items).forEach(item => {
     const pool = eligibleSingleModes(item, enabledModes);
     if (!pool.length) return;
-    singleSteps.push({ kind: 'single', item, pool, phase: 'practice' });
+    const specialized = pool.filter(m => SPECIALIZED_MODES.includes(m));
+    const finalPool = specialized.length ? specialized : pool;
+    singleSteps.push({ kind: 'single', item, pool: finalPool, phase: 'practice' });
   });
 
   // Group and antonym steps keep a fixed mode; only single-item steps have
