@@ -1,6 +1,6 @@
 {
   "topic": "tet3",
-  "level": "A1",
+  "level": "B2",
   "modes": [
     "prepositions",
     "wordFormation",
@@ -19,12 +19,12 @@
         "rush",
         "hour"
       ],
-      "image": null,
+      "image": "https://pixabay.com/get/g1e3d35db23243ae6848f2a5651b7125996a3d752263bebc35f3d1147876ab9201eb7eed081c3eefefca9cb7019c78491_640.jpg",
       "audio": null,
       "imageHint": "",
-      "imageQuery": "",
+      "imageQuery": "rush hour many cars",
       "illustrable": false,
-      "wantsImage": false,
+      "wantsImage": true,
       "requiresPreposition": false,
       "correctPreposition": "",
       "prepositionSentence": "",
