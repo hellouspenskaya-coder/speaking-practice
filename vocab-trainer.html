@@ -289,7 +289,10 @@ function eligibleSingleModes(item, enabledModes) {
   // needs at least 3 other items to offer a real four-way choice.
   const canUseListening = (setData.items || []).filter(i => i.id !== item.id).length >= 3;
   const canUsePrepositions = item.requiresPreposition && item.correctPreposition && item.prepositionSentence;
-  const canUseWordFormation = Array.isArray(item.wordFamily) && item.wordFamily.length >= 2 && item.wordFormationSentence && item.wordFormationAnswer;
+  const wordFormationAnswerValid = Array.isArray(item.wordFamily) && item.wordFormationAnswer
+    && item.wordFamily.some(f => f.form && f.form.toLowerCase() === item.wordFormationAnswer.toLowerCase());
+  const canUseWordFormation = Array.isArray(item.wordFamily) && item.wordFamily.length >= 2
+    && item.wordFormationSentence && wordFormationAnswerValid;
   const canUseCollocations = item.isCollocation && item.collocationSentence && item.collocationAnswer
     && Array.isArray(item.collocationDistractors) && item.collocationDistractors.length >= 3;
   const verbFormsPool = item.isVerb
