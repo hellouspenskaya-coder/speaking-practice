@@ -85,22 +85,35 @@ async function generateContent(req, res) {
   }
   const cefr = level || 'A1';
 
-  const prompt = `You are creating vocabulary trainer content for ${cefr}-level English learners who cannot yet build sentences on their own.
+  const levelGuidance = {
+    A1: 'Definitions must be extremely simple (max 8 words), using only the most common everyday words. Example sentences: 3-6 words, simple present tense only.',
+    A2: 'Definitions simple and short (max 10 words), everyday vocabulary. Example sentences: 4-8 words, simple tenses (present, past simple, going to).',
+    B1: 'Definitions can use everyday natural English, a full sentence is fine. Example sentences should sound natural, using a range of common tenses and structures a B1 learner is expected to know.',
+    B2: 'Definitions in natural, idiomatic English — do not oversimplify. Example sentences should reflect realistic, everyday use, including more complex clauses where natural.',
+    C1: 'Definitions in full natural English, as a good monolingual dictionary would phrase them — no artificial simplification. Example sentences should reflect authentic, sophisticated usage, including nuance, register, and collocation.'
+  }[cefr] || '';
 
-For each item below, decide if it is a single "word" or a multi-word "phrase" (e.g. "live in a house", "say sorry"), then produce:
-- "definition": one very simple ${cefr}-level definition (max 8 words, no difficult words)
-- "example": one short example sentence, 3-6 words, simple present tense, using only common ${cefr} vocabulary, that contains the item naturally
+  const prompt = `You are creating vocabulary trainer content for ${cefr}-level English learners.
+
+${cefr === 'A1' || cefr === 'A2' ? 'These learners cannot yet build sentences on their own — everything must stay within their level.' : 'These learners can already build sentences and are working on precision, naturalness, and range.'}
+
+Level-specific guidance: ${levelGuidance}
+
+For each item below, decide if it is a single "word" or a multi-word "phrase" (e.g. "live in a house", "as far as I understand"), then produce:
+- "definition": a ${cefr}-appropriate definition, per the guidance above
+- "example": one example sentence, per the guidance above, that contains the item naturally
 - "phonetic": IPA transcription (words only; omit for phrases)
 - "chunks": for "phrase" items only - the phrase split into its individual words in correct order, as an array of strings. Omit for words.
-- "imageHint": exactly 2-3 keywords (no commas, no phrases) for finding a clear isolated illustration on a stock image site for teaching beginner English learners. For ambiguous words add a disambiguating keyword (e.g. "key" → "door key", "tablet" → "tablet ipad", "glasses" → "glasses eyewear", "tissue" → "tissue kleenex", "bat" → "baseball bat"). Keep it short — Pixabay works best with 2-3 simple words.
+- "illustrable": true or false. true only if the item names a concrete, physical, drawable thing or action (e.g. "laptop", "run", "umbrella"). false for abstract concepts, feelings, discourse markers, evaluative words, or anything a picture could not unambiguously convey (e.g. "guilty", "as far as I understand", "responsible", "rush hour" as a concept rather than a scene). When in doubt, prefer false — a wrong or misleading picture is worse than no picture.
+- "imageHint": ONLY if "illustrable" is true — exactly 2-3 keywords (no commas, no phrases) for finding a clear isolated illustration on a stock image site. For ambiguous words add a disambiguating keyword (e.g. "key" → "door key", "tablet" → "tablet ipad", "glasses" → "glasses eyewear"). Omit this field entirely if "illustrable" is false.
 
 Items: ${JSON.stringify(items)}
 
 Respond with ONLY a JSON array, one object per item, in the same order as the input, in this exact shape:
-[{"text":"...","type":"word|phrase","definition":"...","example":"...","phonetic":"...","chunks":["...","..."],"imageHint":"..."}]
+[{"text":"...","type":"word|phrase","definition":"...","example":"...","phonetic":"...","chunks":["...","..."],"illustrable":true,"imageHint":"..."}]
 No preamble, no markdown fences, no explanation - JSON only.`;
 
-  const text = await callHaiku(prompt, 2000);
+  const text = await callHaiku(prompt, 2500);
   res.status(200).json({ items: extractJsonArray(text) });
 }
 

@@ -172,6 +172,9 @@
         <select id="levelSelect">
           <option value="A1">A1</option>
           <option value="A2">A2</option>
+          <option value="B1">B1</option>
+          <option value="B2">B2</option>
+          <option value="C1">C1</option>
         </select>
       </div>
     </div>
@@ -418,7 +421,12 @@ function renderItemBody(id) {
     <div class="actions-row">
       <button class="small gen-content-btn">Generate content (AI)</button>
     </div>
-    <div class="field-row" style="margin-top:10px;">
+    <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); margin-top:10px;">
+      <input type="checkbox" class="wants-image-toggle" ${item.wantsImage !== false ? 'checked' : ''} style="width:auto;" />
+      Use a picture for this item
+      ${item.illustrable === false ? '<span style="color:var(--muted);">(AI suggested: not illustrable — this is abstract/discourse language)</span>' : ''}
+    </label>
+    <div class="field-row" style="margin-top:6px; ${item.wantsImage === false ? 'display:none;' : ''}" id="imageSearchRow-${id}">
       <label style="flex:0 0 90px; font-size:12px; padding-top:8px;">Image search</label>
       <input type="text" class="image-query-input" placeholder="2-3 words, e.g. tissue kleenex" value="${escapeAttr(item.imageQuery || item.imageHint || item.text)}" style="flex:1;" />
       <button class="small gen-images-btn" style="flex:0 0 auto; margin-left:6px;">Find images</button>
@@ -457,6 +465,22 @@ function renderItemBody(id) {
     }
   });
   body.querySelector('.gen-images-btn').addEventListener('click', () => findImagesFor(item));
+  const wantsImageToggle = body.querySelector('.wants-image-toggle');
+  if (wantsImageToggle) {
+    wantsImageToggle.addEventListener('change', (e) => {
+      item.wantsImage = e.target.checked;
+      const row = document.getElementById(`imageSearchRow-${id}`);
+      if (row) row.style.display = item.wantsImage ? '' : 'none';
+      if (!item.wantsImage) {
+        // Teacher turned pictures off for this item — clear any existing one
+        // so it doesn't linger in picture-based exercises unexpectedly.
+        item.image = null;
+        renderItems();
+      } else if (item.wantsImage && !item.image) {
+        findImagesFor(item);
+      }
+    });
+  }
   body.querySelector('.gen-audio-btn').addEventListener('click', () => generateAudioFor(item));
 
   if (item.image) renderImageCandidates(item, [{ full: item.image, thumb: item.image }], item.image);
@@ -496,6 +520,10 @@ async function generateContentFor(itemsToGenerate) {
       item.example = generated.example || item.example;
       item.phonetic = generated.phonetic || item.phonetic;
       if (Array.isArray(generated.chunks)) item.chunks = generated.chunks;
+      // illustrable is AI's suggestion; wantsImage is the teacher's final
+      // say (defaults to the suggestion, but can be flipped manually below).
+      item.illustrable = generated.illustrable !== false;
+      if (item.wantsImage === undefined) item.wantsImage = item.illustrable;
       if (generated.imageHint) {
         const stopWords = new Set(['a','an','the','for','to','of','in','on','with','and','or','is','are','it','as','use','used','make','up','pack','paper','soft']);
         item.imageHint = generated.imageHint
@@ -514,8 +542,10 @@ async function generateContentFor(itemsToGenerate) {
       if (body) { body.classList.add('open'); renderItemBody(item.id); }
     });
 
-    // Auto-fetch the first image for every item that doesn't have one yet.
-    await autoFetchImages(itemsToGenerate.filter(i => !i.image));
+    // Only auto-fetch a picture for items the teacher wants illustrated —
+    // abstract words (guilty, however, rush hour as a concept) stay text-only
+    // unless the teacher manually asks for an image anyway.
+    await autoFetchImages(itemsToGenerate.filter(i => !i.image && i.wantsImage));
   } catch (err) {
     alert('Content generation failed: ' + err.message);
   } finally {
@@ -758,7 +788,9 @@ function buildSetData() {
       image: i.image,
       audio: i.audio,
       imageHint: i.imageHint || '',
-      imageQuery: i.imageQuery || ''
+      imageQuery: i.imageQuery || '',
+      illustrable: i.illustrable !== false,
+      wantsImage: i.wantsImage !== false
     }))
   };
 }
