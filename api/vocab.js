@@ -84,6 +84,24 @@ async function generateContent(req, res) {
     return;
   }
   const cefr = level || 'A1';
+
+  // Chunk large word lists so each individual Haiku call stays small and
+  // reliable. A single big request (e.g. 19 words with full B1+ fields)
+  // can get truncated mid-response, producing invalid JSON — chunking keeps
+  // this safe no matter how large the set grows.
+  const CHUNK_SIZE = 6;
+  const chunks = [];
+  for (let i = 0; i < items.length; i += CHUNK_SIZE) chunks.push(items.slice(i, i + CHUNK_SIZE));
+
+  try {
+    const results = await Promise.all(chunks.map(chunk => generateContentChunk(chunk, cefr)));
+    res.status(200).json({ items: results.flat() });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function generateContentChunk(items, cefr) {
   const isHigherLevel = ['B1', 'B2', 'C1'].includes(cefr);
 
   const levelGuidance = {
@@ -128,14 +146,16 @@ ${isHigherLevel ? higherLevelFields : ''}
 
 Items: ${JSON.stringify(items)}
 
+IMPORTANT: keep all string values valid JSON — escape any double quotes or apostrophes-as-quotes inside sentences (prefer avoiding quotation marks inside example/sentence fields entirely).
+
 Respond with ONLY a JSON array, one object per item, in the same order as the input, in this exact shape:
 ${isHigherLevel
   ? '[{"text":"...","type":"word|phrase","definition":"...","example":"...","phonetic":"...","chunks":["...","..."],"illustrable":true,"imageHint":"...","requiresPreposition":false,"correctPreposition":"...","prepositionSentence":"...","wordFamily":[{"form":"...","pos":"..."}],"wordFormationSentence":"...","wordFormationAnswer":"...","isCollocation":false,"collocationSentence":"...","collocationAnswer":"...","collocationDistractors":["...","...","..."],"isVerb":false,"pastSimple":"...","pastParticiple":"...","verbSentence":"...","verbAnswer":"..."}]'
   : '[{"text":"...","type":"word|phrase","definition":"...","example":"...","phonetic":"...","chunks":["...","..."],"illustrable":true,"imageHint":"..."}]'}
 No preamble, no markdown fences, no explanation - JSON only.`;
 
-  const text = await callHaiku(prompt, 2500);
-  res.status(200).json({ items: extractJsonArray(text) });
+  const text = await callHaiku(prompt, 3000);
+  return extractJsonArray(text);
 }
 
 async function findAntonyms(req, res) {
