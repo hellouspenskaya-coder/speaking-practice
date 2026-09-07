@@ -248,9 +248,9 @@
       "id": "item_8",
       "type": "word",
       "text": "success",
-      "definition": "when you achieve something you wanted to do or when something turns out well",
-      "example": "The movie was a great success and everyone enjoyed it.",
-      "phonetic": "səkˈses",
+      "definition": "achieving a goal or doing something well that you wanted to do",
+      "example": "After years of hard work, she finally achieved success in her career.",
+      "phonetic": "səkˈsɛs",
       "chunks": [],
       "image": null,
       "audio": null,
@@ -262,6 +262,10 @@
       "correctPreposition": "",
       "prepositionSentence": "",
       "wordFamily": [
+        {
+          "form": "success",
+          "pos": "noun"
+        },
         {
           "form": "successful",
           "pos": "adjective"
@@ -275,7 +279,7 @@
           "pos": "verb"
         }
       ],
-      "wordFormationSentence": "She worked hard and ___ in passing all her exams.",
+      "wordFormationSentence": "She ___ in passing her final exams last month.",
       "wordFormationAnswer": "succeeded",
       "isCollocation": false,
       "collocationSentence": "",
