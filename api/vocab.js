@@ -84,6 +84,7 @@ async function generateContent(req, res) {
     return;
   }
   const cefr = level || 'A1';
+  const isHigherLevel = ['B1', 'B2', 'C1'].includes(cefr);
 
   const levelGuidance = {
     A1: 'Definitions must be extremely simple (max 8 words), using only the most common everyday words. Example sentences: 3-6 words, simple present tense only.',
@@ -92,6 +93,14 @@ async function generateContent(req, res) {
     B2: 'Definitions in natural, idiomatic English — do not oversimplify. Example sentences should reflect realistic, everyday use, including more complex clauses where natural.',
     C1: 'Definitions in full natural English, as a good monolingual dictionary would phrase them — no artificial simplification. Example sentences should reflect authentic, sophisticated usage, including nuance, register, and collocation.'
   }[cefr] || '';
+
+  const higherLevelFields = `
+- "requiresPreposition": true only if this item is commonly used with ONE specific dependent preposition that learners at this level typically get wrong (e.g. "interested" → "in", "depend" → "on", "arrive" → "at"). false otherwise, including if multiple prepositions are equally correct depending on context.
+- "correctPreposition": ONLY if requiresPreposition is true — the single correct preposition, lowercase, one word.
+- "prepositionSentence": ONLY if requiresPreposition is true — a natural sentence containing the item, with the preposition replaced by exactly "___" (three underscores). Example for "interested": "She is interested ___ music."
+- "wordFamily": an array of 2-4 objects {"form": "...", "pos": "noun|verb|adjective|adverb"} covering the different word-class forms of this item's root (e.g. for "success": success/noun, successful/adjective, successfully/adverb). Only include this if the item genuinely has 2+ distinct common forms; omit entirely otherwise.
+- "wordFormationSentence": ONLY if "wordFamily" is included — one natural sentence with a blank (exactly "___") where ONE specific form from wordFamily correctly fits.
+- "wordFormationAnswer": ONLY if "wordFamily" is included — the exact "form" string (from wordFamily) that correctly fills the blank in wordFormationSentence.`;
 
   const prompt = `You are creating vocabulary trainer content for ${cefr}-level English learners.
 
@@ -106,11 +115,14 @@ For each item below, decide if it is a single "word" or a multi-word "phrase" (e
 - "chunks": for "phrase" items only - the phrase split into its individual words in correct order, as an array of strings. Omit for words.
 - "illustrable": true or false. true only if the item names a concrete, physical, drawable thing or action (e.g. "laptop", "run", "umbrella"). false for abstract concepts, feelings, discourse markers, evaluative words, or anything a picture could not unambiguously convey (e.g. "guilty", "as far as I understand", "responsible", "rush hour" as a concept rather than a scene). When in doubt, prefer false — a wrong or misleading picture is worse than no picture.
 - "imageHint": ONLY if "illustrable" is true — exactly 2-3 keywords (no commas, no phrases) for finding a clear isolated illustration on a stock image site. For ambiguous words add a disambiguating keyword (e.g. "key" → "door key", "tablet" → "tablet ipad", "glasses" → "glasses eyewear"). Omit this field entirely if "illustrable" is false.
+${isHigherLevel ? higherLevelFields : ''}
 
 Items: ${JSON.stringify(items)}
 
 Respond with ONLY a JSON array, one object per item, in the same order as the input, in this exact shape:
-[{"text":"...","type":"word|phrase","definition":"...","example":"...","phonetic":"...","chunks":["...","..."],"illustrable":true,"imageHint":"..."}]
+${isHigherLevel
+  ? '[{"text":"...","type":"word|phrase","definition":"...","example":"...","phonetic":"...","chunks":["...","..."],"illustrable":true,"imageHint":"...","requiresPreposition":false,"correctPreposition":"...","prepositionSentence":"...","wordFamily":[{"form":"...","pos":"..."}],"wordFormationSentence":"...","wordFormationAnswer":"..."}]'
+  : '[{"text":"...","type":"word|phrase","definition":"...","example":"...","phonetic":"...","chunks":["...","..."],"illustrable":true,"imageHint":"..."}]'}
 No preamble, no markdown fences, no explanation - JSON only.`;
 
   const text = await callHaiku(prompt, 2500);

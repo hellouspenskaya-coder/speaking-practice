@@ -255,7 +255,9 @@ const MODES = [
   { id: 'dictationNoImage', label: 'Dictation (no picture)' },
   { id: 'phraseBuilder', label: 'Build the phrase' },
   { id: 'whatsMissing', label: "What's missing?" },
-  { id: 'antonyms', label: 'Opposites' }
+  { id: 'antonyms', label: 'Opposites' },
+  { id: 'prepositions', label: 'Prepositions (B1+)' },
+  { id: 'wordFormation', label: 'Word formation (B1+)' }
 ];
 
 let antonymPairs = [];
@@ -523,6 +525,14 @@ async function generateContentFor(itemsToGenerate) {
       // illustrable is AI's suggestion; wantsImage is the teacher's final
       // say (defaults to the suggestion, but can be flipped manually below).
       item.illustrable = generated.illustrable !== false;
+      // B1+ fields — simply absent from the response for A1/A2, so these
+      // stay undefined there and the exercises never appear for them.
+      item.requiresPreposition = Boolean(generated.requiresPreposition);
+      item.correctPreposition = generated.correctPreposition || '';
+      item.prepositionSentence = generated.prepositionSentence || '';
+      item.wordFamily = Array.isArray(generated.wordFamily) ? generated.wordFamily : [];
+      item.wordFormationSentence = generated.wordFormationSentence || '';
+      item.wordFormationAnswer = generated.wordFormationAnswer || '';
       if (item.wantsImage === undefined) item.wantsImage = item.illustrable;
       if (generated.imageHint) {
         const stopWords = new Set(['a','an','the','for','to','of','in','on','with','and','or','is','are','it','as','use','used','make','up','pack','paper','soft']);
@@ -790,7 +800,13 @@ function buildSetData() {
       imageHint: i.imageHint || '',
       imageQuery: i.imageQuery || '',
       illustrable: i.illustrable !== false,
-      wantsImage: i.wantsImage !== false
+      wantsImage: i.wantsImage !== false,
+      requiresPreposition: Boolean(i.requiresPreposition),
+      correctPreposition: i.correctPreposition || '',
+      prepositionSentence: i.prepositionSentence || '',
+      wordFamily: i.wordFamily || [],
+      wordFormationSentence: i.wordFormationSentence || '',
+      wordFormationAnswer: i.wordFormationAnswer || ''
     }))
   };
 }

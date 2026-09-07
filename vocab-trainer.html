@@ -169,8 +169,8 @@ const params = new URLSearchParams(window.location.search);
 const setSlug = params.get('set');
 const app = document.getElementById('app');
 
-const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage'];
-const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'phraseBuilder'];
+const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation'];
+const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'phraseBuilder', 'prepositions'];
 const GROUP_MODES = ['matching', 'matchingDef', 'whatsMissing'];
 // Most pictures shown at once in matching / what's missing.
 // Kept low so a beginner can actually hold them in mind.
@@ -288,11 +288,15 @@ function eligibleSingleModes(item, enabledModes) {
   // (all familiar to the student) rather than invented rhymes, so it
   // needs at least 3 other items to offer a real four-way choice.
   const canUseListening = (setData.items || []).filter(i => i.id !== item.id).length >= 3;
+  const canUsePrepositions = item.requiresPreposition && item.correctPreposition && item.prepositionSentence;
+  const canUseWordFormation = Array.isArray(item.wordFamily) && item.wordFamily.length >= 2 && item.wordFormationSentence && item.wordFormationAnswer;
   return base.filter(m => {
     if (!enabledModes.includes(m)) return false;
     if ((m === 'multipleChoice' || m === 'multipleChoiceReverse') && !canUsePictures) return false;
     if (m === 'listening' && !canUseListening) return false;
     if (m === 'dictation' && !item.image) return false;
+    if (m === 'prepositions' && !canUsePrepositions) return false;
+    if (m === 'wordFormation' && !canUseWordFormation) return false;
     return true;
   });
 }
@@ -485,6 +489,8 @@ function renderStep() {
     else if (step.mode === 'listening') renderListening(cardArea, step.item, onDone);
     else if (step.mode === 'dictation') renderDictation(cardArea, step.item, onDone, true);
     else if (step.mode === 'dictationNoImage') renderDictation(cardArea, step.item, onDone, false);
+    else if (step.mode === 'prepositions') renderPrepositions(cardArea, step.item, onDone);
+    else if (step.mode === 'wordFormation') renderWordFormation(cardArea, step.item, onDone);
     else if (step.mode === 'fillLetters') renderFillLetters(cardArea, step.item, onDone);
     else if (step.mode === 'letterScramble') renderLetterScramble(cardArea, step.item, onDone);
     else if (step.mode === 'phraseBuilder') renderPhraseBuilder(cardArea, step.item, onDone);
@@ -537,6 +543,8 @@ function modeLabel(mode) {
     listening: 'Listen and choose',
     dictation: 'Write what you hear',
     dictationNoImage: 'Write what you hear',
+    prepositions: 'Choose the preposition',
+    wordFormation: 'Choose the right form',
     fillLetters: 'Fill in the letters',
     letterScramble: 'Build the word',
     phraseBuilder: 'Build the phrase',
@@ -751,6 +759,85 @@ function renderFillLetters(container, item, onDone) {
 // --- Letter scramble: build the word by tapping shuffled letters ---
 // --- Dictation: hear the word, type it from scratch (no letter tiles).
 // withImage=true shows the picture as a supporting hint; false is audio-only. ---
+// --- Prepositions (B1+): fill the blank with the correct dependent
+// preposition. Distractors come from a fixed closed-class pool, not from
+// the word list — prepositions aren't lexical items the student is
+// learning here, they're the grammar point being tested. ---
+const COMMON_PREPOSITIONS = ['in', 'on', 'at', 'to', 'for', 'about', 'with', 'from', 'of', 'into'];
+
+function renderPrepositions(container, item, onDone) {
+  const correct = item.correctPreposition.toLowerCase();
+  const others = shuffle(COMMON_PREPOSITIONS.filter(p => p !== correct)).slice(0, 3);
+  const options = shuffle([correct, ...others]);
+  const sentenceHtml = escapeHtml(item.prepositionSentence).replace('___', '<u style="text-decoration:none;border-bottom:2px solid var(--border);padding:0 8px;">&nbsp;&nbsp;&nbsp;&nbsp;</u>');
+
+  container.innerHTML = `
+    <p class="mode-label">Choose the correct preposition</p>
+    <p style="font-size:17px;line-height:1.6;text-align:center;margin:14px 0;">${sentenceHtml}</p>
+    <div class="word-choice-grid" id="prepGrid"></div>
+    <div id="feedback"></div>
+  `;
+  const grid = document.getElementById('prepGrid');
+  options.forEach(prep => {
+    const btn = document.createElement('button');
+    btn.className = 'word-tile';
+    btn.textContent = prep;
+    btn.addEventListener('click', () => {
+      const isCorrect = prep === correct;
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      if (!isCorrect) {
+        const correctBtn = [...grid.querySelectorAll('.word-tile')].find(b => b.textContent === correct);
+        if (correctBtn) correctBtn.classList.add('correct');
+        const fb = document.createElement('div');
+        fb.className = 'feedback wrong';
+        fb.textContent = `It's "${correct}"`;
+        document.getElementById('feedback').appendChild(fb);
+      }
+      grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
+      setTimeout(() => onDone(isCorrect), isCorrect ? 700 : 2500);
+    });
+    grid.appendChild(btn);
+  });
+}
+
+// --- Word formation (B1+): fill the blank with the correct part-of-speech
+// form. Distractors are the OTHER forms of the SAME word family — that IS
+// the point of the exercise, so this is the one place "wrong" options are
+// deliberately close to the right answer rather than clearly-different. ---
+function renderWordFormation(container, item, onDone) {
+  const forms = shuffle(item.wordFamily.map(f => f.form));
+  const correct = item.wordFormationAnswer;
+  const sentenceHtml = escapeHtml(item.wordFormationSentence).replace('___', '<u style="text-decoration:none;border-bottom:2px solid var(--border);padding:0 8px;">&nbsp;&nbsp;&nbsp;&nbsp;</u>');
+
+  container.innerHTML = `
+    <p class="mode-label">Choose the correct form</p>
+    <p style="font-size:17px;line-height:1.6;text-align:center;margin:14px 0;">${sentenceHtml}</p>
+    <div class="word-choice-grid" id="wfGrid"></div>
+    <div id="feedback"></div>
+  `;
+  const grid = document.getElementById('wfGrid');
+  forms.forEach(form => {
+    const btn = document.createElement('button');
+    btn.className = 'word-tile';
+    btn.textContent = form;
+    btn.addEventListener('click', () => {
+      const isCorrect = form === correct;
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      if (!isCorrect) {
+        const correctBtn = [...grid.querySelectorAll('.word-tile')].find(b => b.textContent === correct);
+        if (correctBtn) correctBtn.classList.add('correct');
+        const fb = document.createElement('div');
+        fb.className = 'feedback wrong';
+        fb.textContent = `It's "${correct}"`;
+        document.getElementById('feedback').appendChild(fb);
+      }
+      grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
+      setTimeout(() => onDone(isCorrect), isCorrect ? 700 : 2500);
+    });
+    grid.appendChild(btn);
+  });
+}
+
 function renderDictation(container, item, onDone, withImage) {
   const word = item.text.toLowerCase();
   container.innerHTML = `
