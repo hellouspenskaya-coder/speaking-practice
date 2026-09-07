@@ -95,7 +95,7 @@ async function generateContent(req, res) {
   }[cefr] || '';
 
   const higherLevelFields = `
-- "requiresPreposition": true only if this item is commonly used with ONE specific dependent preposition that learners at this level typically get wrong (e.g. "interested" → "in", "depend" → "on", "arrive" → "at"). false otherwise, including if multiple prepositions are equally correct depending on context.
+- "requiresPreposition": true only if this item is a SINGLE VERB (not a phrase) commonly used with ONE specific dependent preposition that learners at this level typically get wrong (e.g. "interested" → "in", "depend" → "on", "arrive" → "at"). Always false for multi-word items that already include their own particle or preposition (e.g. "look after", "give up", "live in a house") — the particle is already visible in the item itself, so this exercise would be redundant.
 - "correctPreposition": ONLY if requiresPreposition is true — the single correct preposition, lowercase, one word.
 - "prepositionSentence": ONLY if requiresPreposition is true — a natural sentence containing the item, with the preposition replaced by exactly "___" (three underscores). Example for "interested": "She is interested ___ music."
 - "wordFamily": an array of 2-4 objects {"form": "...", "pos": "noun|verb|adjective|adverb"} covering the different word-class forms of this item's root (e.g. for "success": success/noun, successful/adjective, successfully/adverb). Only include this if the item genuinely has 2+ distinct common forms; omit entirely otherwise.
