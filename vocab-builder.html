@@ -187,6 +187,14 @@
     <div class="actions-row" style="margin-top:10px;">
       <button id="addBulkBtn">Add all</button>
     </div>
+    <div id="bulkPreview" style="display:none; margin-top:14px; border-top:1px solid var(--border); padding-top:12px;">
+      <p style="font-size:13px; color:var(--muted); margin:0 0 10px;">Check the split below — edit, split, or remove any line before adding.</p>
+      <div id="bulkPreviewList"></div>
+      <div class="actions-row" style="margin-top:10px;">
+        <button class="primary" id="confirmBulkBtn">Add these <span id="bulkPreviewCount"></span></button>
+        <button id="cancelBulkBtn">Cancel</button>
+      </div>
+    </div>
   </div>
 
   <div class="card">
@@ -320,15 +328,70 @@ function addItem(text) {
   return true;
 }
 
-document.getElementById('addBulkBtn').addEventListener('click', async () => {
+let bulkCandidates = [];
+
+document.getElementById('addBulkBtn').addEventListener('click', () => {
   const textarea = document.getElementById('bulkInput');
-  const parts = textarea.value.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+  bulkCandidates = textarea.value.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+  if (!bulkCandidates.length) return;
+  renderBulkPreview();
+});
+
+function renderBulkPreview() {
+  const preview = document.getElementById('bulkPreview');
+  const list = document.getElementById('bulkPreviewList');
+  preview.style.display = bulkCandidates.length ? 'block' : 'none';
+  document.getElementById('bulkPreviewCount').textContent = bulkCandidates.length ? `(${bulkCandidates.length})` : '';
+  list.innerHTML = '';
+
+  bulkCandidates.forEach((text, idx) => {
+    const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex; gap:8px; align-items:center; margin-bottom:6px;';
+    row.innerHTML = `
+      <input type="text" class="preview-item-input" value="${escapeAttr(text)}" style="flex:1;" />
+      ${wordCount > 1 ? `<span style="font-size:11px; color:var(--muted); white-space:nowrap;">${wordCount} words</span>` : ''}
+      ${wordCount > 1 ? `<button class="small preview-split-btn" title="Split into separate items">Split</button>` : ''}
+      <button class="small danger preview-remove-btn">Remove</button>
+    `;
+
+    row.querySelector('.preview-item-input').addEventListener('input', (e) => {
+      bulkCandidates[idx] = e.target.value;
+    });
+    row.querySelector('.preview-remove-btn').addEventListener('click', () => {
+      bulkCandidates.splice(idx, 1);
+      renderBulkPreview();
+    });
+    const splitBtn = row.querySelector('.preview-split-btn');
+    if (splitBtn) {
+      splitBtn.addEventListener('click', () => {
+        const words = bulkCandidates[idx].trim().split(/\s+/).filter(Boolean);
+        bulkCandidates.splice(idx, 1, ...words);
+        renderBulkPreview();
+      });
+    }
+    list.appendChild(row);
+  });
+}
+
+document.getElementById('cancelBulkBtn').addEventListener('click', () => {
+  bulkCandidates = [];
+  document.getElementById('bulkInput').value = '';
+  document.getElementById('bulkPreview').style.display = 'none';
+});
+
+document.getElementById('confirmBulkBtn').addEventListener('click', async () => {
   const skipped = [];
-  parts.forEach(p => { if (!addItem(p)) skipped.push(p); });
-  textarea.value = '';
+  const finalWords = bulkCandidates.map(s => s.trim()).filter(Boolean);
+  finalWords.forEach(p => { if (!addItem(p)) skipped.push(p); });
+  bulkCandidates = [];
+  document.getElementById('bulkInput').value = '';
+  document.getElementById('bulkPreview').style.display = 'none';
   if (skipped.length) {
     alert(`Already in the list, skipped: ${skipped.join(', ')}`);
   }
+  // Sweep up anything without content yet — the words just added, plus any
+  // older item that never finished generating (e.g. a previous run failed).
   await generateContentFor(items.filter(i => !i.definition));
 });
 
