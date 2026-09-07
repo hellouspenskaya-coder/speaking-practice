@@ -104,7 +104,12 @@ async function generateContent(req, res) {
 - "isCollocation": true only if the item is a fixed collocation with ONE word that learners commonly get wrong by substituting a similar-meaning word (e.g. "make a decision" — learners often wrongly say "do a decision"; "do homework" — learners often wrongly say "make homework"; "take a photo", "have a shower"). false for ordinary free phrases with no well-known confusable substitute.
 - "collocationSentence": ONLY if isCollocation is true — a natural sentence containing the full collocation, with ONLY the one confusable word replaced by exactly "___". Example for "make a decision": "It's time to ___ a decision."
 - "collocationAnswer": ONLY if isCollocation is true — the single correct word that fills the blank (e.g. "make").
-- "collocationDistractors": ONLY if isCollocation is true — an array of exactly 3 other real English words that a learner might plausibly (but wrongly) substitute in that exact blank (e.g. for "make a decision": ["do","take","have"]). Never repeat collocationAnswer.`;
+- "collocationDistractors": ONLY if isCollocation is true — an array of exactly 3 other real English words that a learner might plausibly (but wrongly) substitute in that exact blank (e.g. for "make a decision": ["do","take","have"]). Never repeat collocationAnswer.
+- "isVerb": true only if the item is a single verb in its base form (e.g. "go", "eat", "buy"). false for everything else, including phrases containing a verb.
+- "pastSimple": ONLY if isVerb is true — the past simple form (e.g. "went", "ate", "bought" — irregular verbs matter most here, but regular verbs are fine too).
+- "pastParticiple": ONLY if isVerb is true — the past participle form (e.g. "gone", "eaten", "bought").
+- "verbSentence": ONLY if isVerb is true — a natural sentence with a blank (exactly "___") that requires ONE specific form of this verb (base, past simple, or past participle — your choice, pick whichever makes the clearest test).
+- "verbAnswer": ONLY if isVerb is true — the exact correct form (base form, pastSimple, or pastParticiple as generated above) that fills the blank in verbSentence.`;
 
   const prompt = `You are creating vocabulary trainer content for ${cefr}-level English learners.
 
@@ -125,7 +130,7 @@ Items: ${JSON.stringify(items)}
 
 Respond with ONLY a JSON array, one object per item, in the same order as the input, in this exact shape:
 ${isHigherLevel
-  ? '[{"text":"...","type":"word|phrase","definition":"...","example":"...","phonetic":"...","chunks":["...","..."],"illustrable":true,"imageHint":"...","requiresPreposition":false,"correctPreposition":"...","prepositionSentence":"...","wordFamily":[{"form":"...","pos":"..."}],"wordFormationSentence":"...","wordFormationAnswer":"...","isCollocation":false,"collocationSentence":"...","collocationAnswer":"...","collocationDistractors":["...","...","..."]}]'
+  ? '[{"text":"...","type":"word|phrase","definition":"...","example":"...","phonetic":"...","chunks":["...","..."],"illustrable":true,"imageHint":"...","requiresPreposition":false,"correctPreposition":"...","prepositionSentence":"...","wordFamily":[{"form":"...","pos":"..."}],"wordFormationSentence":"...","wordFormationAnswer":"...","isCollocation":false,"collocationSentence":"...","collocationAnswer":"...","collocationDistractors":["...","...","..."],"isVerb":false,"pastSimple":"...","pastParticiple":"...","verbSentence":"...","verbAnswer":"..."}]'
   : '[{"text":"...","type":"word|phrase","definition":"...","example":"...","phonetic":"...","chunks":["...","..."],"illustrable":true,"imageHint":"..."}]'}
 No preamble, no markdown fences, no explanation - JSON only.`;
 

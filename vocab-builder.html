@@ -258,7 +258,8 @@ const MODES = [
   { id: 'antonyms', label: 'Opposites' },
   { id: 'prepositions', label: 'Prepositions (B1+)' },
   { id: 'wordFormation', label: 'Word formation (B1+)' },
-  { id: 'collocations', label: 'Collocations (B1+)' }
+  { id: 'collocations', label: 'Collocations (B1+)' },
+  { id: 'verbForms', label: 'Verb forms (B1+)' }
 ];
 
 let antonymPairs = [];
@@ -552,6 +553,11 @@ async function generateContentFor(itemsToGenerate) {
       } else {
         item.collocationDistractors = [];
       }
+      item.isVerb = Boolean(generated.isVerb);
+      item.pastSimple = generated.pastSimple || '';
+      item.pastParticiple = generated.pastParticiple || '';
+      item.verbSentence = generated.verbSentence || '';
+      item.verbAnswer = generated.verbAnswer || '';
       if (item.wantsImage === undefined) item.wantsImage = item.illustrable;
       if (generated.imageHint) {
         const stopWords = new Set(['a','an','the','for','to','of','in','on','with','and','or','is','are','it','as','use','used','make','up','pack','paper','soft']);
@@ -829,7 +835,12 @@ function buildSetData() {
       isCollocation: Boolean(i.isCollocation),
       collocationSentence: i.collocationSentence || '',
       collocationAnswer: i.collocationAnswer || '',
-      collocationDistractors: i.collocationDistractors || []
+      collocationDistractors: i.collocationDistractors || [],
+      isVerb: Boolean(i.isVerb),
+      pastSimple: i.pastSimple || '',
+      pastParticiple: i.pastParticiple || '',
+      verbSentence: i.verbSentence || '',
+      verbAnswer: i.verbAnswer || ''
     }))
   };
 }

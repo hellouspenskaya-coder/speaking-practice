@@ -169,7 +169,7 @@ const params = new URLSearchParams(window.location.search);
 const setSlug = params.get('set');
 const app = document.getElementById('app');
 
-const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation', 'collocations'];
+const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation', 'collocations', 'verbForms'];
 const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'phraseBuilder', 'prepositions', 'collocations'];
 const GROUP_MODES = ['matching', 'matchingDef', 'whatsMissing'];
 // Most pictures shown at once in matching / what's missing.
@@ -292,6 +292,10 @@ function eligibleSingleModes(item, enabledModes) {
   const canUseWordFormation = Array.isArray(item.wordFamily) && item.wordFamily.length >= 2 && item.wordFormationSentence && item.wordFormationAnswer;
   const canUseCollocations = item.isCollocation && item.collocationSentence && item.collocationAnswer
     && Array.isArray(item.collocationDistractors) && item.collocationDistractors.length >= 3;
+  const verbFormsPool = item.isVerb
+    ? [...new Set([item.text, item.pastSimple, item.pastParticiple].filter(Boolean).map(s => s.toLowerCase()))]
+    : [];
+  const canUseVerbForms = item.isVerb && item.verbSentence && item.verbAnswer && verbFormsPool.length >= 2;
   return base.filter(m => {
     if (!enabledModes.includes(m)) return false;
     if ((m === 'multipleChoice' || m === 'multipleChoiceReverse') && !canUsePictures) return false;
@@ -300,6 +304,7 @@ function eligibleSingleModes(item, enabledModes) {
     if (m === 'prepositions' && !canUsePrepositions) return false;
     if (m === 'wordFormation' && !canUseWordFormation) return false;
     if (m === 'collocations' && !canUseCollocations) return false;
+    if (m === 'verbForms' && !canUseVerbForms) return false;
     return true;
   });
 }
@@ -495,6 +500,7 @@ function renderStep() {
     else if (step.mode === 'prepositions') renderPrepositions(cardArea, step.item, onDone);
     else if (step.mode === 'wordFormation') renderWordFormation(cardArea, step.item, onDone);
     else if (step.mode === 'collocations') renderCollocations(cardArea, step.item, onDone);
+    else if (step.mode === 'verbForms') renderVerbForms(cardArea, step.item, onDone);
     else if (step.mode === 'fillLetters') renderFillLetters(cardArea, step.item, onDone);
     else if (step.mode === 'letterScramble') renderLetterScramble(cardArea, step.item, onDone);
     else if (step.mode === 'phraseBuilder') renderPhraseBuilder(cardArea, step.item, onDone);
@@ -550,6 +556,7 @@ function modeLabel(mode) {
     prepositions: 'Choose the preposition',
     wordFormation: 'Choose the right form',
     collocations: 'Choose the right word',
+    verbForms: 'Choose the right verb form',
     fillLetters: 'Fill in the letters',
     letterScramble: 'Build the word',
     phraseBuilder: 'Build the phrase',
@@ -869,6 +876,53 @@ function renderCollocations(container, item, onDone) {
       btn.classList.add(isCorrect ? 'correct' : 'wrong');
       if (!isCorrect) {
         const correctBtn = [...grid.querySelectorAll('.word-tile')].find(b => b.textContent === correct);
+        if (correctBtn) correctBtn.classList.add('correct');
+        const fb = document.createElement('div');
+        fb.className = 'feedback wrong';
+        fb.textContent = `It's "${correct}"`;
+        document.getElementById('feedback').appendChild(fb);
+      }
+      grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
+      setTimeout(() => onDone(isCorrect), isCorrect ? 700 : 2500);
+    });
+    grid.appendChild(btn);
+  });
+}
+
+// --- Verb forms (B1+): choose the correct form (base/past simple/past
+// participle) to fill a blank. Distractors are the verb's OTHER forms —
+// built-in, no risk of an unfamiliar word, but some irregular verbs share
+// a form (e.g. "buy" → bought/bought), so options are deduplicated first. ---
+function renderVerbForms(container, item, onDone) {
+  const correct = item.verbAnswer;
+  const seen = new Set();
+  const options = [];
+  [item.text, item.pastSimple, item.pastParticiple].forEach(form => {
+    if (!form) return;
+    const lower = form.toLowerCase();
+    if (seen.has(lower)) return;
+    seen.add(lower);
+    options.push(form);
+  });
+  const shuffledOptions = shuffle(options);
+  const sentenceHtml = escapeHtml(item.verbSentence).replace('___', '<u style="text-decoration:none;border-bottom:2px solid var(--border);padding:0 8px;">&nbsp;&nbsp;&nbsp;&nbsp;</u>');
+
+  container.innerHTML = `
+    <p class="mode-label">Choose the correct verb form</p>
+    <p style="font-size:17px;line-height:1.6;text-align:center;margin:14px 0;">${sentenceHtml}</p>
+    <div class="word-choice-grid" id="verbGrid"></div>
+    <div id="feedback"></div>
+  `;
+  const grid = document.getElementById('verbGrid');
+  shuffledOptions.forEach(form => {
+    const btn = document.createElement('button');
+    btn.className = 'word-tile';
+    btn.textContent = form;
+    btn.addEventListener('click', () => {
+      const isCorrect = form.toLowerCase() === correct.toLowerCase();
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      if (!isCorrect) {
+        const correctBtn = [...grid.querySelectorAll('.word-tile')].find(b => b.textContent.toLowerCase() === correct.toLowerCase());
         if (correctBtn) correctBtn.classList.add('correct');
         const fb = document.createElement('div');
         fb.className = 'feedback wrong';
