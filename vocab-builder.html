@@ -387,6 +387,21 @@ function statusLabel(item) {
   return parts.join(' · ');
 }
 
+// Updates only the small status line ("content ✓ · image — · audio —") in an
+// item's collapsed header, without touching the rest of the list. A full
+// renderItems() here would destroy every input in the open card — including
+// the one the teacher is actively typing into — and lose focus after every
+// single keystroke.
+function updateItemStatusOnly(id) {
+  const body = document.getElementById(`body-${id}`);
+  if (!body) return;
+  const itemEl = body.closest('.item');
+  const item = items.find(i => i.id === id);
+  if (!itemEl || !item) return;
+  const statusEl = itemEl.querySelector('.item-status');
+  if (statusEl) statusEl.textContent = statusLabel(item);
+}
+
 function toggleItemBody(id) {
   const body = document.getElementById(`body-${id}`);
   const isOpen = body.classList.contains('open');
@@ -493,8 +508,10 @@ function renderItemBody(id) {
         item[field] = input.value;
       }
       if (['wordFamilyForms', 'wordFormationSentence', 'wordFormationAnswer'].includes(field)) updateWfValidation();
-      renderItems();
-      document.getElementById(`body-${id}`).classList.add('open');
+      // Update just the small status line in this item's header (content ✓/image/audio),
+      // instead of rebuilding the whole list — a full re-render here would destroy the
+      // input the teacher is actively typing into and lose focus after every keystroke.
+      updateItemStatusOnly(id);
     });
   });
 
