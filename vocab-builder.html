@@ -439,17 +439,60 @@ function renderItemBody(id) {
     <div class="actions-row">
       <button class="small gen-audio-btn" ${!item.example ? 'disabled' : ''}>Generate audio</button>
     </div>
+    ${!isPhrase ? `
+    <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:10px;">
+      <p style="font-size:12px; color:var(--muted); margin:0 0 8px;">Word formation (B1+) — leave blank to skip this exercise for this item</p>
+      <div class="field-row">
+        <label>Forms</label>
+        <input type="text" data-field="wordFamilyForms" value="${escapeAttr((item.wordFamily || []).map(f => f.form).join(', '))}" placeholder="success, successful, successfully" />
+      </div>
+      <div class="field-row">
+        <label>Sentence</label>
+        <input type="text" data-field="wordFormationSentence" value="${escapeAttr(item.wordFormationSentence || '')}" placeholder="She was very ___ in her career." />
+      </div>
+      <div class="field-row">
+        <label>Answer</label>
+        <input type="text" data-field="wordFormationAnswer" value="${escapeAttr(item.wordFormationAnswer || '')}" placeholder="successful" />
+      </div>
+      <p id="wfValidation-${id}" style="font-size:12px; margin:4px 0 0;"></p>
+    </div>
+    ` : ''}
     <div class="error-box" id="itemError-${id}"></div>
   `;
+
+  function updateWfValidation() {
+    const el = document.getElementById(`wfValidation-${id}`);
+    if (!el) return;
+    const forms = (item.wordFamily || []).map(f => f.form.toLowerCase());
+    const answer = (item.wordFormationAnswer || '').toLowerCase();
+    if (!forms.length && !answer) { el.textContent = ''; return; }
+    if (forms.length < 2) {
+      el.textContent = 'Need at least 2 forms for this exercise to appear.';
+      el.style.color = 'var(--muted)';
+    } else if (!answer || !forms.includes(answer)) {
+      el.textContent = 'Answer must exactly match one of the forms above — exercise won\'t show otherwise.';
+      el.style.color = 'var(--danger)';
+    } else if (!item.wordFormationSentence) {
+      el.textContent = 'Add a sentence with ___ to complete this exercise.';
+      el.style.color = 'var(--muted)';
+    } else {
+      el.textContent = 'Looks good — this exercise will appear.';
+      el.style.color = 'var(--success)';
+    }
+  }
+  updateWfValidation();
 
   body.querySelectorAll('input[data-field]').forEach(input => {
     input.addEventListener('input', () => {
       const field = input.dataset.field;
       if (field === 'chunks') {
         item.chunks = input.value.split(/\s+/).filter(Boolean);
+      } else if (field === 'wordFamilyForms') {
+        item.wordFamily = input.value.split(',').map(s => s.trim()).filter(Boolean).map(form => ({ form, pos: '' }));
       } else {
         item[field] = input.value;
       }
+      if (['wordFamilyForms', 'wordFormationSentence', 'wordFormationAnswer'].includes(field)) updateWfValidation();
       renderItems();
       document.getElementById(`body-${id}`).classList.add('open');
     });
