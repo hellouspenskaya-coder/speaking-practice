@@ -257,7 +257,8 @@ const MODES = [
   { id: 'whatsMissing', label: "What's missing?" },
   { id: 'antonyms', label: 'Opposites' },
   { id: 'prepositions', label: 'Prepositions (B1+)' },
-  { id: 'wordFormation', label: 'Word formation (B1+)' }
+  { id: 'wordFormation', label: 'Word formation (B1+)' },
+  { id: 'collocations', label: 'Collocations (B1+)' }
 ];
 
 let antonymPairs = [];
@@ -533,6 +534,24 @@ async function generateContentFor(itemsToGenerate) {
       item.wordFamily = Array.isArray(generated.wordFamily) ? generated.wordFamily : [];
       item.wordFormationSentence = generated.wordFormationSentence || '';
       item.wordFormationAnswer = generated.wordFormationAnswer || '';
+      item.isCollocation = Boolean(generated.isCollocation);
+      item.collocationSentence = generated.collocationSentence || '';
+      item.collocationAnswer = generated.collocationAnswer || '';
+      if (Array.isArray(generated.collocationDistractors)) {
+        // Same self-duplicate risk we already fixed once for listening —
+        // guard against the model repeating the answer as its own distractor.
+        const answerLower = (generated.collocationAnswer || '').toLowerCase();
+        const seen = new Set([answerLower]);
+        item.collocationDistractors = generated.collocationDistractors.filter(d => {
+          if (!d) return false;
+          const lower = d.toLowerCase();
+          if (seen.has(lower)) return false;
+          seen.add(lower);
+          return true;
+        });
+      } else {
+        item.collocationDistractors = [];
+      }
       if (item.wantsImage === undefined) item.wantsImage = item.illustrable;
       if (generated.imageHint) {
         const stopWords = new Set(['a','an','the','for','to','of','in','on','with','and','or','is','are','it','as','use','used','make','up','pack','paper','soft']);
@@ -806,7 +825,11 @@ function buildSetData() {
       prepositionSentence: i.prepositionSentence || '',
       wordFamily: i.wordFamily || [],
       wordFormationSentence: i.wordFormationSentence || '',
-      wordFormationAnswer: i.wordFormationAnswer || ''
+      wordFormationAnswer: i.wordFormationAnswer || '',
+      isCollocation: Boolean(i.isCollocation),
+      collocationSentence: i.collocationSentence || '',
+      collocationAnswer: i.collocationAnswer || '',
+      collocationDistractors: i.collocationDistractors || []
     }))
   };
 }
