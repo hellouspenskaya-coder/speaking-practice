@@ -510,7 +510,7 @@ function renderItemBody(id) {
     </label>
     <div class="field-row" style="margin-top:6px; ${item.wantsImage === false ? 'display:none;' : ''}" id="imageSearchRow-${id}">
       <label style="flex:0 0 90px; font-size:12px; padding-top:8px;">Image search</label>
-      <input type="text" class="image-query-input" placeholder="2-3 words, e.g. tissue kleenex" value="${escapeAttr(item.imageQuery || item.imageHint || item.text)}" style="flex:1;" />
+      <input type="text" class="image-query-input" placeholder="e.g. tissue" value="${escapeAttr(item.imageQuery || item.text)}" style="flex:1;" />
       <button class="small gen-images-btn" style="flex:0 0 auto; margin-left:6px;">Find images</button>
     </div>
     <div class="images-grid" id="images-${id}"></div>
@@ -716,7 +716,7 @@ async function autoFetchImages(itemsNeedingImages) {
   if (!itemsNeedingImages.length) return;
   await Promise.all(itemsNeedingImages.map(async (item) => {
     try {
-      const query = item.imageQuery || item.imageHint || (item.type === 'phrase' ? phraseImageQuery(item.text) : item.text);
+      const query = item.imageQuery || item.text;
       const response = await fetch('/api/vocab', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -740,7 +740,7 @@ async function findImagesFor(item) {
   try {
     // Use the teacher's manual query if provided, otherwise auto-generate.
     const manualQuery = (item.imageQuery || '').trim();
-    const autoQuery = item.imageHint || (item.type === 'phrase' ? phraseImageQuery(item.text) : item.text);
+    const autoQuery = item.text;
     const query = manualQuery || autoQuery;
     const response = await fetch('/api/vocab', {
       method: 'POST',
