@@ -29,6 +29,8 @@ module.exports = async function handler(req, res) {
     if (action === 'audio') return await generateAudio(req, res);
     if (action === 'images') return await searchImages(req, res);
     if (action === 'save') return await saveSet(req, res);
+    if (action === 'listSets') return await listSets(req, res);
+    if (action === 'repairImages') return await repairImages(req, res);
     res.status(400).json({ error: `Unknown action: ${action}` });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -312,6 +314,18 @@ async function saveSet(req, res) {
     return;
   }
 
+  // Pixabay's image URLs are not permanently stable (they can change or stop
+  // working within a day). Bake every image into the saved JSON as base64
+  // right now, so this set never depends on an external link staying alive.
+  if (Array.isArray(data.items)) {
+    await Promise.all(data.items.map(async (item) => {
+      if (item.image && typeof item.image === 'string' && item.image.startsWith('http')) {
+        const embedded = await fetchAndEmbedImage(item.image);
+        item.image = embedded; // null if the fetch failed — degrades gracefully, same as no image
+      }
+    }));
+  }
+
   const path = `vocab-sets/${cleanSlug}.json`;
   const apiUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`;
   const content = Buffer.from(JSON.stringify(data, null, 2)).toString('base64');
@@ -404,6 +418,133 @@ async function addToNotionLibrary(data, fullLink) {
     const errText = await response.text();
     throw new Error(`Notion error ${response.status}: ${errText}`);
   }
+}
+
+// Downloads an image and returns it as a permanent base64 data URL.
+// Returns null on any failure so callers can degrade gracefully (same
+// behaviour as an item having no image at all).
+async function fetchAndEmbedImage(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    const contentType = response.headers.get('content-type') || 'image/jpeg';
+    const buffer = Buffer.from(await response.arrayBuffer());
+    if (buffer.length > 600000) return null; // sanity cap (~600KB) so sets don't bloat
+    return `data:${contentType};base64,${buffer.toString('base64')}`;
+  } catch (err) {
+    return null;
+  }
+}
+
+// Lists every saved set's slug, so a repair pass can process all of them
+// without the caller needing to know the filenames in advance.
+async function listSets(req, res) {
+  const token = process.env.GITHUB_TOKEN;
+  const apiUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/vocab-sets`;
+  const response = await fetch(apiUrl, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {}
+  });
+  if (!response.ok) {
+    res.status(502).json({ error: `Could not list sets: ${response.status}` });
+    return;
+  }
+  const files = await response.json();
+  const slugs = files
+    .filter(f => f.name.endsWith('.json'))
+    .map(f => f.name.replace(/\.json$/, ''));
+  res.status(200).json({ slugs });
+}
+
+// Emergency repair: Pixabay's image URLs are not permanently stable, so any
+// set saved before this was fixed may have dead image links. This re-fetches
+// (or re-searches and re-fetches) each image and embeds it as permanent
+// base64 data, then commits the repaired set back to the repo.
+async function repairImages(req, res) {
+  const { slug } = req.body;
+  if (!slug) {
+    res.status(400).json({ error: 'Missing slug' });
+    return;
+  }
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) {
+    res.status(500).json({ error: 'GITHUB_TOKEN is not set' });
+    return;
+  }
+  const pixabayKey = process.env.PIXABAY_API_KEY;
+
+  const path = `vocab-sets/${slug}.json`;
+  const apiUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`;
+  const existing = await fetch(apiUrl, {
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
+  });
+  if (!existing.ok) {
+    res.status(404).json({ error: `Set not found: ${slug}` });
+    return;
+  }
+  const existingData = await existing.json();
+  const sha = existingData.sha;
+  const data = JSON.parse(Buffer.from(existingData.content, 'base64').toString('utf-8'));
+
+  const results = [];
+  let changed = false;
+
+  await Promise.all((data.items || []).map(async (item) => {
+    if (!item.image || item.image.startsWith('data:')) {
+      return; // no image, or already permanently embedded — nothing to do
+    }
+    changed = true;
+    // Try the URL exactly as stored first — it may still work.
+    let embedded = await fetchAndEmbedImage(item.image);
+
+    // If that failed, re-search Pixabay using whatever the item remembers
+    // about how it was found, and try the freshest top result instead.
+    if (!embedded && pixabayKey) {
+      const query = item.imageQuery || item.imageHint || item.text;
+      const imageType = item.type === 'phrase' ? 'photo' : 'vector';
+      try {
+        let searchRes = await fetch(`https://pixabay.com/api/?key=${pixabayKey}&q=${encodeURIComponent(query)}&image_type=${imageType}&orientation=horizontal&per_page=3&safesearch=true`);
+        let searchData = await searchRes.json();
+        let hit = (searchData.hits || [])[0];
+        if (!hit && imageType === 'vector') {
+          searchRes = await fetch(`https://pixabay.com/api/?key=${pixabayKey}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&per_page=3&safesearch=true`);
+          searchData = await searchRes.json();
+          hit = (searchData.hits || [])[0];
+        }
+        if (hit) embedded = await fetchAndEmbedImage(hit.webformatURL);
+      } catch (err) { /* leave embedded as null */ }
+    }
+
+    if (embedded) {
+      item.image = embedded;
+      results.push({ text: item.text, status: 'fixed' });
+    } else {
+      item.image = null;
+      results.push({ text: item.text, status: 'could not recover — image removed' });
+    }
+  }));
+
+  if (!changed) {
+    res.status(200).json({ ok: true, slug, skipped: true, results: [] });
+    return;
+  }
+
+  const newContent = Buffer.from(JSON.stringify(data, null, 2)).toString('base64');
+  const commitResponse = await fetch(apiUrl, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ message: `Repair images: ${slug}`, content: newContent, sha })
+  });
+  if (!commitResponse.ok) {
+    const errText = await commitResponse.text();
+    res.status(502).json({ error: `GitHub error ${commitResponse.status}: ${errText}` });
+    return;
+  }
+
+  res.status(200).json({ ok: true, slug, results });
 }
 
 module.exports.config = { maxDuration: 60 };
