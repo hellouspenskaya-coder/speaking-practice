@@ -326,11 +326,11 @@
       "wordFamily": [
         {
           "form": "shadow",
-          "pos": "verb"
+          "pos": ""
         },
         {
-          "form": "shadow",
-          "pos": "noun"
+          "form": "shadowing",
+          "pos": ""
         }
       ],
       "wordFormationSentence": "The intern was asked to ___ the project manager for the entire week.",
