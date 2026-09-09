@@ -386,13 +386,10 @@ async function saveSet(req, res) {
 
 async function addToAssignmentsDatabase(data, fullLink) {
   const dbId = process.env.NOTION_ASSIGNMENTS_DATABASE_ID;
-  const wordCount = (data.items || []).length;
 
-  // Rough duration estimate from set size — matches the existing
-  // Time required options in the database exactly (short/normal/huge).
-  let timeRequired = 'short';
-  if (wordCount > 20) timeRequired = 'huge';
-  else if (wordCount > 10) timeRequired = 'normal';
+  // Anna wants every vocab practice assignment marked "short", regardless
+  // of word count — this tool's exercises are quick regardless of set size.
+  const timeRequired = 'short';
 
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
