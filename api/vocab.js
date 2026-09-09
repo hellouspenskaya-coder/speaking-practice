@@ -362,12 +362,12 @@ async function saveSet(req, res) {
   const trainerLink = `/vocab-trainer.html?set=${cleanSlug}`;
   const fullLink = `${SITE_ORIGIN}${trainerLink}`;
 
-  // Also file the link in the Notion library page, if one is configured.
+  // Also file this as a row in the Assignments database, if configured.
   let notion = { attempted: false };
-  if (process.env.NOTION_VOCAB_PAGE_ID && process.env.NOTION_TOKEN) {
+  if (process.env.NOTION_ASSIGNMENTS_DB_ID && process.env.NOTION_TOKEN) {
     notion.attempted = true;
     try {
-      await addToNotionLibrary(data, fullLink);
+      await addToAssignmentsDatabase(data, fullLink);
       notion.ok = true;
     } catch (err) {
       // A Notion failure must never lose the set — it's already committed.
@@ -384,33 +384,38 @@ async function saveSet(req, res) {
   });
 }
 
-async function addToNotionLibrary(data, fullLink) {
-  const pageId = process.env.NOTION_VOCAB_PAGE_ID;
+async function addToAssignmentsDatabase(data, fullLink) {
+  const dbId = process.env.NOTION_ASSIGNMENTS_DB_ID;
   const wordCount = (data.items || []).length;
-  const label = `${data.topic} (${data.level}) — ${wordCount} words`;
 
-  const response = await fetch(`https://api.notion.com/v1/blocks/${pageId}/children`, {
-    method: 'PATCH',
+  // Rough duration estimate from set size — matches the existing
+  // Time required options in the database exactly (short/normal/huge).
+  let timeRequired = 'short';
+  if (wordCount > 20) timeRequired = 'huge';
+  else if (wordCount > 10) timeRequired = 'normal';
+
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+  const response = await fetch('https://api.notion.com/v1/pages', {
+    method: 'POST',
     headers: {
       Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
       'Notion-Version': '2022-06-28',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      children: [
-        {
-          object: 'block',
-          type: 'bulleted_list_item',
-          bulleted_list_item: {
-            rich_text: [
-              {
-                type: 'text',
-                text: { content: label, link: { url: fullLink } }
-              }
-            ]
-          }
-        }
-      ]
+      parent: { database_id: dbId },
+      properties: {
+        'Assignment Title': { title: [{ text: { content: data.topic || 'Untitled set' } }] },
+        'Format': { select: { name: 'Individual' } },
+        'Platform': { select: { name: 'practice' } },
+        'Skill': { multi_select: [{ name: 'vocabulary' }] },
+        'Type': { multi_select: [{ name: 'vocpractice' }] },
+        'Level': { multi_select: [{ name: data.level || 'A1' }] },
+        'Time required': { multi_select: [{ name: timeRequired }] },
+        'URL': { url: fullLink },
+        'created': { date: { start: today } }
+      }
     })
   });
 
