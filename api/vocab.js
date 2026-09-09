@@ -364,7 +364,7 @@ async function saveSet(req, res) {
 
   // Also file this as a row in the Assignments database, if configured.
   let notion = { attempted: false };
-  if (process.env.NOTION_ASSIGNMENTS_DB_ID && process.env.NOTION_TOKEN) {
+  if (process.env.NOTION_ASSIGNMENTS_DATABASE_ID && process.env.NOTION_TOKEN) {
     notion.attempted = true;
     try {
       await addToAssignmentsDatabase(data, fullLink);
@@ -385,7 +385,7 @@ async function saveSet(req, res) {
 }
 
 async function addToAssignmentsDatabase(data, fullLink) {
-  const dbId = process.env.NOTION_ASSIGNMENTS_DB_ID;
+  const dbId = process.env.NOTION_ASSIGNMENTS_DATABASE_ID;
   const wordCount = (data.items || []).length;
 
   // Rough duration estimate from set size — matches the existing
