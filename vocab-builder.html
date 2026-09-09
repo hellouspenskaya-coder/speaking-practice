@@ -916,7 +916,10 @@ function renderModes() {
     const label = document.createElement('label');
     label.className = 'mode-check';
     const isOpposites = mode.id === 'antonyms';
-    label.innerHTML = `<input type="checkbox" data-mode="${mode.id}" ${isOpposites ? '' : 'checked'} ${isOpposites ? 'disabled' : ''} /> ${mode.label}`;
+    // All modes start unchecked — teacher opts in per set, rather than
+    // having to uncheck a wall of blue boxes that mostly don't apply
+    // (e.g. B1+ modes at A1, where they can never fire anyway).
+    label.innerHTML = `<input type="checkbox" data-mode="${mode.id}" ${isOpposites ? 'disabled' : ''} /> ${mode.label}`;
     if (isOpposites) label.style.opacity = '0.4';
     grid.appendChild(label);
   });
