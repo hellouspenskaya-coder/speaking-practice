@@ -1167,9 +1167,8 @@ function renderVerbFormsDictation(container, item, onDone) {
 
   container.innerHTML = `
     <p class="mode-label">Listen and write the missing forms</p>
-    <p class="word-main">${escapeHtml(item.text)}</p>
-    ${item.phonetic ? `<p class="phonetic">${escapeHtml(item.phonetic)}</p>` : ''}
-    <div style="display:flex; gap:10px; margin-top:16px;">
+    <button id="listenBaseBtn" style="width:100%; margin-bottom:14px; padding:12px; font-size:15px;"><span class="icon">&#128266;</span> Listen to the word</button>
+    <div style="display:flex; gap:10px;">
       <div style="flex:1;">
         <p style="font-size:12px; color:var(--muted); margin:0 0 6px;">Past simple</p>
         <button id="listenPastBtn" style="width:100%; margin-bottom:6px; padding:8px;"><span class="icon">&#128266;</span> Listen</button>
@@ -1185,15 +1184,19 @@ function renderVerbFormsDictation(container, item, onDone) {
     </div>
     <button class="primary wide" id="checkBtn" style="margin-top:14px;">Check</button>
     <div id="feedback"></div>
+    <p id="revealWord" style="display:none; font-size:13px; color:var(--muted); margin-top:8px;"></p>
   `;
 
   const pastInput = document.getElementById('pastSimpleInput');
   const participleInput = document.getElementById('pastParticipleInput');
+  document.getElementById('listenBaseBtn').addEventListener('click', () => speakText(item.text));
   document.getElementById('listenPastBtn').addEventListener('click', () => speakText(item.pastSimple));
   document.getElementById('listenParticipleBtn').addEventListener('click', () => speakText(item.pastParticiple));
-  // Play the past simple form automatically so the student doesn't have to
-  // click before starting — matches the existing dictation mode's behaviour.
-  speakText(item.pastSimple);
+  // Play the base word automatically so the student doesn't have to click
+  // before starting — matches the existing dictation mode's behaviour. The
+  // base form is audio-only too: reading it as text would let the student
+  // simply recall the past forms from memory instead of actually listening.
+  speakText(item.text);
   pastInput.focus();
 
   function check() {
@@ -1220,6 +1223,12 @@ function renderVerbFormsDictation(container, item, onDone) {
       if (!participleOk) parts.push(`past participle is "${item.pastParticiple}"`);
       feedback.textContent = parts.join(', ');
     }
+    // Reveal the base word as text now that the attempt is over — nothing
+    // left to give away, and it helps the student connect what they heard
+    // to how the word is actually spelled.
+    const revealEl = document.getElementById('revealWord');
+    revealEl.textContent = `The word was "${item.text}"`;
+    revealEl.style.display = 'block';
     setTimeout(() => onDone(bothCorrect), bothCorrect ? 900 : 2500);
   }
 
