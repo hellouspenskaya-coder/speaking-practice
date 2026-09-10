@@ -244,23 +244,41 @@ function renderGallery() {
 function openOverlay(item) {
   const overlay = document.getElementById('overlay');
   overlay.style.display = 'flex';
+  const isVerbWithForms = item.isVerb && item.pastSimple && item.pastParticiple;
+
+  const topBlock = isVerbWithForms
+    ? `<div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+         <span style="padding:10px 14px;background:var(--teal-light);border-radius:10px;font-weight:600;font-size:17px;">${escapeHtml(item.text)}</span>
+         <span style="color:var(--muted);">&rarr;</span>
+         <span style="padding:10px 14px;background:var(--teal-light);border-radius:10px;font-weight:600;font-size:17px;">${escapeHtml(item.pastSimple)}</span>
+         <span style="color:var(--muted);">&rarr;</span>
+         <span style="padding:10px 14px;background:var(--teal-light);border-radius:10px;font-weight:600;font-size:17px;">${escapeHtml(item.pastParticiple)}</span>
+       </div>`
+    : `<div style="height:160px;background:var(--teal-light);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;overflow:hidden;">
+         ${item.image
+           ? `<img src="${escapeAttr(item.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
+           : `<span style="font-size:13px;color:var(--muted);padding:8px;">${escapeHtml(item.definition||'')}</span>`}
+       </div>`;
+
   overlay.innerHTML = `
     <div style="background:#fff;border-radius:16px;padding:24px 20px;max-width:340px;width:100%;position:relative;text-align:center;">
       <button id="closeOverlayBtn" style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:#fff;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>
-      <div style="height:160px;background:var(--teal-light);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;overflow:hidden;">
-        ${item.image
-          ? `<img src="${escapeAttr(item.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
-          : `<span style="font-size:13px;color:var(--muted);padding:8px;">${escapeHtml(item.definition||'')}</span>`}
-      </div>
-      <p style="font-size:24px;font-weight:600;margin:0 0 4px;">${escapeHtml(item.text)}</p>
+      ${topBlock}
+      ${!isVerbWithForms ? `<p style="font-size:24px;font-weight:600;margin:0 0 4px;">${escapeHtml(item.text)}</p>` : ''}
       ${item.phonetic ? `<p style="font-size:13px;color:var(--muted);margin:0 0 8px;">${escapeHtml(item.phonetic)}</p>` : ''}
-      <p style="font-size:14px;color:var(--muted);margin:0 0 4px;">${escapeHtml(item.definition||'')}</p>
-      <p style="font-size:13px;color:var(--muted);font-style:italic;margin:0 0 14px;">${escapeHtml(item.example||'')}</p>
+      ${item.definition ? `<p style="font-size:14px;color:var(--muted);margin:0 0 4px;">${escapeHtml(item.definition)}</p>` : ''}
+      ${item.example ? `<p style="font-size:13px;color:var(--muted);font-style:italic;margin:0 0 14px;">${escapeHtml(item.example)}</p>` : ''}
       <button id="overlayListenBtn" style="padding:10px 20px;border-radius:10px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:14px;">&#128266; Listen</button>
     </div>
   `;
   document.getElementById('closeOverlayBtn').addEventListener('click', closeOverlay);
-  document.getElementById('overlayListenBtn').addEventListener('click', () => speak(item, false));
+  document.getElementById('overlayListenBtn').addEventListener('click', () => {
+    if (isVerbWithForms) {
+      speakText(`${item.text}, ${item.pastSimple}, ${item.pastParticiple}`);
+    } else {
+      speak(item, false);
+    }
+  });
 }
 
 function closeOverlay() {
@@ -1142,14 +1160,20 @@ function renderVerbFormsTyping(container, item, onDone) {
     if (bothCorrect) {
       feedback.className = 'feedback correct';
       feedback.textContent = 'Correct!';
+      setTimeout(() => onDone(true), 900);
     } else {
       feedback.className = 'feedback wrong';
       const parts = [];
       if (!pastOk) parts.push(`past simple is "${item.pastSimple}"`);
       if (!participleOk) parts.push(`past participle is "${item.pastParticiple}"`);
-      feedback.textContent = parts.join(', ');
+      feedback.innerHTML = `<p>${escapeHtml(parts.join(', '))}</p>`;
+      const continueBtn = document.createElement('button');
+      continueBtn.className = 'primary wide';
+      continueBtn.textContent = 'Continue';
+      continueBtn.style.marginTop = '10px';
+      continueBtn.addEventListener('click', () => onDone(false));
+      feedback.appendChild(continueBtn);
     }
-    setTimeout(() => onDone(bothCorrect), bothCorrect ? 900 : 2500);
   }
 
   document.getElementById('checkBtn').addEventListener('click', check);
@@ -1213,23 +1237,30 @@ function renderVerbFormsDictation(container, item, onDone) {
     document.getElementById('checkBtn').disabled = true;
 
     const feedback = document.getElementById('feedback');
-    if (bothCorrect) {
-      feedback.className = 'feedback correct';
-      feedback.textContent = 'Correct!';
-    } else {
-      feedback.className = 'feedback wrong';
-      const parts = [];
-      if (!pastOk) parts.push(`past simple is "${item.pastSimple}"`);
-      if (!participleOk) parts.push(`past participle is "${item.pastParticiple}"`);
-      feedback.textContent = parts.join(', ');
-    }
     // Reveal the base word as text now that the attempt is over — nothing
     // left to give away, and it helps the student connect what they heard
     // to how the word is actually spelled.
     const revealEl = document.getElementById('revealWord');
     revealEl.textContent = `The word was "${item.text}"`;
     revealEl.style.display = 'block';
-    setTimeout(() => onDone(bothCorrect), bothCorrect ? 900 : 2500);
+
+    if (bothCorrect) {
+      feedback.className = 'feedback correct';
+      feedback.textContent = 'Correct!';
+      setTimeout(() => onDone(true), 900);
+    } else {
+      feedback.className = 'feedback wrong';
+      const parts = [];
+      if (!pastOk) parts.push(`past simple is "${item.pastSimple}"`);
+      if (!participleOk) parts.push(`past participle is "${item.pastParticiple}"`);
+      feedback.innerHTML = `<p>${escapeHtml(parts.join(', '))}</p>`;
+      const continueBtn = document.createElement('button');
+      continueBtn.className = 'primary wide';
+      continueBtn.textContent = 'Continue';
+      continueBtn.style.marginTop = '10px';
+      continueBtn.addEventListener('click', () => onDone(false));
+      feedback.appendChild(continueBtn);
+    }
   }
 
   document.getElementById('checkBtn').addEventListener('click', check);
