@@ -169,7 +169,7 @@ const params = new URLSearchParams(window.location.search);
 const setSlug = params.get('set');
 const app = document.getElementById('app');
 
-const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation', 'collocations', 'verbForms'];
+const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping'];
 const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'phraseBuilder', 'prepositions', 'collocations'];
 const GROUP_MODES = ['matching', 'matchingDef', 'whatsMissing', 'phraseMatch'];
 // Most pictures shown at once in matching / what's missing.
@@ -308,6 +308,7 @@ function eligibleSingleModes(item, enabledModes) {
     ? [...new Set([item.text, item.pastSimple, item.pastParticiple].filter(Boolean).map(s => s.toLowerCase()))]
     : [];
   const canUseVerbForms = item.isVerb && item.verbSentence && item.verbAnswer && verbFormsPool.length >= 2;
+  const canUseVerbFormsTyping = item.isVerb && item.pastSimple && item.pastParticiple;
   return base.filter(m => {
     if (!enabledModes.includes(m)) return false;
     if ((m === 'multipleChoice' || m === 'multipleChoiceReverse') && !canUsePictures) return false;
@@ -317,6 +318,7 @@ function eligibleSingleModes(item, enabledModes) {
     if (m === 'wordFormation' && !canUseWordFormation) return false;
     if (m === 'collocations' && !canUseCollocations) return false;
     if (m === 'verbForms' && !canUseVerbForms) return false;
+    if (m === 'verbFormsTyping' && !canUseVerbFormsTyping) return false;
     return true;
   });
 }
@@ -375,7 +377,7 @@ function buildSession(data) {
   // they shouldn't have to compete on equal odds with generic modes like
   // Listening that are eligible for almost every word. Whenever an item
   // qualifies for a specialized mode, guarantee it's the one used.
-  const SPECIALIZED_MODES = ['prepositions', 'wordFormation', 'collocations', 'verbForms'];
+  const SPECIALIZED_MODES = ['prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping'];
   const singleSteps = [];
   shuffle(items).forEach(item => {
     const pool = eligibleSingleModes(item, enabledModes);
@@ -553,6 +555,7 @@ function renderStep() {
     else if (step.mode === 'wordFormation') renderWordFormation(cardArea, step.item, onDone);
     else if (step.mode === 'collocations') renderCollocations(cardArea, step.item, onDone);
     else if (step.mode === 'verbForms') renderVerbForms(cardArea, step.item, onDone);
+    else if (step.mode === 'verbFormsTyping') renderVerbFormsTyping(cardArea, step.item, onDone);
     else if (step.mode === 'fillLetters') renderFillLetters(cardArea, step.item, onDone);
     else if (step.mode === 'letterScramble') renderLetterScramble(cardArea, step.item, onDone);
     else if (step.mode === 'phraseBuilder') renderPhraseBuilder(cardArea, step.item, onDone);
@@ -610,6 +613,7 @@ function modeLabel(mode) {
     wordFormation: 'Choose the right form',
     collocations: 'Choose the right word',
     verbForms: 'Choose the right verb form',
+    verbFormsTyping: 'Write the verb forms',
     fillLetters: 'Fill in the letters',
     letterScramble: 'Build the word',
     phraseBuilder: 'Build the phrase',
@@ -1075,6 +1079,71 @@ function renderPhraseMatch(container, items, onDone) {
     badge.textContent = number;
     parent.appendChild(badge);
   }
+}
+
+// --- Verb forms (write them): no sentence, no picking from options — the
+// student sees the base form and types past simple + past participle from
+// memory. Built specifically for A1 rote memorisation, where a context
+// sentence can (a) be too hard to read and (b) risk the wrong word sense
+// slipping in (e.g. "thought" the noun instead of "think" past tense). ---
+function renderVerbFormsTyping(container, item, onDone) {
+  const correctPast = item.pastSimple.trim().toLowerCase();
+  const correctParticiple = item.pastParticiple.trim().toLowerCase();
+
+  container.innerHTML = `
+    <p class="word-main">${escapeHtml(item.text)}</p>
+    ${item.phonetic ? `<p class="phonetic">${escapeHtml(item.phonetic)}</p>` : ''}
+    <div style="margin-top:8px;">${listenButton('listenBtn')}</div>
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <div style="flex:1;">
+        <p class="mode-label" style="margin-bottom:6px;">Past simple</p>
+        <input type="text" id="pastSimpleInput" autocomplete="off" autocapitalize="off" spellcheck="false"
+          style="width:100%;padding:10px;font-size:16px;text-align:center;border:1px solid var(--border);border-radius:10px;" />
+      </div>
+      <div style="flex:1;">
+        <p class="mode-label" style="margin-bottom:6px;">Past participle</p>
+        <input type="text" id="pastParticipleInput" autocomplete="off" autocapitalize="off" spellcheck="false"
+          style="width:100%;padding:10px;font-size:16px;text-align:center;border:1px solid var(--border);border-radius:10px;" />
+      </div>
+    </div>
+    <button class="primary wide" id="checkBtn" style="margin-top:14px;">Check</button>
+    <div id="feedback"></div>
+  `;
+  document.getElementById('listenBtn').addEventListener('click', () => speak(item, false));
+  const pastInput = document.getElementById('pastSimpleInput');
+  const participleInput = document.getElementById('pastParticipleInput');
+  pastInput.focus();
+
+  function check() {
+    const pastGuess = pastInput.value.trim().toLowerCase();
+    const participleGuess = participleInput.value.trim().toLowerCase();
+    const pastOk = pastGuess === correctPast;
+    const participleOk = participleGuess === correctParticiple;
+    const bothCorrect = pastOk && participleOk;
+
+    pastInput.style.borderColor = pastOk ? 'var(--success)' : 'var(--danger)';
+    participleInput.style.borderColor = participleOk ? 'var(--success)' : 'var(--danger)';
+    pastInput.disabled = true;
+    participleInput.disabled = true;
+    document.getElementById('checkBtn').disabled = true;
+
+    const feedback = document.getElementById('feedback');
+    if (bothCorrect) {
+      feedback.className = 'feedback correct';
+      feedback.textContent = 'Correct!';
+    } else {
+      feedback.className = 'feedback wrong';
+      const parts = [];
+      if (!pastOk) parts.push(`past simple is "${item.pastSimple}"`);
+      if (!participleOk) parts.push(`past participle is "${item.pastParticiple}"`);
+      feedback.textContent = parts.join(', ');
+    }
+    setTimeout(() => onDone(bothCorrect), bothCorrect ? 900 : 2500);
+  }
+
+  document.getElementById('checkBtn').addEventListener('click', check);
+  participleInput.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+  pastInput.addEventListener('keydown', e => { if (e.key === 'Enter') participleInput.focus(); });
 }
 
 function renderDictation(container, item, onDone, withImage) {
