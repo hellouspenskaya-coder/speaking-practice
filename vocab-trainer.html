@@ -169,7 +169,7 @@ const params = new URLSearchParams(window.location.search);
 const setSlug = params.get('set');
 const app = document.getElementById('app');
 
-const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping'];
+const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping', 'verbFormsDictation'];
 const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'phraseBuilder', 'prepositions', 'collocations'];
 const GROUP_MODES = ['matching', 'matchingDef', 'whatsMissing', 'phraseMatch'];
 // Most pictures shown at once in matching / what's missing.
@@ -309,6 +309,7 @@ function eligibleSingleModes(item, enabledModes) {
     : [];
   const canUseVerbForms = item.isVerb && item.verbSentence && item.verbAnswer && verbFormsPool.length >= 2;
   const canUseVerbFormsTyping = item.isVerb && item.pastSimple && item.pastParticiple;
+  const canUseVerbFormsDictation = item.isVerb && item.pastSimple && item.pastParticiple;
   return base.filter(m => {
     if (!enabledModes.includes(m)) return false;
     if ((m === 'multipleChoice' || m === 'multipleChoiceReverse') && !canUsePictures) return false;
@@ -319,6 +320,7 @@ function eligibleSingleModes(item, enabledModes) {
     if (m === 'collocations' && !canUseCollocations) return false;
     if (m === 'verbForms' && !canUseVerbForms) return false;
     if (m === 'verbFormsTyping' && !canUseVerbFormsTyping) return false;
+    if (m === 'verbFormsDictation' && !canUseVerbFormsDictation) return false;
     return true;
   });
 }
@@ -377,7 +379,7 @@ function buildSession(data) {
   // they shouldn't have to compete on equal odds with generic modes like
   // Listening that are eligible for almost every word. Whenever an item
   // qualifies for a specialized mode, guarantee it's the one used.
-  const SPECIALIZED_MODES = ['prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping'];
+  const SPECIALIZED_MODES = ['prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping', 'verbFormsDictation'];
   const singleSteps = [];
   shuffle(items).forEach(item => {
     const pool = eligibleSingleModes(item, enabledModes);
@@ -556,6 +558,7 @@ function renderStep() {
     else if (step.mode === 'collocations') renderCollocations(cardArea, step.item, onDone);
     else if (step.mode === 'verbForms') renderVerbForms(cardArea, step.item, onDone);
     else if (step.mode === 'verbFormsTyping') renderVerbFormsTyping(cardArea, step.item, onDone);
+    else if (step.mode === 'verbFormsDictation') renderVerbFormsDictation(cardArea, step.item, onDone);
     else if (step.mode === 'fillLetters') renderFillLetters(cardArea, step.item, onDone);
     else if (step.mode === 'letterScramble') renderLetterScramble(cardArea, step.item, onDone);
     else if (step.mode === 'phraseBuilder') renderPhraseBuilder(cardArea, step.item, onDone);
@@ -614,6 +617,7 @@ function modeLabel(mode) {
     collocations: 'Choose the right word',
     verbForms: 'Choose the right verb form',
     verbFormsTyping: 'Write the verb forms',
+    verbFormsDictation: 'Listen and write the forms',
     fillLetters: 'Fill in the letters',
     letterScramble: 'Build the word',
     phraseBuilder: 'Build the phrase',
@@ -645,6 +649,13 @@ function speak(item, useSentence) {
     new Audio(item.audio).play();
     return;
   }
+  speakText(text);
+}
+
+// Speaks an arbitrary string via the browser's built-in synthesiser — used
+// where there's no "item" to hang the text off, e.g. dictating a verb's
+// past form rather than the item's own base-form text.
+function speakText(text) {
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
@@ -1112,6 +1123,77 @@ function renderVerbFormsTyping(container, item, onDone) {
   document.getElementById('listenBtn').addEventListener('click', () => speak(item, false));
   const pastInput = document.getElementById('pastSimpleInput');
   const participleInput = document.getElementById('pastParticipleInput');
+  pastInput.focus();
+
+  function check() {
+    const pastGuess = pastInput.value.trim().toLowerCase();
+    const participleGuess = participleInput.value.trim().toLowerCase();
+    const pastOk = pastGuess === correctPast;
+    const participleOk = participleGuess === correctParticiple;
+    const bothCorrect = pastOk && participleOk;
+
+    pastInput.style.borderColor = pastOk ? 'var(--success)' : 'var(--danger)';
+    participleInput.style.borderColor = participleOk ? 'var(--success)' : 'var(--danger)';
+    pastInput.disabled = true;
+    participleInput.disabled = true;
+    document.getElementById('checkBtn').disabled = true;
+
+    const feedback = document.getElementById('feedback');
+    if (bothCorrect) {
+      feedback.className = 'feedback correct';
+      feedback.textContent = 'Correct!';
+    } else {
+      feedback.className = 'feedback wrong';
+      const parts = [];
+      if (!pastOk) parts.push(`past simple is "${item.pastSimple}"`);
+      if (!participleOk) parts.push(`past participle is "${item.pastParticiple}"`);
+      feedback.textContent = parts.join(', ');
+    }
+    setTimeout(() => onDone(bothCorrect), bothCorrect ? 900 : 2500);
+  }
+
+  document.getElementById('checkBtn').addEventListener('click', check);
+  participleInput.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+  pastInput.addEventListener('keydown', e => { if (e.key === 'Enter') participleInput.focus(); });
+}
+
+// --- Verb forms (dictation): the base form is shown as text — the student
+// already knows it, that's not the skill being tested. Past simple and past
+// participle are each dictated by ear (repeatable), and the student writes
+// what they hear. Tests spelling of the irregular form, not recall of it. ---
+function renderVerbFormsDictation(container, item, onDone) {
+  const correctPast = item.pastSimple.trim().toLowerCase();
+  const correctParticiple = item.pastParticiple.trim().toLowerCase();
+
+  container.innerHTML = `
+    <p class="mode-label">Listen and write the missing forms</p>
+    <p class="word-main">${escapeHtml(item.text)}</p>
+    ${item.phonetic ? `<p class="phonetic">${escapeHtml(item.phonetic)}</p>` : ''}
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <div style="flex:1;">
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px;">Past simple</p>
+        <button id="listenPastBtn" style="width:100%; margin-bottom:6px; padding:8px;"><span class="icon">&#128266;</span> Listen</button>
+        <input type="text" id="pastSimpleInput" autocomplete="off" autocapitalize="off" spellcheck="false"
+          style="width:100%;padding:10px;font-size:16px;text-align:center;border:1px solid var(--border);border-radius:10px;" />
+      </div>
+      <div style="flex:1;">
+        <p style="font-size:12px; color:var(--muted); margin:0 0 6px;">Past participle</p>
+        <button id="listenParticipleBtn" style="width:100%; margin-bottom:6px; padding:8px;"><span class="icon">&#128266;</span> Listen</button>
+        <input type="text" id="pastParticipleInput" autocomplete="off" autocapitalize="off" spellcheck="false"
+          style="width:100%;padding:10px;font-size:16px;text-align:center;border:1px solid var(--border);border-radius:10px;" />
+      </div>
+    </div>
+    <button class="primary wide" id="checkBtn" style="margin-top:14px;">Check</button>
+    <div id="feedback"></div>
+  `;
+
+  const pastInput = document.getElementById('pastSimpleInput');
+  const participleInput = document.getElementById('pastParticipleInput');
+  document.getElementById('listenPastBtn').addEventListener('click', () => speakText(item.pastSimple));
+  document.getElementById('listenParticipleBtn').addEventListener('click', () => speakText(item.pastParticiple));
+  // Play the past simple form automatically so the student doesn't have to
+  // click before starting — matches the existing dictation mode's behaviour.
+  speakText(item.pastSimple);
   pastInput.focus();
 
   function check() {
