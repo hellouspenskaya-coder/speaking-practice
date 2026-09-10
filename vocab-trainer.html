@@ -171,7 +171,7 @@ const app = document.getElementById('app');
 
 const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation', 'collocations', 'verbForms'];
 const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'phraseBuilder', 'prepositions', 'collocations'];
-const GROUP_MODES = ['matching', 'matchingDef', 'whatsMissing'];
+const GROUP_MODES = ['matching', 'matchingDef', 'whatsMissing', 'phraseMatch'];
 // Most pictures shown at once in matching / what's missing.
 // Kept low so a beginner can actually hold them in mind.
 const MAX_GROUP_SIZE = 6;
@@ -386,13 +386,41 @@ function buildSession(data) {
   const withImages = shuffle(items.filter(i => i.image));
   const withDefs = shuffle(items.filter(i => i.definition));
   GROUP_MODES.forEach(groupMode => {
-    if (!enabledModes.includes(groupMode)) return;
+    if (!enabledModes.includes(groupMode) || groupMode === 'phraseMatch') return;
     const pool = groupMode === 'matchingDef' ? withDefs : withImages;
     for (let i = 0; i < pool.length; i += MAX_GROUP_SIZE) {
       const chunk = pool.slice(i, i + MAX_GROUP_SIZE);
       if (chunk.length >= 3) practiceSteps.push({ kind: 'group', mode: groupMode, items: chunk, phase: 'practice' });
     }
   });
+
+  // Match the phrase: pairs a head word ("cook") with its completion
+  // ("dinner"). Two phrases sharing the same head word (e.g. "do housework"
+  // and "do homework") must never land in the same round — the student
+  // would see two identical "do" buttons with no way to tell them apart.
+  if (enabledModes.includes('phraseMatch')) {
+    const phrasePool = shuffle(items.filter(i => i.type === 'phrase' && Array.isArray(i.chunks) && i.chunks.length >= 2));
+    const remaining = phrasePool.slice();
+    while (remaining.length) {
+      const group = [];
+      const usedHeads = new Set();
+      for (let i = remaining.length - 1; i >= 0 && group.length < MAX_GROUP_SIZE; i--) {
+        const head = remaining[i].chunks[0].toLowerCase();
+        if (!usedHeads.has(head)) {
+          usedHeads.add(head);
+          group.push(remaining[i]);
+          remaining.splice(i, 1);
+        }
+      }
+      if (group.length >= 3) {
+        practiceSteps.push({ kind: 'group', mode: 'phraseMatch', items: group, phase: 'practice' });
+      } else {
+        // Whatever's left shares too many head words to form another
+        // round — stop rather than loop forever on the same leftovers.
+        break;
+      }
+    }
+  }
 
   // Antonym steps: one per pair the teacher confirmed in the builder.
   if (enabledModes.includes('antonyms') && Array.isArray(data.antonymPairs)) {
@@ -527,6 +555,7 @@ function renderStep() {
     if (step.mode === 'matching') renderMatching(cardArea, step.items, onDone);
     else if (step.mode === 'matchingDef') renderMatchingDef(cardArea, step.items, onDone);
     else if (step.mode === 'whatsMissing') renderWhatsMissing(cardArea, step.items, onDone);
+    else if (step.mode === 'phraseMatch') renderPhraseMatch(cardArea, step.items, onDone);
   }
 
   // Safety net: if nothing rendered (unknown mode from an older saved set),
@@ -578,6 +607,7 @@ function modeLabel(mode) {
     matching: 'Matching',
     matchingDef: 'Match the definition',
     whatsMissing: "What's missing?",
+    phraseMatch: 'Match the phrase',
     antonyms: 'Opposites',
     antonymMatching: 'Match the opposites'
   })[mode] || mode;
@@ -949,6 +979,93 @@ function renderVerbForms(container, item, onDone) {
     });
     grid.appendChild(btn);
   });
+}
+
+// --- Match the phrase: connect a head word ("cook") to its completion
+// ("dinner"). Distractors are the other phrases' completions in this same
+// group — grouping already guarantees no two phrases share a head word. ---
+function renderPhraseMatch(container, items, onDone) {
+  let selectedHead = null;
+  let matched = new Set();
+  let pairNumber = 0;
+
+  const heads = shuffle(items.map(i => ({ id: i.id, text: i.chunks[0] })));
+  let tails = shuffle(items.map(i => ({ id: i.id, text: i.chunks.slice(1).join(' ') })));
+  let attempts = 0;
+  while (attempts < 10 && items.every((it, idx) => tails[idx] && tails[idx].id === it.id)) {
+    tails = shuffle(items.map(i => ({ id: i.id, text: i.chunks.slice(1).join(' ') })));
+    attempts++;
+  }
+
+  container.innerHTML = `
+    <p class="mode-label">Match the phrase</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div id="headsCol" style="display:flex;flex-direction:column;gap:8px;"></div>
+      <div id="tailsCol" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+  `;
+  const headsCol = document.getElementById('headsCol');
+  const tailsCol = document.getElementById('tailsCol');
+
+  heads.forEach(head => {
+    const wrap = document.createElement('div');
+    wrap.className = 'match-row';
+    const btn = document.createElement('button');
+    btn.textContent = head.text;
+    btn.dataset.id = head.id;
+    btn.style.width = '100%';
+    btn.addEventListener('click', () => {
+      if (matched.has(head.id)) return;
+      headsCol.querySelectorAll('button').forEach(b => b.style.outline = 'none');
+      selectedHead = head;
+      btn.style.outline = '2px solid var(--teal)';
+    });
+    wrap.appendChild(btn);
+    headsCol.appendChild(wrap);
+  });
+
+  tails.forEach(tail => {
+    const wrap = document.createElement('div');
+    wrap.className = 'match-row';
+    const btn = document.createElement('button');
+    btn.textContent = tail.text;
+    btn.style.width = '100%';
+    btn.style.fontSize = '13px';
+    btn.addEventListener('click', () => {
+      if (!selectedHead || matched.has(tail.id)) return;
+      const correct = selectedHead.id === tail.id;
+      if (correct) {
+        pairNumber += 1;
+        matched.add(tail.id);
+        btn.style.background = 'var(--success-light)';
+        btn.style.borderColor = 'var(--success)';
+        btn.style.color = 'var(--success)';
+        btn.disabled = true;
+        addBadge(wrap, pairNumber);
+        const headBtn = headsCol.querySelector(`button[data-id="${selectedHead.id}"]`);
+        headBtn.style.outline = 'none';
+        headBtn.disabled = true;
+        headBtn.style.background = 'var(--success-light)';
+        headBtn.style.borderColor = 'var(--success)';
+        headBtn.style.color = 'var(--success)';
+        addBadge(headBtn.parentElement, pairNumber);
+      } else {
+        btn.classList.add('wrong');
+        setTimeout(() => btn.classList.remove('wrong'), 400);
+      }
+      selectedHead = null;
+      if (matched.size === items.length) setTimeout(() => onDone(true), 700);
+    });
+    wrap.appendChild(btn);
+    tailsCol.appendChild(wrap);
+  });
+
+  function addBadge(parent, number) {
+    const badge = document.createElement('div');
+    badge.className = 'pair-badge';
+    badge.textContent = number;
+    parent.appendChild(badge);
+  }
 }
 
 function renderDictation(container, item, onDone, withImage) {
@@ -1550,9 +1667,7 @@ function renderDone() {
     `<span class="${i < stars ? 'star-on' : 'star-off'}">&#9733;</span>`
   ).join('');
 
-  const reviewWords = setData.items
-    .filter(i => wrongItemIds.has(i.id))
-    .map(i => i.text);
+  const reviewItems = setData.items.filter(i => wrongItemIds.has(i.id));
 
   app.innerHTML = `
     <div class="done-screen">
@@ -1573,14 +1688,48 @@ function renderDone() {
         </div>
       </div>
 
-      ${reviewWords.length ? `
-        <p class="final-label">Practise these again:</p>
-        <p class="review-list">${reviewWords.map(escapeHtml).join(' &middot; ')}</p>
-      ` : `<p class="final-label">You got every word right!</p>`}
+      ${reviewItems.length
+        ? `<p class="final-label">Practise these again — tap a word to see it:</p>
+           <p class="review-list" id="reviewList"></p>`
+        : `<p class="final-label">You got every word right!</p>`}
 
       <button class="primary wide" id="restartBtn">Practise again</button>
+      ${reviewItems.length ? `<button class="wide" id="reviewMissedBtn" style="margin-top:10px;">Review missed words</button>` : ''}
     </div>
+    <div id="overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:100; align-items:center; justify-content:center; padding:20px;"></div>
   `;
+
+  if (reviewItems.length) {
+    const reviewList = document.getElementById('reviewList');
+    reviewItems.forEach((item, idx) => {
+      const span = document.createElement('span');
+      span.textContent = item.text;
+      span.style.cssText = 'cursor:pointer; text-decoration:underline; color:var(--teal);';
+      span.addEventListener('click', () => openOverlay(item));
+      reviewList.appendChild(span);
+      if (idx < reviewItems.length - 1) reviewList.appendChild(document.createTextNode(' \u00b7 '));
+    });
+    const overlay = document.getElementById('overlay');
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+
+    document.getElementById('reviewMissedBtn').addEventListener('click', () => {
+      // Rebuild a mini-session using only the missed items. Distractors and
+      // eligibility still look at the full word set (via the global setData
+      // that eligibleSingleModes reads), so small review rounds stay just as
+      // reliable as the main session.
+      const reviewData = { ...setData, items: reviewItems };
+      wrongItemIds = new Set();
+      score = 0;
+      streak = 0;
+      bestStreak = 0;
+      correctCount = 0;
+      answeredCount = 0;
+      queue = buildSession(reviewData);
+      stepIndex = 0;
+      renderStep();
+    });
+  }
+
   document.getElementById('restartBtn').addEventListener('click', () => {
     wrongItemIds = new Set();
     score = 0;
