@@ -500,6 +500,14 @@ function renderItemBody(id) {
       <label>Word order</label>
       <input type="text" data-field="chunks" value="${escapeAttr((item.chunks || []).join(' '))}" placeholder="live in a house" />
     </div>
+    <div class="field-row">
+      <label>Split point</label>
+      <div style="flex:1;">
+        <input type="number" data-field="phraseSplitIndex" min="1" max="${Math.max(1, (item.chunks || []).length - 1)}" value="${item.phraseSplitIndex || 1}" style="width:70px;" />
+        <span style="font-size:12px; color:var(--muted); margin-left:8px;">words in the first part (for Match the phrase)</span>
+        <p id="splitPreview-${id}" style="font-size:13px; color:var(--text-secondary); margin:6px 0 0;"></p>
+      </div>
+    </div>
     `}
     <div class="actions-row">
       <button class="small gen-content-btn">Generate content (AI)</button>
@@ -539,6 +547,17 @@ function renderItemBody(id) {
     <div class="error-box" id="itemError-${id}"></div>
   `;
 
+  function updateSplitPreview(itemId) {
+    const el = document.getElementById(`splitPreview-${itemId}`);
+    if (!el) return;
+    const chunks = item.chunks || [];
+    const splitAt = Math.min(Math.max(item.phraseSplitIndex || 1, 1), Math.max(1, chunks.length - 1));
+    const head = chunks.slice(0, splitAt).join(' ');
+    const tail = chunks.slice(splitAt).join(' ');
+    el.textContent = chunks.length >= 2 ? `"${head}" ↔ "${tail}"` : 'Add word order above first.';
+  }
+  updateSplitPreview(id);
+
   function updateWfValidation() {
     const el = document.getElementById(`wfValidation-${id}`);
     if (!el) return;
@@ -566,8 +585,12 @@ function renderItemBody(id) {
       const field = input.dataset.field;
       if (field === 'chunks') {
         item.chunks = input.value.split(/\s+/).filter(Boolean);
+        updateSplitPreview(id);
       } else if (field === 'wordFamilyForms') {
         item.wordFamily = input.value.split(',').map(s => s.trim()).filter(Boolean).map(form => ({ form, pos: '' }));
+      } else if (field === 'phraseSplitIndex') {
+        item.phraseSplitIndex = Math.max(1, parseInt(input.value, 10) || 1);
+        updateSplitPreview(id);
       } else {
         item[field] = input.value;
       }
@@ -947,6 +970,7 @@ function buildSetData() {
       example: i.example,
       phonetic: i.phonetic,
       chunks: i.chunks,
+      phraseSplitIndex: i.phraseSplitIndex || 1,
       image: i.image,
       audio: i.audio,
       imageHint: i.imageHint || '',

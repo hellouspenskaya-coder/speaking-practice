@@ -268,6 +268,15 @@ function closeOverlay() {
   if (overlay) overlay.style.display = 'none';
 }
 
+// Splits a phrase's chunks into head/tail at the teacher-chosen point
+// (defaults to 1 word, e.g. "cook" / "dinner"). Clamped so a bad stored
+// value can never produce an empty half.
+function phraseSplit(item) {
+  const chunks = item.chunks || [];
+  const splitAt = Math.min(Math.max(item.phraseSplitIndex || 1, 1), Math.max(1, chunks.length - 1));
+  return { head: chunks.slice(0, splitAt).join(' '), tail: chunks.slice(splitAt).join(' ') };
+}
+
 function shuffle(arr) {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -405,7 +414,7 @@ function buildSession(data) {
       const group = [];
       const usedHeads = new Set();
       for (let i = remaining.length - 1; i >= 0 && group.length < MAX_GROUP_SIZE; i--) {
-        const head = remaining[i].chunks[0].toLowerCase();
+        const head = phraseSplit(remaining[i]).head.toLowerCase();
         if (!usedHeads.has(head)) {
           usedHeads.add(head);
           group.push(remaining[i]);
@@ -989,8 +998,8 @@ function renderPhraseMatch(container, items, onDone) {
   let matched = new Set();
   let pairNumber = 0;
 
-  const heads = shuffle(items.map(i => ({ id: i.id, text: i.chunks[0] })));
-  let tails = shuffle(items.map(i => ({ id: i.id, text: i.chunks.slice(1).join(' ') })));
+  const heads = shuffle(items.map(i => ({ id: i.id, text: phraseSplit(i).head })));
+  let tails = shuffle(items.map(i => ({ id: i.id, text: phraseSplit(i).tail })));
   let attempts = 0;
   while (attempts < 10 && items.every((it, idx) => tails[idx] && tails[idx].id === it.id)) {
     tails = shuffle(items.map(i => ({ id: i.id, text: i.chunks.slice(1).join(' ') })));
