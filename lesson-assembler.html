@@ -329,6 +329,7 @@
     <p class="hint" id="topicHint" style="margin-left:0;">The list is saved in this browser between visits.</p>
 
     <button class="secondary" id="findResourceBtn" type="button" disabled style="margin-top:12px; color:#fff; background:var(--accent); border-color:var(--accent);">Find material</button>
+    <button class="ghost" id="skipSearchBtn" type="button" disabled style="margin-top:8px;">✨ I already have material — just generate title, target & questions</button>
 
     <div class="resource-card" id="resourceCard"></div>
   </section>
@@ -476,6 +477,7 @@ function renderTopics() {
       topicState.selected = i;
       renderTopics();
       document.getElementById('findResourceBtn').disabled = false;
+      document.getElementById('skipSearchBtn').disabled = false;
     };
     const rm = document.createElement('button');
     rm.type = 'button';
@@ -490,6 +492,7 @@ function renderTopics() {
       renderTopics();
       saveTopics();
       document.getElementById('findResourceBtn').disabled = topicState.selected === null;
+      document.getElementById('skipSearchBtn').disabled = topicState.selected === null;
       replenishOneTopic(removed);
     };
     chip.appendChild(rm);
@@ -531,6 +534,7 @@ document.getElementById('addTopicBtn').addEventListener('click', () => {
   renderTopics();
   saveTopics();
   document.getElementById('findResourceBtn').disabled = false;
+      document.getElementById('skipSearchBtn').disabled = false;
 });
 document.getElementById('newTopicInput').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') document.getElementById('addTopicBtn').click();
@@ -634,6 +638,55 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
   } finally {
     btn.disabled = false;
     btn.textContent = 'Find material';
+  }
+});
+
+// ---- Skip search: already have material, just want the framing generated ----
+document.getElementById('skipSearchBtn').addEventListener('click', async () => {
+  if (topicState.selected === null) return;
+  const btn = document.getElementById('skipSearchBtn');
+  const card = document.getElementById('resourceCard');
+  const topic = topicState.topics[topicState.selected];
+  const level = document.getElementById('resLevel').value;
+
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+  card.className = 'resource-card';
+
+  try {
+    const res = await fetch('/api/generate-intro', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic, level })
+    });
+    const out = await res.json();
+    if (!res.ok) throw new Error(out.error || 'Could not generate.');
+
+    if (out.title) document.getElementById('title').value = out.title;
+    if (out.icon) document.getElementById('icon').value = out.icon;
+    if (out.target) document.getElementById('target').value = out.target;
+    if (out.warmup_question) document.getElementById('warmup').value = out.warmup_question;
+    if (Array.isArray(out.discussion_questions) && out.discussion_questions.length) {
+      document.getElementById('questions').value = out.discussion_questions.join('\n');
+    }
+    if (Array.isArray(out.group_discussion_question_sets) && out.group_discussion_question_sets.length) {
+      const text = out.group_discussion_question_sets
+        .map((round, i) => `Round ${i + 1}\n` + round.map(q => `- ${q}`).join('\n'))
+        .join('\n\n');
+      document.getElementById('groupQuestions').value = text;
+    }
+    if (!document.getElementById('topicOverride').value) {
+      document.getElementById('topicOverride').value = topic.split(' — ')[0];
+    }
+
+    card.innerHTML = `<p style="margin:0; color:var(--ink-soft); font-size:12px;">No search performed — title, target, warm-up, and questions were generated from the topic alone. Fill in your own video/reading links and words below.</p>`;
+    card.classList.add('show');
+  } catch (e) {
+    card.innerHTML = `<div class="type-tag" style="color:var(--bad);">Didn't work</div>${e.message || 'Try again.'}`;
+    card.classList.add('show');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✨ I already have material — just generate title, target & questions';
   }
 });
 
