@@ -206,13 +206,17 @@ async function init() {
 
 function renderGallery() {
   const items = setData.items || [];
+  const verbItems = items.filter(i => i.isVerb && i.pastSimple && i.pastParticiple);
   app.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
       <div>
         <p style="font-size:16px;font-weight:600;margin:0;">${escapeHtml(setData.topic||'Word set')}</p>
         <p style="font-size:13px;color:var(--muted);margin:0;">${items.length} words — tap any to look closer</p>
       </div>
-      <button class="primary" id="startBtn" style="padding:10px 18px;font-size:14px;">Start practice</button>
+      <div style="display:flex;gap:8px;">
+        ${verbItems.length ? `<button id="printBtn" style="padding:10px 14px;font-size:14px;">Print list</button>` : ''}
+        <button class="primary" id="startBtn" style="padding:10px 18px;font-size:14px;">Start practice</button>
+      </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;" id="gallery"></div>
     <div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;padding:20px;"></div>
@@ -222,6 +226,8 @@ function renderGallery() {
     stepIndex = 0;
     renderStep();
   });
+  const printBtn = document.getElementById('printBtn');
+  if (printBtn) printBtn.addEventListener('click', () => printVerbList(verbItems));
   const gallery = document.getElementById('gallery');
   items.forEach(item => {
     const tile = document.createElement('div');
@@ -239,6 +245,55 @@ function renderGallery() {
   });
   const overlay = document.getElementById('overlay');
   overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+}
+
+// Opens a clean printable page: word list with blank columns for the two
+// past forms, for paper practice or written tests. Picks a fresh random 10
+// each time when the pool is larger than 10 (e.g. a checkpoint's full
+// accumulated pool) — a set with exactly 10 just prints all of them.
+function printVerbList(verbItems) {
+  const picked = verbItems.length > 10 ? shuffle(verbItems).slice(0, 10) : verbItems;
+  const rows = picked.map((item, idx) => `
+    <tr>
+      <td style="padding:10px 8px;border-bottom:1px solid #ccc;text-align:center;color:#666;">${idx + 1}</td>
+      <td style="padding:10px 8px;border-bottom:1px solid #ccc;font-weight:600;">${escapeHtml(item.text)}</td>
+      <td style="padding:10px 8px;border-bottom:1px solid #ccc;"></td>
+      <td style="padding:10px 8px;border-bottom:1px solid #ccc;"></td>
+    </tr>
+  `).join('');
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8" />
+      <title>${escapeHtml(setData.topic || 'Verb list')}</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 30px; }
+        h1 { font-size: 18px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px 8px; border-bottom: 2px solid #333; font-size: 13px; color: #333; }
+      </style>
+    </head>
+    <body>
+      <h1>${escapeHtml(setData.topic || 'Verb list')}</h1>
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:center;">#</th>
+            <th>Verb</th>
+            <th>Past Simple</th>
+            <th>Past Participle</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </body>
+    </html>
+  `;
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(html);
+  printWindow.document.close();
+  printWindow.onload = () => printWindow.print();
 }
 
 function openOverlay(item) {
@@ -345,7 +400,12 @@ function eligibleSingleModes(item, enabledModes) {
 
 function buildSession(data) {
   const enabledModes = data.modes && data.modes.length ? data.modes : SINGLE_WORD_MODES.concat(SINGLE_PHRASE_MODES, GROUP_MODES);
-  const items = data.items || [];
+  // Checkpoint sets store their WHOLE accumulated word pool but only test a
+  // fresh random subset each time — so repeated practice covers different
+  // words from the pool instead of the same fixed 40 every single time.
+  const items = data.sampleSize && data.items && data.items.length > data.sampleSize
+    ? shuffle(data.items).slice(0, data.sampleSize)
+    : (data.items || []);
 
   // --- Warm-up: guarantee at least 4 "choose the picture" and 4 "choose the
   // word" steps right at the start, before anything else. These are the
