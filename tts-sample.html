@@ -31,6 +31,18 @@
   <h2>"make, made, made." (with period)</h2>
   <div class="voice-grid" id="phrase4"></div>
 
+  <h2>Isolated word: "get"</h2>
+  <div class="voice-grid" id="word1"></div>
+
+  <h2>Isolated word: "got"</h2>
+  <div class="voice-grid" id="word2"></div>
+
+  <h2>Isolated word: "make"</h2>
+  <div class="voice-grid" id="word3"></div>
+
+  <h2>Isolated word: "made"</h2>
+  <div class="voice-grid" id="word4"></div>
+
 <script>
 const VOICES = ['autumn', 'diana', 'hannah', 'austin', 'daniel', 'troy'];
 // Hannah dropped from further testing — too intimate/breathy a voice for
@@ -40,7 +52,11 @@ const PHRASES = {
   phrase1: { text: 'get, got, got', voices: VOICES },
   phrase2: { text: 'make, made, made', voices: VOICES },
   phrase3: { text: 'get, got, got.', voices: APPROVED_VOICES },
-  phrase4: { text: 'make, made, made.', voices: APPROVED_VOICES }
+  phrase4: { text: 'make, made, made.', voices: APPROVED_VOICES },
+  word1: { text: 'get', voices: APPROVED_VOICES },
+  word2: { text: 'got', voices: APPROVED_VOICES },
+  word3: { text: 'make', voices: APPROVED_VOICES },
+  word4: { text: 'made', voices: APPROVED_VOICES }
 };
 
 async function playSample(btn, statusEl, text, voice) {
