@@ -25,11 +25,22 @@
   <h2>"make, made, made"</h2>
   <div class="voice-grid" id="phrase2"></div>
 
+  <h2>"get, got, got." (with period — testing the stray-sound theory)</h2>
+  <div class="voice-grid" id="phrase3"></div>
+
+  <h2>"make, made, made." (with period)</h2>
+  <div class="voice-grid" id="phrase4"></div>
+
 <script>
 const VOICES = ['autumn', 'diana', 'hannah', 'austin', 'daniel', 'troy'];
+// Hannah dropped from further testing — too intimate/breathy a voice for
+// a teaching context, including with teenage students.
+const APPROVED_VOICES = ['autumn', 'diana', 'austin', 'daniel', 'troy'];
 const PHRASES = {
-  phrase1: 'get, got, got',
-  phrase2: 'make, made, made'
+  phrase1: { text: 'get, got, got', voices: VOICES },
+  phrase2: { text: 'make, made, made', voices: VOICES },
+  phrase3: { text: 'get, got, got.', voices: APPROVED_VOICES },
+  phrase4: { text: 'make, made, made.', voices: APPROVED_VOICES }
 };
 
 async function playSample(btn, statusEl, text, voice) {
@@ -67,9 +78,9 @@ function showError(btn, statusEl, voice, message) {
   statusEl.style.color = '#dc2626';
 }
 
-Object.entries(PHRASES).forEach(([gridId, text]) => {
+Object.entries(PHRASES).forEach(([gridId, { text, voices }]) => {
   const grid = document.getElementById(gridId);
-  VOICES.forEach(voice => {
+  voices.forEach(voice => {
     const wrap = document.createElement('div');
     const btn = document.createElement('button');
     btn.textContent = voice;
