@@ -208,16 +208,23 @@ function renderGallery() {
   const items = setData.items || [];
   const verbItems = items.filter(i => i.isVerb && i.pastSimple && i.pastParticiple);
   app.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
-      <div>
-        <p style="font-size:16px;font-weight:600;margin:0;">${escapeHtml(setData.topic||'Word set')}</p>
-        <p style="font-size:13px;color:var(--muted);margin:0;">${items.length} words — tap any to look closer</p>
-      </div>
+    <style>
+      @keyframes cardPeek {
+        0%   { transform: perspective(600px) rotateY(-22deg); }
+        100% { transform: perspective(600px) rotateY(0deg); }
+      }
+      .demo-flip { animation: cardPeek 750ms ease-out; transform-origin: left center; }
+    </style>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+      <p style="font-size:16px;font-weight:600;margin:0;">${escapeHtml(setData.topic||'Word set')}</p>
       <div style="display:flex;gap:8px;">
         ${verbItems.length ? `<button id="printBtn" style="padding:10px 14px;font-size:14px;">Print list</button>` : ''}
         <button class="primary" id="startBtn" style="padding:10px 18px;font-size:14px;">Start practice</button>
       </div>
     </div>
+    <p style="font-size:16px;color:var(--muted);margin:0 0 14px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:20px;">👆</span> Tap any card to look closer — ${items.length} words
+    </p>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;" id="gallery"></div>
     <div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;padding:20px;"></div>
   `;
@@ -229,9 +236,13 @@ function renderGallery() {
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', () => printVerbList(verbItems));
   const gallery = document.getElementById('gallery');
-  items.forEach(item => {
+  items.forEach((item, idx) => {
     const tile = document.createElement('div');
     tile.style.cssText = 'border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;';
+    // Briefly "peek" the very first card on load — a live demo that cards
+    // are tappable and hold more content, not just a text hint that's easy
+    // to skim past.
+    if (idx === 0) tile.className = 'demo-flip';
     tile.innerHTML = `
       <div style="height:70px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
         ${item.image
