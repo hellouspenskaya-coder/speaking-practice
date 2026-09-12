@@ -302,7 +302,7 @@ function openOverlay(item) {
   const isVerbWithForms = item.isVerb && item.pastSimple && item.pastParticiple;
 
   const topBlock = isVerbWithForms
-    ? `<div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+    ? `<div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:44px;margin-bottom:14px;">
          <span style="padding:10px 14px;background:var(--teal-light);border-radius:10px;font-weight:600;font-size:17px;">${escapeHtml(item.text)}</span>
          <span style="color:var(--muted);">&rarr;</span>
          <span style="padding:10px 14px;background:var(--teal-light);border-radius:10px;font-weight:600;font-size:17px;">${escapeHtml(item.pastSimple)}</span>
