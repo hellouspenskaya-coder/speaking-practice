@@ -32,14 +32,14 @@ const PHRASES = {
   phrase2: 'make, made, made'
 };
 
-async function playSample(btn, text, voice) {
+async function playSample(btn, statusEl, text, voice) {
   if (btn.dataset.audioUrl) {
-    new Audio(btn.dataset.audioUrl).play();
+    new Audio(btn.dataset.audioUrl).play().catch(err => showError(btn, statusEl, voice, 'Playback blocked: ' + err.message));
     return;
   }
   btn.disabled = true;
-  const originalText = btn.textContent;
   btn.textContent = voice + ' — loading…';
+  statusEl.textContent = '';
   try {
     const res = await fetch('/api/vocab', {
       method: 'POST',
@@ -51,22 +51,36 @@ async function playSample(btn, text, voice) {
     btn.dataset.audioUrl = data.audio;
     btn.classList.add('loaded');
     btn.textContent = voice + ' ▶ (loaded)';
-    new Audio(data.audio).play();
+    btn.style.borderColor = '';
+    await new Audio(data.audio).play().catch(err => showError(btn, statusEl, voice, 'Playback blocked: ' + err.message));
   } catch (err) {
-    btn.textContent = voice + ' — error';
-    console.error(err);
+    showError(btn, statusEl, voice, err.message);
   } finally {
     btn.disabled = false;
   }
 }
 
+function showError(btn, statusEl, voice, message) {
+  btn.textContent = voice + ' — error';
+  btn.style.borderColor = '#dc2626';
+  statusEl.textContent = message;
+  statusEl.style.color = '#dc2626';
+}
+
 Object.entries(PHRASES).forEach(([gridId, text]) => {
   const grid = document.getElementById(gridId);
   VOICES.forEach(voice => {
+    const wrap = document.createElement('div');
     const btn = document.createElement('button');
     btn.textContent = voice;
-    btn.addEventListener('click', () => playSample(btn, text, voice));
-    grid.appendChild(btn);
+    btn.style.width = '100%';
+    const status = document.createElement('p');
+    status.className = 'status';
+    status.style.wordBreak = 'break-word';
+    btn.addEventListener('click', () => playSample(btn, status, text, voice));
+    wrap.appendChild(btn);
+    wrap.appendChild(status);
+    grid.appendChild(wrap);
   });
 });
 </script>
