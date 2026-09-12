@@ -210,10 +210,10 @@ function renderGallery() {
   app.innerHTML = `
     <style>
       @keyframes cardPeek {
-        0%   { transform: perspective(600px) rotateY(-22deg); }
-        100% { transform: perspective(600px) rotateY(0deg); }
+        0%   { transform: perspective(600px) rotateY(-30deg) scale(1.03); }
+        100% { transform: perspective(600px) rotateY(0deg) scale(1); }
       }
-      .demo-flip { animation: cardPeek 750ms ease-out; transform-origin: left center; }
+      .demo-flip { animation: cardPeek 900ms ease-out 450ms both; transform-origin: left center; }
     </style>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
       <p style="font-size:16px;font-weight:600;margin:0;">${escapeHtml(setData.topic||'Word set')}</p>
@@ -223,7 +223,7 @@ function renderGallery() {
       </div>
     </div>
     <p style="font-size:16px;color:var(--muted);margin:0 0 14px;display:flex;align-items:center;gap:8px;">
-      <span style="font-size:20px;">👆</span> Tap any card to look closer — ${items.length} words
+      <span style="font-size:20px;">👇</span> Tap any card to look closer — ${items.length} words
     </p>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;" id="gallery"></div>
     <div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;padding:20px;"></div>
