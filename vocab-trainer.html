@@ -209,11 +209,24 @@ function renderGallery() {
   const verbItems = items.filter(i => i.isVerb && i.pastSimple && i.pastParticiple);
   app.innerHTML = `
     <style>
-      @keyframes cardPeek {
-        0%   { transform: perspective(600px) rotateY(-30deg) scale(1.03); }
-        100% { transform: perspective(600px) rotateY(0deg) scale(1); }
+      @keyframes flipReveal {
+        0%   { transform: rotateY(0deg); }
+        40%  { transform: rotateY(180deg); }
+        75%  { transform: rotateY(180deg); }
+        100% { transform: rotateY(360deg); }
       }
-      .demo-flip { animation: cardPeek 900ms ease-out 450ms both; transform-origin: left center; }
+      .flip-outer { perspective: 700px; }
+      .flip-inner {
+        position: relative; width: 100%; height: 100%;
+        transform-style: preserve-3d;
+        animation: flipReveal 2200ms ease-in-out 500ms both;
+      }
+      .flip-face {
+        position: absolute; inset: 0;
+        backface-visibility: hidden;
+        display: flex; flex-direction: column;
+      }
+      .flip-back { transform: rotateY(180deg); }
     </style>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
       <p style="font-size:16px;font-weight:600;margin:0;">${escapeHtml(setData.topic||'Word set')}</p>
@@ -238,19 +251,41 @@ function renderGallery() {
   const gallery = document.getElementById('gallery');
   items.forEach((item, idx) => {
     const tile = document.createElement('div');
-    tile.style.cssText = 'border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;';
-    // Briefly "peek" the very first card on load — a live demo that cards
-    // are tappable and hold more content, not just a text hint that's easy
-    // to skim past.
-    if (idx === 0) tile.className = 'demo-flip';
-    tile.innerHTML = `
-      <div style="height:70px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
-        ${item.image
-          ? `<img src="${escapeAttr(item.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
-          : `<span style="font-size:11px;color:var(--muted);padding:4px;text-align:center;">${escapeHtml(item.definition||'')}</span>`}
-      </div>
-      <div style="padding:5px 6px;text-align:center;font-size:13px;font-weight:500;">${escapeHtml(item.text)}</div>
-    `;
+    tile.style.cssText = 'border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;height:105px;';
+    const isFirstVerbDemo = idx === 0 && item.isVerb && item.pastSimple && item.pastParticiple;
+
+    if (isFirstVerbDemo) {
+      // Live demo: flip to actually SHOW the three forms once, then flip
+      // back — proves the card holds more content instead of just hinting
+      // at it with a subtle wiggle (which turned out too easy to miss).
+      tile.classList.add('flip-outer');
+      tile.innerHTML = `
+        <div class="flip-inner">
+          <div class="flip-face">
+            <div style="height:70px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+              ${item.image
+                ? `<img src="${escapeAttr(item.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
+                : `<span style="font-size:11px;color:var(--muted);padding:4px;text-align:center;">${escapeHtml(item.definition||'')}</span>`}
+            </div>
+            <div style="padding:5px 6px;text-align:center;font-size:13px;font-weight:500;">${escapeHtml(item.text)}</div>
+          </div>
+          <div class="flip-face flip-back" style="background:var(--teal-light);align-items:center;justify-content:center;padding:6px;">
+            <div style="font-size:10px;font-weight:600;text-align:center;line-height:1.5;word-break:break-word;">
+              ${escapeHtml(item.text)}<br/>&darr;<br/>${escapeHtml(item.pastSimple)}<br/>&darr;<br/>${escapeHtml(item.pastParticiple)}
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      tile.innerHTML = `
+        <div style="height:70px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          ${item.image
+            ? `<img src="${escapeAttr(item.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
+            : `<span style="font-size:11px;color:var(--muted);padding:4px;text-align:center;">${escapeHtml(item.definition||'')}</span>`}
+        </div>
+        <div style="padding:5px 6px;text-align:center;font-size:13px;font-weight:500;">${escapeHtml(item.text)}</div>
+      `;
+    }
     tile.addEventListener('click', () => openOverlay(item));
     gallery.appendChild(tile);
   });
