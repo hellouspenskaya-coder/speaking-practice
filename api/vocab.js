@@ -31,6 +31,7 @@ module.exports = async function handler(req, res) {
     if (action === 'save') return await saveSet(req, res);
     if (action === 'listSets') return await listSets(req, res);
     if (action === 'repairImages') return await repairImages(req, res);
+    if (action === 'ttsSample') return await ttsSample(req, res);
     res.status(400).json({ error: `Unknown action: ${action}` });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -547,6 +548,45 @@ async function repairImages(req, res) {
   }
 
   res.status(200).json({ ok: true, slug, results });
+}
+
+// TEMPORARY — for auditioning Groq voices before deciding whether to use
+// them for the Irregular Verbs course. Not part of the main app; safe to
+// remove once Anna has heard what she needs.
+async function ttsSample(req, res) {
+  const { text, voice } = req.body;
+  if (!text || !voice) {
+    res.status(400).json({ error: 'Missing text or voice' });
+    return;
+  }
+  const groqKey = process.env.GROQ_API_KEY;
+  if (!groqKey) {
+    res.status(500).json({ error: 'GROQ_API_KEY is not set' });
+    return;
+  }
+
+  const response = await fetch('https://api.groq.com/openai/v1/audio/speech', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${groqKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'canopylabs/orpheus-v1-english',
+      voice,
+      input: text,
+      response_format: 'wav'
+    })
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    res.status(502).json({ error: `Groq error ${response.status}: ${errText}` });
+    return;
+  }
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+  res.status(200).json({ audio: `data:audio/wav;base64,${buffer.toString('base64')}` });
 }
 
 module.exports.config = { maxDuration: 60 };
