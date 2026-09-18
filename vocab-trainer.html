@@ -535,16 +535,23 @@ function buildSession(data) {
   // ("dinner"). Two phrases sharing the same head word (e.g. "do housework"
   // and "do homework") must never land in the same round — the student
   // would see two identical "do" buttons with no way to tell them apart.
+  // Same protection applies to the TAIL: "Close your books" / "Open your
+  // books" share an identical tail ("your books") no matter where the
+  // split point falls, and would be just as confusing paired together.
   if (enabledModes.includes('phraseMatch')) {
     const phrasePool = shuffle(items.filter(i => i.type === 'phrase' && Array.isArray(i.chunks) && i.chunks.length >= 2));
     const remaining = phrasePool.slice();
     while (remaining.length) {
       const group = [];
       const usedHeads = new Set();
+      const usedTails = new Set();
       for (let i = remaining.length - 1; i >= 0 && group.length < MAX_GROUP_SIZE; i--) {
-        const head = phraseSplit(remaining[i]).head.toLowerCase();
-        if (!usedHeads.has(head)) {
+        const split = phraseSplit(remaining[i]);
+        const head = split.head.toLowerCase();
+        const tail = split.tail.toLowerCase();
+        if (!usedHeads.has(head) && !usedTails.has(tail)) {
           usedHeads.add(head);
+          usedTails.add(tail);
           group.push(remaining[i]);
           remaining.splice(i, 1);
         }
@@ -552,7 +559,7 @@ function buildSession(data) {
       if (group.length >= 3) {
         practiceSteps.push({ kind: 'group', mode: 'phraseMatch', items: group, phase: 'practice' });
       } else {
-        // Whatever's left shares too many head words to form another
+        // Whatever's left shares too many head/tail words to form another
         // round — stop rather than loop forever on the same leftovers.
         break;
       }

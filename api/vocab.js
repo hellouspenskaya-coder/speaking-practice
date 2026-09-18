@@ -109,9 +109,9 @@ async function generateContentChunk(items, cefr) {
   const levelGuidance = {
     A1: 'Definitions must be extremely simple (max 8 words), using only the most common everyday words. Example sentences: 3-6 words, simple present tense only.',
     A2: 'Definitions simple and short (max 10 words), everyday vocabulary. Example sentences: 4-8 words, simple tenses (present, past simple, going to).',
-    B1: 'Definitions can use everyday natural English, a full sentence is fine. Example sentences should sound natural, using a range of common tenses and structures a B1 learner is expected to know.',
-    B2: 'Definitions in natural, idiomatic English — do not oversimplify. Example sentences should reflect realistic, everyday use, including more complex clauses where natural.',
-    C1: 'Definitions in full natural English, as a good monolingual dictionary would phrase them — no artificial simplification. Example sentences should reflect authentic, sophisticated usage, including nuance, register, and collocation.'
+    B1: 'Definitions can use everyday natural English, phrased as one full sentence. Example sentences should sound natural, using a range of common tenses and structures a B1 learner is expected to know.',
+    B2: 'Definitions in natural, idiomatic English — do not oversimplify, but keep it to one sentence. Example sentences should reflect realistic, everyday use, including more complex clauses where natural.',
+    C1: 'Definitions in full natural English, as a good monolingual dictionary\'s single-sentence definition would phrase it — no artificial simplification, but still one sentence. Example sentences should reflect authentic, sophisticated usage, including nuance, register, and collocation.'
   }[cefr] || '';
 
   const higherLevelFields = `
@@ -135,10 +135,10 @@ ${cefr === 'A1' || cefr === 'A2' ? 'These learners cannot yet build sentences on
 Level-specific guidance: ${levelGuidance}
 
 For each item below, decide if it is a single "word" or a multi-word "phrase" (e.g. "live in a house", "as far as I understand"), then produce:
-- "definition": a ${cefr}-appropriate definition, per the guidance above
+- "definition": a ${cefr}-appropriate definition, per the guidance above. ALWAYS exactly ONE sentence, no matter the level — never a second explanatory clause, never a semicolon-joined addition, never a "used when..." follow-up sentence. If the concept needs more nuance, express it more precisely within that single sentence rather than adding a second one.
 - "example": one example sentence, per the guidance above, that contains the item naturally
 - "phonetic": IPA transcription (words only; omit for phrases)
-- "chunks": for "phrase" items only - the phrase split into its individual words in correct order, as an array of strings. Omit for words.
+- "chunks": for "phrase" items only - the phrase split into its individual words in correct order, as an array of strings. Keep contractions as ONE single token exactly as written — never expand them (e.g. "I don't know" → ["I","don't","know"], NOT ["I","do","not","know"]; "I'm ready" → ["I'm","ready"], not ["I","am","ready"]). The learner needs the natural contracted form, not an expanded rewrite. Omit for words.
 - "illustrable": true or false. true only if the item names a concrete, physical, drawable thing or action (e.g. "laptop", "run", "umbrella"). false for abstract concepts, feelings, discourse markers, evaluative words, or anything a picture could not unambiguously convey (e.g. "guilty", "as far as I understand", "responsible", "rush hour" as a concept rather than a scene). When in doubt, prefer false — a wrong or misleading picture is worse than no picture.
 - "imageHint": ONLY if "illustrable" is true — exactly 2-3 keywords (no commas, no phrases) for finding a clear isolated illustration on a stock image site. For ambiguous words add a disambiguating keyword (e.g. "key" → "door key", "tablet" → "tablet ipad", "glasses" → "glasses eyewear"). Omit this field entirely if "illustrable" is false.
 - "isVerb": true only if the item is a single verb in its base form (e.g. "go", "eat", "buy"). false for everything else, including phrases containing a verb. This applies at every level, not just higher ones — beginners need this just as much for rote memorisation of irregular forms.

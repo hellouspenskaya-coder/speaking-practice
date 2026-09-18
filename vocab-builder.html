@@ -178,6 +178,10 @@
         </select>
       </div>
     </div>
+    <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); margin-top:10px;">
+      <input type="checkbox" id="skipImageSearchCheckbox" style="width:auto;" />
+      Skip image search for this set (useful at higher levels, where most words are abstract)
+    </label>
   </div>
 
   <div class="card">
@@ -708,6 +712,7 @@ async function generateContentFor(itemsToGenerate) {
       item.verbSentence = generated.verbSentence || '';
       item.verbAnswer = generated.verbAnswer || '';
       if (item.wantsImage === undefined) item.wantsImage = item.illustrable;
+      if (document.getElementById('skipImageSearchCheckbox').checked) item.wantsImage = false;
       if (generated.imageHint) {
         const stopWords = new Set(['a','an','the','for','to','of','in','on','with','and','or','is','are','it','as','use','used','make','up','pack','paper','soft']);
         item.imageHint = generated.imageHint
@@ -740,6 +745,10 @@ async function generateContentFor(itemsToGenerate) {
 
 async function autoFetchImages(itemsNeedingImages) {
   if (!itemsNeedingImages.length) return;
+  // Used to auto-pick the first result here — but in practice the first
+  // pick was wrong essentially every time, requiring a manual fix anyway.
+  // Show the candidates instead, same as a manual "Find images" click,
+  // so the teacher picks once instead of picking wrong then fixing.
   await Promise.all(itemsNeedingImages.map(async (item) => {
     try {
       const query = item.imageQuery || item.text;
@@ -750,13 +759,12 @@ async function autoFetchImages(itemsNeedingImages) {
       });
       const data = await response.json();
       if (response.ok && data.images && data.images.length) {
-        item.image = data.images[0].full;
+        renderImageCandidates(item, data.images, null);
       }
     } catch (e) {
       // Silently skip — user can add image manually via Edit → Find images
     }
   }));
-  renderItems();
 }
 
 
