@@ -676,7 +676,15 @@ async function generateContentFor(itemsToGenerate) {
       item.definition = generated.definition || item.definition;
       item.example = generated.example || item.example;
       item.phonetic = generated.phonetic || item.phonetic;
-      if (Array.isArray(generated.chunks)) item.chunks = generated.chunks;
+      if (Array.isArray(generated.chunks)) {
+        // Safety net: even with the prompt instruction, the model sometimes
+        // still returns a lowercase "i" for the first-person pronoun (or a
+        // contraction starting with it, like "i'm"). Fix it here rather
+        // than trust the model every time.
+        item.chunks = generated.chunks.map(word =>
+          /^i('|$)/i.test(word) ? word.charAt(0).toUpperCase() + word.slice(1) : word
+        );
+      }
       // illustrable is AI's suggestion; wantsImage is the teacher's final
       // say (defaults to the suggestion, but can be flipped manually below).
       item.illustrable = generated.illustrable !== false;
