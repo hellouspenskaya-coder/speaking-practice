@@ -677,9 +677,15 @@ async function generateContentFor(itemsToGenerate) {
 
     data.items.forEach((generated, idx) => {
       const item = itemsToGenerate[idx];
+      const generatedDefinition = generated.definition || item.definition || '';
       if (!document.getElementById('skipDefinitionsCheckbox').checked) {
-        item.definition = generated.definition || item.definition;
+        item.definition = generatedDefinition;
       }
+      // Even when the teacher chose not to show a definition to the
+      // student, keep it in memory to help disambiguate the image search
+      // for ambiguous single words (e.g. "gate") — without it, search
+      // quality quietly degrades as a side effect of skipping definitions.
+      item._searchDefinitionHint = generatedDefinition;
       item.example = generated.example || item.example;
       item.phonetic = generated.phonetic || item.phonetic;
       if (Array.isArray(generated.chunks)) {
@@ -769,7 +775,7 @@ async function autoFetchImages(itemsNeedingImages) {
       const response = await fetch('/api/vocab', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'images', query, definition: item.definition || '' })
+        body: JSON.stringify({ action: 'images', query, definition: item._searchDefinitionHint || item.definition || '' })
       });
       const data = await response.json();
       if (response.ok && data.images && data.images.length) {
@@ -793,7 +799,7 @@ async function findImagesFor(item) {
     const response = await fetch('/api/vocab', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'images', query, definition: item.definition || '' })
+      body: JSON.stringify({ action: 'images', query, definition: item._searchDefinitionHint || item.definition || '' })
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Image search failed');
