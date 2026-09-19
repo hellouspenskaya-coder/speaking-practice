@@ -229,6 +229,7 @@ async function generateAudio(req, res) {
 async function searchImages(req, res) {
   const rawQuery = (req.body.query || '').toString().trim();
   const definition = (req.body.definition || '').toString().trim();
+  const topic = (req.body.topic || '').toString().trim();
   if (!rawQuery) {
     res.status(400).json({ error: 'Missing query' });
     return;
@@ -236,23 +237,36 @@ async function searchImages(req, res) {
 
   const isPhrase = rawQuery.includes(' ');
 
-  // Build a disambiguated query using the definition when available.
-  // Extract up to 3 meaningful words from the definition as context.
-  let query;
-  if (isPhrase) {
-    query = rawQuery;
-  } else if (definition) {
-    const stopWords = new Set(['a','an','the','to','you','it','is','are','they','that','very','small','large','used','for','of','in','on','with','or','and','have','has','can','we','he','she','use','make','get','do','this','be','at','by','from','as','if','when','which']);
-    const hint = definition
+  const STOP_WORDS = new Set(['a','an','the','to','you','it','is','are','they','that','very','small','large','used','for','of','in','on','with','or','and','have','has','can','we','he','she','use','make','get','do','this','be','at','by','from','as','if','when','which']);
+  function extractKeywords(text, maxWords) {
+    return text
       .toLowerCase()
-      .replace(/[^a-z\s]/g, '')
+      .replace(/[^a-z\s]/g, ' ')
       .split(/\s+/)
-      .filter(w => w.length > 2 && !stopWords.has(w))
-      .slice(0, 3)
+      .filter(w => w.length > 2 && !STOP_WORDS.has(w))
+      .slice(0, maxWords)
       .join(' ');
-    query = hint ? `${rawQuery} ${hint}` : `single ${rawQuery}`;
-  } else {
+  }
+
+  // The lesson topic (e.g. "Airport") is short and deliberately chosen —
+  // it disambiguates far better than a parsed definition, and helps even
+  // abstract phrase-level concepts ("arrivals"/"departures") land on
+  // visually distinct results instead of a generic hall photo for both.
+  // Applies to phrases too, unlike the definition hint (which would dilute
+  // an already multi-word phrase query too much).
+  const topicHint = topic ? extractKeywords(topic, 2) : '';
+  // Leave less room for definition keywords when a topic is already
+  // contributing context, so the combined query doesn't get too diluted.
+  const definitionHint = (!isPhrase && definition) ? extractKeywords(definition, topicHint ? 1 : 3) : '';
+
+  const extras = [topicHint, definitionHint].filter(Boolean).join(' ');
+  let query;
+  if (extras) {
+    query = `${rawQuery} ${extras}`;
+  } else if (!isPhrase) {
     query = `single ${rawQuery}`;
+  } else {
+    query = rawQuery;
   }
 
   // Random page (1-3) so repeated clicks return fresh results.
@@ -264,10 +278,12 @@ async function searchImages(req, res) {
     return;
   }
 
-  // For single words, prefer vector illustrations — they show one clean object
-  // on a plain background, which is much better for A1 vocabulary cards than
-  // busy stock photos. Phrases fall back to photos since vectors rarely cover them.
-  const imageType = isPhrase ? 'photo' : 'vector';
+  // Prefer vector illustrations for everything now, not just single words —
+  // one clean object/scene on a plain background reads far better for
+  // beginners than a busy stock photo, when a matching vector exists.
+  // Falls back to photos below when it doesn't (most phrases still won't
+  // have a vector match, but it's worth trying first).
+  const imageType = 'vector';
 
   const url = `https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=${imageType}&orientation=horizontal&per_page=4&page=${page}&safesearch=true`;
   const response = await fetch(url);
@@ -281,7 +297,7 @@ async function searchImages(req, res) {
   let hits = data.hits || [];
 
   // If no vectors found, fall back to photos
-  if (!hits.length && imageType === 'vector') {
+  if (!hits.length) {
     const fallback = await fetch(`https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&per_page=4&page=${page}&safesearch=true`);
     const fbData = await fallback.json();
     hits = fbData.hits || [];
