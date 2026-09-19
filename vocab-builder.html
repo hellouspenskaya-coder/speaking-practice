@@ -182,6 +182,10 @@
       <input type="checkbox" id="skipImageSearchCheckbox" style="width:auto;" />
       Skip image search for this set (useful at higher levels, where most words are abstract)
     </label>
+    <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); margin-top:6px;">
+      <input type="checkbox" id="skipDefinitionsCheckbox" style="width:auto;" />
+      Skip definitions for this set (useful at A1, where the picture alone is enough)
+    </label>
   </div>
 
   <div class="card">
@@ -673,7 +677,9 @@ async function generateContentFor(itemsToGenerate) {
 
     data.items.forEach((generated, idx) => {
       const item = itemsToGenerate[idx];
-      item.definition = generated.definition || item.definition;
+      if (!document.getElementById('skipDefinitionsCheckbox').checked) {
+        item.definition = generated.definition || item.definition;
+      }
       item.example = generated.example || item.example;
       item.phonetic = generated.phonetic || item.phonetic;
       if (Array.isArray(generated.chunks)) {
