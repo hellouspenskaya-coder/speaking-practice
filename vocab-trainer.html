@@ -167,6 +167,7 @@
 <script>
 const params = new URLSearchParams(window.location.search);
 const setSlug = params.get('set');
+const isWorksheet = params.get('worksheet') === '1';
 const app = document.getElementById('app');
 
 const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping', 'verbFormsDictation'];
@@ -201,7 +202,11 @@ async function init() {
     app.innerHTML = `<div class="center-msg">Could not load this word set.</div>`;
     return;
   }
-  renderGallery();
+  if (isWorksheet) {
+    renderWorksheet();
+  } else {
+    renderGallery();
+  }
 }
 
 function renderGallery() {
@@ -333,6 +338,166 @@ function printVerbList(verbItems) {
         </thead>
         <tbody>${rows}</tbody>
       </table>
+    </body>
+    </html>
+  `;
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(html);
+  printWindow.document.close();
+  printWindow.onload = () => printWindow.print();
+}
+
+// --- Worksheet: a secret, non-linked screen for quick in-class checks.
+// Reachable only via &worksheet=1 in the URL — never shown or linked from
+// the regular practice page, so students can't stumble onto it themselves.
+function buildWorksheetItems(allItems) {
+  const eligible = [];
+  allItems.forEach(item => {
+    if (item.image) {
+      eligible.push({ kind: 'pic', item, prompt: '', answer: item.text });
+      return;
+    }
+    if (item.definition) {
+      eligible.push({ kind: 'def', item, prompt: item.definition, answer: item.text });
+      return;
+    }
+    // No picture or definition — fall back to whichever B1+ gap-sentence
+    // this item happens to have, so grammar-only sets (Skip images + Skip
+    // definitions) still produce a usable worksheet instead of an empty one.
+    if (item.prepositionSentence && item.correctPreposition) {
+      eligible.push({ kind: 'sent', item, prompt: item.prepositionSentence, answer: item.correctPreposition });
+      return;
+    }
+    if (item.collocationSentence && item.collocationAnswer) {
+      eligible.push({ kind: 'sent', item, prompt: item.collocationSentence, answer: item.collocationAnswer });
+      return;
+    }
+    if (item.wordFormationSentence && item.wordFormationAnswer) {
+      eligible.push({ kind: 'sent', item, prompt: item.wordFormationSentence, answer: item.wordFormationAnswer });
+      return;
+    }
+    if (item.verbSentence && item.verbAnswer) {
+      eligible.push({ kind: 'sent', item, prompt: item.verbSentence, answer: item.verbAnswer });
+      return;
+    }
+    // Nothing usable for this item at all — it's simply left off the sheet.
+  });
+  return eligible.length > 10 ? shuffle(eligible).slice(0, 10) : eligible;
+}
+
+function renderWorksheet() {
+  const worksheetItems = buildWorksheetItems(setData.items || []);
+  if (!worksheetItems.length) {
+    app.innerHTML = `<div class="center-msg">Nothing in this set can be shown on a worksheet (no images, definitions, or exercise sentences to test).</div>`;
+    return;
+  }
+
+  app.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <p style="font-size:16px;font-weight:600;margin:0;">${escapeHtml(setData.topic || 'Word set')} — worksheet</p>
+      <button id="printWorksheetBtn" style="padding:6px 12px;font-size:13px;">Print</button>
+    </div>
+    <div id="worksheetGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;"></div>
+    <button class="primary wide" id="checkWorksheetBtn">Check</button>
+    <p id="worksheetScore" style="font-size:15px;font-weight:600;text-align:center;margin:12px 0 0;display:none;"></p>
+  `;
+
+  const grid = document.getElementById('worksheetGrid');
+  worksheetItems.forEach((w, idx) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:6px 8px;';
+
+    const box = document.createElement('div');
+    box.style.cssText = 'width:52px;height:52px;border-radius:6px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;';
+    if (w.kind === 'pic') {
+      box.innerHTML = `<img src="${escapeAttr(w.item.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`;
+    } else {
+      box.innerHTML = `<span style="font-size:18px;">${w.kind === 'def' ? '📖' : '✏️'}</span>`;
+    }
+    row.appendChild(box);
+
+    if (w.prompt) {
+      const p = document.createElement('p');
+      p.textContent = w.prompt;
+      p.style.cssText = 'font-size:10px;color:var(--muted);margin:0;flex:0 0 auto;width:80px;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;';
+      row.appendChild(p);
+    }
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.id = 'wk' + idx;
+    input.autocomplete = 'off';
+    input.autocapitalize = 'off';
+    input.spellcheck = false;
+    input.placeholder = '...';
+    input.style.cssText = 'flex:1;height:30px;font-size:12px;padding:0 6px;min-width:0;border:1px solid var(--border);border-radius:6px;';
+    row.appendChild(input);
+
+    grid.appendChild(row);
+  });
+
+  document.getElementById('checkWorksheetBtn').addEventListener('click', () => {
+    // Deliberately no "fill everything in first" gate — a blank answer is
+    // just a wrong one. Forcing a guess before checking would only make
+    // the student type nonsense for words they genuinely don't know yet.
+    let correctCount = 0;
+    worksheetItems.forEach((w, idx) => {
+      const input = document.getElementById('wk' + idx);
+      const val = input.value.trim().toLowerCase();
+      const ok = val === w.answer.trim().toLowerCase();
+      if (ok) correctCount++;
+      input.disabled = true;
+      if (ok) {
+        input.style.borderColor = 'var(--success)';
+        input.style.background = 'var(--success-light)';
+      } else {
+        input.style.borderColor = 'var(--danger)';
+        input.style.background = 'var(--danger-light)';
+        input.value = w.answer;
+        input.style.color = 'var(--danger)';
+      }
+    });
+    document.getElementById('checkWorksheetBtn').disabled = true;
+    const scoreEl = document.getElementById('worksheetScore');
+    scoreEl.textContent = `${correctCount} / ${worksheetItems.length} correct`;
+    scoreEl.style.color = correctCount === worksheetItems.length ? 'var(--success)' : 'inherit';
+    scoreEl.style.display = 'block';
+  });
+
+  document.getElementById('printWorksheetBtn').addEventListener('click', () => printWorksheet(worksheetItems));
+}
+
+function printWorksheet(worksheetItems) {
+  const cells = worksheetItems.map((w, idx) => {
+    const box = w.kind === 'pic'
+      ? `<img src="${escapeAttr(w.item.image)}" style="max-width:100%;max-height:100%;object-fit:contain;" />`
+      : `<div style="font-size:11px;color:#666;padding:4px;text-align:center;">${escapeHtml(w.prompt)}</div>`;
+    return `
+      <div style="border:1px solid #cbd5e1;border-radius:8px;padding:10px 12px;">
+        <p style="font-size:11px;color:#94a3b8;margin:0 0 4px;">${idx + 1}</p>
+        <div style="height:60px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;overflow:hidden;">${box}</div>
+        <div style="border-bottom:1px solid #1e293b;height:22px;"></div>
+      </div>
+    `;
+  }).join('');
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8" />
+      <title>${escapeHtml(setData.topic || 'Worksheet')}</title>
+      <style>
+        body { font-family: Arial, sans-serif; max-width: 700px; margin: 30px auto; padding: 0 20px; color: #1e293b; }
+        h1 { font-size: 18px; margin-bottom: 4px; }
+        .sub { font-size: 13px; color: #64748b; margin-bottom: 24px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      </style>
+    </head>
+    <body>
+      <h1>${escapeHtml(setData.topic || 'Worksheet')}</h1>
+      <p class="sub">Name: _____________________&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date: _____________</p>
+      <div class="grid">${cells}</div>
     </body>
     </html>
   `;
