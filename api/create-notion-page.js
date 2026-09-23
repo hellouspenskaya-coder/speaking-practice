@@ -135,7 +135,7 @@ function toolLinkOrPlaceholder(emoji, label, url) {
   return labeledLinkBlock(label + ':', null);
 }
 
-function buildChildren({ target, warmup, introVideoLink, videoLink, videoLabel, readingLink, writingLink, speakingLink, modelAnswer, discussionQuestions, questionRounds, presentationLink, groupDocLink }) {
+function buildChildren({ target, warmup, introVideoLink, videoLink, videoLabel, readingLink, vocabPracticeLink, writingLink, speakingLink, modelAnswer, discussionQuestions, questionRounds, presentationLink, groupDocLink }) {
   const children = [];
 
   if (target) children.push(calloutBlock('🎯', target));
@@ -162,8 +162,13 @@ function buildChildren({ target, warmup, introVideoLink, videoLink, videoLabel, 
   children.push(...toolLinkOrPlaceholder('🎬', videoLabel || 'Video to work on', videoLink));
   children.push(...finish('Video done'));
 
-  children.push(...toolLinkOrPlaceholder('📖', 'Reading', readingLink));
-  children.push(...finish('Reading done'));
+  if (readingLink) {
+    children.push(toolButtonBlock('📖', 'Reading', readingLink));
+    children.push(...finish('Reading done'));
+  }
+
+  children.push(...toolLinkOrPlaceholder('🔤', 'Vocabulary Practice', vocabPracticeLink));
+  children.push(...finish('Vocabulary Practice done'));
 
   if (writingLink) {
     children.push(toolButtonBlock('✍️', 'Writing Practice', writingLink));
@@ -319,7 +324,7 @@ module.exports = async (req, res) => {
   }
 
   const {
-    icon, title, level, target, warmup, introVideoLink, videoLink, readingLink,
+    icon, title, level, target, warmup, introVideoLink, videoLink, readingLink, vocabPracticeLink,
     discussionQuestions, speakingLink, modelAnswer,
     writingLink, groupQuestionRounds, groupPracticeLink, presentationLink, groupDocLink
   } = req.body || {};
@@ -343,7 +348,7 @@ module.exports = async (req, res) => {
     const pageTitle = isGroup ? `${title} — Group` : title;
 
     const children = buildChildren({
-      target, warmup, introVideoLink, readingLink, writingLink, speakingLink, modelAnswer,
+      target, warmup, introVideoLink, readingLink, vocabPracticeLink, writingLink, speakingLink, modelAnswer,
       videoLink: isGroup ? groupPracticeLink : videoLink,
       videoLabel: isGroup ? 'Practice' : 'Video to work on',
       discussionQuestions: isGroup ? null : discussionQuestions,

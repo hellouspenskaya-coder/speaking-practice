@@ -366,6 +366,12 @@
   </section>
 
   <section class="card">
+    <h2><span class="n">•</span> Vocabulary Practice</h2>
+    <p class="hint">Link to the vocab-trainer set for this lesson's words (e.g. spelling/collocations), pasted in manually. Always shows on the page — leave empty for now if you haven't built the set yet.</p>
+    <input type="url" id="vocabPracticeLink" placeholder="https://speaking-practice-ruby.vercel.app/vocab-trainer.html?set=...">
+  </section>
+
+  <section class="card">
     <h2><span class="n">4</span> Words for the trainers</h2>
     <p class="hint">Words are no longer auto-extracted from the article/video — pull them from Twee after processing and type them here, comma-separated. These are exactly the words that go into the speaking and writing tool links.</p>
     <textarea id="trainerWords" placeholder="gene, inherit, trait, evolve, mutation"></textarea>
@@ -765,6 +771,7 @@ function collectData() {
     introVideoLink: val('introVideoLink'),
     videoLink: val('videoLink'),
     readingLink: val('readingLink'),
+    vocabPracticeLink: val('vocabPracticeLink'),
     discussionQuestions: questionsList(),
     speakingLink: buildSpeakingLink(),
     modelAnswer: val('modelAnswer'),
@@ -834,6 +841,7 @@ document.getElementById('buildTextBtn').addEventListener('click', () => {
   if (d.warmup) { parts.push(d.warmup); parts.push(''); parts.push('> ✍️ '); parts.push(''); }
   if (d.videoLink) { parts.push('Video to work on: ' + d.videoLink); parts.push(''); }
   if (d.readingLink) { parts.push('Reading: ' + d.readingLink); parts.push(''); }
+  if (d.vocabPracticeLink) { parts.push('Vocabulary Practice: ' + d.vocabPracticeLink); parts.push(''); }
   const words = wordsList();
   if (words.length) { parts.push('For Twee: ' + words.join(', ')); parts.push(''); }
   if (d.writingLink) { parts.push('Practice in writing:'); parts.push(d.writingLink); parts.push(''); }
