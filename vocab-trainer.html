@@ -386,6 +386,14 @@ function buildWorksheetItems(allItems) {
 }
 
 function renderWorksheet() {
+  // The regular practice views deliberately cap width at 440px for
+  // students on their own phones. The worksheet is a different scenario
+  // entirely — shown on a desktop, usually shared over Zoom — so give it
+  // room to breathe instead of squeezing a 2-column grid into phone width.
+  app.classList.remove('wrap');
+  app.style.maxWidth = '900px';
+  app.style.margin = '0 auto';
+
   const worksheetItems = buildWorksheetItems(setData.items || []);
   if (!worksheetItems.length) {
     app.innerHTML = `<div class="center-msg">Nothing in this set can be shown on a worksheet (no images, definitions, or exercise sentences to test).</div>`;
