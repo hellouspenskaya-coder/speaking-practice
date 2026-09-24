@@ -459,10 +459,16 @@ function renderWorksheet() {
         input.style.borderColor = 'var(--success)';
         input.style.background = 'var(--success-light)';
       } else {
+        // Keep the student's own attempt visible instead of overwriting it
+        // with the correct answer — the teacher needs to see what they
+        // actually wrote (a misspelling vs. a wrong word vs. nothing at
+        // all), not just that it was wrong.
         input.style.borderColor = 'var(--danger)';
         input.style.background = 'var(--danger-light)';
-        input.value = w.answer;
-        input.style.color = 'var(--danger)';
+        const note = document.createElement('p');
+        note.textContent = 'Correct: ' + w.answer;
+        note.style.cssText = 'font-size:13px;color:var(--danger);margin:6px 0 0;';
+        input.insertAdjacentElement('afterend', note);
       }
     });
     document.getElementById('checkWorksheetBtn').disabled = true;
