@@ -393,33 +393,33 @@ function renderWorksheet() {
   }
 
   app.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-      <p style="font-size:16px;font-weight:600;margin:0;">${escapeHtml(setData.topic || 'Word set')} — worksheet</p>
-      <button id="printWorksheetBtn" style="padding:6px 12px;font-size:13px;">Print</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <p style="font-size:20px;font-weight:600;margin:0;">${escapeHtml(setData.topic || 'Word set')} — worksheet</p>
+      <button id="printWorksheetBtn" style="padding:8px 16px;font-size:15px;">Print</button>
     </div>
-    <div id="worksheetGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;"></div>
-    <button class="primary wide" id="checkWorksheetBtn">Check</button>
-    <p id="worksheetScore" style="font-size:15px;font-weight:600;text-align:center;margin:12px 0 0;display:none;"></p>
+    <div id="worksheetGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;"></div>
+    <button class="primary wide" id="checkWorksheetBtn" style="padding:14px;font-size:17px;">Check</button>
+    <p id="worksheetScore" style="font-size:19px;font-weight:600;text-align:center;margin:14px 0 0;display:none;"></p>
   `;
 
   const grid = document.getElementById('worksheetGrid');
   worksheetItems.forEach((w, idx) => {
     const card = document.createElement('div');
-    card.style.cssText = 'background:#fff;border:1px solid var(--border);border-radius:8px;padding:6px 8px;';
+    card.style.cssText = 'background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;';
 
     if (w.kind === 'pic') {
       const box = document.createElement('div');
-      box.style.cssText = 'height:48px;border-radius:6px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:6px;';
+      box.style.cssText = 'height:90px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:10px;';
       box.innerHTML = `<img src="${escapeAttr(w.item.image)}" alt="" style="max-width:100%;max-height:100%;object-fit:contain;background:#fff;" />`;
       card.appendChild(box);
     } else {
-      // Definitions and gap-sentences are text, and cramming them beside
-      // the input left no room for either. Content on its own line, full
-      // card width, with the input on a second line below — same fix
-      // idea as before, just carried one step further.
+      // Definitions and gap-sentences are text. No line-clamp here anymore
+      // — truncating at a fixed line count is exactly what caused the
+      // "text cut off mid-word" bug before. Now that scrolling is fine,
+      // let it wrap as many lines as it actually needs.
       const p = document.createElement('p');
       p.textContent = w.prompt;
-      p.style.cssText = 'font-size:11px;color:var(--muted);margin:0 0 6px;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;';
+      p.style.cssText = 'font-size:16px;color:var(--muted);margin:0 0 10px;line-height:1.4;';
       card.appendChild(p);
     }
 
@@ -430,7 +430,7 @@ function renderWorksheet() {
     input.autocapitalize = 'off';
     input.spellcheck = false;
     input.placeholder = '...';
-    input.style.cssText = 'width:100%;height:30px;font-size:12px;padding:0 6px;box-sizing:border-box;border:1px solid var(--border);border-radius:6px;';
+    input.style.cssText = 'width:100%;height:44px;font-size:16px;padding:0 12px;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;';
     card.appendChild(input);
 
     grid.appendChild(card);
