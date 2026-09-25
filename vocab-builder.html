@@ -423,8 +423,8 @@ function renderItems() {
       <div class="item-head">
         <div style="display:flex; align-items:center; gap:10px;">
           ${item.image
-            ? `<img src="${item.image}" alt="" style="width:80px; height:80px; object-fit:contain; border-radius:8px; flex-shrink:0; background:#fff; padding:2px;" />`
-            : `<div style="width:80px; height:80px; border-radius:8px; background:var(--bg); border:1px dashed var(--border); flex-shrink:0;"></div>`
+            ? `<img src="${item.image}" alt="" class="item-thumb" style="width:80px; height:80px; object-fit:contain; border-radius:8px; flex-shrink:0; background:#fff; padding:2px;" />`
+            : `<div class="item-thumb" style="width:80px; height:80px; border-radius:8px; background:var(--bg); border:1px dashed var(--border); flex-shrink:0;"></div>`
           }
           <div>
             <span class="item-title">${escapeHtml(item.text)}</span>
@@ -474,6 +474,20 @@ function updateItemStatusOnly(id) {
   if (!itemEl || !item) return;
   const statusEl = itemEl.querySelector('.item-status');
   if (statusEl) statusEl.textContent = statusLabel(item);
+
+  const thumbEl = itemEl.querySelector('.item-thumb');
+  if (thumbEl) {
+    const newThumb = document.createElement(item.image ? 'img' : 'div');
+    newThumb.className = 'item-thumb';
+    newThumb.style.cssText = 'width:80px; height:80px; object-fit:contain; border-radius:8px; flex-shrink:0; background:#fff; padding:2px;';
+    if (item.image) {
+      newThumb.src = item.image;
+      newThumb.alt = '';
+    } else {
+      newThumb.style.cssText = 'width:80px; height:80px; border-radius:8px; background:var(--bg); border:1px dashed var(--border); flex-shrink:0;';
+    }
+    thumbEl.replaceWith(newThumb);
+  }
 }
 
 function toggleItemBody(id) {
@@ -636,7 +650,7 @@ function renderItemBody(id) {
         // Teacher turned pictures off for this item — clear any existing one
         // so it doesn't linger in picture-based exercises unexpectedly.
         item.image = null;
-        renderItems();
+        updateItemStatusOnly(id);
       } else if (item.wantsImage && !item.image) {
         findImagesFor(item);
       }
@@ -845,7 +859,7 @@ function renderImageCandidates(item, images, selectedUrl) {
     div.innerHTML = `<img src="${img.thumb}" alt="${escapeAttr(img.alt || item.text)}" />`;
     div.addEventListener('click', () => {
       item.image = img.full;
-      renderItems();
+      updateItemStatusOnly(item.id);
       renderImageCandidates(item, images, img.full);
     });
     grid.appendChild(div);
@@ -869,7 +883,7 @@ async function generateAudioFor(item) {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Audio generation failed');
     item.audio = data.audio;
-    renderItems();
+    updateItemStatusOnly(item.id);
   } catch (err) {
     errorBox.textContent = err.message;
     errorBox.classList.add('open');
