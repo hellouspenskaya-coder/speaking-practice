@@ -195,7 +195,7 @@ async function init() {
     return;
   }
   try {
-    const response = await fetch(`/vocab-sets/${setSlug}.json`);
+    const response = await fetch(`/vocab-sets/${setSlug}.json`, { cache: 'no-store' });
     if (!response.ok) throw new Error('not found');
     setData = await response.json();
   } catch (err) {

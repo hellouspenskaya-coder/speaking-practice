@@ -290,7 +290,7 @@ async function maybeLoadExistingSet() {
   const slug = new URLSearchParams(window.location.search).get('set');
   if (!slug) return;
   try {
-    const res = await fetch(`/vocab-sets/${slug}.json`);
+    const res = await fetch(`/vocab-sets/${slug}.json`, { cache: 'no-store' });
     if (!res.ok) return;
     const data = await res.json();
     document.getElementById('topicInput').value = data.topic || '';
