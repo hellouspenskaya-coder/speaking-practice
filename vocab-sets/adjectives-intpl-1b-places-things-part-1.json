@@ -1,0 +1,488 @@
+{
+  "topic": "Adjectives IntPl 1B Places & Things Part 1",
+  "level": "B1",
+  "modes": [
+    "matchingDef",
+    "listening",
+    "fillLetters",
+    "wordFormation"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "affordable",
+      "definition": "Not expensive and able to be paid for without difficulty.",
+      "example": "We found an affordable apartment in a nice neighbourhood.",
+      "phonetic": "/əˈfɔːrdəbl/",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "afford",
+          "pos": "verb"
+        },
+        {
+          "form": "affordably",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "You can buy quality clothes ___ if you shop wisely.",
+      "wordFormationAnswer": "affordably",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "comfortable",
+      "definition": "Providing a pleasant feeling and not causing pain or worry.",
+      "example": "These shoes are very comfortable for long walks.",
+      "phonetic": "/ˈkʌmfətəbl/",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "comfort",
+          "pos": "noun"
+        },
+        {
+          "form": "comfortably",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "They sat in the living room in complete ___.",
+      "wordFormationAnswer": "comfort",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "suitable",
+      "definition": "Right or appropriate for a particular person, purpose, or situation.",
+      "example": "That film is not suitable for young children.",
+      "phonetic": "/ˈsuːtəbl/",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "suit",
+          "pos": "verb"
+        },
+        {
+          "form": "suitably",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "The job ___ her perfectly because she loves working with people.",
+      "wordFormationAnswer": "suits",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "dirty",
+      "definition": "Covered with or containing unwanted marks, dust, or other unclean matter.",
+      "example": "My hands got dirty when I was working in the garden.",
+      "phonetic": "/ˈdɜːti/",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "hands dirt mud",
+      "imageQuery": "",
+      "illustrable": true,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_5",
+      "type": "word",
+      "text": "messy",
+      "definition": "Not neat or tidy, with things in disorder or scattered around.",
+      "example": "His room is always messy because he never puts his clothes away.",
+      "phonetic": "/ˈmesi/",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "room untidy clutter",
+      "imageQuery": "",
+      "illustrable": true,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "mess",
+          "pos": "noun"
+        },
+        {
+          "form": "messily",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "The kitchen was in a complete ___ after the party.",
+      "wordFormationAnswer": "mess",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_6",
+      "type": "word",
+      "text": "risky",
+      "definition": "Involving the possibility of something bad or dangerous happening.",
+      "example": "Driving too fast is risky and illegal.",
+      "phonetic": "/ˈrɪski/",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "risk",
+          "pos": "noun"
+        },
+        {
+          "form": "riskily",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "There is a ___ that the project will fail if we do not plan carefully.",
+      "wordFormationAnswer": "risk",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_7",
+      "type": "word",
+      "text": "expensive",
+      "definition": "costing a lot of money.",
+      "example": "This restaurant is quite expensive, so we don't eat there very often.",
+      "phonetic": "ɪkˈspensɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "expense",
+          "pos": "noun"
+        },
+        {
+          "form": "expensively",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "The hotel was decorated very ___, with marble floors and expensive furniture everywhere.",
+      "wordFormationAnswer": "expensively",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_8",
+      "type": "word",
+      "text": "addictive",
+      "definition": "causing someone to want to use or do something repeatedly because it gives them pleasure.",
+      "example": "Video games can be addictive, especially for young people who play for hours every day.",
+      "phonetic": "əˈdɪktɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "addict",
+          "pos": "noun"
+        },
+        {
+          "form": "addiction",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "He struggled with alcohol ___ for many years before finally getting help.",
+      "wordFormationAnswer": "addiction",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_9",
+      "type": "word",
+      "text": "luxurious",
+      "definition": "very comfortable, elegant, and expensive, providing great pleasure and enjoyment.",
+      "example": "The hotel offered luxurious rooms with silk bedding and marble bathrooms.",
+      "phonetic": "lʌɡˈʒuːriəs",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "luxury",
+          "pos": "noun"
+        },
+        {
+          "form": "luxuriously",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "They lived a life of ___, traveling around the world and staying in five-star hotels.",
+      "wordFormationAnswer": "luxury",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_10",
+      "type": "word",
+      "text": "dangerous",
+      "definition": "able or likely to cause harm, injury, or damage.",
+      "example": "Swimming in that river is dangerous because of the strong current and rocks.",
+      "phonetic": "ˈdeɪndʒərəs",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "danger",
+          "pos": "noun"
+        },
+        {
+          "form": "dangerously",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "The car was driving ___ fast on the icy road, and I was very worried.",
+      "wordFormationAnswer": "dangerously",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_11",
+      "type": "word",
+      "text": "peaceful",
+      "definition": "calm, quiet, and free from noise or conflict.",
+      "example": "The garden was so peaceful in the early morning that we decided to have breakfast there.",
+      "phonetic": "ˈpiːsfl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "peace",
+          "pos": "noun"
+        },
+        {
+          "form": "peacefully",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "The baby slept ___ for three hours without waking up.",
+      "wordFormationAnswer": "peacefully",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_12",
+      "type": "word",
+      "text": "stressful",
+      "definition": "causing worry, pressure, or nervous tension.",
+      "example": "Moving to a new country is stressful because you have to adjust to a different culture and language.",
+      "phonetic": "ˈstresfəl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "stress",
+          "pos": "noun"
+        },
+        {
+          "form": "stress",
+          "pos": "verb"
+        },
+        {
+          "form": "stressfully",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "Too much ___ at work can affect your health and your relationships.",
+      "wordFormationAnswer": "stress",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    }
+  ]
+}
