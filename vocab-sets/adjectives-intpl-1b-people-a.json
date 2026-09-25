@@ -1,0 +1,538 @@
+{
+  "topic": "Adjectives IntPl 1B People A",
+  "level": "B1",
+  "modes": [
+    "matchingDef",
+    "listening",
+    "fillLetters",
+    "dictationNoImage",
+    "wordFormation"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "reliable",
+      "definition": "Someone or something that you can trust to do what they say they will do or to work well.",
+      "example": "My car is very reliable and I have never had any problems with it.",
+      "phonetic": "rɪˈlaɪəbl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "reliable",
+          "pos": "adjective"
+        },
+        {
+          "form": "reliability",
+          "pos": "noun"
+        },
+        {
+          "form": "reliably",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "The train service works with great ___.",
+      "wordFormationAnswer": "reliability",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "sociable",
+      "definition": "Someone who enjoys spending time with other people and making friends easily.",
+      "example": "She is very sociable and always organizes parties and group activities.",
+      "phonetic": "ˈsoʊʃəbl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "sociable",
+          "pos": "adjective"
+        },
+        {
+          "form": "sociably",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "He behaved very ___ at the dinner party.",
+      "wordFormationAnswer": "sociably",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "affectionate",
+      "definition": "Someone who shows love and care for people or animals by being physically warm and tender.",
+      "example": "The dog is very affectionate and loves to sit on my lap.",
+      "phonetic": "əˈfɛkʃənət",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "affectionate",
+          "pos": "adjective"
+        },
+        {
+          "form": "affectionately",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "She kissed him ___ on the cheek.",
+      "wordFormationAnswer": "affectionately",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "considerate",
+      "definition": "Someone who thinks carefully about how their actions affect other people and tries not to upset or hurt them.",
+      "example": "It was very considerate of him to help carry my bags upstairs.",
+      "phonetic": "kənˈsɪdərət",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "considerate",
+          "pos": "adjective"
+        },
+        {
+          "form": "consideration",
+          "pos": "noun"
+        },
+        {
+          "form": "considerately",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "You should treat others with ___.",
+      "wordFormationAnswer": "consideration",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_5",
+      "type": "word",
+      "text": "assertive",
+      "definition": "Someone who is confident and expresses their opinions and needs clearly without being aggressive or rude.",
+      "example": "In the meeting, she was assertive and made sure everyone heard her ideas.",
+      "phonetic": "əˈsɜːrtɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "assertive",
+          "pos": "adjective"
+        },
+        {
+          "form": "assert",
+          "pos": "verb"
+        },
+        {
+          "form": "assertively",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "He decided to ___ his rights and demand a fair salary.",
+      "wordFormationAnswer": "assert",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_6",
+      "type": "word",
+      "text": "creative",
+      "definition": "Someone who has the ability to make new and interesting things or come up with original ideas.",
+      "example": "My sister is very creative and loves to paint and design clothes.",
+      "phonetic": "kriːˈeɪtɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "creative",
+          "pos": "adjective"
+        },
+        {
+          "form": "creativity",
+          "pos": "noun"
+        },
+        {
+          "form": "creatively",
+          "pos": "adverb"
+        },
+        {
+          "form": "create",
+          "pos": "verb"
+        }
+      ],
+      "wordFormationSentence": "The artist showed great ___ in designing the exhibition.",
+      "wordFormationAnswer": "creativity",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_7",
+      "type": "word",
+      "text": "impulsive",
+      "definition": "Acting or done suddenly without thinking carefully about what might happen.",
+      "example": "He made an impulsive decision to quit his job without having another one lined up.",
+      "phonetic": "ɪmˈpʌlsɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "impulsive",
+          "pos": "adjective"
+        },
+        {
+          "form": "impulse",
+          "pos": "noun"
+        },
+        {
+          "form": "impulsively",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "She acted ___ and bought the expensive shoes without checking her bank account.",
+      "wordFormationAnswer": "impulsively",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_8",
+      "type": "word",
+      "text": "possessive",
+      "definition": "Not wanting to share something you own or not wanting someone you care about to spend time with other people.",
+      "example": "Her possessive boyfriend didn't like her going out with friends.",
+      "phonetic": "pəˈzɛsɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "possessive",
+          "pos": "adjective"
+        },
+        {
+          "form": "possess",
+          "pos": "verb"
+        },
+        {
+          "form": "possession",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "The child's ___ of toys made it hard for him to share with other kids.",
+      "wordFormationAnswer": "possession",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_9",
+      "type": "word",
+      "text": "envious",
+      "definition": "Wishing you had something that someone else has because you think it is really good.",
+      "example": "I felt envious when my friend told me she got the promotion I wanted.",
+      "phonetic": "ˈɛnviəs",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "envious",
+          "pos": "adjective"
+        },
+        {
+          "form": "envy",
+          "pos": "noun"
+        },
+        {
+          "form": "envy",
+          "pos": "verb"
+        }
+      ],
+      "wordFormationSentence": "She looked at her colleague with ___ when she heard about the salary increase.",
+      "wordFormationAnswer": "envy",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_10",
+      "type": "word",
+      "text": "rebellious",
+      "definition": "Unwilling to obey rules or authority and wanting to do things in your own way.",
+      "example": "The rebellious teenager refused to follow his parents' rules and stayed out late every night.",
+      "phonetic": "rɪˈbɛljəs",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "rebellious",
+          "pos": "adjective"
+        },
+        {
+          "form": "rebel",
+          "pos": "noun"
+        },
+        {
+          "form": "rebel",
+          "pos": "verb"
+        }
+      ],
+      "wordFormationSentence": "She decided to ___ against the strict school system by dropping out.",
+      "wordFormationAnswer": "rebel",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_11",
+      "type": "word",
+      "text": "helpful",
+      "definition": "Wanting to assist or support someone, or making something easier or better.",
+      "example": "The staff at the hotel were friendly and helpful during our stay.",
+      "phonetic": "ˈhɛlpfəl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "helpful",
+          "pos": "adjective"
+        },
+        {
+          "form": "help",
+          "pos": "verb"
+        },
+        {
+          "form": "helpfully",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "He ___ explained the instructions so everyone could understand them.",
+      "wordFormationAnswer": "helpfully",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_12",
+      "type": "word",
+      "text": "thoughtful",
+      "definition": "Considering other people's feelings and needs, or showing careful thinking.",
+      "example": "It was thoughtful of her to remember my birthday and send me a card.",
+      "phonetic": "ˈθɔːtfəl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "thoughtful",
+          "pos": "adjective"
+        },
+        {
+          "form": "thought",
+          "pos": "noun"
+        },
+        {
+          "form": "thoughtfully",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "He ___ chose a gift that matched his friend's interests perfectly.",
+      "wordFormationAnswer": "thoughtfully",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    }
+  ]
+}
