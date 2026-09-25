@@ -265,9 +265,14 @@ async function searchImages(req, res) {
   let query;
   if (extras) {
     query = `${rawQuery} ${extras}`;
-  } else if (!isPhrase) {
-    query = `single ${rawQuery}`;
   } else {
+    // Used to prefix bare words with "single" (e.g. "single balcony") to
+    // bias toward one object on a plain background rather than a group
+    // photo. In practice "single" is a heavily overloaded word in stock
+    // photo tagging (Single Sign-On, Single Page App, dating-site content)
+    // and appears to have been dragging in unrelated tech/business results
+    // for words that have no natural defense against that association.
+    // Just search the plain word instead.
     query = rawQuery;
   }
 
