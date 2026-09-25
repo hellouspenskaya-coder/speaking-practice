@@ -1,0 +1,502 @@
+{
+  "topic": "Adjectives IntPl 1B People B",
+  "level": "B1",
+  "modes": [
+    "matchingDef",
+    "listening",
+    "fillLetters",
+    "dictationNoImage",
+    "wordFormation"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "lovable",
+      "definition": "Easy to love or like because of being kind and pleasant.",
+      "example": "The puppy was so lovable that everyone wanted to take it home.",
+      "phonetic": "ˈlʌvəbəl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "love",
+          "pos": "verb"
+        },
+        {
+          "form": "love",
+          "pos": "noun"
+        },
+        {
+          "form": "lovable",
+          "pos": "adjective"
+        },
+        {
+          "form": "lovingly",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "She spoke to her daughter ___ as she tucked her into bed.",
+      "wordFormationAnswer": "lovingly",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "sensible",
+      "definition": "Reasonable, practical, and showing good judgment.",
+      "example": "It was a sensible decision to leave early and avoid the traffic.",
+      "phonetic": "ˈsensəbəl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "sense",
+          "pos": "noun"
+        },
+        {
+          "form": "sensible",
+          "pos": "adjective"
+        },
+        {
+          "form": "sensibly",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "She responded ___ to the emergency and called the doctor immediately.",
+      "wordFormationAnswer": "sensibly",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "compassionate",
+      "definition": "Showing genuine sympathy and a desire to help people who are suffering.",
+      "example": "The nurse was compassionate towards her patients and always listened to their concerns.",
+      "phonetic": "kəmˈpæʃənət",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "compassion",
+          "pos": "noun"
+        },
+        {
+          "form": "compassionate",
+          "pos": "adjective"
+        },
+        {
+          "form": "compassionately",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "He treated homeless people with ___ and offered them hot meals.",
+      "wordFormationAnswer": "compassion",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "passionate",
+      "definition": "Showing very strong and intense feeling or enthusiasm about something.",
+      "example": "She is passionate about environmental protection and volunteers at local organizations.",
+      "phonetic": "ˈpæʃənət",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "passion",
+          "pos": "noun"
+        },
+        {
+          "form": "passionate",
+          "pos": "adjective"
+        },
+        {
+          "form": "passionately",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "He spoke ___ about his dream to become a professional athlete.",
+      "wordFormationAnswer": "passionately",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_5",
+      "type": "word",
+      "text": "attractive",
+      "definition": "Appealing to look at or interesting enough to catch someone's attention.",
+      "example": "The attractive design of the building made it one of the most popular tourist spots in the city.",
+      "phonetic": "əˈtræktɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "attract",
+          "pos": "verb"
+        },
+        {
+          "form": "attraction",
+          "pos": "noun"
+        },
+        {
+          "form": "attractive",
+          "pos": "adjective"
+        },
+        {
+          "form": "attractively",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "The new shopping centre has many ___ for families, including a cinema and games arcade.",
+      "wordFormationAnswer": "attractions",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_6",
+      "type": "word",
+      "text": "responsive",
+      "definition": "Quick to react or reply to something, or willing to listen and take action.",
+      "example": "The customer service team was responsive and solved the problem within an hour.",
+      "phonetic": "rɪˈspɒnsɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "respond",
+          "pos": "verb"
+        },
+        {
+          "form": "response",
+          "pos": "noun"
+        },
+        {
+          "form": "responsive",
+          "pos": "adjective"
+        },
+        {
+          "form": "responsively",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "I haven't received a ___ to my email yet, so I'll call them tomorrow.",
+      "wordFormationAnswer": "response",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_7",
+      "type": "word",
+      "text": "sensitive",
+      "definition": "able to understand and feel other people's emotions and problems, or easily hurt or offended by something.",
+      "example": "She is sensitive to criticism, so try to be kind when you give her feedback.",
+      "phonetic": "ˈsɛnsɪtɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "sensitive",
+          "pos": "adjective"
+        },
+        {
+          "form": "sensitivity",
+          "pos": "noun"
+        },
+        {
+          "form": "sensitively",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "She spoke ___ about the difficult topic.",
+      "wordFormationAnswer": "sensitively",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_8",
+      "type": "word",
+      "text": "glamorous",
+      "definition": "attractive and exciting in a sophisticated, elegant way that makes people admire you.",
+      "example": "She looked glamorous at the party in her expensive dress and jewelry.",
+      "phonetic": "ˈɡlæmərəs",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "glamorous",
+          "pos": "adjective"
+        },
+        {
+          "form": "glamour",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "The ___ of the film industry attracts many young people.",
+      "wordFormationAnswer": "glamour",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_9",
+      "type": "word",
+      "text": "ambitious",
+      "definition": "having a strong desire to succeed and achieve important goals in life.",
+      "example": "He is ambitious and wants to become a manager by the age of thirty.",
+      "phonetic": "æmˈbɪʃəs",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "ambitious",
+          "pos": "adjective"
+        },
+        {
+          "form": "ambition",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "Her ___ to travel the world started when she was a teenager.",
+      "wordFormationAnswer": "ambition",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_10",
+      "type": "word",
+      "text": "powerful",
+      "definition": "having great strength, influence, or ability to control or affect things and people.",
+      "example": "The storm was so powerful that it knocked down trees across the city.",
+      "phonetic": "ˈpaʊərfl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "powerful",
+          "pos": "adjective"
+        },
+        {
+          "form": "power",
+          "pos": "noun"
+        },
+        {
+          "form": "powerfully",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "The president has a lot of ___ in the country.",
+      "wordFormationAnswer": "power",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_11",
+      "type": "word",
+      "text": "successful",
+      "definition": "achieving the goals or results you wanted or expected to achieve.",
+      "example": "The company had a very successful year and made a lot of profit.",
+      "phonetic": "səkˈsɛsfəl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "successful",
+          "pos": "adjective"
+        },
+        {
+          "form": "success",
+          "pos": "noun"
+        },
+        {
+          "form": "successfully",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "She achieved ___ in her career after years of hard work.",
+      "wordFormationAnswer": "success",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    }
+  ]
+}
