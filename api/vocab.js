@@ -385,9 +385,12 @@ async function saveSet(req, res) {
   const trainerLink = `/vocab-trainer.html?set=${cleanSlug}`;
   const fullLink = `${SITE_ORIGIN}${trainerLink}`;
 
-  // Also file this as a row in the Assignments database, if configured.
+  // Also file this as a row in the Assignments database — but only the
+  // first time this set is published. Re-saving an existing set (fixing
+  // pictures, tweaking a definition) reuses the same slug/link, so it
+  // would otherwise file a duplicate row under the same name every time.
   let notion = { attempted: false };
-  if (process.env.NOTION_ASSIGNMENTS_DATABASE_ID && process.env.NOTION_TOKEN) {
+  if (!sha && process.env.NOTION_ASSIGNMENTS_DATABASE_ID && process.env.NOTION_TOKEN) {
     notion.attempted = true;
     try {
       await addToAssignmentsDatabase(data, fullLink);
