@@ -769,22 +769,35 @@ async function autoFetchImages(itemsNeedingImages) {
   // pick was wrong essentially every time, requiring a manual fix anyway.
   // Show the candidates instead, same as a manual "Find images" click,
   // so the teacher picks once instead of picking wrong then fixing.
-  await Promise.all(itemsNeedingImages.map(async (item) => {
-    try {
-      const query = item.imageQuery || item.text;
-      const response = await fetch('/api/vocab', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'images', query, definition: item._searchDefinitionHint || item.definition || '', topic: document.getElementById('topicInput').value.trim() })
-      });
-      const data = await response.json();
-      if (response.ok && data.images && data.images.length) {
-        renderImageCandidates(item, data.images, null);
+  //
+  // Firing every request at once (Promise.all over the whole list) was
+  // tripping Pixabay's rate limit on sets with many items — only the
+  // first request or two would succeed, and the rest failed silently,
+  // leaving later items with no image and no explanation why. Batching a
+  // few at a time avoids that, and a failure now leaves a visible message
+  // instead of just quietly doing nothing.
+  const BATCH_SIZE = 3;
+  for (let i = 0; i < itemsNeedingImages.length; i += BATCH_SIZE) {
+    const batch = itemsNeedingImages.slice(i, i + BATCH_SIZE);
+    await Promise.all(batch.map(async (item) => {
+      try {
+        const query = item.imageQuery || item.text;
+        const response = await fetch('/api/vocab', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'images', query, definition: item._searchDefinitionHint || item.definition || '', topic: document.getElementById('topicInput').value.trim() })
+        });
+        const data = await response.json();
+        if (response.ok && data.images && data.images.length) {
+          renderImageCandidates(item, data.images, null);
+        } else {
+          showImageSearchError(item, data.error || `Request failed (${response.status})`);
+        }
+      } catch (e) {
+        showImageSearchError(item, e.message);
       }
-    } catch (e) {
-      // Silently skip — user can add image manually via Edit → Find images
-    }
-  }));
+    }));
+  }
 }
 
 
@@ -814,6 +827,12 @@ async function findImagesFor(item) {
 // Phrases don't search well literally — turn them into a scene description.
 function phraseImageQuery(phrase) {
   return `person ${phrase}`;
+}
+
+function showImageSearchError(item, message) {
+  const grid = document.getElementById(`images-${item.id}`);
+  if (!grid) return;
+  grid.innerHTML = `<p style="font-size:12px;color:var(--danger,#dc2626);margin:4px 0;grid-column:1/-1;">Image search failed for "${item.text}": ${message} — click "Find images" to retry.</p>`;
 }
 
 function renderImageCandidates(item, images, selectedUrl) {
