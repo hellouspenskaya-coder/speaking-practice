@@ -254,7 +254,23 @@ async function searchImages(req, res) {
   // visually distinct results instead of a generic hall photo for both.
   // Applies to phrases too, unlike the definition hint (which would dilute
   // an already multi-word phrase query too much).
-  const topicHint = topic ? extractKeywords(topic, 2) : '';
+  // Topic strings often carry the teacher's own naming/organisation
+  // convention rather than actual thematic content — e.g. "House Voc Part
+  // 1" is really just "House", with "Voc"/"Part" being how she labels the
+  // set, not something to search images for. Filter those out separately
+  // from the general stop-word list, since a word like "part" is a
+  // perfectly normal word to keep in a real definition.
+  const TOPIC_META_WORDS = new Set(['voc','vocab','vocabulary','part','unit','lesson','set','level','practice','topic','words','phrases','group','list','adv','intermediate','beginner','advanced']);
+  function extractTopicKeywords(text, maxWords) {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z\s]/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length > 2 && !STOP_WORDS.has(w) && !TOPIC_META_WORDS.has(w))
+      .slice(0, maxWords)
+      .join(' ');
+  }
+  const topicHint = topic ? extractTopicKeywords(topic, 2) : '';
   // Leave less room for definition keywords when a topic is already
   // contributing context, so the combined query doesn't get too diluted.
   const definitionHint = (!isPhrase && definition) ? extractKeywords(definition, topicHint ? 1 : 3) : '';
