@@ -390,7 +390,14 @@ async function saveSet(req, res) {
   // pictures, tweaking a definition) reuses the same slug/link, so it
   // would otherwise file a duplicate row under the same name every time.
   let notion = { attempted: false };
-  if (!sha && process.env.NOTION_ASSIGNMENTS_DATABASE_ID && process.env.NOTION_TOKEN) {
+  if (sha) {
+    // This is a re-save of an existing set, not a not-configured situation —
+    // the frontend needs to tell these two apart to avoid showing a
+    // "configure Notion" tip when Notion is already working fine.
+    notion.reason = 'existing_set';
+  } else if (!process.env.NOTION_ASSIGNMENTS_DATABASE_ID || !process.env.NOTION_TOKEN) {
+    notion.reason = 'not_configured';
+  } else {
     notion.attempted = true;
     try {
       await addToAssignmentsDatabase(data, fullLink);

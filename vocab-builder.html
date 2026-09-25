@@ -1095,6 +1095,9 @@ document.getElementById('publishBtn').addEventListener('click', async () => {
         notionNote.textContent = `Link created, but Notion save failed: ${result.notion.error}`;
         notionNote.style.color = 'var(--danger)';
       }
+    } else if (result.notion && result.notion.reason === 'existing_set') {
+      notionNote.textContent = 'Existing set updated — already logged in Notion, so no new row was added.';
+      notionNote.style.color = 'var(--muted)';
     } else {
       notionNote.textContent = 'Tip: set NOTION_ASSIGNMENTS_DATABASE_ID in Vercel to log each set in your Assignments tracker automatically.';
       notionNote.style.color = 'var(--muted)';
