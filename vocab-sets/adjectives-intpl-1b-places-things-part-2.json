@@ -1,0 +1,460 @@
+{
+  "topic": "Adjectives IntPl 1B Places & Things Part 2",
+  "level": "B1",
+  "modes": [
+    "matchingDef",
+    "listening",
+    "fillLetters",
+    "wordFormation"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "desirable",
+      "definition": "Something that you want or would like to have because it is good or attractive.",
+      "example": "A job with flexible hours is very desirable for parents with young children.",
+      "phonetic": "dɪˈzaɪrəbl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "desirable",
+          "pos": "adjective"
+        },
+        {
+          "form": "desire",
+          "pos": "verb"
+        },
+        {
+          "form": "desire",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "She has a strong ___ to travel around the world.",
+      "wordFormationAnswer": "desire",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "profitable",
+      "definition": "Producing or earning a good amount of money or benefit.",
+      "example": "The new business model has become very profitable after just two years.",
+      "phonetic": "ˈprɒfɪtəbl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "profitable",
+          "pos": "adjective"
+        },
+        {
+          "form": "profit",
+          "pos": "noun"
+        },
+        {
+          "form": "profit",
+          "pos": "verb"
+        }
+      ],
+      "wordFormationSentence": "The company made a significant ___ from selling its shares.",
+      "wordFormationAnswer": "profit",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "recognizable",
+      "definition": "Easy to identify or know because you have seen or heard it before.",
+      "example": "Her voice is recognizable immediately because of her unique accent.",
+      "phonetic": "ˈrekəɡnaɪzəbl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "recognizable",
+          "pos": "adjective"
+        },
+        {
+          "form": "recognize",
+          "pos": "verb"
+        },
+        {
+          "form": "recognition",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "The ___ of her talent came after she won the award.",
+      "wordFormationAnswer": "recognition",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "healthy",
+      "definition": "In a good physical or mental condition, without illness or disease.",
+      "example": "Eating more vegetables and exercising regularly will help you stay healthy.",
+      "phonetic": "ˈhelθi",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "healthy",
+          "pos": "adjective"
+        },
+        {
+          "form": "health",
+          "pos": "noun"
+        },
+        {
+          "form": "unhealthy",
+          "pos": "adjective"
+        }
+      ],
+      "wordFormationSentence": "Good ___ is more important than having lots of money.",
+      "wordFormationAnswer": "health",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_5",
+      "type": "word",
+      "text": "noisy",
+      "definition": "Making or full of loud, unpleasant sounds.",
+      "example": "The noisy construction work outside kept us awake last night.",
+      "phonetic": "ˈnɔɪzi",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "loud traffic city",
+      "imageQuery": "",
+      "illustrable": true,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_6",
+      "type": "word",
+      "text": "easy",
+      "definition": "Not difficult to do or understand.",
+      "example": "This exercise is easy once you practice it a few times.",
+      "phonetic": "ˈiːzi",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "easy",
+          "pos": "adjective"
+        },
+        {
+          "form": "easily",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "She solved the problem ___, without needing any help.",
+      "wordFormationAnswer": "easily",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_7",
+      "type": "word",
+      "text": "impressive",
+      "definition": "Something that makes you feel admiration or respect because it is very good or large.",
+      "example": "Her presentation was impressive and everyone in the meeting was impressed.",
+      "phonetic": "ɪmˈpresɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "impress",
+          "pos": "verb"
+        },
+        {
+          "form": "impressed",
+          "pos": "adjective"
+        },
+        {
+          "form": "impression",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "The new building made a strong ___ on all the visitors.",
+      "wordFormationAnswer": "impression",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_8",
+      "type": "word",
+      "text": "spacious",
+      "definition": "Large and having plenty of room to move around in.",
+      "example": "We moved to a spacious apartment with high ceilings and big windows.",
+      "phonetic": "ˈspeɪʃəs",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "spacious room interior",
+      "imageQuery": "",
+      "illustrable": true,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "space",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "The garden has plenty of ___ for the children to play.",
+      "wordFormationAnswer": "space",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_9",
+      "type": "word",
+      "text": "colourful",
+      "definition": "Having many bright or different colours.",
+      "example": "The market was full of colourful fruits and vegetables.",
+      "phonetic": "ˈkʌləfəl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "colorful fruits vegetables",
+      "imageQuery": "",
+      "illustrable": true,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "colour",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "She loves wearing clothes in different ___ and styles.",
+      "wordFormationAnswer": "colours",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_10",
+      "type": "word",
+      "text": "restful",
+      "definition": "Peaceful and relaxing in a way that makes you feel calm and less tired.",
+      "example": "The restful garden with soft music was perfect after a busy day at work.",
+      "phonetic": "ˈrestfəl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "rest",
+          "pos": "verb"
+        },
+        {
+          "form": "rest",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "After a long walk, I need to take a ___ and sit down.",
+      "wordFormationAnswer": "rest",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_11",
+      "type": "word",
+      "text": "useful",
+      "definition": "Able to be used to help you do something or to solve a problem.",
+      "example": "A dictionary is a useful tool when you are learning a new language.",
+      "phonetic": "ˈjuːsfl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "use",
+          "pos": "verb"
+        },
+        {
+          "form": "use",
+          "pos": "noun"
+        },
+        {
+          "form": "useless",
+          "pos": "adjective"
+        }
+      ],
+      "wordFormationSentence": "What is the ___ of this machine?",
+      "wordFormationAnswer": "use",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    }
+  ]
+}
