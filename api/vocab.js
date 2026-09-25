@@ -248,34 +248,20 @@ async function searchImages(req, res) {
       .join(' ');
   }
 
-  // The lesson topic (e.g. "Airport") is short and deliberately chosen —
-  // it disambiguates far better than a parsed definition, and helps even
-  // abstract phrase-level concepts ("arrivals"/"departures") land on
-  // visually distinct results instead of a generic hall photo for both.
-  // Applies to phrases too, unlike the definition hint (which would dilute
-  // an already multi-word phrase query too much).
-  // Topic strings often carry the teacher's own naming/organisation
-  // convention rather than actual thematic content — e.g. "House Voc Part
-  // 1" is really just "House", with "Voc"/"Part" being how she labels the
-  // set, not something to search images for. Filter those out separately
-  // from the general stop-word list, since a word like "part" is a
-  // perfectly normal word to keep in a real definition.
-  const TOPIC_META_WORDS = new Set(['voc','vocab','vocabulary','part','unit','lesson','set','level','practice','topic','words','phrases','group','list','adv','intermediate','beginner','advanced']);
-  function extractTopicKeywords(text, maxWords) {
-    return text
-      .toLowerCase()
-      .replace(/[^a-z\s]/g, ' ')
-      .split(/\s+/)
-      .filter(w => w.length > 2 && !STOP_WORDS.has(w) && !TOPIC_META_WORDS.has(w))
-      .slice(0, maxWords)
-      .join(' ');
-  }
-  const topicHint = topic ? extractTopicKeywords(topic, 2) : '';
-  // Leave less room for definition keywords when a topic is already
-  // contributing context, so the combined query doesn't get too diluted.
-  const definitionHint = (!isPhrase && definition) ? extractKeywords(definition, topicHint ? 1 : 3) : '';
+  // Tried blending the lesson topic into every single-word query (e.g.
+  // "gate" + "Airport"), hoping it would help disambiguate. In practice it
+  // backfired for ordinary, already-specific words — "balcony", "hall",
+  // "garden" all got swamped by generic "house" results once the topic was
+  // added, since Pixabay apparently has far more indexed matches for
+  // "house" than for a specific room/feature. A handful of genuinely
+  // ambiguous words (like "gate") benefit from topic context, but most
+  // words in a themed set don't need or want it — and there's no cheap way
+  // to tell in advance which is which. Reverted to definition-only
+  // disambiguation; for the rare ambiguous word, the teacher can still add
+  // context herself directly in the Image search field.
+  const definitionHint = (!isPhrase && definition) ? extractKeywords(definition, 3) : '';
 
-  const extras = [topicHint, definitionHint].filter(Boolean).join(' ');
+  const extras = definitionHint;
   let query;
   if (extras) {
     query = `${rawQuery} ${extras}`;
