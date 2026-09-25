@@ -280,30 +280,30 @@ async function searchImages(req, res) {
     return;
   }
 
-  // Prefer vector illustrations for everything now, not just single words —
-  // one clean object/scene on a plain background reads far better for
-  // beginners than a busy stock photo, when a matching vector exists.
-  // Falls back to photos below when it doesn't (most phrases still won't
-  // have a vector match, but it's worth trying first).
-  const imageType = 'vector';
+  // Vector illustrations are great for discrete objects (an apple, a key)
+  // but a room or place ("kitchen", "classroom") doesn't reduce to one
+  // clean icon — vector search still returns SOMETHING (a cutting board, a
+  // random house icon), just not an actual kitchen, and since that's a
+  // non-empty result the old "only fall back to photo if vector is
+  // completely empty" logic never kicked in. Fetching both at once and
+  // merging them means an object gets its clean vector options, a
+  // room/place still gets real recognizable photos alongside whatever
+  // vectors turned up, and either way there are more candidates to choose
+  // from — instead of hoping a second click's random page happens to
+  // surface something different.
+  const [vectorRes, photoRes] = await Promise.all([
+    fetch(`https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=vector&orientation=horizontal&per_page=6&page=${page}&safesearch=true`),
+    fetch(`https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&per_page=6&page=${page}&safesearch=true`)
+  ]);
 
-  const url = `https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=${imageType}&orientation=horizontal&per_page=4&page=${page}&safesearch=true`;
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    res.status(502).json({ error: `Pixabay error ${response.status}` });
+  if (!vectorRes.ok && !photoRes.ok) {
+    res.status(502).json({ error: `Pixabay error ${vectorRes.status}/${photoRes.status}` });
     return;
   }
 
-  const data = await response.json();
-  let hits = data.hits || [];
-
-  // If no vectors found, fall back to photos
-  if (!hits.length) {
-    const fallback = await fetch(`https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&per_page=4&page=${page}&safesearch=true`);
-    const fbData = await fallback.json();
-    hits = fbData.hits || [];
-  }
+  const vectorData = vectorRes.ok ? await vectorRes.json() : { hits: [] };
+  const photoData = photoRes.ok ? await photoRes.json() : { hits: [] };
+  const hits = [...(vectorData.hits || []), ...(photoData.hits || [])];
 
   const images = hits.map(h => ({
     thumb: h.previewURL,
