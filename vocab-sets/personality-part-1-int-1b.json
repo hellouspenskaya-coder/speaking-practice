@@ -1,0 +1,461 @@
+{
+  "topic": "Personality Part 1 Int 1B",
+  "level": "B1",
+  "modes": [
+    "matchingDef",
+    "listening",
+    "fillLetters",
+    "wordFormation",
+    "collocations"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "affectionate",
+      "definition": "Showing feelings of liking or love towards another person.",
+      "example": "She gave her son an affectionate hug before he left for school.",
+      "phonetic": "əˈfɛkʃənət",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "affection",
+          "pos": "noun"
+        },
+        {
+          "form": "affectionately",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "He spoke about his grandmother with great ___.",
+      "wordFormationAnswer": "affection",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "ambitious",
+      "definition": "Wanting to be successful and to achieve important goals.",
+      "example": "She is ambitious and hopes to become a doctor within the next five years.",
+      "phonetic": "æmˈbɪʃəs",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "ambition",
+          "pos": ""
+        },
+        {
+          "form": "ambitious",
+          "pos": ""
+        }
+      ],
+      "wordFormationSentence": "His ___ to travel the world drives him to work hard every day.",
+      "wordFormationAnswer": "ambition",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "anxious",
+      "definition": "Worried or nervous about something that might happen.",
+      "example": "He felt anxious before his job interview and couldn't sleep well the night before.",
+      "phonetic": "ˈæŋkʃəs",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "anxiety",
+          "pos": "noun"
+        },
+        {
+          "form": "anxiously",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "She spoke ___ about the exam results.",
+      "wordFormationAnswer": "anxiously",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "bossy",
+      "definition": "Liking to tell other people what to do in a way that is annoying.",
+      "example": "His bossy attitude makes it difficult for his teammates to enjoy working with him.",
+      "phonetic": "ˈbɒsi",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_5",
+      "type": "word",
+      "text": "charming",
+      "definition": "Attractive and pleasant in a way that makes people like you.",
+      "example": "The charming old town with its narrow streets attracted many tourists.",
+      "phonetic": "ˈtʃɑːmɪŋ",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "charm",
+          "pos": "noun"
+        },
+        {
+          "form": "charm",
+          "pos": "verb"
+        }
+      ],
+      "wordFormationSentence": "The ___ of the countryside made her want to move there permanently.",
+      "wordFormationAnswer": "charm",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_6",
+      "type": "word",
+      "text": "competitive",
+      "definition": "Wanting very much to win or be better than other people.",
+      "example": "She has a competitive spirit and always tries her best in every sport.",
+      "phonetic": "kəmˈpɛtɪtɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "compete",
+          "pos": "verb"
+        },
+        {
+          "form": "competition",
+          "pos": "noun"
+        },
+        {
+          "form": "competitor",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "The two runners will ___ in the final race next week.",
+      "wordFormationAnswer": "compete",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_7",
+      "type": "word",
+      "text": "honest",
+      "definition": "Someone who is honest tells the truth and does not try to deceive other people.",
+      "example": "My friend is always honest with me, even when the truth is difficult to hear.",
+      "phonetic": "/ˈɒnɪst/",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "honest",
+          "pos": "adjective"
+        },
+        {
+          "form": "honestly",
+          "pos": "adverb"
+        },
+        {
+          "form": "honesty",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "To be ___, I didn't enjoy that film very much.",
+      "wordFormationAnswer": "honest",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_8",
+      "type": "word",
+      "text": "imaginative",
+      "definition": "Someone who is imaginative has the ability to create new ideas or picture things in their mind in creative ways.",
+      "example": "The children came up with imaginative solutions to the problem.",
+      "phonetic": "/ɪˈmædʒɪnətɪv/",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "imaginative",
+          "pos": "adjective"
+        },
+        {
+          "form": "imagination",
+          "pos": "noun"
+        },
+        {
+          "form": "imagine",
+          "pos": "verb"
+        }
+      ],
+      "wordFormationSentence": "You need a lot of ___ to write a good fantasy story.",
+      "wordFormationAnswer": "imagination",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_9",
+      "type": "word",
+      "text": "independent",
+      "definition": "Someone who is independent can do things and make decisions on their own without needing help from other people.",
+      "example": "She became independent when she moved out and got her first job.",
+      "phonetic": "/ˌɪndɪˈpendənt/",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "independent",
+          "pos": "adjective"
+        },
+        {
+          "form": "independently",
+          "pos": "adverb"
+        },
+        {
+          "form": "independence",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "The country fought for its ___ for many years.",
+      "wordFormationAnswer": "independence",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_10",
+      "type": "word",
+      "text": "insecure",
+      "definition": "Someone who is insecure feels uncertain about themselves and worries that other people do not value them.",
+      "example": "He felt insecure about his English when speaking to native speakers.",
+      "phonetic": "/ˌɪnsɪˈkjʊə/",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "insecure",
+          "pos": "adjective"
+        },
+        {
+          "form": "insecurity",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "Many teenagers experience ___ about their appearance.",
+      "wordFormationAnswer": "insecurity",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_11",
+      "type": "word",
+      "text": "mature",
+      "definition": "Someone who is mature is emotionally grown-up and able to behave responsibly and think about consequences.",
+      "example": "His response to the criticism was mature and thoughtful.",
+      "phonetic": "/məˈtʃʊə/",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "mature",
+          "pos": "adjective"
+        },
+        {
+          "form": "maturity",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "She showed great ___ by handling the situation calmly.",
+      "wordFormationAnswer": "maturity",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    }
+  ]
+}
