@@ -1,0 +1,594 @@
+{
+  "topic": "Personality Part 3 Int 1B",
+  "level": "B1",
+  "modes": [
+    "matchingDef",
+    "listening",
+    "fillLetters",
+    "letterScramble",
+    "wordFormation",
+    "collocations"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "unambitious",
+      "definition": "Not having a strong desire to be successful or to achieve important goals.",
+      "example": "He seemed unambitious about his career and was happy just earning a steady wage.",
+      "phonetic": "ʌnæmˈbɪʃəs",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "ambitious",
+          "pos": "adjective"
+        },
+        {
+          "form": "ambition",
+          "pos": "noun"
+        },
+        {
+          "form": "ambitiously",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "She has great ___ and wants to become a doctor by the time she is thirty.",
+      "wordFormationAnswer": "ambition",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "unfriendly",
+      "definition": "Not kind or warm towards other people and not willing to be friendly.",
+      "example": "The staff at that restaurant seemed unfriendly and made us feel unwelcome.",
+      "phonetic": "ʌnˈfrendli",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "friendly",
+          "pos": "adjective"
+        },
+        {
+          "form": "friend",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "She has developed a strong ___ with her classmates over the past year.",
+      "wordFormationAnswer": "friendship",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "dishonest",
+      "definition": "Not telling the truth or not acting in an honest and fair way.",
+      "example": "It was dishonest of him to say he had finished the project when he had barely started it.",
+      "phonetic": "dɪsˈɒnɪst",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "honest",
+          "pos": "adjective"
+        },
+        {
+          "form": "honesty",
+          "pos": "noun"
+        },
+        {
+          "form": "honestly",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "I appreciate your ___ even when the truth is difficult to hear.",
+      "wordFormationAnswer": "honesty",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "unimaginative",
+      "definition": "Lacking creativity or the ability to think of new and interesting ideas.",
+      "example": "The menu at the hotel was quite unimaginative, with the same basic dishes every single day.",
+      "phonetic": "ʌnɪˈmædʒɪnətɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "imaginative",
+          "pos": "adjective"
+        },
+        {
+          "form": "imagination",
+          "pos": "noun"
+        },
+        {
+          "form": "imagine",
+          "pos": "verb"
+        }
+      ],
+      "wordFormationSentence": "Children need to use their ___ when they play with toys.",
+      "wordFormationAnswer": "imagination",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_5",
+      "type": "word",
+      "text": "unkind",
+      "definition": "Not being nice or considerate to others and causing them to feel hurt or upset.",
+      "example": "It was unkind of you to make fun of her in front of everyone.",
+      "phonetic": "ʌnˈkaɪnd",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "kind",
+          "pos": "adjective"
+        },
+        {
+          "form": "kindness",
+          "pos": "noun"
+        },
+        {
+          "form": "kindly",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "She treated everyone with ___ and always had time to help.",
+      "wordFormationAnswer": "kindness",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_6",
+      "type": "word",
+      "text": "immature",
+      "definition": "Not fully grown or developed, or behaving in a way that is typical of someone younger.",
+      "example": "His jokes were too immature for an adult dinner party.",
+      "phonetic": "ɪməˈtʃʊə",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "mature",
+          "pos": "adjective"
+        },
+        {
+          "form": "maturity",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "He showed great ___ in the way he handled the difficult situation.",
+      "wordFormationAnswer": "maturity",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_7",
+      "type": "word",
+      "text": "disorganized",
+      "definition": "Not arranged in a neat or orderly way, or not planning or managing things in a structured way.",
+      "example": "His desk is so disorganized that he can never find anything he needs.",
+      "phonetic": "dɪsˈɔːɡənaɪzd",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "disorganized",
+          "pos": "adjective"
+        },
+        {
+          "form": "disorganize",
+          "pos": "verb"
+        }
+      ],
+      "wordFormationSentence": "She tends to ___ her files, which makes work harder.",
+      "wordFormationAnswer": "disorganize",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_8",
+      "type": "word",
+      "text": "impatient",
+      "definition": "Unwilling to wait or deal with delays, or annoyed when something takes longer than expected.",
+      "example": "He becomes impatient when meetings run late, even though he understands it sometimes cannot be avoided.",
+      "phonetic": "ɪmˈpeɪʃənt",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "impatient",
+          "pos": "adjective"
+        },
+        {
+          "form": "impatience",
+          "pos": "noun"
+        },
+        {
+          "form": "impatiently",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "His ___ with slow technology was obvious.",
+      "wordFormationAnswer": "impatience",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_9",
+      "type": "word",
+      "text": "unreliable",
+      "definition": "Not able to be trusted or depended on, because someone or something does not work or perform consistently.",
+      "example": "The bus service is unreliable, so I often arrive late for work.",
+      "phonetic": "ʌnrɪˈlaɪəbl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "unreliable",
+          "pos": "adjective"
+        },
+        {
+          "form": "reliability",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "The ___ of this equipment is a serious problem.",
+      "wordFormationAnswer": "reliability",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_10",
+      "type": "word",
+      "text": "irresponsible",
+      "definition": "Not showing proper care or thought about the consequences of your actions, and not deserving to be trusted with important tasks.",
+      "example": "It would be irresponsible to leave a child alone in the car.",
+      "phonetic": "ɪrɪˈspɒnsəbl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "irresponsible",
+          "pos": "adjective"
+        },
+        {
+          "form": "responsibility",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "Part of your ___ is to arrive on time.",
+      "wordFormationAnswer": "responsibility",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_11",
+      "type": "word",
+      "text": "unselfish",
+      "definition": "Caring about other people's needs and feelings more than your own, and willing to help without expecting anything in return.",
+      "example": "It was very unselfish of her to donate money to help the homeless.",
+      "phonetic": "ʌnˈselfɪʃ",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_12",
+      "type": "word",
+      "text": "insensitive",
+      "definition": "Not aware of or not caring about other people's feelings and how your words or actions might hurt or upset them.",
+      "example": "Making jokes about her accident was insensitive and hurtful.",
+      "phonetic": "ɪnˈsensətɪv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "insensitive",
+          "pos": "adjective"
+        },
+        {
+          "form": "sensitivity",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "The teacher showed great ___ toward her students' personal problems.",
+      "wordFormationAnswer": "sensitivity",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_13",
+      "type": "word",
+      "text": "unsociable",
+      "definition": "Someone who does not enjoy spending time with other people or being in social situations.",
+      "example": "My uncle is quite unsociable and prefers to stay home rather than go to parties.",
+      "phonetic": "ʌnˈsoʊʃəbəl",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "unsociable",
+          "pos": "adjective"
+        },
+        {
+          "form": "sociable",
+          "pos": "adjective"
+        },
+        {
+          "form": "sociably",
+          "pos": "adverb"
+        }
+      ],
+      "wordFormationSentence": "He is very ___, always greeting people and making friends easily.",
+      "wordFormationAnswer": "sociable",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_14",
+      "type": "word",
+      "text": "untidy",
+      "definition": "Something that is messy and not organized or arranged neatly.",
+      "example": "Her bedroom is always untidy because she never puts her clothes away.",
+      "phonetic": "ʌnˈtaɪdi",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "messy bedroom disorganized",
+      "imageQuery": "",
+      "illustrable": true,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "untidy",
+          "pos": "adjective"
+        },
+        {
+          "form": "tidy",
+          "pos": "adjective"
+        },
+        {
+          "form": "tidy",
+          "pos": "verb"
+        }
+      ],
+      "wordFormationSentence": "I need to ___ my desk before my boss arrives.",
+      "wordFormationAnswer": "tidy",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    }
+  ]
+}
