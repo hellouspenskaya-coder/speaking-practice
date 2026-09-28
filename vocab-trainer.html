@@ -157,6 +157,20 @@
   .stat-num { font-size: 20px; font-weight: 600; }
   .stat-label { font-size: 12px; color: var(--muted); }
   .review-list { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  .story-strip { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 0 0 12px; }
+  .story-chip { background: var(--teal-light); border: 1px solid #b8e6da; border-radius: 10px; padding: 5px 9px; font-size: 13px; color: var(--text); line-height: 1.3; text-align: left; }
+  .story-chip .em { font-size: 18px; margin-right: 4px; vertical-align: -2px; }
+  .story-chip .gl { display: block; font-size: 11px; color: var(--muted); }
+  .story-bank { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 0 0 14px; }
+  .bank-chip { background: #fff; border: 1.5px solid var(--teal); color: var(--teal); border-radius: 20px; padding: 4px 12px; font-size: 14px; font-weight: 600; }
+  .bank-chip.used { border-color: var(--border); color: #b6c0cc; text-decoration: line-through; background: #f8fafc; }
+  .story-text { text-align: left; font-size: 17px; line-height: 2.5; margin: 0 0 10px; }
+  .gap-input { width: 96px; padding: 3px 6px; font-size: 16px; text-align: center; border: 1.5px solid var(--border); border-radius: 8px; font-family: inherit; color: var(--text); background: #fff; margin: 0 2px; }
+  .gap-input.ok { border-color: var(--success); background: var(--success-light); color: var(--success); }
+  .gap-input.bad { border-color: var(--danger); background: var(--danger-light); color: var(--danger); }
+  .gap-input.shake { animation: gapshake 0.3s; }
+  @keyframes gapshake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
 </style>
 </head>
 <body>
@@ -247,7 +261,7 @@ function renderGallery() {
     <div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;padding:20px;"></div>
   `;
   document.getElementById('startBtn').addEventListener('click', () => {
-    queue = buildSession(setData);
+    queue = buildSession(setData).concat(buildStorySteps(setData));
     stepIndex = 0;
     renderStep();
   });
@@ -857,7 +871,13 @@ function renderStep() {
     renderStep();
   };
 
-  if (step.kind === 'single') {
+  if (step.kind === 'story') {
+    renderStory(cardArea, step, () => {
+      if (step.lastInBlock) bumpStoryRuns();
+      stepIndex += 1;
+      renderStep();
+    });
+  } else if (step.kind === 'single') {
     if (step.mode === 'multipleChoice') renderMultipleChoice(cardArea, step.item, onDone);
     else if (step.mode === 'multipleChoiceReverse') renderMultipleChoiceReverse(cardArea, step.item, onDone);
     else if (step.mode === 'listening') renderListening(cardArea, step.item, onDone);
@@ -936,7 +956,8 @@ function modeLabel(mode) {
     whatsMissing: "What's missing?",
     phraseMatch: 'Match the phrase',
     antonyms: 'Opposites',
-    antonymMatching: 'Match the opposites'
+    antonymMatching: 'Match the opposites',
+    story: 'Complete the story'
   })[mode] || mode;
 }
 
@@ -2139,6 +2160,153 @@ function renderAntonyms(container, item, answer, onDone) {
   });
 }
 
+// --- "Complete the story" block. Optional: only sets whose JSON has a
+// "stories" list show it. Each set holds two pairs of short stories; the
+// first time a student finishes the block they get pair 1, the second time
+// pair 2, after that the block is skipped (a "Read the stories again"
+// button on the final screen brings it back). The count lives in this
+// browser only (localStorage) - nothing is sent anywhere. ---
+const STORY_RUNS_KEY = 'vocabStoryRuns:' + setSlug;
+let storyReplayIndex = 0;
+
+function getStoryRuns() {
+  try { return parseInt(localStorage.getItem(STORY_RUNS_KEY) || '0', 10) || 0; } catch (e) { return 0; }
+}
+function bumpStoryRuns() {
+  try { localStorage.setItem(STORY_RUNS_KEY, String(getStoryRuns() + 1)); } catch (e) {}
+}
+function storyStepsForPair(pair, countRun) {
+  const list = (pair && pair.stories) || [];
+  return list.map((story, i) => ({
+    kind: 'story', mode: 'story', story, phase: 'practice',
+    lastInBlock: Boolean(countRun) && i === list.length - 1
+  }));
+}
+function buildStorySteps(data) {
+  if (!data || !Array.isArray(data.stories) || !data.stories.length) return [];
+  const runs = getStoryRuns();
+  if (runs >= data.stories.length) return [];
+  return storyStepsForPair(data.stories[runs], true);
+}
+function storyReplayAvailable() {
+  return Boolean(setData && Array.isArray(setData.stories) && setData.stories.length && getStoryRuns() >= setData.stories.length);
+}
+
+function renderStory(container, step, onFinish) {
+  const story = step.story;
+  const gaps = story.gaps || [];
+  const state = gaps.map(() => ({ tries: 0, locked: false }));
+  let firstTry = 0;
+
+  const stripHtml = (story.strip || []).map(s =>
+    `<span class="story-chip">${s.e ? `<span class="em">${escapeHtml(s.e)}</span>` : ''}${escapeHtml(s.w)}${s.g ? `<span class="gl">${escapeHtml(s.g)}</span>` : ''}</span>`
+  ).join('');
+  const bankHtml = shuffle(gaps.map(g => g.b)).map(w =>
+    `<span class="bank-chip" data-base="${escapeAttr(w)}">${escapeHtml(w)}</span>`
+  ).join('');
+  const textHtml = escapeHtml(story.text).replace(/\{(\d+)\}/g, (m, n) =>
+    `<input type="text" class="gap-input" data-gap="${n}" placeholder="${n}" aria-label="Gap ${n}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />`
+  );
+
+  container.innerHTML = `
+    ${stripHtml ? `<div class="story-strip">${stripHtml}</div>` : ''}
+    <p class="mode-label">Put each verb in the right form</p>
+    <div class="story-bank" id="storyBank">${bankHtml}</div>
+    <p class="story-text">${textHtml}</p>
+    <div id="storyMsg" class="feedback" style="display:none;"></div>
+    <button class="primary wide" id="storyCheck" style="margin-top:6px;">Check</button>
+  `;
+
+  const inputs = Array.from(container.querySelectorAll('.gap-input'));
+  const msg = container.querySelector('#storyMsg');
+  const checkBtn = container.querySelector('#storyCheck');
+
+  function say(text, kind) {
+    msg.style.display = text ? 'block' : 'none';
+    msg.className = 'feedback ' + (kind || '');
+    msg.textContent = text || '';
+  }
+  function norm(s) { return (s || '').trim().toLowerCase().replace(/\u2019/g, "'"); }
+  function markBank(base) {
+    const chip = Array.from(container.querySelectorAll('.bank-chip')).find(c => c.dataset.base === base && !c.classList.contains('used'));
+    if (chip) chip.classList.add('used');
+  }
+  function noteWrong(gap) {
+    const it = (setData.items || []).find(i => norm(i.text) === norm(gap.b));
+    if (it) wrongItemIds.add(it.id);
+  }
+  function focusNext(from) {
+    for (let k = 1; k <= inputs.length; k++) {
+      const idx = (from + k) % inputs.length;
+      if (!state[idx].locked) { inputs[idx].focus(); return; }
+    }
+  }
+  function checkGap(idx) {
+    const st = state[idx];
+    const gap = gaps[idx];
+    const input = inputs[idx];
+    if (st.locked) return;
+    const val = norm(input.value);
+    if (!val) return;
+    const accepted = [gap.a].concat(gap.alt || []).map(norm);
+    if (accepted.includes(val)) {
+      input.classList.remove('bad');
+      input.classList.add('ok');
+      input.readOnly = true;
+      st.locked = true;
+      if (st.tries === 0) firstTry += 1; else noteWrong(gap);
+      awardPoints(st.tries === 0);
+      markBank(gap.b);
+      say('', '');
+    } else {
+      st.tries += 1;
+      if (st.tries >= 2) {
+        input.value = gap.a;
+        input.classList.add('bad');
+        input.readOnly = true;
+        st.locked = true;
+        noteWrong(gap);
+        awardPoints(false);
+        markBank(gap.b);
+        say(`${idx + 1}: ${gap.a}`, 'wrong');
+      } else {
+        input.classList.add('bad', 'shake');
+        setTimeout(() => input.classList.remove('shake'), 350);
+        say('Not quite. Try again.', 'wrong');
+      }
+    }
+  }
+  function maybeFinish() {
+    if (!state.every(s => s.locked)) return;
+    checkBtn.style.display = 'none';
+    say(`${firstTry} of ${gaps.length} right the first time`, firstTry === gaps.length ? 'correct' : 'wrong');
+    const btn = document.createElement('button');
+    btn.className = 'primary wide';
+    btn.textContent = 'Continue';
+    btn.style.marginTop = '10px';
+    btn.addEventListener('click', onFinish);
+    container.appendChild(btn);
+  }
+
+  inputs.forEach((input, idx) => {
+    input.addEventListener('input', () => { input.classList.remove('bad'); });
+    input.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      checkGap(idx);
+      maybeFinish();
+      if (state[idx].locked) focusNext(idx);
+    });
+  });
+  checkBtn.addEventListener('click', () => {
+    const anyFilled = inputs.some((inp, i) => !state[i].locked && norm(inp.value));
+    if (!anyFilled) { say('Fill in at least one gap first.', 'wrong'); return; }
+    inputs.forEach((inp, i) => checkGap(i));
+    maybeFinish();
+  });
+  if (inputs[0]) inputs[0].focus();
+}
+
 function renderDone() {
   const percent = answeredCount ? Math.round((correctCount / answeredCount) * 100) : 0;
   const sticker = pickSticker(percent);
@@ -2174,6 +2342,7 @@ function renderDone() {
         : `<p class="final-label">You got every word right!</p>`}
 
       <button class="primary wide" id="restartBtn">Practise again</button>
+      ${storyReplayAvailable() ? `<button class="wide" id="storyReplayBtn" style="margin-top:10px;">Read the stories again</button>` : ''}
       ${reviewItems.length ? `<button class="wide" id="reviewMissedBtn" style="margin-top:10px;">Review missed words</button>` : ''}
     </div>
     <div id="overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:100; align-items:center; justify-content:center; padding:20px;"></div>
@@ -2205,6 +2374,23 @@ function renderDone() {
       correctCount = 0;
       answeredCount = 0;
       queue = buildSession(reviewData);
+      stepIndex = 0;
+      renderStep();
+    });
+  }
+
+  const storyReplayBtn = document.getElementById('storyReplayBtn');
+  if (storyReplayBtn) {
+    storyReplayBtn.addEventListener('click', () => {
+      wrongItemIds = new Set();
+      score = 0;
+      streak = 0;
+      bestStreak = 0;
+      correctCount = 0;
+      answeredCount = 0;
+      const pair = setData.stories[storyReplayIndex % setData.stories.length];
+      storyReplayIndex += 1;
+      queue = storyStepsForPair(pair, false);
       stepIndex = 0;
       renderStep();
     });

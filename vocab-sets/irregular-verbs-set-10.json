@@ -177,5 +177,233 @@
       "pastSimple": "withdrew",
       "pastParticiple": "withdrawn"
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "⛸️",
+              "w": "skates"
+            },
+            {
+              "w": "ice",
+              "g": "frozen water"
+            },
+            {
+              "w": "icy",
+              "g": "covered with ice"
+            },
+            {
+              "e": "⛪",
+              "w": "church"
+            }
+          ],
+          "text": "Winter came early. The lake {1} in one night. Children {2} on it in their new skates. The sun {3} on the ice all morning. Lili {4} down the icy hill on her back. She {5} down to tie her skates again. The church clock has just {6} twelve.",
+          "gaps": [
+            {
+              "a": "froze",
+              "b": "freeze"
+            },
+            {
+              "a": "skated",
+              "b": "skate"
+            },
+            {
+              "a": "shone",
+              "b": "shine"
+            },
+            {
+              "a": "slid",
+              "b": "slide"
+            },
+            {
+              "a": "bent",
+              "b": "bend"
+            },
+            {
+              "a": "struck",
+              "b": "strike"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "🧣",
+              "w": "scarf"
+            },
+            {
+              "w": "wool",
+              "g": "the soft hair of sheep; you make clothes from it"
+            },
+            {
+              "w": "pond",
+              "g": "a small lake"
+            },
+            {
+              "e": "❄️",
+              "w": "snow"
+            }
+          ],
+          "text": "Grandma has {1} a warm scarf for Tom. But it {2} in the wash and became very small. Mum {3} Tom's cold hands with hot tea. Tom {4} on his life never to lose his next scarf. Grandma {5} new green wool into a ball. Mum {6} some money from the bank to buy more wool. The ice on the pond {7} under Tom's boots. Snow {8} all the roofs of the village. Everybody {9} for a warmer week.",
+          "gaps": [
+            {
+              "a": "sewn",
+              "b": "sew",
+              "alt": [
+                "sewed"
+              ]
+            },
+            {
+              "a": "shrank",
+              "b": "shrink"
+            },
+            {
+              "a": "warmed",
+              "b": "warm"
+            },
+            {
+              "a": "swore",
+              "b": "swear"
+            },
+            {
+              "a": "wound",
+              "b": "wind"
+            },
+            {
+              "a": "withdrew",
+              "b": "withdraw"
+            },
+            {
+              "a": "cracked",
+              "b": "crack"
+            },
+            {
+              "a": "covered",
+              "b": "cover"
+            },
+            {
+              "a": "hoped",
+              "b": "hope"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "w": "coin",
+              "g": "a small round piece of money"
+            },
+            {
+              "e": "🧥",
+              "w": "coat"
+            },
+            {
+              "w": "wool",
+              "g": "the soft hair of sheep; you make clothes from it"
+            },
+            {
+              "w": "lake",
+              "g": "a big area of water with land around it"
+            }
+          ],
+          "text": "Grandpa {1} old coins from many countries for fifty years. Last week he {2} two hundred euros from the bank to buy one more coin. His old coat has been {3} by Grandma many times. That day the lake was {4}, so they walked across it. Grandpa {5} on the ice and laughed. Back home, a ball of wool was {6} by Grandma while he told stories.",
+          "gaps": [
+            {
+              "a": "collected",
+              "b": "collect"
+            },
+            {
+              "a": "withdrew",
+              "b": "withdraw"
+            },
+            {
+              "a": "sewn",
+              "b": "sew",
+              "alt": [
+                "sewed"
+              ]
+            },
+            {
+              "a": "frozen",
+              "b": "freeze"
+            },
+            {
+              "a": "slid",
+              "b": "slide"
+            },
+            {
+              "a": "wound",
+              "b": "wind"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "w": "jumper",
+              "g": "a warm top with long sleeves"
+            },
+            {
+              "e": "🚌",
+              "w": "school bus"
+            },
+            {
+              "w": "driver",
+              "g": "a person who drives a bus"
+            },
+            {
+              "w": "jacket",
+              "g": "a short coat"
+            }
+          ],
+          "text": "On the first warm day the snow {1} fast. The sun {2} brightly, and the children {3} for the school bus at the gate. Mrs Bell {4} their lunches in paper bags. A tall boy {5} down to tie his shoe. His new jumper {6} in the wash and was now too small. \"I {7} I would never wash it again!\" he said. The town clock {8} eight, and the driver {9} their bright jackets.",
+          "gaps": [
+            {
+              "a": "melted",
+              "b": "melt"
+            },
+            {
+              "a": "shone",
+              "b": "shine"
+            },
+            {
+              "a": "waited",
+              "b": "wait"
+            },
+            {
+              "a": "packed",
+              "b": "pack"
+            },
+            {
+              "a": "bent",
+              "b": "bend"
+            },
+            {
+              "a": "shrank",
+              "b": "shrink"
+            },
+            {
+              "a": "swore",
+              "b": "swear"
+            },
+            {
+              "a": "struck",
+              "b": "strike"
+            },
+            {
+              "a": "admired",
+              "b": "admire"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

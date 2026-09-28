@@ -177,5 +177,234 @@
       "pastSimple": "chose",
       "pastParticiple": "chosen"
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🎒",
+              "w": "bag"
+            },
+            {
+              "w": "zip",
+              "g": "the part that closes a bag"
+            },
+            {
+              "w": "price tag",
+              "g": "a small paper with the price"
+            },
+            {
+              "w": "assistant",
+              "g": "a person who works in a shop"
+            }
+          ],
+          "text": "Noah wanted a new bag for school. On Saturday he {1} in the city centre with his mum. The assistant in the first shop spoke very fast, so Noah {2} only half of what she said. In the second shop he tried a jacket, but the zip {3} when he pulled it. At home he {4} a picture of his dream bag. His mum {5} the price tag off a new backpack, and he {6} it to school on Monday.",
+          "gaps": [
+            {
+              "a": "shopped",
+              "b": "shop"
+            },
+            {
+              "a": "understood",
+              "b": "understand"
+            },
+            {
+              "a": "broke",
+              "b": "break"
+            },
+            {
+              "a": "drew",
+              "b": "draw"
+            },
+            {
+              "a": "cut",
+              "b": "cut"
+            },
+            {
+              "a": "wore",
+              "b": "wear"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "🏨",
+              "w": "hotel"
+            },
+            {
+              "w": "suitcase",
+              "g": "a big bag for a trip"
+            },
+            {
+              "e": "🍫",
+              "w": "chocolate"
+            },
+            {
+              "w": "till",
+              "g": "the machine in a shop where you pay"
+            },
+            {
+              "w": "lamp",
+              "g": "a light on a table"
+            }
+          ],
+          "text": "Mr Lee {1} a holiday for the whole family. He {2} between two hotels: one by the sea and one in the mountains. The sun {3} at six o'clock the next morning, and they {4} to the airport in his old car. Mrs Lee {5} four suitcases. At the airport shop she {6} two bars of chocolate and paid at the till. At the hotel Mr Lee {7} a broken lamp in their room, because he loves fixing things. They {8} two weeks by the sea and {9} to a bigger room on the last day.",
+          "gaps": [
+            {
+              "a": "planned",
+              "b": "plan"
+            },
+            {
+              "a": "chose",
+              "b": "choose"
+            },
+            {
+              "a": "rose",
+              "b": "rise"
+            },
+            {
+              "a": "drove",
+              "b": "drive"
+            },
+            {
+              "a": "packed",
+              "b": "pack"
+            },
+            {
+              "a": "bought",
+              "b": "buy",
+              "alt": [
+                "chose"
+              ]
+            },
+            {
+              "a": "fixed",
+              "b": "fix"
+            },
+            {
+              "a": "spent",
+              "b": "spend"
+            },
+            {
+              "a": "moved",
+              "b": "move"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🖌️",
+              "w": "paint"
+            },
+            {
+              "w": "newspaper",
+              "g": "a paper with the news"
+            },
+            {
+              "e": "✂️",
+              "w": "scissors"
+            },
+            {
+              "e": "🚐",
+              "w": "van"
+            }
+          ],
+          "text": "Mia's uncle is a painter. Yesterday he {1} the kitchen wall yellow. Mia {2} old jeans to help him. She {3} big sheets of newspaper for the floor with scissors. At lunch time her uncle {4} her to the shop in his van. There she {5} a pink colour for her own room. Mia {6} every word the shop assistant said, because he spoke slowly and clearly.",
+          "gaps": [
+            {
+              "a": "painted",
+              "b": "paint"
+            },
+            {
+              "a": "wore",
+              "b": "wear"
+            },
+            {
+              "a": "cut",
+              "b": "cut"
+            },
+            {
+              "a": "drove",
+              "b": "drive"
+            },
+            {
+              "a": "chose",
+              "b": "choose"
+            },
+            {
+              "a": "understood",
+              "b": "understand"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "🎈",
+              "w": "balloons"
+            },
+            {
+              "e": "🎂",
+              "w": "cake"
+            },
+            {
+              "e": "🎀",
+              "w": "ribbons"
+            },
+            {
+              "w": "guests",
+              "g": "people you invite to a party"
+            }
+          ],
+          "text": "Lena's birthday party was on Friday. In the morning the sun {1} over the hills, and she {2} her room quickly. Her dad {3} balloons and a big cake at the shop. Lena {4} a funny picture of a dog for each guest. She {5} the table with flowers and ribbons. Then a glass {6} in the kitchen with a loud noise! At seven o'clock the guests {7} in the garden to the music. Lena {8} a lot of time with her best friend that day. When the guests left, she {9} goodbye from the door.",
+          "gaps": [
+            {
+              "a": "rose",
+              "b": "rise"
+            },
+            {
+              "a": "tidied",
+              "b": "tidy"
+            },
+            {
+              "a": "bought",
+              "b": "buy"
+            },
+            {
+              "a": "drew",
+              "b": "draw"
+            },
+            {
+              "a": "decorated",
+              "b": "decorate"
+            },
+            {
+              "a": "broke",
+              "b": "break"
+            },
+            {
+              "a": "danced",
+              "b": "dance"
+            },
+            {
+              "a": "spent",
+              "b": "spend"
+            },
+            {
+              "a": "waved",
+              "b": "wave"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

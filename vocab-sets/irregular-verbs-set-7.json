@@ -177,5 +177,230 @@
       "pastSimple": "stole",
       "pastParticiple": "stolen"
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🚲",
+              "w": "bike"
+            },
+            {
+              "e": "⚽",
+              "w": "ball"
+            },
+            {
+              "w": "gate",
+              "g": "a door in a fence"
+            }
+          ],
+          "text": "Leo {1} his bike to the park. He {2} a ball to his brother. His brother {3} it back with his foot, and it {4} Leo on the arm. It {5} a lot, but Leo didn't cry. Then he {6} the gate and went home.",
+          "gaps": [
+            {
+              "a": "rode",
+              "b": "ride"
+            },
+            {
+              "a": "threw",
+              "b": "throw"
+            },
+            {
+              "a": "kicked",
+              "b": "kick"
+            },
+            {
+              "a": "hit",
+              "b": "hit"
+            },
+            {
+              "a": "hurt",
+              "b": "hurt"
+            },
+            {
+              "a": "shut",
+              "b": "shut"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "w": "market",
+              "g": "a place with many small shops outside"
+            },
+            {
+              "e": "🍎",
+              "w": "apples"
+            },
+            {
+              "e": "🍐",
+              "w": "pears"
+            },
+            {
+              "w": "thief",
+              "g": "a person who steals things"
+            },
+            {
+              "e": "📷",
+              "w": "camera"
+            }
+          ],
+          "text": "Saturday at the market. A loud bell {1} Mia up at six o'clock. Her uncle {2} apples and pears at his stall. The apples {3} two euros a kilo. Mia {4} a short film of the stall with her new camera. Suddenly a thief {5} a bag of pears! Mia {6} \"Stop!\" and {7} after him. The thief dropped the bag and {8} like a baby. Two men {9} him gently towards the police car.",
+          "gaps": [
+            {
+              "a": "woke",
+              "b": "wake"
+            },
+            {
+              "a": "sold",
+              "b": "sell"
+            },
+            {
+              "a": "cost",
+              "b": "cost"
+            },
+            {
+              "a": "shot",
+              "b": "shoot"
+            },
+            {
+              "a": "stole",
+              "b": "steal"
+            },
+            {
+              "a": "shouted",
+              "b": "shout"
+            },
+            {
+              "a": "chased",
+              "b": "chase"
+            },
+            {
+              "a": "cried",
+              "b": "cry"
+            },
+            {
+              "a": "pushed",
+              "b": "push"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🐓",
+              "w": "cockerel"
+            },
+            {
+              "e": "🐴",
+              "w": "horse"
+            },
+            {
+              "w": "saddle",
+              "g": "a seat on a horse"
+            },
+            {
+              "e": "🎥",
+              "w": "video"
+            }
+          ],
+          "text": "Sam's uncle has a farm. A cockerel {1} Sam up at five o'clock. After breakfast he {2} a horse called Star round the field. Then he {3} apples from the trees. His uncle {4} a short video of him for Grandma. A ball {5} Sam on the head, but he only laughed. Star's new saddle {6} three hundred euros.",
+          "gaps": [
+            {
+              "a": "woke",
+              "b": "wake"
+            },
+            {
+              "a": "rode",
+              "b": "ride"
+            },
+            {
+              "a": "picked",
+              "b": "pick"
+            },
+            {
+              "a": "shot",
+              "b": "shoot"
+            },
+            {
+              "a": "hit",
+              "b": "hit"
+            },
+            {
+              "a": "cost",
+              "b": "cost"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "w": "barn",
+              "g": "a big farm building"
+            },
+            {
+              "w": "plaster",
+              "g": "a small sticker for a cut"
+            },
+            {
+              "e": "🍎",
+              "w": "apples"
+            },
+            {
+              "w": "market",
+              "g": "a place with many small shops outside"
+            }
+          ],
+          "text": "After lunch Sam and Kim played in the barn. First they {1} the big door because it was cold. Kim {2} a red ball to Sam, and Sam {3} his finger when he caught it. \"Ouch!\" he said. Kim {4} at the door while he looked for a plaster. Then they {5} a heavy box of apples out of the barn. Their uncle {6} the apples at the market for two euros a kilo. A little boy {7} one apple from the box, but he {8} it the next day and said sorry. At noon the market {9} for lunch.",
+          "gaps": [
+            {
+              "a": "shut",
+              "b": "shut"
+            },
+            {
+              "a": "threw",
+              "b": "throw"
+            },
+            {
+              "a": "hurt",
+              "b": "hurt"
+            },
+            {
+              "a": "waited",
+              "b": "wait",
+              "alt": [
+                "stopped"
+              ]
+            },
+            {
+              "a": "pulled",
+              "b": "pull"
+            },
+            {
+              "a": "sold",
+              "b": "sell"
+            },
+            {
+              "a": "stole",
+              "b": "steal"
+            },
+            {
+              "a": "returned",
+              "b": "return"
+            },
+            {
+              "a": "stopped",
+              "b": "stop"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

@@ -177,5 +177,241 @@
       "pastSimple": "drank",
       "pastParticiple": "drunk"
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🏆",
+              "w": "prize"
+            },
+            {
+              "e": "🎹",
+              "w": "piano"
+            },
+            {
+              "w": "cot",
+              "g": "a small bed for a baby"
+            },
+            {
+              "w": "famous",
+              "g": "known by many people"
+            }
+          ],
+          "text": "Grandma is a famous cook, and last year she {1} a big cooking prize. On Sunday she {2} dinner for the whole family. We {3} everything and asked for more. After dinner Dad {4} our little sister to play the piano. Then everybody {5} together. At ten o'clock the baby {6} in her cot.",
+          "gaps": [
+            {
+              "a": "won",
+              "b": "win"
+            },
+            {
+              "a": "cooked",
+              "b": "cook"
+            },
+            {
+              "a": "ate",
+              "b": "eat"
+            },
+            {
+              "a": "taught",
+              "b": "teach"
+            },
+            {
+              "a": "sang",
+              "b": "sing"
+            },
+            {
+              "a": "slept",
+              "b": "sleep"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "✈️",
+              "w": "plane"
+            },
+            {
+              "e": "🏖️",
+              "w": "beach"
+            },
+            {
+              "e": "👒",
+              "w": "hat"
+            },
+            {
+              "e": "🍊",
+              "w": "orange juice"
+            },
+            {
+              "w": "salty",
+              "g": "with a lot of salt"
+            }
+          ],
+          "text": "Ben's family went to Spain last summer. The plane {1} over the sea for two hours. At the airport Ben {2} his hat in the taxi, so Dad had to go back for it. On the beach they {3} in the warm water every morning. At the café Dad {4} fish soup, and Ben {5} a little of it: it was salty! Mum {6} her pizza with Ben. Ben {7} two glasses of orange juice. A boy on the beach {8} a big fish, and everybody {9}.",
+          "gaps": [
+            {
+              "a": "flew",
+              "b": "fly"
+            },
+            {
+              "a": "forgot",
+              "b": "forget"
+            },
+            {
+              "a": "swam",
+              "b": "swim"
+            },
+            {
+              "a": "ordered",
+              "b": "order"
+            },
+            {
+              "a": "tasted",
+              "b": "taste"
+            },
+            {
+              "a": "shared",
+              "b": "share"
+            },
+            {
+              "a": "drank",
+              "b": "drink"
+            },
+            {
+              "a": "caught",
+              "b": "catch"
+            },
+            {
+              "a": "cheered",
+              "b": "cheer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🎹",
+              "w": "piano"
+            },
+            {
+              "w": "concert",
+              "g": "a show with music"
+            },
+            {
+              "w": "stage",
+              "g": "the place where singers stand"
+            },
+            {
+              "e": "🥚",
+              "w": "eggs"
+            }
+          ],
+          "text": "Anna {1} the piano every day for three months. The night before the big concert she {2} badly. In the morning she {3} a big breakfast: eggs, bread and fruit. On stage she {4} the first line of her song for a second, but then she remembered it. She played very well and {5} first prize. After the concert her family {6} to Paris for a holiday.",
+          "gaps": [
+            {
+              "a": "practised",
+              "b": "practise"
+            },
+            {
+              "a": "slept",
+              "b": "sleep"
+            },
+            {
+              "a": "ate",
+              "b": "eat"
+            },
+            {
+              "a": "forgot",
+              "b": "forget"
+            },
+            {
+              "a": "won",
+              "b": "win"
+            },
+            {
+              "a": "flew",
+              "b": "fly"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "w": "lake",
+              "g": "a big area of water with land around it"
+            },
+            {
+              "e": "🎣",
+              "w": "fishing"
+            },
+            {
+              "w": "net",
+              "g": "a thing for catching fish"
+            },
+            {
+              "e": "🔥",
+              "w": "fire"
+            },
+            {
+              "e": "☕",
+              "w": "hot chocolate"
+            }
+          ],
+          "text": "Jack's grandpa lives by a lake. Grandpa {1} Jack to swim when he was five, and now Jack {2} in the lake every summer. Jack {3} every minute of the holiday. In the evening the family {4} songs by the fire, and Jack {5} hot chocolate. He {6} about being a fisherman one day. One morning he {7} a big fish with a net. His sister {8} it on her phone. That week she also {9} to fish.",
+          "gaps": [
+            {
+              "a": "taught",
+              "b": "teach"
+            },
+            {
+              "a": "swam",
+              "b": "swim"
+            },
+            {
+              "a": "enjoyed",
+              "b": "enjoy"
+            },
+            {
+              "a": "sang",
+              "b": "sing"
+            },
+            {
+              "a": "drank",
+              "b": "drink"
+            },
+            {
+              "a": "dreamed",
+              "b": "dream",
+              "alt": [
+                "dreamt"
+              ]
+            },
+            {
+              "a": "caught",
+              "b": "catch"
+            },
+            {
+              "a": "filmed",
+              "b": "film"
+            },
+            {
+              "a": "learned",
+              "b": "learn",
+              "alt": [
+                "learnt"
+              ]
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

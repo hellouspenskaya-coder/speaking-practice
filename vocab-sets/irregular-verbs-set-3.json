@@ -177,5 +177,227 @@
       "pastSimple": "paid",
       "pastParticiple": "paid"
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🎫",
+              "w": "ticket"
+            },
+            {
+              "e": "🎭",
+              "w": "theatre"
+            },
+            {
+              "e": "🎤",
+              "w": "singer"
+            },
+            {
+              "e": "✉️",
+              "w": "letter"
+            }
+          ],
+          "text": "Jack was at the theatre with his class. He {1} his ticket in his hand and {2} in a long line at the door. At last he {3} the music from inside and smiled. His sister asked, \"Please can I sit next to you?\" and he {4} her take the seat by the wall. He {5} to the singer for two hours. On the way home he {6} a letter to his grandma about the night.",
+          "gaps": [
+            {
+              "a": "held",
+              "b": "hold"
+            },
+            {
+              "a": "stood",
+              "b": "stand"
+            },
+            {
+              "a": "heard",
+              "b": "hear"
+            },
+            {
+              "a": "let",
+              "b": "let"
+            },
+            {
+              "a": "listened",
+              "b": "listen"
+            },
+            {
+              "a": "wrote",
+              "b": "write"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "🍕",
+              "w": "pizza"
+            },
+            {
+              "e": "🚌",
+              "w": "bus"
+            },
+            {
+              "w": "crispy",
+              "g": "hard and dry, in a good way"
+            },
+            {
+              "w": "waiter",
+              "g": "a person who brings food in a café"
+            }
+          ],
+          "text": "Emma had a busy Saturday. On the way to the café she {1} her old friend Kate in the street. They {2} about school for ten minutes. Kate {3} goodbye and walked away. At the café a waiter came, and Emma {4} a big pizza. She asked what \"crispy\" was. The waiter explained that it {5} \"hard and dry, in a good way\". After lunch Emma {6} for the bus, because she was late. She {7} the bill with her card before she left. At home she {8} her homework and then {9} her alarm for seven o'clock.",
+          "gaps": [
+            {
+              "a": "met",
+              "b": "meet"
+            },
+            {
+              "a": "talked",
+              "b": "talk"
+            },
+            {
+              "a": "waved",
+              "b": "wave"
+            },
+            {
+              "a": "ordered",
+              "b": "order"
+            },
+            {
+              "a": "meant",
+              "b": "mean"
+            },
+            {
+              "a": "ran",
+              "b": "run"
+            },
+            {
+              "a": "paid",
+              "b": "pay"
+            },
+            {
+              "a": "finished",
+              "b": "finish"
+            },
+            {
+              "a": "set",
+              "b": "set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🍦",
+              "w": "ice cream"
+            },
+            {
+              "w": "stall",
+              "g": "a small table where people sell things"
+            },
+            {
+              "w": "cone",
+              "g": "a thin biscuit for ice cream"
+            },
+            {
+              "e": "💶",
+              "w": "euros"
+            }
+          ],
+          "text": "At the school fair Tom {1} next to the ice-cream stall. A woman {2} a cone of vanilla ice cream in each hand. Tom {3} at the prices on the board. Then he {4} the seller call, \"Two euros, please!\" He {5} for both cones. Later he {6} a thank-you card to his teacher.",
+          "gaps": [
+            {
+              "a": "stood",
+              "b": "stand"
+            },
+            {
+              "a": "held",
+              "b": "hold"
+            },
+            {
+              "a": "looked",
+              "b": "look"
+            },
+            {
+              "a": "heard",
+              "b": "hear"
+            },
+            {
+              "a": "paid",
+              "b": "pay"
+            },
+            {
+              "a": "wrote",
+              "b": "write"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "w": "stage",
+              "g": "the place where actors stand"
+            },
+            {
+              "w": "audience",
+              "g": "the people who watch a show"
+            },
+            {
+              "w": "crew",
+              "g": "the people who help behind the stage"
+            },
+            {
+              "w": "cousin",
+              "g": "the child of your uncle or aunt"
+            }
+          ],
+          "text": "Ella was in the school play. Before the show she {1} all the chairs twice: forty in all. Her friend {2} over a low bench to warm up. The play {3} a lot to Ella, because her grandma wrote it. Her teacher {4} the actors go on stage at seven o'clock. Ella {5} a heavy box up the stairs. The crew {6} the lights to blue for the last scene. The audience {7} loudly at the end. Ella {8} to her mum, and they {9} Ella's cousin at the door.",
+          "gaps": [
+            {
+              "a": "counted",
+              "b": "count"
+            },
+            {
+              "a": "jumped",
+              "b": "jump"
+            },
+            {
+              "a": "meant",
+              "b": "mean"
+            },
+            {
+              "a": "let",
+              "b": "let"
+            },
+            {
+              "a": "carried",
+              "b": "carry"
+            },
+            {
+              "a": "set",
+              "b": "set"
+            },
+            {
+              "a": "clapped",
+              "b": "clap"
+            },
+            {
+              "a": "ran",
+              "b": "run"
+            },
+            {
+              "a": "met",
+              "b": "meet"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

@@ -177,5 +177,231 @@
       "pastSimple": "wept",
       "pastParticiple": "wept"
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "w": "harbour",
+              "g": "a place where boats stay"
+            },
+            {
+              "w": "storm",
+              "g": "very bad weather with strong wind"
+            },
+            {
+              "e": "⛵",
+              "w": "boat"
+            },
+            {
+              "w": "brush",
+              "g": "you use it to clean the floor"
+            }
+          ],
+          "text": "A storm came to the little harbour. The wind {1} very hard all night. In the morning a small boat has {2} near the rocks. A wooden box {3} on the water. A fisherman's wife {4} the harbour floor with a big brush. Her old apron has {5} on a nail again, but she smiled: her baby was {6} in that village, and she loved it.",
+          "gaps": [
+            {
+              "a": "blew",
+              "b": "blow"
+            },
+            {
+              "a": "sunk",
+              "b": "sink"
+            },
+            {
+              "a": "floated",
+              "b": "float"
+            },
+            {
+              "a": "swept",
+              "b": "sweep"
+            },
+            {
+              "a": "torn",
+              "b": "tear"
+            },
+            {
+              "a": "born",
+              "b": "bear"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "🚢",
+              "w": "ship"
+            },
+            {
+              "e": "🌊",
+              "w": "waves"
+            },
+            {
+              "w": "rope",
+              "g": "a thick string"
+            },
+            {
+              "w": "lid",
+              "g": "the top of a pot"
+            },
+            {
+              "w": "stove",
+              "g": "the hot place in a kitchen where you cook"
+            }
+          ],
+          "text": "Captain Omar {1} out of the harbour at dawn. In the storm the wheel {2} round and round. Omar has always {3} calmly with big waves. When a sailor fell in the water, the crew {4} him with a rope. The sailor {5} with fear for a minute and then smiled. The cook {6} the soup pot with a lid. A sock has {7} to the wet floor, and nobody can pull it off. The lamp {8} left and right on the roof. In the evening everyone {9} their wet clothes by the stove.",
+          "gaps": [
+            {
+              "a": "sailed",
+              "b": "sail"
+            },
+            {
+              "a": "spun",
+              "b": "spin"
+            },
+            {
+              "a": "dealt",
+              "b": "deal"
+            },
+            {
+              "a": "rescued",
+              "b": "rescue"
+            },
+            {
+              "a": "wept",
+              "b": "weep"
+            },
+            {
+              "a": "covered",
+              "b": "cover"
+            },
+            {
+              "a": "stuck",
+              "b": "stick"
+            },
+            {
+              "a": "swung",
+              "b": "swing"
+            },
+            {
+              "a": "dried",
+              "b": "dry"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🎡",
+              "w": "fair"
+            },
+            {
+              "e": "🃏",
+              "w": "cards"
+            },
+            {
+              "w": "circus",
+              "g": "a show with clowns and animals"
+            },
+            {
+              "e": "🍬",
+              "w": "sweet"
+            }
+          ],
+          "text": "At the fair a little girl {1} high on a swing. Her friends {2} when she waved. A man {3} cards to four players at a small table. He was {4} in a circus family, and he loves cards. A sweet has {5} to his shoe, so he walked funny. His old rule book has {6} on one page.",
+          "gaps": [
+            {
+              "a": "swung",
+              "b": "swing"
+            },
+            {
+              "a": "laughed",
+              "b": "laugh"
+            },
+            {
+              "a": "dealt",
+              "b": "deal"
+            },
+            {
+              "a": "born",
+              "b": "bear"
+            },
+            {
+              "a": "stuck",
+              "b": "stick"
+            },
+            {
+              "a": "torn",
+              "b": "tear"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "w": "workshop",
+              "g": "a room for making things"
+            },
+            {
+              "w": "top",
+              "g": "a small toy that spins"
+            },
+            {
+              "w": "cloth",
+              "g": "a soft piece of material"
+            },
+            {
+              "w": "brush",
+              "g": "you use it to clean the floor"
+            }
+          ],
+          "text": "On Saturday Grandpa {1} the floor of his workshop with a big brush. A cold wind {2} through the open door, and Grandpa {3} to shut it. Then he {4} his old ship model with a soft cloth and {5} it in a blanket. \"This little ship has {6} twice in the lake!\" he said. \"The first time Grandma {7} for an hour.\" Then he {8} an old wooden top on the table, and when it stopped, we all {9}.",
+          "gaps": [
+            {
+              "a": "swept",
+              "b": "sweep"
+            },
+            {
+              "a": "blew",
+              "b": "blow"
+            },
+            {
+              "a": "hurried",
+              "b": "hurry"
+            },
+            {
+              "a": "polished",
+              "b": "polish"
+            },
+            {
+              "a": "wrapped",
+              "b": "wrap"
+            },
+            {
+              "a": "sunk",
+              "b": "sink"
+            },
+            {
+              "a": "wept",
+              "b": "weep"
+            },
+            {
+              "a": "spun",
+              "b": "spin"
+            },
+            {
+              "a": "cheered",
+              "b": "cheer"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

@@ -177,5 +177,227 @@
       "pastSimple": "built",
       "pastParticiple": "built"
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🍅",
+              "w": "tomato"
+            },
+            {
+              "w": "seeds",
+              "g": "small things that grow into plants"
+            },
+            {
+              "e": "🐸",
+              "w": "frog"
+            },
+            {
+              "w": "chapter",
+              "g": "a part of a book"
+            }
+          ],
+          "text": "Oliver loves his garden. On Sunday he {1} some tomato seeds in a small pot. He {2} on the grass with his book and {3} a chapter about frogs. His mum {4} to him from the window: \"Lunch is ready!\" The plants {5} a little every week. On Monday Oliver {6} a picture of the garden to his cousin.",
+          "gaps": [
+            {
+              "a": "planted",
+              "b": "plant"
+            },
+            {
+              "a": "sat",
+              "b": "sit"
+            },
+            {
+              "a": "read",
+              "b": "read"
+            },
+            {
+              "a": "spoke",
+              "b": "speak"
+            },
+            {
+              "a": "grew",
+              "b": "grow"
+            },
+            {
+              "a": "sent",
+              "b": "send"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "🐕",
+              "w": "dog"
+            },
+            {
+              "e": "🍎",
+              "w": "apple"
+            },
+            {
+              "w": "hut",
+              "g": "a very small simple house"
+            }
+          ],
+          "text": "It was a windy day. Kate {1} the plants with a small can before school. On the way to the park she {2} her hat when the wind took it. Her dog Max {3} the way through the gate, and Kate {4} him. \"Wait for me!\" she {5}. They {6} on the grass under a tree to rest. Suddenly an apple {7} from the tree onto Max's nose! Max jumped up, and Kate {8} to catch him. Later they {9} a small hut from sticks.",
+          "gaps": [
+            {
+              "a": "watered",
+              "b": "water"
+            },
+            {
+              "a": "lost",
+              "b": "lose"
+            },
+            {
+              "a": "led",
+              "b": "lead"
+            },
+            {
+              "a": "followed",
+              "b": "follow"
+            },
+            {
+              "a": "shouted",
+              "b": "shout"
+            },
+            {
+              "a": "lay",
+              "b": "lie"
+            },
+            {
+              "a": "fell",
+              "b": "fall"
+            },
+            {
+              "a": "hurried",
+              "b": "hurry"
+            },
+            {
+              "a": "built",
+              "b": "build"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🌧️",
+              "w": "rain"
+            },
+            {
+              "w": "sofa",
+              "g": "a soft seat for two or three people"
+            },
+            {
+              "w": "pirate",
+              "g": "a robber on a ship"
+            },
+            {
+              "e": "🖊️",
+              "w": "pen"
+            }
+          ],
+          "text": "It {1} all Saturday morning, so Sara stayed at home. She {2} on the sofa with a warm blanket and {3} a long story about a pirate. Her little brother {4} off his chair and cried, but he was fine. Then Sara {5} to her friend on the phone for an hour. Later she {6} her favourite pen and looked for it under the sofa.",
+          "gaps": [
+            {
+              "a": "rained",
+              "b": "rain"
+            },
+            {
+              "a": "lay",
+              "b": "lie"
+            },
+            {
+              "a": "read",
+              "b": "read"
+            },
+            {
+              "a": "fell",
+              "b": "fall"
+            },
+            {
+              "a": "spoke",
+              "b": "speak"
+            },
+            {
+              "a": "lost",
+              "b": "lose"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "w": "village",
+              "g": "a very small town"
+            },
+            {
+              "e": "🗺️",
+              "w": "map"
+            },
+            {
+              "w": "birdhouse",
+              "g": "a small wooden house for birds"
+            },
+            {
+              "w": "parcel",
+              "g": "a package you send by post"
+            },
+            {
+              "w": "head teacher",
+              "g": "the leader of a school"
+            }
+          ],
+          "text": "Tom's class went to a village school. The teacher {1} the children through the gate. They {2} in a circle on the floor and {3} for the head teacher. She came, smiled, and {4} at a big map on the wall. \"Look at the trees!\" she said. The children {5} that the trees on the map were green and red. The head teacher told them that the school garden {6} apples and pears every year. Then they {7} small birdhouses from wood. Tom {8} his birdhouse to his grandad in a parcel. At the end of the day Tom's mum {9} him at the gate.",
+          "gaps": [
+            {
+              "a": "led",
+              "b": "lead"
+            },
+            {
+              "a": "sat",
+              "b": "sit"
+            },
+            {
+              "a": "waited",
+              "b": "wait"
+            },
+            {
+              "a": "pointed",
+              "b": "point"
+            },
+            {
+              "a": "noticed",
+              "b": "notice"
+            },
+            {
+              "a": "grew",
+              "b": "grow"
+            },
+            {
+              "a": "built",
+              "b": "build"
+            },
+            {
+              "a": "sent",
+              "b": "send"
+            },
+            {
+              "a": "hugged",
+              "b": "hug"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

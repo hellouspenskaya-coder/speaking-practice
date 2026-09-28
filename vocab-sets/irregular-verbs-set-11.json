@@ -177,5 +177,234 @@
       "pastSimple": "quit",
       "pastParticiple": "quit"
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "w": "thread",
+              "g": "a thin string for sewing"
+            },
+            {
+              "e": "🐴",
+              "w": "horse"
+            },
+            {
+              "w": "pipe",
+              "g": "a tube for water"
+            },
+            {
+              "w": "hay",
+              "g": "dry grass for animals"
+            }
+          ],
+          "text": "Farmer Joe loved his farm. In winter he {1} old books with strong thread. His farm has {2} horses for many years. One cold night a water pipe {3} in the barn. A cat {4} in through the window and slept on the hay. Joe had {5} his job in the city before he bought the farm. The next day he {6} the pipe himself.",
+          "gaps": [
+            {
+              "a": "bound",
+              "b": "bind"
+            },
+            {
+              "a": "bred",
+              "b": "breed"
+            },
+            {
+              "a": "burst",
+              "b": "burst"
+            },
+            {
+              "a": "crept",
+              "b": "creep"
+            },
+            {
+              "a": "quit",
+              "b": "quit"
+            },
+            {
+              "a": "repaired",
+              "b": "repair"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "w": "mill",
+              "g": "a building where wheat becomes flour"
+            },
+            {
+              "e": "🌾",
+              "w": "wheat"
+            },
+            {
+              "w": "shadow",
+              "g": "the dark shape of something in the light"
+            },
+            {
+              "w": "lock",
+              "g": "you use a key to open it"
+            }
+          ],
+          "text": "At the old mill the miller {1} wheat into flour every day. A little girl {2} down to look at the big stones. Her mother {3} a long shadow on the wall with a lamp. The girl {4} her fear of the loud machine after a minute. The miller {5} his ears with cotton wool. At five o'clock the workers {6} around him to say goodbye. Someone {7} that the front door was open. A guard {8} it with a strong lock. The girl {9} her coat on a chair and went home.",
+          "gaps": [
+            {
+              "a": "ground",
+              "b": "grind"
+            },
+            {
+              "a": "knelt",
+              "b": "kneel"
+            },
+            {
+              "a": "cast",
+              "b": "cast"
+            },
+            {
+              "a": "overcame",
+              "b": "overcome"
+            },
+            {
+              "a": "protected",
+              "b": "protect"
+            },
+            {
+              "a": "gathered",
+              "b": "gather"
+            },
+            {
+              "a": "noticed",
+              "b": "notice"
+            },
+            {
+              "a": "fastened",
+              "b": "fasten"
+            },
+            {
+              "a": "laid",
+              "b": "lay"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "w": "pirate",
+              "g": "a robber on a ship"
+            },
+            {
+              "w": "net",
+              "g": "a thing for catching fish"
+            },
+            {
+              "e": "🗺️",
+              "w": "map"
+            },
+            {
+              "w": "deck",
+              "g": "the floor of a ship"
+            },
+            {
+              "w": "merchant",
+              "g": "a person who sells things"
+            }
+          ],
+          "text": "A pirate ship sailed out at night. The captain {1} a big net into the sea to catch fish. Then the pirates {2} along the dark deck without a sound. They {3} a merchant ship at midnight. The merchants were {4} by fear and gave up their gold. The captain {5} the prisoners' hands with strong rope. Later he {6} his map on the table and looked for an island.",
+          "gaps": [
+            {
+              "a": "cast",
+              "b": "cast",
+              "alt": [
+                "laid"
+              ]
+            },
+            {
+              "a": "crept",
+              "b": "creep"
+            },
+            {
+              "a": "attacked",
+              "b": "attack"
+            },
+            {
+              "a": "overcome",
+              "b": "overcome"
+            },
+            {
+              "a": "bound",
+              "b": "bind"
+            },
+            {
+              "a": "laid",
+              "b": "lay"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "🐶",
+              "w": "puppy"
+            },
+            {
+              "w": "oats",
+              "g": "a food from a plant, for breakfast"
+            },
+            {
+              "w": "flour",
+              "g": "white powder for making bread"
+            },
+            {
+              "e": "🌳",
+              "w": "trees"
+            }
+          ],
+          "text": "Maria has {1} dogs since she was twenty. Every day she {2} oats into flour for their food. She {3} the flour with milk in a big bowl. One day a bag {4}, and flour flew everywhere. Maria {5} on the floor to clean it up. Then a puppy fell into the river, and she {6} it. She {7} a warm blanket for it online. In April she {8} small trees behind the barn. She had {9} her city job to work with animals, and she was very happy.",
+          "gaps": [
+            {
+              "a": "bred",
+              "b": "breed"
+            },
+            {
+              "a": "ground",
+              "b": "grind"
+            },
+            {
+              "a": "mixed",
+              "b": "mix"
+            },
+            {
+              "a": "burst",
+              "b": "burst"
+            },
+            {
+              "a": "knelt",
+              "b": "kneel"
+            },
+            {
+              "a": "rescued",
+              "b": "rescue"
+            },
+            {
+              "a": "ordered",
+              "b": "order"
+            },
+            {
+              "a": "planted",
+              "b": "plant"
+            },
+            {
+              "a": "quit",
+              "b": "quit"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

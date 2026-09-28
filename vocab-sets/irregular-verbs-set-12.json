@@ -177,5 +177,239 @@
       "pastSimple": "forbade",
       "pastParticiple": "forbidden"
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🐝",
+              "w": "bee"
+            },
+            {
+              "w": "wolf",
+              "g": "a wild animal like a big dog"
+            },
+            {
+              "w": "mayor",
+              "g": "the leader of a town"
+            },
+            {
+              "w": "basket",
+              "g": "you carry things in it"
+            },
+            {
+              "e": "🍞",
+              "w": "bread"
+            }
+          ],
+          "text": "A young man {1} his lost dog for three days. A bee {2} him on the hand, but he didn't stop. A kind neighbour {3} him about the wolves in the forest. It was {4} to walk there at night, said the mayor. At last he found the dog, and he {5} his bread with it. The next day an old man {6} a basket from thin branches for the dog.",
+          "gaps": [
+            {
+              "a": "sought",
+              "b": "seek"
+            },
+            {
+              "a": "stung",
+              "b": "sting"
+            },
+            {
+              "a": "warned",
+              "b": "warn"
+            },
+            {
+              "a": "forbidden",
+              "b": "forbid"
+            },
+            {
+              "a": "split",
+              "b": "split"
+            },
+            {
+              "a": "wove",
+              "b": "weave"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "w": "fair",
+              "g": "a big event with games and stalls"
+            },
+            {
+              "w": "stall",
+              "g": "a small table where people sell things"
+            },
+            {
+              "e": "📻",
+              "w": "radio"
+            },
+            {
+              "e": "🐟",
+              "w": "fish"
+            }
+          ],
+          "text": "At the fair a problem {1} at noon: the fish at the old stall {2} terribly. This {3} many visitors. The mayor {4} the problem with the stall owner. He {5} the man to stay if he cleaned the stall. A worker {6} the fish again at two o'clock. Two boys {7} ten euros that the smell would be gone by then. At four o'clock the local radio {8} the news. In the evening everyone {9} cake in the town hall.",
+          "gaps": [
+            {
+              "a": "arose",
+              "b": "arise"
+            },
+            {
+              "a": "stank",
+              "b": "stink"
+            },
+            {
+              "a": "upset",
+              "b": "upset"
+            },
+            {
+              "a": "discussed",
+              "b": "discuss"
+            },
+            {
+              "a": "allowed",
+              "b": "allow"
+            },
+            {
+              "a": "checked",
+              "b": "check"
+            },
+            {
+              "a": "bet",
+              "b": "bet"
+            },
+            {
+              "a": "broadcast",
+              "b": "broadcast"
+            },
+            {
+              "a": "shared",
+              "b": "share"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🚲",
+              "w": "bike"
+            },
+            {
+              "w": "tyre",
+              "g": "the round rubber part of a wheel"
+            },
+            {
+              "w": "chain",
+              "g": "the part that moves the pedals"
+            },
+            {
+              "w": "garage",
+              "g": "a room for a car or a bike"
+            },
+            {
+              "e": "🐝",
+              "w": "bee"
+            }
+          ],
+          "text": "Nina {1} her brother five euros that she could fix her old bike alone. First a bee {2} her on the finger, but she kept working. She {3} the flat tyre with a small patch. Then a new problem {4}: the chain was missing. She {5} it in the garage for an hour. Her brother had {6} her with his rude jokes, but she stayed calm.",
+          "gaps": [
+            {
+              "a": "bet",
+              "b": "bet"
+            },
+            {
+              "a": "stung",
+              "b": "sting"
+            },
+            {
+              "a": "repaired",
+              "b": "repair"
+            },
+            {
+              "a": "arose",
+              "b": "arise"
+            },
+            {
+              "a": "sought",
+              "b": "seek"
+            },
+            {
+              "a": "upset",
+              "b": "upset"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "w": "camp",
+              "g": "a holiday place with tents"
+            },
+            {
+              "w": "counsellor",
+              "g": "a person who looks after children at a camp"
+            },
+            {
+              "e": "⛺",
+              "w": "tent"
+            },
+            {
+              "w": "bracelet",
+              "g": "a small ring for your arm"
+            },
+            {
+              "e": "📻",
+              "w": "radio"
+            }
+          ],
+          "text": "At the summer camp the counsellors {1} the children into two teams. The old boots in the tent {2} terribly. A girl {3} the smell to the leader, and he {4} the problem by washing them. A nurse {5} a boy's sore knee. In the afternoon the girls {6} bracelets from red thread. The leader {7} a campfire that night. But then the rain came, and he {8} everyone to leave the tents. The camp radio {9} songs all evening.",
+          "gaps": [
+            {
+              "a": "split",
+              "b": "split"
+            },
+            {
+              "a": "stank",
+              "b": "stink"
+            },
+            {
+              "a": "reported",
+              "b": "report"
+            },
+            {
+              "a": "solved",
+              "b": "solve"
+            },
+            {
+              "a": "treated",
+              "b": "treat"
+            },
+            {
+              "a": "wove",
+              "b": "weave"
+            },
+            {
+              "a": "promised",
+              "b": "promise"
+            },
+            {
+              "a": "forbade",
+              "b": "forbid"
+            },
+            {
+              "a": "broadcast",
+              "b": "broadcast"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

@@ -177,5 +177,239 @@
       "pastSimple": "kept",
       "pastParticiple": "kept"
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🎂",
+              "w": "birthday"
+            },
+            {
+              "e": "👗",
+              "w": "dress"
+            },
+            {
+              "e": "📞",
+              "w": "phone"
+            },
+            {
+              "w": "excited",
+              "g": "very happy about something"
+            },
+            {
+              "w": "guests",
+              "g": "people you invite to a party"
+            }
+          ],
+          "text": "Lily's birthday was on Saturday. On Friday she {1} about the party all day, and she couldn't sleep. After school she {2} her friend Zoe on the phone and {3} her, \"Please come at four o'clock!\" Zoe {4} very excited. On Saturday Zoe {5} Lily her new dress. \"Do you like it?\" she asked. At six o'clock the guests {6} the party and went home.",
+          "gaps": [
+            {
+              "a": "thought",
+              "b": "think"
+            },
+            {
+              "a": "called",
+              "b": "call"
+            },
+            {
+              "a": "told",
+              "b": "tell"
+            },
+            {
+              "a": "became",
+              "b": "become"
+            },
+            {
+              "a": "showed",
+              "b": "show"
+            },
+            {
+              "a": "left",
+              "b": "leave"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "🎈",
+              "w": "balloons"
+            },
+            {
+              "e": "🐇",
+              "w": "rabbit"
+            },
+            {
+              "e": "🎩",
+              "w": "hat"
+            },
+            {
+              "w": "magician",
+              "g": "a person who does magic"
+            },
+            {
+              "w": "aunt",
+              "g": "your mum's or dad's sister"
+            }
+          ],
+          "text": "Ben's party started at four o'clock. First, Ben {1} all the balloons on the wall with tape. His aunt {2} a big chocolate cake to the party. Last week Ben {3} six friends, and now they were all here. The children {4} for the magician at the door. The magician {5} the show at half past four. Everyone {6} when he pulled a rabbit out of his hat. Ben's little sister {7} the rabbit safe in her arms all evening. After the show his friends {8} in the games. At the end of the day Ben {9} tired but happy.",
+          "gaps": [
+            {
+              "a": "put",
+              "b": "put"
+            },
+            {
+              "a": "brought",
+              "b": "bring"
+            },
+            {
+              "a": "invited",
+              "b": "invite"
+            },
+            {
+              "a": "waited",
+              "b": "wait"
+            },
+            {
+              "a": "began",
+              "b": "begin"
+            },
+            {
+              "a": "smiled",
+              "b": "smile"
+            },
+            {
+              "a": "kept",
+              "b": "keep"
+            },
+            {
+              "a": "joined",
+              "b": "join"
+            },
+            {
+              "a": "felt",
+              "b": "feel"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🖌️",
+              "w": "brush"
+            },
+            {
+              "e": "🖼️",
+              "w": "frame"
+            },
+            {
+              "e": "🎁",
+              "w": "present"
+            },
+            {
+              "w": "wrapped",
+              "g": "covered in paper"
+            }
+          ],
+          "text": "Sara wanted to make a present for her granny. She {1} about it for a long time. Then she {2} her dad, \"I have an idea!\" She {3} a big red house and a green tree with her brush. Dad went to the shop and {4} her a frame. Sara {5} the picture in the frame and wrapped it carefully. At seven o'clock she {6} the house with the present in her bag and walked to Granny's.",
+          "gaps": [
+            {
+              "a": "thought",
+              "b": "think"
+            },
+            {
+              "a": "told",
+              "b": "tell"
+            },
+            {
+              "a": "painted",
+              "b": "paint"
+            },
+            {
+              "a": "brought",
+              "b": "bring"
+            },
+            {
+              "a": "put",
+              "b": "put"
+            },
+            {
+              "a": "left",
+              "b": "leave"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "🐖",
+              "w": "pig"
+            },
+            {
+              "e": "🐑",
+              "w": "lamb"
+            },
+            {
+              "w": "barn",
+              "g": "a big farm building for animals"
+            },
+            {
+              "w": "feather",
+              "g": "a light thing from a bird's wing"
+            },
+            {
+              "w": "farmer",
+              "g": "a person who works on a farm"
+            }
+          ],
+          "text": "Tom's class visited a farm. The trip {1} at eight o'clock in the morning. The farmer {2} the children the cows and the chickens. The children {3} when a small pig ran between their legs. Tom {4} up an apple tree to see the whole farm. Then it started to rain, so everybody {5} a coat. They {6} in the barn for an hour. Tom {7} sorry for a little lamb, because it was alone in the rain. Later the rain stopped and the sky {8} blue again. Tom {9} a small feather in his pocket all day.",
+          "gaps": [
+            {
+              "a": "began",
+              "b": "begin"
+            },
+            {
+              "a": "showed",
+              "b": "show"
+            },
+            {
+              "a": "laughed",
+              "b": "laugh"
+            },
+            {
+              "a": "climbed",
+              "b": "climb"
+            },
+            {
+              "a": "needed",
+              "b": "need"
+            },
+            {
+              "a": "stayed",
+              "b": "stay"
+            },
+            {
+              "a": "felt",
+              "b": "feel"
+            },
+            {
+              "a": "became",
+              "b": "become"
+            },
+            {
+              "a": "kept",
+              "b": "keep"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

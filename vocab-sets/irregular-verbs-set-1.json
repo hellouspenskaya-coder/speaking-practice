@@ -177,5 +177,237 @@
       "pastSimple": "found",
       "pastParticiple": "found"
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🌳",
+              "w": "park"
+            },
+            {
+              "e": "🎒",
+              "w": "bag"
+            },
+            {
+              "e": "⚽",
+              "w": "ball"
+            },
+            {
+              "e": "🍪",
+              "w": "biscuit"
+            }
+          ],
+          "text": "On Saturday Mia {1} to the park with her brother. She {2} the way very well. In the park they {3} a big brown dog. Her brother {4} a ball out of his bag, and the children {5} with it for an hour. Then Mia {6} the dog a biscuit.",
+          "gaps": [
+            {
+              "a": "went",
+              "b": "go"
+            },
+            {
+              "a": "knew",
+              "b": "know"
+            },
+            {
+              "a": "saw",
+              "b": "see"
+            },
+            {
+              "a": "took",
+              "b": "take"
+            },
+            {
+              "a": "played",
+              "b": "play"
+            },
+            {
+              "a": "gave",
+              "b": "give"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "🍲",
+              "w": "pot"
+            },
+            {
+              "e": "🥕",
+              "w": "carrots"
+            },
+            {
+              "e": "🍽️",
+              "w": "dishes"
+            }
+          ],
+          "text": "Mia's mum was in the kitchen. She {1} a big pot of soup with carrots and onions. Mia {2} her mum with the salad. \"Time to eat!\" Mum {3}. Then Mia's granny {4} for dinner, and she was very happy. It was hot, so Mia {5} the window. Under the table she {6} her old pencil, the one she lost last week! After dinner Mia {7} the dishes. At nine o'clock she {8} a cartoon on TV. At ten o'clock she {9} ready for bed.",
+          "gaps": [
+            {
+              "a": "made",
+              "b": "make"
+            },
+            {
+              "a": "helped",
+              "b": "help"
+            },
+            {
+              "a": "said",
+              "b": "say"
+            },
+            {
+              "a": "came",
+              "b": "come"
+            },
+            {
+              "a": "opened",
+              "b": "open"
+            },
+            {
+              "a": "found",
+              "b": "find",
+              "alt": [
+                "got"
+              ]
+            },
+            {
+              "a": "washed",
+              "b": "wash"
+            },
+            {
+              "a": "watched",
+              "b": "watch"
+            },
+            {
+              "a": "got",
+              "b": "get"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "👵",
+              "w": "grandmother"
+            },
+            {
+              "e": "🚌",
+              "w": "bus"
+            },
+            {
+              "e": "🐟",
+              "w": "fish"
+            },
+            {
+              "e": "🌸",
+              "w": "flower"
+            },
+            {
+              "w": "cousins",
+              "g": "your uncle's or aunt's children"
+            }
+          ],
+          "text": "Last Sunday Tom {1} his grandmother. He {2} the bus at nine o'clock. His grandmother {3} a big lunch: fish and potatoes. Tom {4} her a flower from the garden. Later his cousins {5} to the house too. Tom {6} all of them very well, because he saw them every summer.",
+          "gaps": [
+            {
+              "a": "visited",
+              "b": "visit"
+            },
+            {
+              "a": "took",
+              "b": "take"
+            },
+            {
+              "a": "cooked",
+              "b": "cook"
+            },
+            {
+              "a": "gave",
+              "b": "give"
+            },
+            {
+              "a": "came",
+              "b": "come"
+            },
+            {
+              "a": "knew",
+              "b": "know"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "🏊",
+              "w": "swimming"
+            },
+            {
+              "e": "👋",
+              "w": "waved"
+            },
+            {
+              "e": "🛏️",
+              "w": "bed"
+            },
+            {
+              "e": "💬",
+              "w": "message"
+            },
+            {
+              "w": "school trip",
+              "g": "a day out with your class"
+            }
+          ],
+          "text": "Tom {1} swimming with his dad on Monday. Mr Black, his teacher, was in the water. Tom {2} him and waved. Mr Black {3} \"Good morning!\" and smiled. Tom {4} him about the school trip. He {5} to join it very much. At home he {6} a list of things for the trip. He looked for his old bag for ten minutes, and at last he {7} it under the bed. It was dirty, so he {8} it. On Friday Tom {9} a message from the school: the trip was on!",
+          "gaps": [
+            {
+              "a": "went",
+              "b": "go"
+            },
+            {
+              "a": "saw",
+              "b": "see"
+            },
+            {
+              "a": "said",
+              "b": "say"
+            },
+            {
+              "a": "asked",
+              "b": "ask"
+            },
+            {
+              "a": "wanted",
+              "b": "want"
+            },
+            {
+              "a": "made",
+              "b": "make"
+            },
+            {
+              "a": "found",
+              "b": "find"
+            },
+            {
+              "a": "cleaned",
+              "b": "clean"
+            },
+            {
+              "a": "got",
+              "b": "get",
+              "alt": [
+                "found"
+              ]
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

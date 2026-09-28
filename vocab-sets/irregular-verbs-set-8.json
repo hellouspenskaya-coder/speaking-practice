@@ -177,5 +177,245 @@
       "pastSimple": "bit",
       "pastParticiple": "bitten"
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "w": "shovel",
+              "g": "a tool for digging"
+            },
+            {
+              "w": "hole",
+              "g": "an empty place in the ground"
+            },
+            {
+              "w": "neighbour",
+              "g": "a person who lives next to you"
+            },
+            {
+              "e": "📦",
+              "w": "box"
+            },
+            {
+              "e": "🔥",
+              "w": "fire"
+            }
+          ],
+          "text": "Last summer Grandpa {1} a big hole in the garden. He {2} a small box in the hole, and now nobody can find it! Yesterday his neighbour {3} him. She {4} him her shovel for the weekend. In the evening they {5} a small fire in the garden. Grandpa has not {6} the shovel yet, and it is still dirty.",
+          "gaps": [
+            {
+              "a": "dug",
+              "b": "dig"
+            },
+            {
+              "a": "hid",
+              "b": "hide"
+            },
+            {
+              "a": "visited",
+              "b": "visit"
+            },
+            {
+              "a": "lent",
+              "b": "lend"
+            },
+            {
+              "a": "lit",
+              "b": "light",
+              "alt": [
+                "lighted"
+              ]
+            },
+            {
+              "a": "cleaned",
+              "b": "clean"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "📞",
+              "w": "phone"
+            },
+            {
+              "w": "butter",
+              "g": "yellow food you put on bread"
+            },
+            {
+              "e": "🦟",
+              "w": "mosquito"
+            },
+            {
+              "w": "bottle",
+              "g": "you keep water in it"
+            }
+          ],
+          "text": "Ben and his sister Anna {1} about a toy this morning. Ben has already {2} her, so now they are friends again. The phone {3} at ten o'clock, and it was Grandma. Anna has already {4} butter on the bread. Ben has {5} the bottle, so be careful when you open it! A mosquito has {6} Anna twice today. Mum {7} Anna, \"Does it hurt?\" They {8} to stay at home this afternoon. Ben {9} English for an hour, and Anna read a book.",
+          "gaps": [
+            {
+              "a": "fought",
+              "b": "fight"
+            },
+            {
+              "a": "forgiven",
+              "b": "forgive"
+            },
+            {
+              "a": "rang",
+              "b": "ring"
+            },
+            {
+              "a": "spread",
+              "b": "spread"
+            },
+            {
+              "a": "shaken",
+              "b": "shake"
+            },
+            {
+              "a": "bitten",
+              "b": "bite"
+            },
+            {
+              "a": "asked",
+              "b": "ask"
+            },
+            {
+              "a": "decided",
+              "b": "decide"
+            },
+            {
+              "a": "studied",
+              "b": "study"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stories": [
+        {
+          "strip": [
+            {
+              "e": "🔔",
+              "w": "bell"
+            },
+            {
+              "e": "🥪",
+              "w": "sandwich"
+            },
+            {
+              "e": "🖊️",
+              "w": "pen"
+            },
+            {
+              "e": "🌳",
+              "w": "tree"
+            },
+            {
+              "w": "cook",
+              "g": "a person who makes food"
+            }
+          ],
+          "text": "Last week our class {1} a hole in the school garden for a new tree. Mr Green {2} us with the work all morning. The old bell {3} at twelve o'clock, and we all went to lunch. Our cook {4} soup and rice for us. A boy has {5} his sandwich in his bag, and now he can't find it! After lunch I {6} Tom my pen for the test.",
+          "gaps": [
+            {
+              "a": "dug",
+              "b": "dig"
+            },
+            {
+              "a": "helped",
+              "b": "help"
+            },
+            {
+              "a": "rang",
+              "b": "ring"
+            },
+            {
+              "a": "cooked",
+              "b": "cook"
+            },
+            {
+              "a": "hidden",
+              "b": "hide"
+            },
+            {
+              "a": "lent",
+              "b": "lend"
+            }
+          ]
+        },
+        {
+          "strip": [
+            {
+              "e": "⚽",
+              "w": "football"
+            },
+            {
+              "e": "🦟",
+              "w": "mosquito"
+            },
+            {
+              "e": "⭐",
+              "w": "stars"
+            },
+            {
+              "w": "blanket",
+              "g": "a soft cover for a bed or the grass"
+            },
+            {
+              "e": "🔥",
+              "w": "fire"
+            }
+          ],
+          "text": "Sam and Leo {1} about a football yesterday. Later Sam said sorry, and Leo {2} him. They {3} hands and became friends again. The boys {4} football in the park for an hour. A mosquito has {5} Sam on the arm twice today. In the evening they {6} a fire and sat around it. Sam {7} a blanket on the grass. They {8} the stars for a long time. Sam {9} to stay longer, but it was late.",
+          "gaps": [
+            {
+              "a": "fought",
+              "b": "fight"
+            },
+            {
+              "a": "forgave",
+              "b": "forgive"
+            },
+            {
+              "a": "shook",
+              "b": "shake"
+            },
+            {
+              "a": "played",
+              "b": "play"
+            },
+            {
+              "a": "bitten",
+              "b": "bite"
+            },
+            {
+              "a": "lit",
+              "b": "light",
+              "alt": [
+                "lighted"
+              ]
+            },
+            {
+              "a": "spread",
+              "b": "spread"
+            },
+            {
+              "a": "watched",
+              "b": "watch"
+            },
+            {
+              "a": "wanted",
+              "b": "want"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }
