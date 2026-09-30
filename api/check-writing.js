@@ -26,9 +26,9 @@ ${answer}
 
 Go sentence by sentence. For EVERY sentence the student wrote, produce one item:
 - If it's grammatically correct and natural: {"status": "correct", "text": "the sentence exactly as written"}
-- Only if it has a genuine error (wrong grammar, wrong word choice, spelling, unnatural phrasing): {"status": "error", "text": "that sentence with the specific wrong word or phrase wrapped like §ERR§wrong bit§/ERR§ (wrap only the problem part, not the whole sentence)", "corrected": "that same sentence fully fixed"}
+- Only if it has at least one genuine error (wrong grammar, wrong word choice, spelling, unnatural phrasing): {"status": "error", "text": "that sentence with EVERY wrong word or phrase wrapped like §ERR§wrong bit§/ERR§ — a single sentence can have two, three, or more separate errors, keep searching the whole sentence and wrap each one, don't stop after the first", "corrected": "that same sentence with ALL of those errors fixed at once, not just one"}
 
-Important: do NOT mark a sentence as "error" just because it uses one of the target vocabulary words, or because you want to comment on it — using a target word correctly is success, not an error. Only use "error" when the corrected version would actually be different from the original. If you can't produce a corrected version that differs from the original, the sentence is correct — mark it "correct".
+Important: do NOT mark a sentence as "error" just because it uses one of the target vocabulary words, or because you want to comment on it — using a target word correctly is success, not an error. Only use "error" when the corrected version would actually be different from the original. If you can't produce a corrected version that differs from the original, the sentence is correct — mark it "correct". But once a sentence does have errors, be thorough — find all of them in one pass, not one at a time.
 
 Return ONLY a JSON object: {"items": [...]}, one item per sentence, in the original order. No markdown fences, no extra text.`;
 
