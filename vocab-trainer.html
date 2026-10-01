@@ -184,8 +184,8 @@ const setSlug = params.get('set');
 const isWorksheet = params.get('worksheet') === '1';
 const app = document.getElementById('app');
 
-const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping', 'verbFormsDictation'];
-const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'phraseBuilder', 'prepositions', 'collocations'];
+const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'contextGap', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping', 'verbFormsDictation'];
+const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'contextGap', 'phraseBuilder', 'prepositions', 'collocations'];
 const GROUP_MODES = ['matching', 'matchingDef', 'whatsMissing', 'phraseMatch'];
 // Most pictures shown at once in matching / what's missing.
 // Kept low so a beginner can actually hold them in mind.
@@ -218,6 +218,8 @@ async function init() {
   }
   if (isWorksheet) {
     renderWorksheet();
+  } else if (setData.passage && setData.passage.text) {
+    renderReading();
   } else {
     renderGallery();
   }
@@ -261,7 +263,7 @@ function renderGallery() {
     <div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;padding:20px;"></div>
   `;
   document.getElementById('startBtn').addEventListener('click', () => {
-    queue = buildSession(setData).concat(buildStorySteps(setData));
+    queue = buildPassageTapSteps(setData).concat(buildSession(setData)).concat(buildStorySteps(setData));
     stepIndex = 0;
     renderStep();
   });
@@ -609,6 +611,9 @@ function eligibleSingleModes(item, enabledModes) {
   // (all familiar to the student) rather than invented rhymes, so it
   // needs at least 3 other items to offer a real four-way choice.
   const canUseListening = (setData.items || []).filter(i => i.id !== item.id).length >= 3;
+  const contextGapForms = (setData.items || []).filter(i => i.passageForm).length;
+  const canUseContextGap = Boolean(item.passageForm && item.example
+    && item.example.toLowerCase().includes(item.passageForm.toLowerCase()) && contextGapForms >= 4);
   const canUsePrepositions = item.requiresPreposition && item.correctPreposition && item.prepositionSentence;
   const wordFormationAnswerValid = Array.isArray(item.wordFamily) && item.wordFormationAnswer
     && item.wordFamily.some(f => f.form && f.form.toLowerCase() === item.wordFormationAnswer.toLowerCase());
@@ -626,6 +631,7 @@ function eligibleSingleModes(item, enabledModes) {
     if (!enabledModes.includes(m)) return false;
     if ((m === 'multipleChoice' || m === 'multipleChoiceReverse') && !canUsePictures) return false;
     if (m === 'listening' && !canUseListening) return false;
+    if (m === 'contextGap' && !canUseContextGap) return false;
     if (m === 'dictation' && !item.image) return false;
     if (m === 'prepositions' && !canUsePrepositions) return false;
     if (m === 'wordFormation' && !canUseWordFormation) return false;
@@ -871,7 +877,9 @@ function renderStep() {
     renderStep();
   };
 
-  if (step.kind === 'story') {
+  if (step.kind === 'passageTap') {
+    renderPassageTap(cardArea, step.tap, onDone);
+  } else if (step.kind === 'story') {
     renderStory(cardArea, step, () => {
       if (step.lastInBlock) bumpStoryRuns();
       stepIndex += 1;
@@ -881,6 +889,7 @@ function renderStep() {
     if (step.mode === 'multipleChoice') renderMultipleChoice(cardArea, step.item, onDone);
     else if (step.mode === 'multipleChoiceReverse') renderMultipleChoiceReverse(cardArea, step.item, onDone);
     else if (step.mode === 'listening') renderListening(cardArea, step.item, onDone);
+    else if (step.mode === 'contextGap') renderContextGap(cardArea, step.item, onDone);
     else if (step.mode === 'dictation') renderDictation(cardArea, step.item, onDone, true);
     else if (step.mode === 'dictationNoImage') renderDictation(cardArea, step.item, onDone, false);
     else if (step.mode === 'prepositions') renderPrepositions(cardArea, step.item, onDone);
@@ -957,7 +966,9 @@ function modeLabel(mode) {
     phraseMatch: 'Match the phrase',
     antonyms: 'Opposites',
     antonymMatching: 'Match the opposites',
-    story: 'Complete the story'
+    story: 'Complete the story',
+    contextGap: 'Choose the word in context',
+    passageTap: 'Read and choose'
   })[mode] || mode;
 }
 
@@ -2155,6 +2166,151 @@ function renderAntonyms(container, item, answer, onDone) {
         feedback.textContent = `The opposite of "${item.text}" is "${answer.text}"`;
       }
       activeTimers.push(setTimeout(() => onDone(correct), correct ? 700 : 2500));
+    });
+    grid.appendChild(btn);
+  });
+}
+
+// --- Text sets: a real excerpt with highlighted words, then reading-skill
+// questions, then the usual word practice. Only sets whose JSON has a
+// "passage" use any of this; every other set is untouched. ---
+function escapeRegex(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+function renderReading() {
+  const passage = setData.passage;
+  const items = (setData.items || []).filter(i => i.passageForm && i.definition);
+  let html = escapeHtml(passage.text);
+  const tokens = [];
+  items.slice().sort((a, b) => b.passageForm.length - a.passageForm.length).forEach(it => {
+    const re = new RegExp('(?<![A-Za-z])' + escapeRegex(escapeHtml(it.passageForm)) + '(?![A-Za-z])', 'i');
+    html = html.replace(re, m => { tokens.push({ id: it.id, text: m }); return '\u0000' + (tokens.length - 1) + '\u0000'; });
+  });
+  html = html.replace(/\u0000(\d+)\u0000/g, (m, i) =>
+    `<span class="hl-word" data-id="${escapeAttr(tokens[i].id)}">${tokens[i].text}</span>`);
+
+  const src = passage.source || {};
+  const srcLine = src.url
+    ? `Source: <a href="${escapeAttr(src.url)}" target="_blank" rel="noopener">${escapeHtml(src.title || src.url)}</a>${src.authors ? ' · ' + escapeHtml(src.authors) : ''}${src.journal ? ' · ' + escapeHtml(src.journal) : ''}${src.license ? ' · ' + escapeHtml(src.license) : ''}. Excerpt shortened, citations removed.`
+    : '';
+
+  app.innerHTML = `
+    <style>
+      .hl-word { background: #fef3c7; border-bottom: 2px solid #f59e0b; border-radius: 3px; padding: 0 2px; cursor: pointer; }
+      .hl-word.on { background: #fde68a; }
+    </style>
+    <p style="font-size:16px;font-weight:600;margin:0 0 4px;">${escapeHtml(setData.topic || 'Reading')}</p>
+    <p style="font-size:14px;color:var(--muted);margin:0 0 12px;">Read the text. Tap a highlighted word to see what it means.</p>
+    <div class="card" style="text-align:left;">
+      <p id="readText" style="font-size:17px;line-height:1.75;margin:0;">${html}</p>
+    </div>
+    <div id="defBox" style="display:none;margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--teal-light);text-align:left;font-size:15px;line-height:1.5;"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+      <button id="readListen">&#128266; Listen</button>
+      <button class="primary" id="readNext" style="flex:1;">Continue</button>
+    </div>
+    ${srcLine ? `<p style="font-size:12px;color:var(--muted);margin:16px 0 0;line-height:1.5;">${srcLine}</p>` : ''}
+  `;
+  const defBox = document.getElementById('defBox');
+  app.querySelectorAll('.hl-word').forEach(el => {
+    el.addEventListener('click', () => {
+      const it = items.find(i => i.id === el.dataset.id);
+      if (!it) return;
+      app.querySelectorAll('.hl-word').forEach(x => x.classList.remove('on'));
+      el.classList.add('on');
+      defBox.style.display = 'block';
+      defBox.innerHTML = `<strong>${escapeHtml(it.text)}</strong> &mdash; ${escapeHtml(it.definition)}`;
+    });
+  });
+  document.getElementById('readListen').addEventListener('click', () => speakText(passage.text));
+  document.getElementById('readNext').addEventListener('click', () => {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    renderGallery();
+  });
+}
+
+function buildPassageTapSteps(data) {
+  const taps = data && data.passage && Array.isArray(data.passage.taps) ? data.passage.taps : [];
+  return taps
+    .filter(t => t && t.correct && Array.isArray(t.wrong) && t.wrong.length >= 1)
+    .map(t => ({ kind: 'passageTap', mode: 'passageTap', tap: t, phase: 'practice' }));
+}
+
+function renderPassageTap(container, tap, onDone) {
+  let ctx = '';
+  if (tap.context) {
+    let h = escapeHtml(tap.context);
+    if (tap.mark) {
+      h = h.replace(new RegExp('(?<![A-Za-z])' + escapeRegex(escapeHtml(tap.mark)) + '(?![A-Za-z])', 'i'),
+        m => `<mark style="background:#fde68a;border-radius:3px;padding:0 2px;">${m}</mark>`);
+    }
+    ctx = `<p style="font-size:15px;line-height:1.6;text-align:left;background:var(--teal-light);border-radius:10px;padding:10px 12px;margin:0 0 12px;">${h}</p>`;
+  } else if (tap.kind === 'mainIdea' && setData.passage) {
+    ctx = `<p style="font-size:14px;line-height:1.6;text-align:left;background:var(--teal-light);border-radius:10px;padding:10px 12px;margin:0 0 12px;max-height:170px;overflow:auto;">${escapeHtml(setData.passage.text)}</p>`;
+  }
+  const options = shuffle([tap.correct].concat(tap.wrong.slice(0, 2)));
+  container.innerHTML = `
+    <p class="mode-label">${escapeHtml(tap.prompt || 'Choose the best answer')}</p>
+    ${ctx}
+    <div class="word-choice-grid" id="tapGrid" style="grid-template-columns:1fr;"></div>
+    <div id="feedback"></div>
+  `;
+  const grid = document.getElementById('tapGrid');
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'word-tile';
+    btn.style.cssText = 'text-align:left;line-height:1.45;font-weight:400;font-size:14px;padding:10px 12px;height:auto;';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => {
+      const isCorrect = opt === tap.correct;
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      if (!isCorrect) {
+        const cb = [...grid.querySelectorAll('.word-tile')].find(b => b.textContent === tap.correct);
+        if (cb) cb.classList.add('correct');
+      }
+      const fb = document.createElement('div');
+      fb.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+      fb.textContent = tap.explain || (isCorrect ? 'Correct' : 'Not quite');
+      document.getElementById('feedback').appendChild(fb);
+      grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
+      activeTimers.push(setTimeout(() => onDone(isCorrect), tap.explain ? (isCorrect ? 2400 : 4200) : (isCorrect ? 700 : 2500)));
+    });
+    grid.appendChild(btn);
+  });
+}
+
+// The sentence from the text with the word blanked out; the options are
+// the other highlighted words, exactly as they appear in the text.
+function renderContextGap(container, item, onDone) {
+  const form = item.passageForm;
+  const others = shuffle((setData.items || []).filter(i => i.id !== item.id && i.passageForm)).slice(0, 3);
+  const options = shuffle([form].concat(others.map(o => o.passageForm)));
+  const re = new RegExp('(?<![A-Za-z])' + escapeRegex(escapeHtml(form)) + '(?![A-Za-z])', 'i');
+  const sentenceHtml = escapeHtml(item.example).replace(re,
+    '<u style="text-decoration:none;border-bottom:2px solid var(--border);padding:0 8px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>');
+  container.innerHTML = `
+    <p class="mode-label">Choose the word that fits</p>
+    <p style="font-size:17px;line-height:1.6;text-align:center;margin:14px 0;">${sentenceHtml}</p>
+    <div class="word-choice-grid" id="ctxGrid"></div>
+    <div id="feedback"></div>
+  `;
+  const grid = document.getElementById('ctxGrid');
+  options.forEach(word => {
+    const btn = document.createElement('button');
+    btn.className = 'word-tile';
+    btn.textContent = word;
+    btn.addEventListener('click', () => {
+      const isCorrect = word === form;
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      if (!isCorrect) {
+        const cb = [...grid.querySelectorAll('.word-tile')].find(b => b.textContent === form);
+        if (cb) cb.classList.add('correct');
+        const fb = document.createElement('div');
+        fb.className = 'feedback wrong';
+        fb.textContent = `It's "${form}": ${item.definition || ''}`;
+        document.getElementById('feedback').appendChild(fb);
+      }
+      grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
+      activeTimers.push(setTimeout(() => onDone(isCorrect), isCorrect ? 700 : 2800));
     });
     grid.appendChild(btn);
   });

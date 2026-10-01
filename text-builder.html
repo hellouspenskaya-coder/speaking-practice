@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Text Set Builder</title>
+<style>
+  :root {
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+    --success: #16a34a;
+    --success-light: #f0fdf4;
+    --warn: #b45309;
+    --warn-light: #fffbeb;
+    --bg: #f8fafc;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 24px 16px 80px;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px; }
+  .card h2 { font-size: 15px; font-weight: 600; margin: 0 0 12px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  input[type=text], select, textarea {
+    width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 14px; font-family: inherit; background: #fff; color: var(--text);
+  }
+  textarea { resize: vertical; min-height: 54px; line-height: 1.4; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .row > div { flex: 1; min-width: 150px; }
+  button {
+    font-family: inherit; font-size: 13px; padding: 8px 14px; border-radius: 8px;
+    border: 1px solid var(--border); background: #fff; color: var(--text); cursor: pointer;
+  }
+  button:hover { background: #f1f5f9; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+  button.primary:hover { background: #1d4ed8; }
+  .status { font-size: 13px; color: var(--muted); margin: 10px 0 0; min-height: 18px; }
+  .status.err { color: var(--danger); }
+  .hidden { display: none; }
+  .passage { font-size: 16px; line-height: 1.75; margin: 10px 0 0; }
+  .hl { background: #fef3c7; border-bottom: 2px solid #f59e0b; border-radius: 3px; padding: 0 2px; }
+  .badge { display: inline-block; font-size: 12px; padding: 2px 9px; border-radius: 12px; }
+  .badge.ok { background: var(--success-light); color: var(--success); }
+  .badge.warn { background: var(--warn-light); color: var(--warn); }
+  .meta { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .word-row { display: flex; gap: 10px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--border); }
+  .word-row:first-of-type { border-top: none; }
+  .word-row input[type=checkbox], .tap-row input[type=checkbox] { margin-top: 8px; }
+  .word-fields { flex: 1; min-width: 0; }
+  .form-line { font-size: 12px; color: var(--muted); margin: 0 0 6px; }
+  .tap-row { display: flex; gap: 10px; padding: 12px 0; border-top: 1px solid var(--border); font-size: 14px; }
+  .tap-row:first-of-type { border-top: none; }
+  .tap-body { flex: 1; min-width: 0; line-height: 1.5; }
+  .opt { margin: 2px 0; padding: 4px 8px; border-radius: 6px; background: #f1f5f9; }
+  .opt.right { background: var(--success-light); color: var(--success); }
+  .kind { font-size: 11px; color: var(--blue); background: var(--blue-light); border-radius: 10px; padding: 2px 8px; margin-right: 6px; }
+  .linkbox { margin-top: 12px; padding: 12px; border-radius: 8px; background: var(--success-light); }
+  .linkbox input { margin-bottom: 8px; }
+  .checkline { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--text); margin: 0 0 10px; }
+  .checkline input { margin-top: 3px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Text Set Builder</h1>
+  <p class="sub">A short real text, highlighted words with definitions, reading-skill questions, and word practice. Opens in the same trainer as your word sets.</p>
+
+  <div class="card">
+    <h2>1. Find a text</h2>
+    <div class="row">
+      <div>
+        <label for="area">Area</label>
+        <input type="text" id="area" list="areaList" placeholder="psychology" autocomplete="off" />
+        <datalist id="areaList"></datalist>
+      </div>
+      <div>
+        <label for="level">Level</label>
+        <select id="level">
+          <option>B1</option>
+          <option selected>B2</option>
+          <option>C1</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="topic">Topic (optional)</label>
+        <input type="text" id="topic" placeholder="attachment and resilience" autocomplete="off" />
+      </div>
+      <div>
+        <label for="url">Or paste an article link (optional)</label>
+        <input type="text" id="url" placeholder="https://www.frontiersin.org/..." autocomplete="off" />
+      </div>
+    </div>
+    <button class="primary" id="findBtn">Find text</button>
+    <p class="status" id="findStatus"></p>
+  </div>
+
+  <div id="textCard" class="card hidden">
+    <h2>2. Text</h2>
+    <p class="meta" id="srcLine"></p>
+    <p id="licenseNote" class="meta" style="margin-top:8px;"></p>
+    <div id="licenseAck" class="hidden" style="margin-top:8px;">
+      <label class="checkline"><input type="checkbox" id="licenseCheck" /> I have checked that I may use this text in a teaching product.</label>
+    </div>
+    <p class="passage" id="passage"></p>
+    <p class="meta" id="wc" style="margin-top:8px;"></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+      <button id="replaceBtn">Replace paragraph</button>
+      <button id="anotherBtn">Find another article</button>
+      <button class="primary" id="buildBtn">Generate words and questions</button>
+    </div>
+    <p class="status" id="buildStatus"></p>
+  </div>
+
+  <div id="wordsCard" class="card hidden">
+    <h2>3. Words and expressions</h2>
+    <p class="meta" style="margin-bottom:8px;">Edit any definition. Untick a word to leave it out of the set.</p>
+    <div id="wordsList"></div>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+      <p class="meta" style="margin-bottom:8px;">Add your own word</p>
+      <div class="row" style="margin-bottom:8px;">
+        <div><input type="text" id="addForm" placeholder="as it appears in the text" autocomplete="off" /></div>
+        <div><input type="text" id="addDef" placeholder="definition in English" autocomplete="off" /></div>
+        <div style="flex:0 0 auto;min-width:0;"><button id="addWordBtn">Add</button></div>
+      </div>
+      <p class="status" id="addStatus"></p>
+    </div>
+  </div>
+
+  <div id="tapsCard" class="card hidden">
+    <h2>4. Reading questions</h2>
+    <p class="meta" style="margin-bottom:8px;">The correct answer is shown in green. Untick a question to drop it.</p>
+    <div id="tapsList"></div>
+  </div>
+
+  <div id="publishCard" class="card hidden">
+    <h2>5. Publish</h2>
+    <label for="title">Set title</label>
+    <input type="text" id="title" autocomplete="off" style="margin-bottom:12px;" />
+    <label class="checkline"><input type="checkbox" id="reviewed" /> I have checked the text, the definitions and the answers.</label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="primary" id="publishBtn">Publish</button>
+      <button id="downloadBtn">Download JSON instead</button>
+    </div>
+    <p class="status err" id="publishError"></p>
+    <div id="linkBox" class="linkbox hidden">
+      <input type="text" id="linkOutput" readonly />
+      <button id="copyBtn">Copy link</button>
+      <p class="meta" id="notionNote" style="margin-top:8px;"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+const MODES = ['listening', 'fillLetters', 'letterScramble', 'dictationNoImage', 'matchingDef', 'contextGap', 'phraseBuilder'];
+
+let article = null;
+let picks = [];
+let pickIdx = 0;
+let passage = '';
+let words = [];
+let taps = [];
+let tried = [];
+let userUrlMode = false;
+
+const $ = (id) => document.getElementById(id);
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function escapeRegex(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function wordCount(s) { return (String(s).match(/\S+/g) || []).length; }
+function setStatus(id, text, isErr) {
+  const el = $(id);
+  el.textContent = text || '';
+  el.classList.toggle('err', Boolean(isErr));
+}
+
+async function api(body) {
+  let resp;
+  try {
+    resp = await fetch('/api/vocab', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  } catch (e) {
+    throw new Error('No connection to the server.');
+  }
+  let data;
+  try { data = await resp.json(); } catch (e) { throw new Error('The server took too long or returned an unexpected answer (status ' + resp.status + ').'); }
+  if (!resp.ok) throw new Error(data.error || ('Server error ' + resp.status));
+  return data;
+}
+
+// ---- areas from Notion ----
+(async function loadAreas() {
+  try {
+    const data = await api({ action: 'textAreas' });
+    $('areaList').innerHTML = (data.areas || []).map(a => `<option value="${escapeHtml(a)}"></option>`).join('');
+  } catch (e) { /* the field still works as free text */ }
+})();
+
+// ---- step 1: find ----
+async function findText(more) {
+  const area = $('area').value.trim();
+  const topic = $('topic').value.trim();
+  const url = $('url').value.trim();
+  const useUrl = Boolean(url) && !more;
+  if (!useUrl && !area && !topic) {
+    setStatus('findStatus', 'Enter an area or a topic, or paste an article link.', true);
+    return;
+  }
+  const btns = [$('findBtn'), $('anotherBtn')];
+  btns.forEach(b => b.disabled = true);
+  setStatus('findStatus', useUrl ? 'Reading the article…' : 'Searching for open-access articles…');
+  try {
+    let candidates;
+    if (useUrl) {
+      candidates = [{ title: url, url, user: true }];
+      tried = [];
+    } else {
+      const found = await api({ action: 'textSearch', area, topic, level: $('level').value, exclude: tried });
+      candidates = found.candidates || [];
+      if (!candidates.length) throw new Error('No new articles found. Try a different topic.');
+    }
+    let ok = false;
+    for (const c of candidates) {
+      setStatus('findStatus', 'Reading: ' + c.title);
+      tried.push(c.url);
+      let result;
+      try {
+        result = await api({ action: 'textFetch', url: c.url, area, topic, level: $('level').value });
+      } catch (e) {
+        if (useUrl) throw e;
+        continue;
+      }
+      if (!c.user && !result.article.licenseOk) continue;
+      article = result.article;
+      picks = result.picks;
+      pickIdx = 0;
+      userUrlMode = Boolean(c.user);
+      words = [];
+      taps = [];
+      showPassage(picks[0].text);
+      ok = true;
+      break;
+    }
+    if (!ok) throw new Error('None of the articles found could be used (not readable or not CC BY). Try again or paste a link.');
+    setStatus('findStatus', '');
+  } catch (err) {
+    setStatus('findStatus', err.message, true);
+  } finally {
+    btns.forEach(b => b.disabled = false);
+  }
+}
+
+function showPassage(text) {
+  passage = text;
+  $('textCard').classList.remove('hidden');
+  ['wordsCard', 'tapsCard', 'publishCard'].forEach(id => $(id).classList.add('hidden'));
+  words = [];
+  taps = [];
+  $('linkBox').classList.add('hidden');
+  setStatus('buildStatus', '');
+  const a = article;
+  $('srcLine').innerHTML = `<a href="${escapeHtml(a.url)}" target="_blank" rel="noopener">${escapeHtml(a.title)}</a>${a.authors ? ' · ' + escapeHtml(a.authors) : ''}${a.journal ? ' · ' + escapeHtml(a.journal) : ''}`;
+  $('licenseNote').innerHTML = a.licenseOk
+    ? `<span class="badge ok">${escapeHtml(a.license)}</span> Credit and licence are added to the set automatically.`
+    : `<span class="badge warn">Licence: ${escapeHtml(a.license)}</span> The licence could not be confirmed as plain CC BY.`;
+  $('licenseAck').classList.toggle('hidden', a.licenseOk);
+  $('licenseCheck').checked = false;
+  $('replaceBtn').disabled = picks.length <= 1;
+  $('replaceBtn').textContent = picks.length <= 1 ? 'No other paragraphs' : `Replace paragraph (${pickIdx + 1} of ${picks.length})`;
+  renderPassage();
+}
+
+function renderPassage() {
+  let html = escapeHtml(passage);
+  const tokens = [];
+  words.filter(w => w.keep).slice().sort((a, b) => b.passageForm.length - a.passageForm.length).forEach(w => {
+    const re = new RegExp('(?<![A-Za-z])' + escapeRegex(escapeHtml(w.passageForm)) + '(?![A-Za-z])', 'i');
+    html = html.replace(re, m => { tokens.push(m); return '\u0000' + (tokens.length - 1) + '\u0000'; });
+  });
+  html = html.replace(/\u0000(\d+)\u0000/g, (m, i) => `<span class="hl">${tokens[i]}</span>`);
+  $('passage').innerHTML = html;
+  $('wc').textContent = wordCount(passage) + ' words · excerpt shortened, citations removed';
+}
+
+$('findBtn').addEventListener('click', () => findText(false));
+$('anotherBtn').addEventListener('click', () => findText(true));
+$('replaceBtn').addEventListener('click', () => {
+  if (picks.length <= 1) return;
+  pickIdx = (pickIdx + 1) % picks.length;
+  showPassage(picks[pickIdx].text);
+});
+
+// ---- step 2: generate words and taps ----
+$('buildBtn').addEventListener('click', async () => {
+  $('buildBtn').disabled = true;
+  setStatus('buildStatus', 'Generating words and questions…');
+  try {
+    const out = await api({ action: 'textBuild', passage, level: $('level').value, area: $('area').value.trim() });
+    words = out.words.map(w => Object.assign({ keep: true }, w));
+    taps = out.taps.map(t => Object.assign({ keep: true }, t));
+    $('title').value = out.title;
+    renderWords();
+    renderTaps();
+    renderPassage();
+    ['wordsCard', 'tapsCard', 'publishCard'].forEach(id => $(id).classList.remove('hidden'));
+    setStatus('buildStatus', '');
+    $('wordsCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    setStatus('buildStatus', err.message, true);
+  } finally {
+    $('buildBtn').disabled = false;
+  }
+});
+
+function renderWords() {
+  const box = $('wordsList');
+  box.innerHTML = '';
+  words.forEach((w, i) => {
+    const row = document.createElement('div');
+    row.className = 'word-row';
+    row.innerHTML = `
+      <input type="checkbox" ${w.keep ? 'checked' : ''} aria-label="Keep ${escapeHtml(w.text)}" />
+      <div class="word-fields">
+        <p class="form-line">In the text: <span class="hl">${escapeHtml(w.passageForm)}</span> · ${w.type}</p>
+        <input type="text" value="${escapeHtml(w.text)}" style="margin-bottom:6px;font-weight:600;" aria-label="Word" />
+        <textarea aria-label="Definition">${escapeHtml(w.definition)}</textarea>
+      </div>`;
+    const [cb, , ] = row.querySelectorAll('input');
+    cb.addEventListener('change', () => { w.keep = cb.checked; renderPassage(); });
+    row.querySelector('input[type=text]').addEventListener('input', e => { w.text = e.target.value; });
+    row.querySelector('textarea').addEventListener('input', e => { w.definition = e.target.value; });
+    box.appendChild(row);
+  });
+}
+
+$('addWordBtn').addEventListener('click', () => {
+  const form = $('addForm').value.trim();
+  const def = $('addDef').value.trim();
+  if (!form || !def) { setStatus('addStatus', 'Fill in both the word and its definition.', true); return; }
+  const m = passage.match(new RegExp('(?<![A-Za-z])' + escapeRegex(form) + '(?![A-Za-z])', 'i'));
+  if (!m) { setStatus('addStatus', 'That word is not in the text. Type it exactly as it appears.', true); return; }
+  if (words.some(w => w.passageForm.toLowerCase() === m[0].toLowerCase())) { setStatus('addStatus', 'Already in the list.', true); return; }
+  const sentences = passage.split(/(?<=[.!?])\s+(?=[A-Z\u201c"])/);
+  const example = sentences.find(s => new RegExp('(?<![A-Za-z])' + escapeRegex(m[0]) + '(?![A-Za-z])', 'i').test(s)) || '';
+  const isPhrase = /\s/.test(m[0]);
+  words.push({ keep: true, text: m[0], passageForm: m[0], type: isPhrase ? 'phrase' : 'word', definition: def, example, chunks: isPhrase ? m[0].split(/\s+/) : [] });
+  $('addForm').value = '';
+  $('addDef').value = '';
+  setStatus('addStatus', '');
+  renderWords();
+  renderPassage();
+});
+
+function renderTaps() {
+  const box = $('tapsList');
+  box.innerHTML = '';
+  if (!taps.length) { box.innerHTML = '<p class="meta">No questions could be made for this text. The set will have the reading and the word practice only.</p>'; return; }
+  taps.forEach(t => {
+    const row = document.createElement('div');
+    row.className = 'tap-row';
+    row.innerHTML = `
+      <input type="checkbox" ${t.keep ? 'checked' : ''} aria-label="Keep question" />
+      <div class="tap-body">
+        <div><span class="kind">${escapeHtml(t.kind)}</span>${escapeHtml(t.prompt)}</div>
+        ${t.context ? `<div class="meta" style="margin:4px 0;">${escapeHtml(t.context)}</div>` : ''}
+        <div class="opt right">${escapeHtml(t.correct)}</div>
+        ${t.wrong.map(x => `<div class="opt">${escapeHtml(x)}</div>`).join('')}
+        ${t.explain ? `<div class="meta" style="margin-top:4px;">${escapeHtml(t.explain)}</div>` : ''}
+      </div>`;
+    row.querySelector('input').addEventListener('change', e => { t.keep = e.target.checked; });
+    box.appendChild(row);
+  });
+}
+
+// ---- publish ----
+function slugify(t) { return String(t).toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'text-set'; }
+
+function makeItem(w, idx) {
+  return {
+    id: 'item_' + (idx + 1),
+    type: w.type,
+    text: w.text.trim(),
+    definition: w.definition.trim(),
+    example: w.example || '',
+    phonetic: '',
+    chunks: w.type === 'phrase' ? (w.chunks && w.chunks.length ? w.chunks : w.passageForm.split(/\s+/)) : [],
+    phraseSplitIndex: 1,
+    image: null,
+    audio: null,
+    imageHint: '',
+    imageQuery: '',
+    illustrable: false,
+    wantsImage: false,
+    requiresPreposition: false,
+    correctPreposition: '',
+    prepositionSentence: '',
+    wordFamily: [],
+    wordFormationSentence: '',
+    wordFormationAnswer: '',
+    isCollocation: false,
+    collocationSentence: '',
+    collocationAnswer: '',
+    collocationDistractors: [],
+    isVerb: false,
+    pastSimple: '',
+    pastParticiple: '',
+    verbSentence: '',
+    verbAnswer: '',
+    passageForm: w.passageForm
+  };
+}
+
+function buildSetData() {
+  const keptWords = words.filter(w => w.keep && w.text.trim() && w.definition.trim());
+  const keptTaps = taps.filter(t => t.keep).map(t => ({
+    kind: t.kind, prompt: t.prompt, context: t.context, mark: t.mark, correct: t.correct, wrong: t.wrong, explain: t.explain
+  }));
+  return {
+    kind: 'textSet',
+    topic: $('title').value.trim() || 'Reading set',
+    level: $('level').value,
+    area: $('area').value.trim(),
+    modes: MODES,
+    antonymPairs: [],
+    passage: {
+      text: passage,
+      source: {
+        title: article.title, url: article.url, authors: article.authors || '', journal: article.journal || '', license: article.license
+      },
+      taps: keptTaps
+    },
+    items: keptWords.map(makeItem)
+  };
+}
+
+function checkReady() {
+  if (!words.length) return 'Generate the words first.';
+  if (words.filter(w => w.keep).length < 4) return 'Keep at least 4 words (the word-in-context exercise needs them).';
+  if (!article.licenseOk && !$('licenseCheck').checked) return 'Confirm that you may use this text (tick the box under the licence note).';
+  if (!$('reviewed').checked) return 'Tick the box to confirm you checked the text, definitions and answers.';
+  return '';
+}
+
+$('publishBtn').addEventListener('click', async () => {
+  const problem = checkReady();
+  if (problem) { setStatus('publishError', problem, true); return; }
+  setStatus('publishError', '');
+  $('publishBtn').disabled = true;
+  const data = buildSetData();
+  const slug = slugify(data.topic) + '-' + Math.random().toString(36).slice(2, 5);
+  try {
+    const result = await api({ action: 'save', slug, data });
+    $('linkOutput').value = window.location.origin + result.trainerLink;
+    $('linkBox').classList.remove('hidden');
+    const n = $('notionNote');
+    if (result.notion && result.notion.attempted) {
+      n.textContent = result.notion.ok ? 'Added to Assignments in Notion (type: text set).' : 'Link created, but Notion failed: ' + result.notion.error;
+      n.style.color = result.notion.ok ? 'var(--success)' : 'var(--danger)';
+    } else {
+      n.textContent = 'Not logged in Notion (the Notion connection is not configured).';
+      n.style.color = 'var(--muted)';
+    }
+  } catch (err) {
+    setStatus('publishError', 'Could not save: ' + err.message + ' You can use "Download JSON instead" and upload it to vocab-sets/ on GitHub.', true);
+  } finally {
+    $('publishBtn').disabled = false;
+  }
+});
+
+$('downloadBtn').addEventListener('click', () => {
+  const problem = checkReady();
+  if (problem) { setStatus('publishError', problem, true); return; }
+  const data = buildSetData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = slugify(data.topic) + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+$('copyBtn').addEventListener('click', () => {
+  $('linkOutput').select();
+  navigator.clipboard.writeText($('linkOutput').value);
+  $('copyBtn').textContent = 'Copied';
+  setTimeout(() => { $('copyBtn').textContent = 'Copy link'; }, 1500);
+});
+</script>
+</body>
+</html>

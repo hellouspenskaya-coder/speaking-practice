@@ -10,6 +10,10 @@
 //   action: "audio"     -> Groq Orpheus speaks a sentence
 //   action: "images"    -> Pexels returns candidate pictures
 //   action: "save"      -> commits the finished set to vocab-sets/*.json
+//   action: "textAreas"  -> Area options from the Notion Assignments database
+//   action: "textSearch" -> Sonnet + web search finds open-access (CC BY) articles
+//   action: "textFetch"  -> reads one article page, returns verbatim excerpt candidates
+//   action: "textBuild"  -> Haiku makes highlighted words + reading-skill taps for an excerpt
 
 const OWNER = 'hellouspenskaya-coder';
 const REPO = 'speaking-practice';
@@ -31,6 +35,10 @@ module.exports = async function handler(req, res) {
     if (action === 'save') return await saveSet(req, res);
     if (action === 'listSets') return await listSets(req, res);
     if (action === 'repairImages') return await repairImages(req, res);
+    if (action === 'textAreas') return await textAreas(req, res);
+    if (action === 'textSearch') return await textSearch(req, res);
+    if (action === 'textFetch') return await textFetch(req, res);
+    if (action === 'textBuild') return await textBuild(req, res);
     res.status(400).json({ error: `Unknown action: ${action}` });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -425,6 +433,7 @@ async function addToAssignmentsDatabase(data, fullLink) {
   const timeRequired = 'short';
 
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const isTextSet = data.kind === 'textSet';
 
   const response = await fetch('https://api.notion.com/v1/pages', {
     method: 'POST',
@@ -439,12 +448,15 @@ async function addToAssignmentsDatabase(data, fullLink) {
         'Assignment Title': { title: [{ text: { content: data.topic || 'Untitled set' } }] },
         'Format': { select: { name: 'Individual' } },
         'Platform': { select: { name: 'practice' } },
-        'Skill': { multi_select: [{ name: 'vocabulary' }] },
-        'Type': { multi_select: [{ name: 'vocpractice' }] },
+        'Skill': { multi_select: isTextSet ? [{ name: 'reading' }, { name: 'vocabulary' }] : [{ name: 'vocabulary' }] },
+        'Type': { multi_select: [{ name: isTextSet ? 'text set' : 'vocpractice' }] },
         'Level': { multi_select: [{ name: data.level || 'A1' }] },
         'Time required': { multi_select: [{ name: timeRequired }] },
         'URL': { url: fullLink },
-        'created': { date: { start: today } }
+        'created': { date: { start: today } },
+        // Area is only filled for text sets; Notion creates a new option
+        // automatically the first time a new area name is used.
+        ...(isTextSet && data.area ? { 'Area': { multi_select: [{ name: String(data.area).slice(0, 100) }] } } : {})
       }
     })
   });
@@ -583,3 +595,393 @@ async function repairImages(req, res) {
 }
 
 module.exports.config = { maxDuration: 60 };
+
+// =====================================================================
+// TEXT SETS: a short, real, openly licensed (CC BY) excerpt with
+// highlighted words, plus a few tap questions about how academic text
+// works (hedging, reference words, main idea).
+//
+// Design rule: the model NEVER writes the passage. It only points at
+// sentences of a page this server fetched itself, and the server builds
+// the passage from those sentences word for word. That removes invented
+// quotes and silent rewrites, and keeps the CC BY licence honest.
+// =====================================================================
+
+const TEXT_UA = 'Mozilla/5.0 (compatible; EnglishHubTextSets/1.0)';
+
+function extractJsonObject(raw) {
+  let cleaned = String(raw || '').trim()
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/, '')
+    .replace(/```\s*$/, '');
+  const start = cleaned.indexOf('{');
+  const end = cleaned.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('Could not find a JSON object in the model output');
+  return JSON.parse(cleaned.slice(start, end + 1));
+}
+
+function wordCount(s) {
+  return (String(s).match(/\S+/g) || []).length;
+}
+
+function escapeRegExp(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function isPrivateHost(hostname) {
+  const h = String(hostname || '').toLowerCase();
+  if (!h || h === 'localhost' || h.endsWith('.local') || h.endsWith('.internal')) return true;
+  if (/^\[/.test(h) || h.includes(':')) return true;
+  if (/^(127\.|10\.|0\.|169\.254\.|192\.168\.)/.test(h)) return true;
+  const m = h.match(/^172\.(\d+)\./);
+  if (m && Number(m[1]) >= 16 && Number(m[1]) <= 31) return true;
+  return false;
+}
+
+function decodeEntities(s) {
+  const named = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', ndash: '\u2013', mdash: '\u2014',
+    rsquo: '\u2019', lsquo: '\u2018', ldquo: '\u201c', rdquo: '\u201d', hellip: '\u2026', shy: '' };
+  return String(s)
+    .replace(/&#x([0-9a-f]+);/gi, (m, h) => { try { return String.fromCodePoint(parseInt(h, 16)); } catch (e) { return ' '; } })
+    .replace(/&#(\d+);/g, (m, d) => { try { return String.fromCodePoint(parseInt(d, 10)); } catch (e) { return ' '; } })
+    .replace(/&([a-z]+);/gi, (m, n) => (n.toLowerCase() in named ? named[n.toLowerCase()] : m));
+}
+
+function metaAll(html, name) {
+  const out = [];
+  const re1 = new RegExp('<meta[^>]+(?:name|property)=["\']' + escapeRegExp(name) + '["\'][^>]*content=["\']([^"\']*)["\']', 'gi');
+  const re2 = new RegExp('<meta[^>]+content=["\']([^"\']*)["\'][^>]*(?:name|property)=["\']' + escapeRegExp(name) + '["\']', 'gi');
+  let m;
+  while ((m = re1.exec(html))) out.push(decodeEntities(m[1]).trim());
+  while ((m = re2.exec(html))) out.push(decodeEntities(m[1]).trim());
+  return out.filter(Boolean);
+}
+
+// Removes in-text citations such as (Bowlby, 1969), (Smith et al., 2015),
+// (2019) and numbered ones like [12] or [3-5].
+function stripCitations(text) {
+  return String(text)
+    .replace(/\s*\[(?:\d+(?:\s*[-\u2013,]\s*\d+)*)\]/g, '')
+    .replace(/\s*\(([^()]*)\)/g, (m, inner) => {
+      const hasYear = /(?:19|20)\d{2}[a-z]?/.test(inner);
+      if (!hasYear) return m;
+      const onlyYear = /^\s*(?:19|20)\d{2}[a-z]?\s*$/.test(inner);
+      const authorYear = /[A-Z][A-Za-z\-']+(?:\s+et al\.?|\s+(?:and|&)\s+[A-Z][A-Za-z\-']+)?,?\s+(?:19|20)\d{2}/.test(inner);
+      return (onlyYear || authorYear) ? '' : m;
+    })
+    .replace(/\s+([,.;:!?])/g, '$1')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function splitSentences(text) {
+  const guarded = String(text).replace(/\b(e\.g|i\.e|et al|vs|Fig|Figs|approx|cf|Dr|Mr|Mrs|Ms|Prof|No|U\.S|etc)\./g, (m) => m.replace(/\./g, '\u00a7'));
+  return guarded
+    .split(/(?<=[.!?])\s+(?=[A-Z\u201c"\u2018'(\[])/)
+    .map((p) => p.replace(/\u00a7/g, '.').trim())
+    .filter(Boolean);
+}
+
+async function fetchArticlePage(url) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 15000);
+  let resp;
+  try {
+    resp = await fetch(url, {
+      headers: { 'User-Agent': TEXT_UA, Accept: 'text/html,application/xhtml+xml' },
+      redirect: 'follow',
+      signal: ctrl.signal
+    });
+  } catch (err) {
+    throw new Error('Could not open the page (' + (err.name === 'AbortError' ? 'timed out' : err.message) + ')');
+  } finally {
+    clearTimeout(timer);
+  }
+  if (!resp.ok) throw new Error('The page answered with status ' + resp.status);
+  const ct = resp.headers.get('content-type') || '';
+  if (!/html/i.test(ct)) throw new Error('This link is not a normal web page (a PDF, maybe)');
+  let html = await resp.text();
+  if (html.length > 3000000) html = html.slice(0, 3000000);
+
+  // Licence: only a plain CC BY licence counts as OK.
+  let license = 'unknown';
+  let licenseOk = false;
+  const lic = html.match(/creativecommons\.org\/licenses\/by\/(\d\.\d)/i);
+  if (lic && !/creativecommons\.org\/licenses\/by-n[cd]/i.test(html)) {
+    license = 'CC BY ' + lic[1];
+    licenseOk = true;
+  } else if (/creativecommons\.org\/licenses\/by-/i.test(html)) {
+    const other = html.match(/creativecommons\.org\/licenses\/(by-[a-z-]+)\/(\d\.\d)/i);
+    license = other ? ('CC ' + other[1].toUpperCase() + ' ' + other[2]) + ' (not plain CC BY)' : 'unknown';
+  }
+
+  const title = (metaAll(html, 'citation_title')[0] || metaAll(html, 'og:title')[0]
+    || decodeEntities((html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [, ''])[1]).trim() || 'Untitled article');
+  const authorsAll = metaAll(html, 'citation_author');
+  const authors = authorsAll.length > 3 ? authorsAll.slice(0, 3).join(', ') + ' et al.' : authorsAll.join(', ');
+  const journal = metaAll(html, 'citation_journal_title')[0] || metaAll(html, 'og:site_name')[0] || '';
+
+  const body = html
+    .replace(/<(script|style|noscript|nav|header|footer|aside|figure|figcaption|table|form|button|svg)\b[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<sup\b[\s\S]*?<\/sup>/gi, '');
+  const paragraphs = [];
+  const seen = new Set();
+  const re = /<p\b[^>]*>([\s\S]*?)<\/p>/gi;
+  let m;
+  const BAD = /(\u00a9|copyright|creative commons|licensee|received:|accepted:|published:|correspondence|conflict of interest|funding|supplementary|data availability|author contributions|doi\.org|https?:\/\/|\bFigure\s*\d|\bFig\.\s*\d|\bTable\s*\d|participants were|were recruited|we recruited|our participants|this study|the present study|our study|\bp\s*[<=]\s*0?\.\d)/i;
+  while ((m = re.exec(body)) && paragraphs.length < 60) {
+    const raw = decodeEntities(m[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+    const clean = stripCitations(raw);
+    const wc = wordCount(clean);
+    if (wc < 40 || wc > 260) continue;
+    if (!/[.?!]["\u201d)]?$/.test(clean)) continue;
+    if (BAD.test(clean)) continue;
+    const digitTokens = (clean.match(/\S*\d\S*/g) || []).length;
+    if (digitTokens / wc > 0.06) continue;
+    const sentences = splitSentences(clean);
+    if (sentences.length < 2) continue;
+    const key = clean.slice(0, 80);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    paragraphs.push({ sentences, words: wc });
+  }
+  return { title, authors, journal, license, licenseOk, paragraphs };
+}
+
+async function textAreas(req, res) {
+  const fallback = ['psychology', 'culture', 'management', 'exam practice'];
+  try {
+    if (!process.env.NOTION_TOKEN || !process.env.NOTION_ASSIGNMENTS_DATABASE_ID) {
+      res.status(200).json({ areas: fallback, source: 'default' });
+      return;
+    }
+    const r = await fetch('https://api.notion.com/v1/databases/' + process.env.NOTION_ASSIGNMENTS_DATABASE_ID, {
+      headers: { Authorization: 'Bearer ' + process.env.NOTION_TOKEN, 'Notion-Version': '2022-06-28' }
+    });
+    if (!r.ok) throw new Error('Notion ' + r.status);
+    const db = await r.json();
+    const opts = (((db.properties || {}).Area || {}).multi_select || {}).options || [];
+    const names = opts.map((o) => o.name).filter(Boolean);
+    res.status(200).json({ areas: names.length ? names : fallback, source: names.length ? 'notion' : 'default' });
+  } catch (err) {
+    res.status(200).json({ areas: fallback, source: 'default' });
+  }
+}
+
+async function textSearch(req, res) {
+  const { area, topic, level, exclude } = req.body || {};
+  if (!area && !topic) {
+    res.status(400).json({ error: 'Give an area or a topic.' });
+    return;
+  }
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    res.status(500).json({ error: 'ANTHROPIC_API_KEY is not set in Vercel.' });
+    return;
+  }
+  const avoid = Array.isArray(exclude) && exclude.length
+    ? '\nDo NOT return any of these URLs: ' + exclude.slice(0, 15).join(', ') + '.' : '';
+  const prompt = `An English teacher needs a readable source text for an adult ${level || 'B2'} learner.
+Field: "${area || ''}"${topic ? `\nTopic: "${topic}"` : ''}
+
+Use web search to find 4 DIFFERENT real articles whose full text is freely readable as a normal HTML web page (not a PDF) and is openly licensed under Creative Commons Attribution (CC BY). Good sources: Frontiers journals, PLOS ONE, BMC journals, MDPI journals, and PubMed Central articles with a CC BY licence. Prefer review or conceptual articles with a clear introduction or discussion over dense statistics papers.
+All URLs must be real ones you found via search. Never invent a URL.${avoid}
+
+Reply with STRICT JSON only, no commentary, no markdown fences:
+{"candidates":[{"title":"real title","url":"real URL"}]}`;
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1500,
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 4 }],
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await resp.json();
+  if (!resp.ok) {
+    res.status(resp.status).json({ error: (data.error && data.error.message) || 'Anthropic API error (search).' });
+    return;
+  }
+  const text = (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('\n');
+  const parsed = extractJsonObject(text);
+  const skip = new Set((exclude || []).map((u) => String(u).replace(/\/$/, '')));
+  const out = [];
+  (parsed.candidates || []).forEach((c) => {
+    try {
+      const u = new URL(c.url);
+      if (!/^https?:$/.test(u.protocol) || isPrivateHost(u.hostname)) return;
+      if (skip.has(u.href.replace(/\/$/, ''))) return;
+      out.push({ title: String(c.title || u.hostname), url: u.href });
+    } catch (e) { /* ignore bad url */ }
+  });
+  res.status(200).json({ candidates: out.slice(0, 4) });
+}
+
+async function textFetch(req, res) {
+  const { url, area, topic, level } = req.body || {};
+  let u;
+  try { u = new URL(url); } catch (e) { res.status(400).json({ error: 'That is not a valid link.' }); return; }
+  if (!/^https?:$/.test(u.protocol) || isPrivateHost(u.hostname)) {
+    res.status(400).json({ error: 'That link cannot be used.' });
+    return;
+  }
+  let page;
+  try {
+    page = await fetchArticlePage(u.href);
+  } catch (err) {
+    res.status(422).json({ error: err.message });
+    return;
+  }
+  if (!page.paragraphs.length) {
+    res.status(422).json({ error: 'Could not find readable paragraphs on this page.' });
+    return;
+  }
+
+  const list = page.paragraphs.slice(0, 40).map((p, i) =>
+    `P${i + 1} (${p.words} words): ` + p.sentences.map((s, k) => `[${k + 1}] ${s}`).join(' ')
+  ).join('\n\n');
+  const prompt = `You are choosing short reading excerpts for an adult ${level || 'B2'} English learner studying: ${area || 'general academic English'}${topic ? ` (topic: ${topic})` : ''}.
+
+Below are numbered paragraphs from one article, each split into numbered sentences. Choose up to 5 excerpts. Each excerpt is 2 to 5 CONSECUTIVE sentences from ONE paragraph, between 55 and 110 words in total.
+
+Good excerpts: understandable on their own (no "this study", "our participants", "as shown above", figures or tables), explain an idea or argue a point, contain academic features such as cautious wording (may, appears to, tends to), reference words (which, this, these) and useful subject vocabulary. Prefer introduction and discussion style paragraphs. Avoid methods and statistics. Different excerpts should come from different paragraphs where possible. Put the best excerpt first.
+
+${list}
+
+Reply with STRICT JSON only: {"picks":[{"p":3,"from":1,"to":3}]}`;
+
+  let picksRaw;
+  try {
+    picksRaw = extractJsonObject(await callHaiku(prompt, 600)).picks || [];
+  } catch (err) {
+    res.status(502).json({ error: 'Could not choose an excerpt: ' + err.message });
+    return;
+  }
+  const picks = [];
+  const seenText = new Set();
+  picksRaw.forEach((pk) => {
+    const para = page.paragraphs[(Number(pk.p) || 0) - 1];
+    if (!para) return;
+    const from = Math.max(1, Number(pk.from) || 1);
+    const to = Math.min(para.sentences.length, Number(pk.to) || from);
+    if (to < from) return;
+    const text = para.sentences.slice(from - 1, to).join(' ');
+    const wc = wordCount(text);
+    if (wc < 45 || wc > 130 || seenText.has(text)) return;
+    seenText.add(text);
+    picks.push({ text, words: wc });
+  });
+  if (!picks.length) {
+    res.status(422).json({ error: 'No suitable excerpt found in this article.' });
+    return;
+  }
+  res.status(200).json({
+    article: { title: page.title, url: u.href, authors: page.authors, journal: page.journal, license: page.license, licenseOk: page.licenseOk },
+    picks: picks.slice(0, 5)
+  });
+}
+
+async function textBuild(req, res) {
+  const { passage, level, area } = req.body || {};
+  const text = String(passage || '').trim();
+  const wc = wordCount(text);
+  if (wc < 30 || wc > 260) {
+    res.status(400).json({ error: 'The passage should be between 30 and 260 words.' });
+    return;
+  }
+  const lvl = level || 'B2';
+  const prompt = `You help an English teacher. Below is a short excerpt from a text in the field: ${area || 'general academic English'}. The learner's level is ${lvl}.
+
+EXCERPT:
+"""
+${text}
+"""
+
+Return STRICT JSON only (no markdown fences) with this shape:
+{
+ "title": "short set title, max 6 words",
+ "words": [ {"text":"base form","passageForm":"exact characters as they appear in the excerpt","type":"word or phrase","definition":"..."} ],
+ "taps": [ ... ]
+}
+
+WORDS: 6 to 9 of the most useful words or fixed expressions for a ${lvl} learner of this field. Mix academic vocabulary (e.g. contribute to, substantial) with field terms. No proper names, no very basic words.
+- "passageForm" must be copied EXACTLY from the excerpt (same inflection and spelling).
+- "text" is the dictionary form (for a phrase, the base phrase).
+- "definition": simple English, max 12 words, easier words than the target, true to the meaning in THIS excerpt, never containing the target word itself.
+
+TAPS: 4 or 5 questions about how the text works. Use only kinds the excerpt supports:
+- {"kind":"hedge","sentence":"EXACT sentence from the excerpt with a hedging expression (appears to, may, tends to, suggest, likely...)","strong":"the same sentence rewritten to sound completely certain","explain":"one short sentence naming the hedging words"}  (at most 2)
+- {"kind":"reference","sentence":"EXACT sentence from the excerpt containing a reference word","pronoun":"the exact reference word, e.g. which / this / these / it / they","correct":"what it refers to, copied from the excerpt","wrong":["plausible wrong noun phrase from the excerpt","another one"],"explain":"short"}  (at most 2)
+- {"kind":"paraphrase","sentence":"EXACT long or complex sentence from the excerpt","correct":"a simpler sentence with the same meaning","wrong":["a sentence with a subtly different meaning","another one"],"explain":"short"}  (at most 1)
+- {"kind":"mainIdea","correct":"the main idea in one sentence","wrong":["a plausible but wrong idea","another one"],"explain":"short"}  (exactly 1)
+Options must be short (max 20 words).`;
+
+  let out;
+  try {
+    out = extractJsonObject(await callHaiku(prompt, 3500));
+  } catch (err) {
+    res.status(502).json({ error: 'Could not generate: ' + err.message });
+    return;
+  }
+
+  const norm = (s) => String(s || '').replace(/\s+/g, ' ').trim();
+  const sentences = splitSentences(text);
+  const findSentence = (s) => {
+    const n = norm(s);
+    return sentences.find((x) => norm(x) === n) || null;
+  };
+
+  const words = [];
+  const usedForms = new Set();
+  (out.words || []).forEach((w) => {
+    const form = norm(w.passageForm);
+    if (!form || !w.definition) return;
+    const m = text.match(new RegExp('(?<![A-Za-z])' + escapeRegExp(form) + '(?![A-Za-z])', 'i'));
+    if (!m) return;
+    const actual = m[0];
+    if (usedForms.has(actual.toLowerCase())) return;
+    usedForms.add(actual.toLowerCase());
+    const example = sentences.find((s) => new RegExp('(?<![A-Za-z])' + escapeRegExp(actual) + '(?![A-Za-z])', 'i').test(s)) || '';
+    const isPhrase = /\s/.test(actual) || w.type === 'phrase';
+    words.push({
+      text: norm(w.text) || actual,
+      passageForm: actual,
+      type: isPhrase ? 'phrase' : 'word',
+      definition: norm(w.definition),
+      example,
+      chunks: isPhrase ? actual.split(/\s+/) : []
+    });
+  });
+
+  const taps = [];
+  (out.taps || []).forEach((t) => {
+    const wrong = (Array.isArray(t.wrong) ? t.wrong : []).map(norm).filter(Boolean).slice(0, 2);
+    if (t.kind === 'hedge') {
+      const sent = findSentence(t.sentence);
+      if (!sent || !t.strong) return;
+      taps.push({ kind: 'hedge', prompt: 'Which sentence sounds more cautious?', context: null, mark: null, correct: sent, wrong: [norm(t.strong)], explain: norm(t.explain) });
+    } else if (t.kind === 'reference') {
+      const sent = findSentence(t.sentence);
+      const pron = norm(t.pronoun);
+      if (!sent || !pron || !t.correct || wrong.length < 2) return;
+      if (!new RegExp('(?<![A-Za-z])' + escapeRegExp(pron) + '(?![A-Za-z])', 'i').test(sent)) return;
+      taps.push({ kind: 'reference', prompt: 'What does "' + pron + '" refer to?', context: sent, mark: pron, correct: norm(t.correct), wrong, explain: norm(t.explain) });
+    } else if (t.kind === 'paraphrase') {
+      const sent = findSentence(t.sentence);
+      if (!sent || !t.correct || wrong.length < 2) return;
+      taps.push({ kind: 'paraphrase', prompt: 'Which sentence means the same?', context: sent, mark: null, correct: norm(t.correct), wrong, explain: norm(t.explain) });
+    } else if (t.kind === 'mainIdea') {
+      if (!t.correct || wrong.length < 2) return;
+      taps.push({ kind: 'mainIdea', prompt: 'What is the main idea of the text?', context: null, mark: null, correct: norm(t.correct), wrong, explain: norm(t.explain) });
+    }
+  });
+
+  if (!words.length) {
+    res.status(502).json({ error: 'No usable words came back. Try again.' });
+    return;
+  }
+  res.status(200).json({ title: norm(out.title) || 'Reading set', words: words.slice(0, 9), taps: taps.slice(0, 5) });
+}

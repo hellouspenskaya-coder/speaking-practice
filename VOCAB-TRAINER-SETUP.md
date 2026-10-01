@@ -47,3 +47,17 @@ The trainer falls back to the browser's built-in speech synthesis whenever a set
 - Phrase image search uses `"person " + phrase"` as the query — works fine for concrete things ("person live in a house" → reasonable), less reliable for abstract phrases ("person say sorry"). You may need to hand-pick from fewer/weaker candidates for those, or skip the image.
 - The AI-generated distractors and phrase chunks are a starting point — review them before publishing, same as you already do with images.
 - No student-side progress is saved anywhere (by design, per what we discussed) — if you want to check comprehension, do it live in the lesson.
+
+## Text sets (reading + highlighted words)
+
+- Builder page: `text-builder.html` (teacher side, all English).
+- Student side: the same `vocab-trainer.html?set=SLUG`. A set whose JSON has a `passage` opens with a reading screen
+  (highlighted words, tap for the English definition), then the word gallery, then reading-skill taps
+  (hedge / reference / paraphrase / main idea), then the usual word practice plus the new `contextGap` mode.
+- New backend actions inside `api/vocab.js` (no new function files): `textAreas`, `textSearch`, `textFetch`, `textBuild`.
+- The passage is never written by the model: the server fetches a CC BY article page and builds the excerpt from
+  its own sentences, word for word (citations removed). Source, authors and licence are stored in `passage.source`
+  and shown under the text.
+- Notion: published text sets are logged in Assignments with Type `text set`, Skill `reading` + `vocabulary`,
+  Platform `practice`, and Area from the builder.
+- `vercel.json` sets `maxDuration: 60` for `api/vocab.js` (safe on both the old 60 s limit and Fluid compute).
