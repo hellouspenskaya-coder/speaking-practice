@@ -408,5 +408,63 @@
       "verbSentence": "",
       "verbAnswer": ""
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "src": "claude",
+          "label": "Complete the story with the missing prepositions and particles",
+          "strip": [],
+          "text": "When Mia started university, she had to live {1} her parents for the first year. Then she got a part-time job, but it wasn't easy to live {2} such a small salary. She spent too much money {3} clothes, and soon she got {4} debt. She even borrowed €500 {5} the bank. One day she tried to take some money {6} of a cash machine, and there was nothing left! Her brother, who never lends money {7} anyone, decided to help her. \"You can pay me {8} next year,\" he said. Now Mia is more careful. She pays {9} card so she can see every euro she spends, she never buys from shops that charge {10} delivery, and one day she wants to invest {11} property.",
+          "gaps": [
+            {
+              "a": "off",
+              "b": "off"
+            },
+            {
+              "a": "on",
+              "b": "on"
+            },
+            {
+              "a": "on",
+              "b": "on"
+            },
+            {
+              "a": "into",
+              "b": "into"
+            },
+            {
+              "a": "from",
+              "b": "from"
+            },
+            {
+              "a": "out",
+              "b": "out"
+            },
+            {
+              "a": "to",
+              "b": "to"
+            },
+            {
+              "a": "back",
+              "b": "back"
+            },
+            {
+              "a": "by",
+              "b": "by"
+            },
+            {
+              "a": "for",
+              "b": "for"
+            },
+            {
+              "a": "in",
+              "b": "in"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

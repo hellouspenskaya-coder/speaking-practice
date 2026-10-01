@@ -282,5 +282,51 @@
       "verbSentence": "",
       "verbAnswer": ""
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "src": "claude",
+          "label": "Fill each gap with the right word",
+          "strip": [],
+          "text": "Anna and Mark have just bought their first flat. They got a {1} from the bank for twenty-five years, and they also took out a small {2} to buy furniture. Mark's {3} isn't very high, so every month they plan a {4} and try to stick to it. When the electricity {5} arrives, they pay it the same day. They also pay for home {6}, in case something breaks or gets stolen. Anna doesn't carry cash any more: she uses {7} for almost everything. \"The worst part,\" says Mark, \"is how much {8} we pay to the government!\"",
+          "gaps": [
+            {
+              "a": "mortgage",
+              "b": "mortgage"
+            },
+            {
+              "a": "loan",
+              "b": "loan"
+            },
+            {
+              "a": "salary",
+              "b": "salary"
+            },
+            {
+              "a": "budget",
+              "b": "budget"
+            },
+            {
+              "a": "bill",
+              "b": "bill"
+            },
+            {
+              "a": "insurance",
+              "b": "insurance"
+            },
+            {
+              "a": "contactless payment",
+              "b": "contactless payment"
+            },
+            {
+              "a": "tax",
+              "b": "tax"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }

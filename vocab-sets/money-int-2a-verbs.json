@@ -437,5 +437,74 @@
       "verbSentence": "",
       "verbAnswer": ""
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "src": "claude",
+          "label": "Put each word in the right form",
+          "strip": [],
+          "text": "Last year Tom {1} €20,000 from his grandmother. At first he {2} a lot of it on expensive dinners and clothes he never wore. Then his sister needed €3,000. She didn't want to {3} it from the bank, because banks {4} a lot of interest, so Tom {5} her the money. She still {6} him half of it, but he isn't worried. Tom now {7} €1,800 a month as a nurse and {8} €300 every month. He has also {9} some money in a small local company. His old car isn't {10} much any more, but a new one {11} about €25,000, and he still {12} it. Next month he's running a marathon to {13} money for the children's hospital.",
+          "gaps": [
+            {
+              "a": "inherited",
+              "b": "inherit"
+            },
+            {
+              "a": "wasted",
+              "b": "waste"
+            },
+            {
+              "a": "borrow",
+              "b": "borrow"
+            },
+            {
+              "a": "charge",
+              "b": "charge"
+            },
+            {
+              "a": "lent",
+              "b": "lend"
+            },
+            {
+              "a": "owes",
+              "b": "owe"
+            },
+            {
+              "a": "earns",
+              "b": "earn"
+            },
+            {
+              "a": "saves",
+              "b": "save"
+            },
+            {
+              "a": "invested",
+              "b": "invest"
+            },
+            {
+              "a": "worth",
+              "b": "be worth"
+            },
+            {
+              "a": "costs",
+              "b": "cost"
+            },
+            {
+              "a": "can't afford",
+              "b": "can't afford",
+              "alt": [
+                "cannot afford"
+              ]
+            },
+            {
+              "a": "raise",
+              "b": "raise"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }
