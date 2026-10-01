@@ -2566,6 +2566,15 @@ function storyReplayAvailable() {
 function renderStory(container, step, onFinish) {
   const story = step.story;
   const gaps = story.gaps || [];
+  // Tap mode for ordinary sets: when every gap's answer is exactly the word
+  // shown in the bank (builder stories, preposition stories), typing adds
+  // nothing, so the student taps a word and then its gap instead. Stories
+  // that need a changed form (irregular verbs: lend -> lent) stay typed.
+  const sameWord = (x, y) => (x || '').trim().toLowerCase().replace(/\u2019/g, "'") === (y || '').trim().toLowerCase().replace(/\u2019/g, "'");
+  if (gaps.length >= 3 && gaps.every(g => sameWord(g.a, g.b) && !(g.alt && g.alt.length))) {
+    renderStoryTap(container, story, onFinish);
+    return;
+  }
   const state = gaps.map(() => ({ tries: 0, locked: false }));
   let firstTry = 0;
 
@@ -2676,6 +2685,139 @@ function renderStory(container, step, onFinish) {
     maybeFinish();
   });
   if (inputs[0]) inputs[0].focus();
+}
+
+// --- Story, tap version: tap a word in the bank, then its gap (or the gap
+// first, then the word). Two wrong tries on one gap reveal the answer, the
+// same rule as the typed story. Duplicate words (e.g. "on" twice) are
+// interchangeable: any chip with the right text fits. ---
+function renderStoryTap(container, story, onFinish) {
+  const gaps = story.gaps || [];
+  const norm = s => (s || '').trim().toLowerCase().replace(/\u2019/g, "'");
+  const state = gaps.map(() => ({ tries: 0, locked: false }));
+  let firstTry = 0;
+  let selChip = null;
+  let selGap = null;
+
+  const stripHtml = (story.strip || []).map(s =>
+    `<span class="story-chip">${s.e ? `<span class="em">${escapeHtml(s.e)}</span>` : ''}${escapeHtml(s.w)}${s.g ? `<span class="gl">${escapeHtml(s.g)}</span>` : ''}</span>`
+  ).join('');
+  const textHtml = escapeHtml(story.text).replace(/\{(\d+)\}/g, (m, n) =>
+    `<span class="st-gap" data-gap="${Number(n) - 1}">${n}</span>`
+  );
+
+  container.innerHTML = `
+    <style>
+      .st-text { text-align:left; font-size:17px; line-height:2.3; margin:0 0 12px; }
+      .st-gap { display:inline-block; min-width:84px; height:30px; line-height:30px; vertical-align:middle; border-bottom:2px solid var(--border); text-align:center; color:#b6c0cc; font-weight:600; cursor:pointer; margin:0 3px; padding:0 6px; border-radius:4px 4px 0 0; }
+      .st-gap.sel { background: var(--teal-light); border-bottom-color: var(--teal); }
+      .st-gap.ok { border-bottom-color: var(--success); color: var(--success); background: var(--success-light); cursor:default; }
+      .st-gap.shown { border-bottom-color: var(--danger); color: var(--danger); background: var(--danger-light); cursor:default; }
+      .st-gap.bad { border-bottom-color: var(--danger); background: var(--danger-light); }
+      .st-bank { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:0 0 12px; }
+      .st-chip { background:#fff; border:1.5px solid var(--teal); color:var(--teal); border-radius:20px; padding:6px 14px; font-size:15px; font-weight:600; cursor:pointer; }
+      .st-chip.sel { background: var(--teal); color:#fff; }
+      .st-chip.used { border-color: var(--border); color:#b6c0cc; text-decoration:line-through; background:#f8fafc; cursor:default; }
+    </style>
+    ${stripHtml ? `<div class="story-strip">${stripHtml}</div>` : ''}
+    <p class="mode-label">${escapeHtml(story.label || 'Complete the story')}</p>
+    <p style="font-size:13px;color:var(--muted);margin:-4px 0 10px;">Tap a word, then tap its gap</p>
+    <div class="st-bank" id="stBank"></div>
+    <p class="st-text">${textHtml}</p>
+    <div id="stMsg" class="feedback" style="display:none;"></div>
+  `;
+  const bank = container.querySelector('#stBank');
+  const msg = container.querySelector('#stMsg');
+  const gapEls = Array.from(container.querySelectorAll('.st-gap'));
+  function say(t, kind) { msg.style.display = t ? 'block' : 'none'; msg.className = 'feedback ' + (kind || ''); msg.textContent = t || ''; }
+  function clearSel() {
+    if (selChip) selChip.classList.remove('sel');
+    if (selGap) selGap.classList.remove('sel');
+    selChip = null; selGap = null;
+  }
+  function useChip(word, preferred) {
+    const chip = preferred && !preferred.classList.contains('used') && norm(preferred.textContent) === norm(word)
+      ? preferred
+      : Array.from(bank.querySelectorAll('.st-chip')).find(c => !c.classList.contains('used') && norm(c.textContent) === norm(word));
+    if (chip) chip.classList.add('used');
+  }
+  function noteWrong(gap) {
+    const it = (setData.items || []).find(i => norm(i.text) === norm(gap.b));
+    if (it) wrongItemIds.add(it.id);
+  }
+  function lock(el, gap, cls) {
+    el.textContent = gap.a;
+    el.classList.remove('bad', 'sel');
+    el.classList.add(cls);
+  }
+  function tryPair(chip, el) {
+    const idx = Number(el.dataset.gap);
+    const st = state[idx];
+    const gap = gaps[idx];
+    if (st.locked) { clearSel(); return; }
+    if (norm(chip.textContent) === norm(gap.a)) {
+      st.locked = true;
+      if (st.tries === 0) firstTry += 1; else noteWrong(gap);
+      awardPoints(st.tries === 0);
+      lock(el, gap, 'ok');
+      useChip(gap.a, chip);
+      say('', '');
+    } else {
+      st.tries += 1;
+      if (st.tries >= 2) {
+        st.locked = true;
+        noteWrong(gap);
+        awardPoints(false);
+        lock(el, gap, 'shown');
+        useChip(gap.a, null);
+        say(`${idx + 1}: ${gap.a}`, 'wrong');
+      } else {
+        el.classList.add('bad');
+        setTimeout(() => el.classList.remove('bad'), 700);
+        say('Not this one. Read the sentence again and try another word.', 'wrong');
+      }
+    }
+    clearSel();
+    maybeFinish();
+  }
+  function maybeFinish() {
+    if (!state.every(s => s.locked)) return;
+    say(`${firstTry} of ${gaps.length} right the first time`, firstTry === gaps.length ? 'correct' : 'wrong');
+    const btn = document.createElement('button');
+    btn.className = 'primary wide';
+    btn.textContent = 'Continue';
+    btn.style.marginTop = '10px';
+    btn.addEventListener('click', onFinish);
+    container.appendChild(btn);
+  }
+
+  shuffle(gaps.map(g => g.b)).forEach(word => {
+    const chip = document.createElement('button');
+    chip.className = 'st-chip';
+    chip.textContent = word;
+    chip.addEventListener('click', () => {
+      if (chip.classList.contains('used')) return;
+      if (selGap) { const el = selGap; selChip = chip; tryPair(chip, el); return; }
+      if (selChip === chip) { clearSel(); return; }
+      if (selChip) selChip.classList.remove('sel');
+      selChip = chip;
+      chip.classList.add('sel');
+      say('', '');
+    });
+    bank.appendChild(chip);
+  });
+
+  gapEls.forEach(el => {
+    el.addEventListener('click', () => {
+      if (state[Number(el.dataset.gap)].locked) return;
+      if (selChip) { const chip = selChip; selGap = el; tryPair(chip, el); return; }
+      if (selGap === el) { clearSel(); return; }
+      if (selGap) selGap.classList.remove('sel');
+      selGap = el;
+      el.classList.add('sel');
+      say('', '');
+    });
+  });
 }
 
 function renderDone() {

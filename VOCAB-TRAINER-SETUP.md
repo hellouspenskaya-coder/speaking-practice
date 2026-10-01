@@ -85,3 +85,10 @@ The trainer falls back to the browser's built-in speech synthesis whenever a set
 - In the two steps where the text itself gives the answer ("Complete the text" and "Choose the word in context")
   the Text tab is hidden and the word cards do not show their example sentence.
 - Not shown in worksheet mode (`&worksheet=1` has its own screen).
+
+### "Complete the story": tap mode for ordinary sets
+
+- If every gap's answer is exactly the word shown in the bank (`a` equals `b`, no `alt`), the story is played by tapping:
+  tap a word, then its gap (or the gap first). Two wrong tries on one gap reveal the answer, as in the typed version.
+- Stories that need a changed form (irregular verbs: bank `lend`, answer `lent`) stay typed, unchanged.
+- No new data fields; builder stories and preposition stories switch to tapping automatically.
