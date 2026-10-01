@@ -74,3 +74,14 @@ The trainer falls back to the browser's built-in speech synthesis whenever a set
   `stories: [{ stories: [{ src: "builder", label, text, gaps }] }]`, i.e. the same structure the irregular verbs sets already use.
 - The builder now keeps fields it does not edit (`stories`, `sampleSize`, `passage`, `passageForm`) when an existing set
   is opened with `?set=slug` and saved again. Before, such a re-save silently dropped them.
+
+### "Words" button in the student practice screen
+
+- Top row of every exercise: `Words` (next to `Skip`). It opens a panel IN PLACE of the exercise: the question and the
+  answer controls are hidden (`display:none`, not removed), so the panel works as a reminder, not as a place to copy from.
+  Score, streak and the queue are untouched; "Back to the exercise" shows the same step again. No limit on how often.
+- Panel: tab "Words" (the same cards as the gallery, tap for the detail card) and, for text sets, tab "Text"
+  (the passage with tappable highlighted words).
+- In the two steps where the text itself gives the answer ("Complete the text" and "Choose the word in context")
+  the Text tab is hidden and the word cards do not show their example sentence.
+- Not shown in worksheet mode (`&worksheet=1` has its own screen).

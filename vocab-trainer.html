@@ -537,7 +537,7 @@ function printWorksheet(worksheetItems) {
   printWindow.onload = () => printWindow.print();
 }
 
-function openOverlay(item) {
+function openOverlay(item, hideExample) {
   const overlay = document.getElementById('overlay');
   overlay.style.display = 'flex';
   const isVerbWithForms = item.isVerb && item.pastSimple && item.pastParticiple;
@@ -563,7 +563,7 @@ function openOverlay(item) {
       ${!isVerbWithForms ? `<p style="font-size:24px;font-weight:600;margin:0 0 4px;">${escapeHtml(item.text)}</p>` : ''}
       ${item.phonetic ? `<p style="font-size:13px;color:var(--muted);margin:0 0 8px;">${escapeHtml(item.phonetic)}</p>` : ''}
       ${item.definition ? `<p style="font-size:14px;color:var(--muted);margin:0 0 4px;">${escapeHtml(item.definition)}</p>` : ''}
-      ${item.example ? `<p style="font-size:13px;color:var(--muted);font-style:italic;margin:0 0 14px;">${escapeHtml(item.example)}</p>` : ''}
+      ${item.example && !hideExample ? `<p style="font-size:13px;color:var(--muted);font-style:italic;margin:0 0 14px;">${escapeHtml(item.example)}</p>` : ''}
       <button id="overlayListenBtn" style="padding:10px 20px;border-radius:10px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:14px;">&#128266; Listen</button>
     </div>
   `;
@@ -853,6 +853,7 @@ function renderStep() {
       <span>${modeLabel(step.mode)}</span>
       <span class="top-right">
         <span>${stepIndex + 1} / ${total}</span>
+        <button class="skip-btn" id="wordsBtn">Words</button>
         <button class="skip-btn" id="skipBtn">Skip &rsaquo;</button>
       </span>
     </div>
@@ -869,6 +870,8 @@ function renderStep() {
     stepIndex += 1;
     renderStep();
   });
+
+  document.getElementById('wordsBtn').addEventListener('click', () => openWordsPanel(cardArea, step));
 
   const onDone = (wasCorrect) => {
     if (step.kind === 'single' && !wasCorrect) wrongItemIds.add(step.item.id);
@@ -2279,6 +2282,118 @@ function renderPassageTap(container, tap, onDone) {
     });
     grid.appendChild(btn);
   });
+}
+
+// --- "Words" panel: opens IN PLACE of the exercise (the question and the
+// answer controls are hidden while it is open, so it works as a reminder,
+// not as a place to copy from). Nothing is reset: score, streak and the
+// queue stay as they are, and closing the panel shows the same step again. ---
+function closeWordsPanel() {
+  const panel = document.getElementById('wordsPanel');
+  if (!panel) return;
+  const area = document.getElementById('cardArea');
+  if (area) area.style.display = '';
+  panel.remove();
+}
+
+function openWordsPanel(cardArea, step) {
+  if (document.getElementById('wordsPanel')) return;
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  const items = setData.items || [];
+  const passage = setData.passage && setData.passage.text ? setData.passage : null;
+  // The text itself would give the answer away in these two steps.
+  const hideText = !passage
+    || step.kind === 'passageCloze'
+    || (step.kind === 'single' && step.mode === 'contextGap');
+
+  const panel = document.createElement('div');
+  panel.id = 'wordsPanel';
+  panel.className = 'card';
+  panel.style.textAlign = 'left';
+  panel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;">
+      <span style="font-size:16px;font-weight:600;">${escapeHtml(setData.topic || 'Words')}</span>
+      <button class="primary" id="wpClose" style="padding:8px 14px;font-size:14px;">Back to the exercise</button>
+    </div>
+    ${hideText ? '' : `<div style="display:flex;gap:8px;margin-bottom:12px;">
+      <button id="wpTabWords" style="flex:1;padding:8px;font-size:14px;">Words</button>
+      <button id="wpTabText" style="flex:1;padding:8px;font-size:14px;">Text</button>
+    </div>`}
+    <div id="wpBody"></div>
+    <div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;padding:20px;"></div>
+  `;
+  cardArea.style.display = 'none';
+  cardArea.parentNode.insertBefore(panel, cardArea.nextSibling);
+
+  const overlay = panel.querySelector('#overlay');
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+  panel.querySelector('#wpClose').addEventListener('click', closeWordsPanel);
+  const body = panel.querySelector('#wpBody');
+
+  function showWords() {
+    body.innerHTML = `
+      <p style="font-size:14px;color:var(--muted);margin:0 0 10px;">Tap a card to look closer.</p>
+      <div id="wpGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>`;
+    const grid = body.querySelector('#wpGrid');
+    items.forEach(item => {
+      const tile = document.createElement('div');
+      tile.style.cssText = 'border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;height:105px;';
+      tile.innerHTML = `
+        <div style="height:70px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          ${item.image
+            ? `<img src="${escapeAttr(item.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
+            : `<span style="font-size:11px;color:var(--muted);padding:4px;text-align:center;">${escapeHtml(item.definition || '')}</span>`}
+        </div>
+        <div style="padding:5px 6px;text-align:center;font-size:13px;font-weight:500;">${escapeHtml(item.text)}</div>`;
+      // In the two text-based steps the example sentence would show the answer.
+      tile.addEventListener('click', () => openOverlay(item, hideText));
+      grid.appendChild(tile);
+    });
+  }
+
+  function showText() {
+    let html = escapeHtml(passage.text);
+    const tokens = [];
+    items.filter(i => i.passageForm && i.definition).slice()
+      .sort((a, b) => b.passageForm.length - a.passageForm.length).forEach(it => {
+        const re = new RegExp('(?<![A-Za-z])' + escapeRegex(escapeHtml(it.passageForm)) + '(?![A-Za-z])', 'i');
+        html = html.replace(re, m => { tokens.push({ id: it.id, text: m }); return '\u0000' + (tokens.length - 1) + '\u0000'; });
+      });
+    html = html.replace(/\u0000(\d+)\u0000/g, (m, i) =>
+      `<span class="wp-hl" data-id="${escapeAttr(tokens[i].id)}" style="background:#fef3c7;border-bottom:2px solid #f59e0b;border-radius:3px;padding:0 2px;cursor:pointer;">${tokens[i].text}</span>`);
+    body.innerHTML = `
+      <p style="font-size:14px;color:var(--muted);margin:0 0 10px;">Tap a highlighted word to see what it means.</p>
+      <p style="font-size:17px;line-height:1.75;margin:0;">${html}</p>
+      <div id="wpDef" style="display:none;margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--teal-light);font-size:15px;line-height:1.5;"></div>`;
+    body.querySelectorAll('.wp-hl').forEach(el => {
+      el.addEventListener('click', () => {
+        const it = items.find(i => i.id === el.dataset.id);
+        if (!it) return;
+        const box = body.querySelector('#wpDef');
+        box.style.display = 'block';
+        box.innerHTML = `<strong>${escapeHtml(it.text)}</strong> &mdash; ${escapeHtml(it.definition)}`;
+      });
+    });
+  }
+
+  function pick(tab) {
+    const w = panel.querySelector('#wpTabWords');
+    const t = panel.querySelector('#wpTabText');
+    if (w && t) {
+      w.classList.toggle('primary', tab === 'words');
+      t.classList.toggle('primary', tab === 'text');
+    }
+    if (tab === 'text') showText(); else showWords();
+  }
+  const tw = panel.querySelector('#wpTabWords');
+  const tt = panel.querySelector('#wpTabText');
+  if (tw && tt) {
+    tw.addEventListener('click', () => pick('words'));
+    tt.addEventListener('click', () => pick('text'));
+  }
+  // A text set student most often wants the text; a word set student the words.
+  pick(passage && !hideText ? 'text' : 'words');
+  panel.scrollIntoView({ block: 'start' });
 }
 
 // Last step of a text set: the same text again, with the highlighted words
