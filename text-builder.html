@@ -159,6 +159,8 @@
     <h2>5. Publish</h2>
     <label for="title">Set title</label>
     <input type="text" id="title" autocomplete="off" style="margin-bottom:12px;" />
+    <label for="areaPub">Area (goes to Notion)</label>
+    <input type="text" id="areaPub" list="areaList" placeholder="psychology" autocomplete="off" style="margin-bottom:12px;" />
     <label class="checkline"><input type="checkbox" id="cloze" checked /> Add "Complete the text" at the end (the same text with gaps).</label>
     <label class="checkline"><input type="checkbox" id="reviewed" /> I have checked the text, the definitions and the answers.</label>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -382,6 +384,7 @@ $('buildBtn').addEventListener('click', async () => {
     words = out.words.map(w => Object.assign({ keep: true }, w));
     taps = out.taps.map(t => Object.assign({ keep: true }, t));
     $('title').value = out.title;
+    if (!$('areaPub').value.trim()) $('areaPub').value = $('area').value.trim();
     renderWords();
     renderTaps();
     renderPassage();
@@ -502,7 +505,7 @@ function buildSetData() {
     kind: 'textSet',
     topic: $('title').value.trim() || 'Reading set',
     level: $('level').value,
-    area: $('area').value.trim(),
+    area: $('areaPub').value.trim(),
     modes: MODES,
     antonymPairs: [],
     passage: {
@@ -522,6 +525,7 @@ function checkReady() {
   if (!words.length) return 'Generate the words first.';
   if (words.filter(w => w.keep).length < 4) return 'Keep at least 4 words (the word-in-context exercise needs them).';
   if (!article.licenseOk && !$('licenseCheck').checked) return 'Confirm that you may use this text (tick the box under the licence note).';
+  if (!$('areaPub').value.trim()) return 'Choose an Area (for example psychology). Without it the Notion card has no Area.';
   if (!$('reviewed').checked) return 'Tick the box to confirm you checked the text, definitions and answers.';
   return '';
 }
