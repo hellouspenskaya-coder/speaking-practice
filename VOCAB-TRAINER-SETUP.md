@@ -61,3 +61,16 @@ The trainer falls back to the browser's built-in speech synthesis whenever a set
 - Notion: published text sets are logged in Assignments with Type `text set`, Skill `reading` + `vocabulary`,
   Platform `practice`, and Area from the builder.
 - `vercel.json` sets `maxDuration: 60` for `api/vocab.js` (safe on both the old 60 s limit and Fluid compute).
+
+### Added later: adaptation and "Complete the story" for any set
+
+- `text-builder.html`: tick "Adapt the wording to the level" (auto-ticked for B1; B1 and B2 only, C1 keeps the original).
+  Action `textAdapt` (Sonnet) rewrites the excerpt; the original stays visible under it for comparison.
+  Adapted sets carry `passage.source.adaptedFor` and the trainer shows "wording adapted for B1" under the text.
+- Text sets end with "Complete the text": the same excerpt with the highlighted words removed (tap a word, tap its gap).
+  Switch off per set with the checkbox in the builder (`passage.cloze: false`).
+- `vocab-builder.html`: optional "Story at the end" card for ANY set. Action `storyBuild` (Haiku) writes a short story
+  from the set's words; gap words are marked **like this** and can be edited. Stored as
+  `stories: [{ stories: [{ src: "builder", label, text, gaps }] }]`, i.e. the same structure the irregular verbs sets already use.
+- The builder now keeps fields it does not edit (`stories`, `sampleSize`, `passage`, `passageForm`) when an existing set
+  is opened with `?set=slug` and saved again. Before, such a re-save silently dropped them.

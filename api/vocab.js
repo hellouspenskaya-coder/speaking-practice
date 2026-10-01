@@ -14,6 +14,8 @@
 //   action: "textSearch" -> Sonnet + web search finds open-access (CC BY) articles
 //   action: "textFetch"  -> reads one article page, returns verbatim excerpt candidates
 //   action: "textBuild"  -> Haiku makes highlighted words + reading-skill taps for an excerpt
+//   action: "textAdapt"  -> Sonnet rewrites an excerpt for a lower level (teacher reviews it)
+//   action: "storyBuild" -> Haiku writes a short gap-fill story from the words of any set
 
 const OWNER = 'hellouspenskaya-coder';
 const REPO = 'speaking-practice';
@@ -39,6 +41,8 @@ module.exports = async function handler(req, res) {
     if (action === 'textSearch') return await textSearch(req, res);
     if (action === 'textFetch') return await textFetch(req, res);
     if (action === 'textBuild') return await textBuild(req, res);
+    if (action === 'textAdapt') return await textAdapt(req, res);
+    if (action === 'storyBuild') return await storyBuild(req, res);
     res.status(400).json({ error: `Unknown action: ${action}` });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -984,4 +988,128 @@ Options must be short (max 20 words).`;
     return;
   }
   res.status(200).json({ title: norm(out.title) || 'Reading set', words: words.slice(0, 9), taps: taps.slice(0, 5) });
+}
+
+
+// ---------- adaptation of an excerpt to a level ----------
+
+async function callSonnet(prompt, maxTokens) {
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': process.env.ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: maxTokens || 1200,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Anthropic error ${response.status}: ${errText}`);
+  }
+  const data = await response.json();
+  return (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('\n');
+}
+
+async function textAdapt(req, res) {
+  const { passage, level, area } = req.body || {};
+  const text = String(passage || '').trim();
+  const wc = wordCount(text);
+  if (wc < 30 || wc > 260) {
+    res.status(400).json({ error: 'The passage should be between 30 and 260 words.' });
+    return;
+  }
+  const lvl = ['B1', 'B2'].includes(level) ? level : null;
+  if (!lvl) {
+    res.status(400).json({ error: 'Adaptation is available for B1 and B2. C1 keeps the original wording.' });
+    return;
+  }
+  const how = lvl === 'B1'
+    ? `- Use mostly CEFR A2-B1 vocabulary and grammar. Average sentence length about 15 words, never more than 25. Split long sentences. Replace rare or abstract words with common ones.
+- Keep a few useful academic words (for example "contribute to", "factor", "outcome") as learning targets.`
+    : `- Keep a clearly academic register, but replace unusually rare words and untangle sentences longer than 30 words.
+- Do not simplify the grammar more than necessary.`;
+  const prompt = `You adapt an authentic text for an adult ${lvl} learner of English. Field: ${area || 'general academic English'}.
+
+ORIGINAL:
+"""
+${text}
+"""
+
+Rewrite it as ONE paragraph of 55 to 110 words.
+Rules:
+${how}
+- Keep the meaning and every claim. Do not add facts, examples or opinions. Do not remove a claim.
+- KEEP the author's cautious wording (appear to, may, tends to, suggest, likely ...) and keep the same degree of certainty. Never make a claim stronger or weaker.
+- KEEP reference words such as which, this, these, it, they where they make sense, because learners are trained on them.
+- KEEP the key subject terms of the field, even if difficult.
+- No citations, no brackets, no quotation marks around the text, no headings, no commentary.
+
+Reply with STRICT JSON only: {"text":"the adapted paragraph"}`;
+
+  let out;
+  try {
+    out = extractJsonObject(await callSonnet(prompt, 900));
+  } catch (err) {
+    res.status(502).json({ error: 'Could not adapt the text: ' + err.message });
+    return;
+  }
+  const adapted = String(out.text || '').replace(/\s+/g, ' ').trim();
+  const awc = wordCount(adapted);
+  if (awc < 40 || awc > 140 || /[\[\]{}*#]/.test(adapted) || !/[.!?]["\u201d)]?$/.test(adapted)) {
+    res.status(502).json({ error: 'The adapted text did not come out right. Try again.' });
+    return;
+  }
+  res.status(200).json({ text: adapted, words: awc });
+}
+
+// ---------- optional "Complete the story" for any word set ----------
+
+async function storyBuild(req, res) {
+  const { words, level, topic } = req.body || {};
+  const list = (Array.isArray(words) ? words : [])
+    .map((w) => ({ text: String((w && w.text) || '').trim(), type: (w && w.type) || 'word', definition: String((w && w.definition) || '').trim() }))
+    .filter((w) => w.text);
+  if (list.length < 4) {
+    res.status(400).json({ error: 'Add at least 4 words to the set first.' });
+    return;
+  }
+  const lvl = level || 'B1';
+  const given = list.slice(0, 40).map((w) => '- ' + w.text + (w.definition ? ' (' + w.definition + ')' : '')).join('\n');
+  const prompt = `Write ONE short story for adult English learners at level ${lvl}. Topic of the word set: ${topic || 'general'}.
+
+WORD LIST:
+${given}
+
+Rules:
+- 60 to 110 words, simple and clear, a little story with a beginning and an end (a person, a problem, what happens). Natural and neutral, suitable for adults.
+- Use between 5 and 8 words from the list. Put each used word in double asterisks, exactly as it is written in the list: NO plural, NO past tense, NO other changes. Example: "She wanted to **cook** dinner."
+- Use each marked word only once. Do not use the other list words unmarked.
+- The context must make each missing word easy to guess, and different marked words must not fit the same gap.
+- Plain text only. No other markdown, no title inside the text.
+
+Reply with STRICT JSON only: {"text":"the story with **marked** words"}`;
+
+  let out;
+  try {
+    out = extractJsonObject(await callHaiku(prompt, 900));
+  } catch (err) {
+    res.status(502).json({ error: 'Could not write the story: ' + err.message });
+    return;
+  }
+  const text = String(out.text || '').replace(/[ \t]+/g, ' ').trim();
+  const marked = [];
+  text.replace(/\*\*(.+?)\*\*/g, (m, w) => { marked.push(w.trim().toLowerCase()); return m; });
+  const allowed = new Set(list.map((w) => w.text.toLowerCase()));
+  const unique = new Set(marked);
+  const wc = wordCount(text);
+  if (marked.length < 4 || unique.size !== marked.length || marked.some((w) => !allowed.has(w)) || wc < 40 || wc > 150) {
+    res.status(502).json({ error: 'The story did not come out right (gaps or length). Try again.' });
+    return;
+  }
+  res.status(200).json({ text, gaps: marked.length });
 }

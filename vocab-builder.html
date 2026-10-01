@@ -235,6 +235,27 @@
   </div>
 
   <div class="card">
+    <h2>Story at the end <span style="color:var(--muted); font-weight:400;">(optional)</span></h2>
+    <p class="sub" style="margin-bottom:10px;">A short story built from your words, with some of them as gaps. Students see it once at the end of the practice and can replay it. Edit it before publishing: words in **double asterisks** become gaps.</p>
+    <div id="storyExisting" style="display:none; font-size:13px; color:var(--muted);"></div>
+    <div id="storyTools">
+      <div class="actions-row">
+        <button id="writeStoryBtn">Write a story</button>
+        <button class="small" id="removeStoryBtn" style="display:none;">Remove story</button>
+      </div>
+      <div id="storyEditor" style="display:none; margin-top:12px;">
+        <textarea id="storyText" style="min-height:150px; line-height:1.5;"></textarea>
+        <p id="storyInfo" style="font-size:12px; color:var(--muted); margin:6px 0 8px;"></p>
+        <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text);">
+          <input type="checkbox" id="storyInclude" checked style="width:auto;" />
+          Include this story in the set
+        </label>
+      </div>
+    </div>
+    <div class="error-box" id="storyError"></div>
+  </div>
+
+  <div class="card">
     <h2>Practice modes for this set</h2>
     <div class="modes-grid" id="modesGrid"></div>
   </div>
@@ -282,6 +303,9 @@ const MODES = [
 ];
 
 let antonymPairs = [];
+let loadedExtras = {};      // fields of a loaded set this page does not edit (kept on re-save)
+let existingStories = null; // stories that were not written by this page (kept as they are)
+let storyDraft = null;      // story text with **marked** gap words, or null
 let items = []; // { id, text, type, definition, example, phonetic, chunks, image, audio, status }
 let idCounter = 0;
 
@@ -298,6 +322,19 @@ async function maybeLoadExistingSet() {
     idCounter = 0;
     items = (data.items || []).map(i => ({ ...i, id: i.id || ('item_' + (++idCounter)), status: 'loaded' }));
     antonymPairs = data.antonymPairs || [];
+    const KNOWN_KEYS = ['topic', 'level', 'modes', 'antonymPairs', 'items', 'stories'];
+    loadedExtras = {};
+    Object.keys(data).forEach(k => { if (!KNOWN_KEYS.includes(k)) loadedExtras[k] = data[k]; });
+    if (Array.isArray(data.stories) && data.stories.length) {
+      const one = data.stories.length === 1 && data.stories[0].stories && data.stories[0].stories.length === 1 ? data.stories[0].stories[0] : null;
+      if (one && one.src === 'builder') {
+        storyDraft = storyToMarked(one);
+        setTimeout(showStoryEditor, 60);
+      } else {
+        existingStories = data.stories;
+        setTimeout(renderStoryExisting, 60);
+      }
+    }
     if (data.modes && data.modes.length) {
       setTimeout(() => {
         document.querySelectorAll('#modesGrid input[type=checkbox]').forEach(cb => {
@@ -1019,7 +1056,7 @@ function getEnabledModes() {
     .map(cb => cb.dataset.mode);
 }
 
-function buildSetData() {
+function buildSetDataCore() {
   return {
     topic: document.getElementById('topicInput').value.trim() || 'Untitled set',
     level: document.getElementById('levelSelect').value,
@@ -1054,10 +1091,110 @@ function buildSetData() {
       pastSimple: i.pastSimple || '',
       pastParticiple: i.pastParticiple || '',
       verbSentence: i.verbSentence || '',
-      verbAnswer: i.verbAnswer || ''
+      verbAnswer: i.verbAnswer || '',
+      ...(i.passageForm ? { passageForm: i.passageForm } : {})
     }))
   };
 }
+
+function buildSetData() {
+  const out = Object.assign({}, loadedExtras, buildSetDataCore());
+  if (storyDraft !== null && document.getElementById('storyInclude').checked) {
+    out.stories = [{ stories: [storyFromMarked(storyDraft)] }];
+  } else if (existingStories) {
+    out.stories = existingStories;
+  }
+  return out;
+}
+
+// ---- optional story at the end ----
+function storyGapWords(text) {
+  const words = [];
+  String(text).replace(/\*\*(.+?)\*\*/g, (m, w) => { words.push(w.trim()); return m; });
+  return words;
+}
+function storyFromMarked(text) {
+  const gaps = [];
+  let n = 0;
+  const clean = String(text).replace(/[{}]/g, '');
+  const body = clean.replace(/\*\*(.+?)\*\*/g, (m, w) => {
+    n += 1;
+    const word = w.trim();
+    const it = items.find(i => i.text.toLowerCase() === word.toLowerCase());
+    gaps.push({ a: word, b: it ? it.text : word });
+    return '{' + n + '}';
+  });
+  return { src: 'builder', label: 'Fill each gap with the right word', strip: [], text: body.trim(), gaps };
+}
+function storyToMarked(story) {
+  return String(story.text || '').replace(/\{(\d+)\}/g, (m, n) => {
+    const g = (story.gaps || [])[Number(n) - 1];
+    return g ? '**' + g.a + '**' : '';
+  });
+}
+function storyProblem() {
+  if (storyDraft === null || !document.getElementById('storyInclude').checked) return '';
+  const gaps = storyGapWords(storyDraft);
+  if (gaps.length < 3) return 'The story needs at least 3 gaps. Put the gap words in **double asterisks**, or untick "Include this story".';
+  if (new Set(gaps.map(g => g.toLowerCase())).size !== gaps.length) return 'Each gap word can appear only once in the story.';
+  return '';
+}
+function updateStoryInfo() {
+  const gaps = storyGapWords(storyDraft || '');
+  const outside = gaps.filter(g => !items.some(i => i.text.toLowerCase() === g.toLowerCase()));
+  document.getElementById('storyInfo').textContent =
+    gaps.length + ' gaps: ' + (gaps.join(', ') || 'none yet') + (outside.length ? ' · not in the set: ' + outside.join(', ') : '');
+}
+function showStoryEditor() {
+  document.getElementById('storyEditor').style.display = 'block';
+  document.getElementById('removeStoryBtn').style.display = 'inline-block';
+  document.getElementById('storyText').value = storyDraft || '';
+  document.getElementById('writeStoryBtn').textContent = 'Write another story';
+  updateStoryInfo();
+}
+function renderStoryExisting() {
+  const box = document.getElementById('storyExisting');
+  box.style.display = 'block';
+  box.textContent = 'This set already has ' + existingStories.length + ' hand-made story block(s) (the irregular verbs kind). They are kept as they are.';
+  document.getElementById('storyTools').style.display = 'none';
+}
+document.getElementById('storyText').addEventListener('input', e => { storyDraft = e.target.value; updateStoryInfo(); });
+document.getElementById('removeStoryBtn').addEventListener('click', () => {
+  storyDraft = null;
+  document.getElementById('storyEditor').style.display = 'none';
+  document.getElementById('removeStoryBtn').style.display = 'none';
+  document.getElementById('writeStoryBtn').textContent = 'Write a story';
+  document.getElementById('storyError').classList.remove('open');
+});
+document.getElementById('writeStoryBtn').addEventListener('click', async () => {
+  const err = document.getElementById('storyError');
+  err.classList.remove('open');
+  const words = items.filter(i => i.text).map(i => ({ text: i.text, type: i.type, definition: i.definition || '' }));
+  if (words.length < 4) { err.textContent = 'Add at least 4 words first.'; err.classList.add('open'); return; }
+  const btn = document.getElementById('writeStoryBtn');
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Writing…';
+  try {
+    const response = await fetch('/api/vocab', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'storyBuild', words, level: document.getElementById('levelSelect').value, topic: document.getElementById('topicInput').value.trim() })
+    });
+    let data;
+    try { data = await response.json(); } catch (e) { throw new Error('The server took too long. Try again.'); }
+    if (!response.ok) throw new Error(data.error || 'Could not write the story');
+    storyDraft = data.text;
+    document.getElementById('storyInclude').checked = true;
+    showStoryEditor();
+  } catch (e) {
+    err.textContent = e.message;
+    err.classList.add('open');
+    btn.textContent = label;
+  } finally {
+    btn.disabled = false;
+  }
+});
 
 function slugify(topic) {
   return topic.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'set';
@@ -1068,6 +1205,12 @@ document.getElementById('publishBtn').addEventListener('click', async () => {
   errorBox.classList.remove('open');
   if (!items.length) {
     errorBox.textContent = 'Add at least one item first.';
+    errorBox.classList.add('open');
+    return;
+  }
+  const storyErr = storyProblem();
+  if (storyErr) {
+    errorBox.textContent = storyErr;
     errorBox.classList.add('open');
     return;
   }
@@ -1110,6 +1253,8 @@ document.getElementById('publishBtn').addEventListener('click', async () => {
 
 document.getElementById('downloadBtn').addEventListener('click', () => {
   if (!items.length) { alert('Add at least one item first.'); return; }
+  const storyErr = storyProblem();
+  if (storyErr) { alert(storyErr); return; }
   const data = buildSetData();
   const slug = slugify(data.topic);
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });

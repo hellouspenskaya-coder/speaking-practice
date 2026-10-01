@@ -263,7 +263,7 @@ function renderGallery() {
     <div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;padding:20px;"></div>
   `;
   document.getElementById('startBtn').addEventListener('click', () => {
-    queue = buildPassageTapSteps(setData).concat(buildSession(setData)).concat(buildStorySteps(setData));
+    queue = buildPassageTapSteps(setData).concat(buildSession(setData)).concat(buildPassageClozeSteps(setData)).concat(buildStorySteps(setData));
     stepIndex = 0;
     renderStep();
   });
@@ -877,7 +877,9 @@ function renderStep() {
     renderStep();
   };
 
-  if (step.kind === 'passageTap') {
+  if (step.kind === 'passageCloze') {
+    renderPassageCloze(cardArea, () => { stepIndex += 1; renderStep(); });
+  } else if (step.kind === 'passageTap') {
     renderPassageTap(cardArea, step.tap, onDone);
   } else if (step.kind === 'story') {
     renderStory(cardArea, step, () => {
@@ -968,7 +970,8 @@ function modeLabel(mode) {
     antonymMatching: 'Match the opposites',
     story: 'Complete the story',
     contextGap: 'Choose the word in context',
-    passageTap: 'Read and choose'
+    passageTap: 'Read and choose',
+    passageCloze: 'Complete the text'
   })[mode] || mode;
 }
 
@@ -2190,7 +2193,7 @@ function renderReading() {
 
   const src = passage.source || {};
   const srcLine = src.url
-    ? `Source: <a href="${escapeAttr(src.url)}" target="_blank" rel="noopener">${escapeHtml(src.title || src.url)}</a>${src.authors ? ' · ' + escapeHtml(src.authors) : ''}${src.journal ? ' · ' + escapeHtml(src.journal) : ''}${src.license ? ' · ' + escapeHtml(src.license) : ''}. Excerpt shortened, citations removed.`
+    ? `Source: <a href="${escapeAttr(src.url)}" target="_blank" rel="noopener">${escapeHtml(src.title || src.url)}</a>${src.authors ? ' · ' + escapeHtml(src.authors) : ''}${src.journal ? ' · ' + escapeHtml(src.journal) : ''}${src.license ? ' · ' + escapeHtml(src.license) : ''}. Excerpt shortened, citations removed${src.adaptedFor ? ', wording adapted for ' + escapeHtml(src.adaptedFor) : ''}.`
     : '';
 
   app.innerHTML = `
@@ -2276,6 +2279,103 @@ function renderPassageTap(container, tap, onDone) {
     });
     grid.appendChild(btn);
   });
+}
+
+// Last step of a text set: the same text again, with the highlighted words
+// removed. Tap a word in the bank, then tap the gap it belongs to.
+function buildPassageClozeSteps(data) {
+  const p = data && data.passage;
+  if (!p || !p.text || p.cloze === false) return [];
+  const withForm = (data.items || []).filter(i => i.passageForm);
+  return withForm.length >= 3 ? [{ kind: 'passageCloze', mode: 'passageCloze', phase: 'practice' }] : [];
+}
+
+function renderPassageCloze(container, onFinish) {
+  const passage = setData.passage;
+  const cands = (setData.items || []).filter(i => i.passageForm).slice(0, 7);
+  let html = escapeHtml(passage.text);
+  const gaps = [];
+  cands.slice().sort((a, b) => b.passageForm.length - a.passageForm.length).forEach(it => {
+    const re = new RegExp('(?<![A-Za-z])' + escapeRegex(escapeHtml(it.passageForm)) + '(?![A-Za-z])', 'i');
+    let hit = false;
+    html = html.replace(re, () => { hit = true; gaps.push({ item: it, form: it.passageForm, tries: 0, done: false }); return '\u0000' + (gaps.length - 1) + '\u0000'; });
+  });
+  if (gaps.length < 3) return;
+  html = html.replace(/\u0000(\d+)\u0000/g, (m, i) => `<span class="cl-gap" data-g="${i}"></span>`);
+
+  container.innerHTML = `
+    <style>
+      .cl-text { text-align:left; font-size:17px; line-height:2.3; margin:0 0 12px; }
+      .cl-gap { display:inline-block; min-width:84px; height:30px; vertical-align:middle; border-bottom:2px solid var(--border); text-align:center; font-weight:600; cursor:pointer; margin:0 3px; border-radius:4px 4px 0 0; }
+      .cl-gap.ok { border-bottom-color: var(--success); color: var(--success); background: var(--success-light); cursor:default; }
+      .cl-gap.bad { border-bottom-color: var(--danger); background: var(--danger-light); }
+      .cl-bank { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:0 0 12px; }
+      .cl-chip { background:#fff; border:1.5px solid var(--teal); color:var(--teal); border-radius:20px; padding:6px 14px; font-size:15px; font-weight:600; cursor:pointer; }
+      .cl-chip.sel { background: var(--teal); color:#fff; }
+      .cl-chip.used { border-color: var(--border); color:#b6c0cc; text-decoration:line-through; background:#f8fafc; cursor:default; }
+    </style>
+    <p class="mode-label">Tap a word, then tap its gap</p>
+    <div class="cl-bank" id="clBank"></div>
+    <p class="cl-text">${html}</p>
+    <div id="clMsg" class="feedback" style="display:none;"></div>
+    <button class="primary wide hidden" id="clDone" style="display:none;margin-top:6px;">Continue</button>
+  `;
+  const bank = container.querySelector('#clBank');
+  const msg = container.querySelector('#clMsg');
+  const doneBtn = container.querySelector('#clDone');
+  let selected = null;
+  function say(t, kind) { msg.style.display = t ? 'block' : 'none'; msg.className = 'feedback ' + (kind || ''); msg.textContent = t || ''; }
+
+  shuffle(gaps.map((g, i) => i)).forEach(i => {
+    const chip = document.createElement('button');
+    chip.className = 'cl-chip';
+    chip.textContent = gaps[i].form;
+    chip.dataset.g = i;
+    chip.addEventListener('click', () => {
+      if (chip.classList.contains('used')) return;
+      container.querySelectorAll('.cl-chip.sel').forEach(c => c.classList.remove('sel'));
+      if (selected === chip) { selected = null; return; }
+      selected = chip;
+      chip.classList.add('sel');
+      say('', '');
+    });
+    bank.appendChild(chip);
+  });
+
+  container.querySelectorAll('.cl-gap').forEach(el => {
+    el.addEventListener('click', () => {
+      const g = gaps[Number(el.dataset.g)];
+      if (g.done) return;
+      if (!selected) { say('Tap a word in the bank first.', ''); return; }
+      const chosen = gaps[Number(selected.dataset.g)];
+      if (chosen === g) {
+        g.done = true;
+        el.textContent = g.form;
+        el.classList.remove('bad');
+        el.classList.add('ok');
+        selected.classList.remove('sel');
+        selected.classList.add('used');
+        selected = null;
+        awardPoints(g.tries === 0);
+        if (g.tries > 0) wrongItemIds.add(g.item.id);
+        say('', '');
+        if (gaps.every(x => x.done)) {
+          doneBtn.style.display = 'block';
+          say('Well done. Read the whole text once more.', 'correct');
+        }
+      } else {
+        g.tries += 1;
+        wrongItemIds.add(g.item.id);
+        streak = 0;
+        el.classList.add('bad');
+        setTimeout(() => el.classList.remove('bad'), 700);
+        selected.classList.remove('sel');
+        selected = null;
+        say('Not this one. Read the sentence again and try another word.', 'wrong');
+      }
+    });
+  });
+  doneBtn.addEventListener('click', onFinish);
 }
 
 // The sentence from the text with the word blanked out; the options are
@@ -2366,7 +2466,7 @@ function renderStory(container, step, onFinish) {
 
   container.innerHTML = `
     ${stripHtml ? `<div class="story-strip">${stripHtml}</div>` : ''}
-    <p class="mode-label">Put each verb in the right form</p>
+    <p class="mode-label">${escapeHtml(story.label || 'Put each verb in the right form')}</p>
     <div class="story-bank" id="storyBank">${bankHtml}</div>
     <p class="story-text">${textHtml}</p>
     <div id="storyMsg" class="feedback" style="display:none;"></div>
