@@ -1,0 +1,381 @@
+{
+  "topic": "Irena 05.10.26",
+  "level": "B2",
+  "modes": [
+    "matchingDef",
+    "fillLetters",
+    "phraseBuilder",
+    "prepositions",
+    "wordFormation",
+    "collocations",
+    "phraseMatch"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "phrase",
+      "text": "be aware of",
+      "definition": "to know or understand that something exists or is happening.",
+      "example": "Are you aware of the new company policy that starts next month?",
+      "phonetic": "",
+      "chunks": [
+        "be",
+        "aware",
+        "of"
+      ],
+      "phraseSplitIndex": 2,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "psychiatrist",
+      "definition": "a medical doctor who specializes in treating mental health disorders and can prescribe medication.",
+      "example": "After months of struggling with anxiety, she finally decided to see a psychiatrist who could help with both therapy and medication.",
+      "phonetic": "saɪˈkætrɪst",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "psychiatrist doctor office",
+      "imageQuery": "",
+      "illustrable": true,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "psychiatry",
+          "pos": "noun"
+        },
+        {
+          "form": "psychiatric",
+          "pos": "adjective"
+        }
+      ],
+      "wordFormationSentence": "She works in ___ and has spent years helping patients with depression.",
+      "wordFormationAnswer": "psychiatry",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "chestnut",
+      "definition": "a reddish-brown nut enclosed in a spiky case that grows on certain trees",
+      "example": "In autumn, children collect chestnuts from the ground beneath the old trees in the park.",
+      "phonetic": "ˈtʃesnʌt",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "chestnut nut tree",
+      "imageQuery": "",
+      "illustrable": true,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "observe",
+      "definition": "to watch carefully or notice something, or to make a remark about what you have seen or understood.",
+      "example": "The researcher observed that patients who exercised regularly reported better sleep quality.",
+      "phonetic": "əbˈzɜːrv",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "person watching observing",
+      "imageQuery": "",
+      "illustrable": true,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "observation",
+          "pos": "noun"
+        },
+        {
+          "form": "observable",
+          "pos": "adjective"
+        },
+        {
+          "form": "observer",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "The ___ made detailed notes about the animals' behavior throughout the study.",
+      "wordFormationAnswer": "observer",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": true,
+      "pastSimple": "observed",
+      "pastParticiple": "observed",
+      "verbSentence": "Scientists have ___ unusual patterns in the data that suggest a new discovery.",
+      "verbAnswer": "observed"
+    },
+    {
+      "id": "item_5",
+      "type": "phrase",
+      "text": "it means",
+      "definition": "used to introduce or explain the significance, implication, or definition of something just mentioned.",
+      "example": "She was promoted to senior manager—it means she will now lead three different teams.",
+      "phonetic": "",
+      "chunks": [
+        "it",
+        "means"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_6",
+      "type": "phrase",
+      "text": "it depends",
+      "definition": "used to indicate that the answer or outcome is conditional on factors that have not yet been specified or clarified.",
+      "example": "Can you come to the party next week? It depends on whether I finish this project by Friday.",
+      "phonetic": "",
+      "chunks": [
+        "it",
+        "depends"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_7",
+      "type": "phrase",
+      "text": "find out",
+      "definition": "To discover or learn something by investigation, inquiry, or by chance.",
+      "example": "I need to find out what time the meeting starts tomorrow morning.",
+      "phonetic": "",
+      "chunks": [
+        "find",
+        "out"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_8",
+      "type": "phrase",
+      "text": "half a year ago",
+      "definition": "Approximately six months before the present moment.",
+      "example": "We moved to this city half a year ago and we're still getting to know our neighbors.",
+      "phonetic": "",
+      "chunks": [
+        "half",
+        "a",
+        "year",
+        "ago"
+      ],
+      "phraseSplitIndex": 2,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_9",
+      "type": "phrase",
+      "text": "taken for granted",
+      "definition": "Assumed to be true or inevitable without appreciating its value or considering whether it might change.",
+      "example": "It's easy to take our parents' support for granted until we have to face challenges on our own.",
+      "phonetic": "",
+      "chunks": [
+        "taken",
+        "for",
+        "granted"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "src": "builder",
+          "label": "Fill each gap with the right word",
+          "strip": [],
+          "text": "Maria hadn't {1} her anxiety until half a year ago. She decided to visit a {2} who helped her understand her thoughts. One autumn day, while sitting under a {3} tree, Maria began to {4} her feelings more carefully. She realized that she had {5} her mental health. When her doctor asked if she wanted medication, Maria said \"{6} on what works best for me.\" After the treatment, she found some hope. {7}, she could finally live peacefully again .",
+          "gaps": [
+            {
+              "a": "been aware of",
+              "b": "been aware of"
+            },
+            {
+              "a": "psychiatrist",
+              "b": "psychiatrist"
+            },
+            {
+              "a": "chestnut",
+              "b": "chestnut"
+            },
+            {
+              "a": "observe",
+              "b": "observe"
+            },
+            {
+              "a": "taken for granted",
+              "b": "taken for granted"
+            },
+            {
+              "a": "it depends",
+              "b": "it depends"
+            },
+            {
+              "a": "It means",
+              "b": "it means"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
