@@ -412,6 +412,13 @@ function renderWorksheet() {
 
   const worksheetItems = buildWorksheetItems(setData.items || []);
   if (!worksheetItems.length) {
+    // Irregular-verb sets have no pictures or definitions, but they do have
+    // verb forms - give them their own worksheet instead of an empty page.
+    const verbWorksheetItems = buildVerbWorksheetItems(setData.items || []);
+    if (verbWorksheetItems.length) {
+      renderVerbWorksheet(verbWorksheetItems);
+      return;
+    }
     app.innerHTML = `<div class="center-msg">Nothing in this set can be shown on a worksheet (no images, definitions, or exercise sentences to test).</div>`;
     return;
   }
@@ -495,6 +502,111 @@ function renderWorksheet() {
   });
 
   document.getElementById('printWorksheetBtn').addEventListener('click', () => printWorksheet(worksheetItems));
+}
+
+// --- Verb-forms worksheet: for sets like Irregular Verbs, where words have
+// no picture or definition. Shows the base verb; the student types the past
+// simple and the past participle. Same Zoom-friendly layout as the normal
+// worksheet (reachable only via &worksheet=1). Up to 10 verbs per opening. ---
+const VERB_FORM_ALTS = {
+  light: { past: ['lighted'], part: ['lighted'] },
+  sew: { part: ['sewed'] },
+  show: { part: ['showed'] },
+  bear: { part: ['borne'] }
+};
+
+function buildVerbWorksheetItems(allItems) {
+  const verbs = (allItems || []).filter(i => i.isVerb && i.pastSimple && i.pastParticiple);
+  return verbs.length > 10 ? shuffle(verbs).slice(0, 10) : verbs;
+}
+
+function renderVerbWorksheet(verbItems) {
+  app.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <p style="font-size:20px;font-weight:600;margin:0;">${escapeHtml(setData.topic || 'Verb forms')} — worksheet</p>
+      <button id="printWorksheetBtn" style="padding:8px 16px;font-size:15px;">Print</button>
+    </div>
+    <div id="worksheetGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;"></div>
+    <button class="primary wide" id="checkWorksheetBtn" style="padding:14px;font-size:17px;">Check</button>
+    <p id="worksheetScore" style="font-size:19px;font-weight:600;text-align:center;margin:14px 0 0;display:none;"></p>
+  `;
+
+  const grid = document.getElementById('worksheetGrid');
+  const inputStyle = 'width:100%;height:44px;font-size:16px;padding:0 12px;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;';
+  verbItems.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.style.cssText = 'background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;';
+    card.innerHTML = `
+      <p style="font-size:24px;font-weight:600;margin:0 0 10px;">${idx + 1}. ${escapeHtml(item.text)}</p>
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;min-width:0;">
+          <p class="mode-label" style="margin:0 0 4px;">Past simple</p>
+          <input type="text" id="wkp${idx}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="..." style="${inputStyle}" />
+          <div id="wkpn${idx}"></div>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p class="mode-label" style="margin:0 0 4px;">Past participle</p>
+          <input type="text" id="wkq${idx}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="..." style="${inputStyle}" />
+          <div id="wkqn${idx}"></div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Enter moves to the next field (past simple -> participle -> next verb).
+  const fields = [];
+  verbItems.forEach((_, idx) => {
+    fields.push(document.getElementById('wkp' + idx), document.getElementById('wkq' + idx));
+  });
+  fields.forEach((f, i) => {
+    f.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && fields[i + 1]) { e.preventDefault(); fields[i + 1].focus(); }
+    });
+  });
+
+  const norm = v => (v || '').trim().toLowerCase();
+  document.getElementById('checkWorksheetBtn').addEventListener('click', () => {
+    // A blank answer is just a wrong one - no "fill everything first" gate.
+    let verbsRight = 0;
+    verbItems.forEach((item, idx) => {
+      const alts = VERB_FORM_ALTS[norm(item.text)] || {};
+      const pairs = [
+        { input: document.getElementById('wkp' + idx), note: document.getElementById('wkpn' + idx), answer: item.pastSimple, extra: alts.past || [] },
+        { input: document.getElementById('wkq' + idx), note: document.getElementById('wkqn' + idx), answer: item.pastParticiple, extra: alts.part || [] }
+      ];
+      let both = true;
+      pairs.forEach(pr => {
+        const accepted = [pr.answer].concat(pr.extra).map(norm);
+        const ok = accepted.includes(norm(pr.input.value));
+        pr.input.disabled = true;
+        if (ok) {
+          pr.input.style.borderColor = 'var(--success)';
+          pr.input.style.background = 'var(--success-light)';
+        } else {
+          both = false;
+          // Keep the student's own attempt visible, add the right form below.
+          pr.input.style.borderColor = 'var(--danger)';
+          pr.input.style.background = 'var(--danger-light)';
+          const note = document.createElement('p');
+          note.textContent = 'Correct: ' + pr.answer;
+          note.style.cssText = 'font-size:13px;color:var(--danger);margin:6px 0 0;';
+          pr.note.appendChild(note);
+        }
+      });
+      if (both) verbsRight++;
+    });
+    document.getElementById('checkWorksheetBtn').disabled = true;
+    const scoreEl = document.getElementById('worksheetScore');
+    scoreEl.textContent = `${verbsRight} / ${verbItems.length} verbs correct`;
+    scoreEl.style.color = verbsRight === verbItems.length ? 'var(--success)' : 'inherit';
+    scoreEl.style.display = 'block';
+  });
+
+  // printVerbList only reshuffles when given more than 10, so the picked
+  // verbs go through unchanged.
+  document.getElementById('printWorksheetBtn').addEventListener('click', () => printVerbList(verbItems));
+  if (fields[0]) fields[0].focus();
 }
 
 function printWorksheet(worksheetItems) {
