@@ -240,53 +240,37 @@ async function generateAudio(req, res) {
 
 async function searchImages(req, res) {
   const rawQuery = (req.body.query || '').toString().trim();
-  const definition = (req.body.definition || '').toString().trim();
-  const topic = (req.body.topic || '').toString().trim();
   if (!rawQuery) {
     res.status(400).json({ error: 'Missing query' });
     return;
   }
 
-  const isPhrase = rawQuery.includes(' ');
-
-  const STOP_WORDS = new Set(['a','an','the','to','you','it','is','are','they','that','very','small','large','used','for','of','in','on','with','or','and','have','has','can','we','he','she','use','make','get','do','this','be','at','by','from','as','if','when','which']);
-  function extractKeywords(text, maxWords) {
-    return text
-      .toLowerCase()
-      .replace(/[^a-z\s]/g, ' ')
-      .split(/\s+/)
-      .filter(w => w.length > 2 && !STOP_WORDS.has(w))
-      .slice(0, maxWords)
-      .join(' ');
-  }
-
+  // Used to auto-append 3 keywords pulled out of the item's own AI-written
+  // definition (hoping to disambiguate words like "key" → "door key").
+  // In practice a one-sentence dictionary definition of a concrete noun
+  // almost always contains its hypernym/category word — "shorts"/"skirt"/
+  // "pyjamas" all defined themselves as "a piece of CLOTHING that COVERS/
+  // WEARS the TOP/legs..." — and appending that pulled in generic shirts,
+  // boots, and jackets for every single garment word, completely invisibly
+  // to the teacher (the Image search box only ever showed the bare word).
+  // Same failure mode as the topic-blending idea below, just one step
+  // removed. Plain word only now; for the rare ambiguous word, the teacher
+  // can type extra context into the Image search field herself.
+  //
   // Tried blending the lesson topic into every single-word query (e.g.
-  // "gate" + "Airport"), hoping it would help disambiguate. In practice it
-  // backfired for ordinary, already-specific words — "balcony", "hall",
-  // "garden" all got swamped by generic "house" results once the topic was
-  // added, since Pixabay apparently has far more indexed matches for
-  // "house" than for a specific room/feature. A handful of genuinely
-  // ambiguous words (like "gate") benefit from topic context, but most
-  // words in a themed set don't need or want it — and there's no cheap way
-  // to tell in advance which is which. Reverted to definition-only
-  // disambiguation; for the rare ambiguous word, the teacher can still add
-  // context herself directly in the Image search field.
-  const definitionHint = (!isPhrase && definition) ? extractKeywords(definition, 3) : '';
-
-  const extras = definitionHint;
-  let query;
-  if (extras) {
-    query = `${rawQuery} ${extras}`;
-  } else {
-    // Used to prefix bare words with "single" (e.g. "single balcony") to
-    // bias toward one object on a plain background rather than a group
-    // photo. In practice "single" is a heavily overloaded word in stock
-    // photo tagging (Single Sign-On, Single Page App, dating-site content)
-    // and appears to have been dragging in unrelated tech/business results
-    // for words that have no natural defense against that association.
-    // Just search the plain word instead.
-    query = rawQuery;
-  }
+  // "gate" + "Airport") too, hoping it would help disambiguate. It
+  // backfired the same way — "balcony", "hall", "garden" all got swamped
+  // by generic "house" results once the topic was added, since Pixabay
+  // apparently has far more indexed matches for "house" than for a
+  // specific room/feature.
+  //
+  // Used to prefix bare words with "single" (e.g. "single balcony") to
+  // bias toward one object on a plain background rather than a group
+  // photo. In practice "single" is a heavily overloaded word in stock
+  // photo tagging (Single Sign-On, Single Page App, dating-site content)
+  // and appears to have been dragging in unrelated tech/business results
+  // for words that have no natural defense against that association.
+  const query = rawQuery;
 
   const apiKey = process.env.PIXABAY_API_KEY;
   if (!apiKey) {
