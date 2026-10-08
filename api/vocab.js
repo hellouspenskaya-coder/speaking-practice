@@ -288,15 +288,22 @@ async function searchImages(req, res) {
     query = rawQuery;
   }
 
-  // Random page (1-3) so repeated clicks return fresh results.
-  const page = Math.floor(Math.random() * 3) + 1;
-
   const apiKey = process.env.PIXABAY_API_KEY;
   if (!apiKey) {
     res.status(500).json({ error: 'PIXABAY_API_KEY is not set in Vercel environment variables' });
     return;
   }
 
+  // Always page 1 — Pixabay's own ranking puts its best matches there, and
+  // for a word with only a handful of genuinely relevant images (most
+  // concrete nouns), page 2+ is already past the good results and into
+  // unrelated filler. We used to randomize page 1-3 so repeated clicks of
+  // "Find images" would show something different, but that traded away
+  // relevance for variety — for a thin-content word like "shorts" it meant
+  // regularly skipping the few real matches entirely. Pulling a bigger pool
+  // from page 1 and shuffling WHICH of those we show keeps every candidate
+  // on-topic while still giving a different 12 each time.
+  //
   // Vector illustrations are great for discrete objects (an apple, a key)
   // but a room or place ("kitchen", "classroom") doesn't reduce to one
   // clean icon — vector search still returns SOMETHING (a cutting board, a
@@ -306,11 +313,11 @@ async function searchImages(req, res) {
   // merging them means an object gets its clean vector options, a
   // room/place still gets real recognizable photos alongside whatever
   // vectors turned up, and either way there are more candidates to choose
-  // from — instead of hoping a second click's random page happens to
-  // surface something different.
+  // from.
+  const POOL_SIZE = 15;
   const [vectorRes, photoRes] = await Promise.all([
-    fetch(`https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=vector&orientation=horizontal&per_page=6&page=${page}&safesearch=true`),
-    fetch(`https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&per_page=6&page=${page}&safesearch=true`)
+    fetch(`https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=vector&orientation=horizontal&per_page=${POOL_SIZE}&page=1&safesearch=true`),
+    fetch(`https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&per_page=${POOL_SIZE}&page=1&safesearch=true`)
   ]);
 
   if (!vectorRes.ok && !photoRes.ok) {
@@ -322,7 +329,15 @@ async function searchImages(req, res) {
   const photoData = photoRes.ok ? await photoRes.json() : { hits: [] };
   const hits = [...(vectorData.hits || []), ...(photoData.hits || [])];
 
-  const images = hits.map(h => ({
+  // Fisher-Yates shuffle, then take 12 — same on-topic pool every time, a
+  // different-looking set of candidates on each click.
+  for (let i = hits.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [hits[i], hits[j]] = [hits[j], hits[i]];
+  }
+  const shown = hits.slice(0, 12);
+
+  const images = shown.map(h => ({
     thumb: h.previewURL,
     full: h.webformatURL,
     alt: h.tags || query
