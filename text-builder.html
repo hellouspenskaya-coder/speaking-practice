@@ -122,10 +122,21 @@
       <label class="checkline"><input type="checkbox" id="licenseCheck" /> I have checked that I may use this text in a teaching product.</label>
     </div>
     <p class="passage" id="passage"></p>
+    <div id="editBlock" class="hidden">
+      <textarea id="editBox" style="min-height:190px;font-size:16px;line-height:1.6;"></textarea>
+      <p class="meta" id="editCount" style="margin:6px 0 8px;"></p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="primary" id="editSave">Save text</button>
+        <button id="editCancel">Cancel</button>
+      </div>
+      <p class="status err" id="editError"></p>
+    </div>
     <p class="meta" id="wc" style="margin-top:8px;"></p>
     <p class="meta" id="adaptNote" style="margin-top:6px;"></p>
     <details class="orig hidden" id="origBox"><summary>Show the original wording (compare before publishing)</summary><p id="origText"></p></details>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+      <button id="editBtn">Edit text</button>
+      <button id="aiBackBtn" class="hidden">Back to AI version</button>
       <button id="adaptBtn">Adapt to level</button>
       <button id="replaceBtn">Replace paragraph</button>
       <button id="anotherBtn">Find another article</button>
@@ -188,6 +199,7 @@ let taps = [];
 let tried = [];
 let userUrlMode = false;
 let original = '';
+let aiText = null;     // last AI-adapted version, so it can be restored after manual edits
 let adaptedFor = null; // level the current passage was adapted for, or null for the original wording
 
 const $ = (id) => document.getElementById(id);
@@ -281,6 +293,7 @@ async function findText(more) {
 function showPassage(text) {
   original = text;
   adaptedFor = null;
+  aiText = null;
   const a = article;
   $('srcLine').innerHTML = `<a href="${escapeHtml(a.url)}" target="_blank" rel="noopener">${escapeHtml(a.title)}</a>${a.authors ? ' · ' + escapeHtml(a.authors) : ''}${a.journal ? ' · ' + escapeHtml(a.journal) : ''}`;
   $('licenseNote').innerHTML = a.licenseOk
@@ -303,6 +316,7 @@ function applyText(text) {
   taps = [];
   $('linkBox').classList.add('hidden');
   setStatus('buildStatus', '');
+  closeEditor();
   renderPassage();
   updateAdaptUi();
 }
@@ -317,6 +331,7 @@ function updateAdaptUi() {
     : (lvl === 'C1' ? 'C1 keeps the original wording.' : '');
   $('adaptBtn').textContent = adapted ? 'Use original wording' : `Adapt to ${lvl}`;
   $('adaptBtn').disabled = lvl === 'C1' && !adapted;
+  $('aiBackBtn').classList.toggle('hidden', !(aiText && passage !== aiText));
 }
 
 async function adaptNow() {
@@ -330,6 +345,7 @@ async function adaptNow() {
     const out = await api({ action: 'textAdapt', passage: forText, level: lvl, area: $('area').value.trim() });
     if (original !== forText) return; // another paragraph was chosen meanwhile
     adaptedFor = lvl;
+    aiText = out.text;
     applyText(out.text);
     setStatus('buildStatus', '');
   } catch (err) {
@@ -339,6 +355,41 @@ async function adaptNow() {
     updateAdaptUi();
   }
 }
+
+function closeEditor() {
+  $('editBlock').classList.add('hidden');
+  $('passage').classList.remove('hidden');
+  $('editError').textContent = '';
+}
+function updateEditCount() {
+  const n = wordCount($('editBox').value);
+  $('editCount').textContent = n + ' words (allowed: 30 to 260)';
+}
+$('editBtn').addEventListener('click', () => {
+  $('editBox').value = passage;
+  $('passage').classList.add('hidden');
+  $('editBlock').classList.remove('hidden');
+  updateEditCount();
+  $('editBox').focus();
+});
+$('editBox').addEventListener('input', updateEditCount);
+$('editCancel').addEventListener('click', closeEditor);
+$('editSave').addEventListener('click', () => {
+  const text = $('editBox').value.replace(/\s+/g, ' ').trim();
+  const n = wordCount(text);
+  if (n < 30 || n > 260) { setStatus('editError', 'The text should be between 30 and 260 words (now ' + n + ').', true); return; }
+  if (text === passage) { closeEditor(); return; }
+  if (words.length && !window.confirm('Changing the text clears the generated words and questions. You will generate them again. Continue?')) return;
+  // A text that differs from the original is labelled as adapted when it is published.
+  if (text !== original && adaptedFor === null) adaptedFor = $('level').value;
+  if (text === original && aiText === null) adaptedFor = null;
+  applyText(text);
+});
+$('aiBackBtn').addEventListener('click', () => {
+  if (words.length && !window.confirm('Going back to the AI version clears the generated words and questions. Continue?')) return;
+  adaptedFor = $('level').value;
+  applyText(aiText);
+});
 
 $('adaptBtn').addEventListener('click', () => {
   if (adaptedFor !== null && passage !== original) {
