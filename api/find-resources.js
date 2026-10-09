@@ -28,12 +28,19 @@ module.exports = async (req, res) => {
 
   const lvl = level || 'B2';
 
+  const lowLevel = /^(A1|A2)/i.test(String(lvl).trim());
+  const videoRules = lowLevel
+    ? `VIDEO STYLE: clear, slow-to-moderate speech and visual support are welcome. Learner-friendly videos are acceptable, but prefer real, engaging content over classroom lessons.`
+    : `VIDEO STYLE (IMPORTANT — the learner is ${lvl}, so this is NOT an English lesson): every video must be AUTHENTIC content made for native English speakers about the topic itself — e.g. a documentary clip, a news feature, a TED/TEDx-style talk, an interview, a journalist's or creator's explainer, a mini-documentary, a thoughtful vlog or essay video. The video must be ABOUT the topic's real-world subject (people, culture, industry, trends, stories, ideas), not about how to say things in English.
+STRICTLY EXCLUDE: English-teaching or ESL channels and teachers, "learn English" / "English lesson" / "English conversation" / "useful phrases" / "vocabulary" / IELTS / TOEFL videos, role-play dialogues, and any video that drills expressions for the topic (for example "phrases to use in a restaurant"). If a video's purpose is teaching English, do not include it.`;
+
   const materialsPrompt = `You are finding authentic English-language teaching material for an adult ${lvl} English learner.
 Topic: "${topic}"
 
 Use web search to find real, currently-live, authentic English-language sources on this topic:
 
-(a) TWO candidate videos, each between 3 and 15 minutes long (this is just a rough search filter — do NOT report or worry about the exact duration in your output). Videos MUST be hosted on YouTube or Vimeo ONLY (a youtube.com/youtu.be or vimeo.com URL) — no other platform. Give two DIFFERENT video URLs — never return the same video twice.
+(a) SIX candidate videos (the best FOUR will be kept), each between 3 and 15 minutes long (this is just a rough search filter — do NOT report or worry about the exact duration in your output). Videos MUST be hosted on YouTube or Vimeo ONLY (a youtube.com/youtu.be or vimeo.com URL) — no other platform. Give DIFFERENT video URLs — never return the same video twice.
+${videoRules}
 
 (b) TWO candidate articles, each readable in UNDER 10 MINUTES (roughly 400-1100 words). Give two DIFFERENT article URLs — never return the same article twice. For "length", give an honest estimated reading time based on the actual word count (roughly 200 words/minute), e.g. "4 min read".
 
@@ -67,8 +74,8 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 3000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 5 }],
+        max_tokens: 3500,
+        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 6 }],
         messages: [{ role: 'user', content: materialsPrompt }]
       })
     });
@@ -99,10 +106,18 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
         materialsPlan.materials.video_options.map(async (v) => {
           const real = await verifyVideoExists(v.url);
           if (!real) return null;
-          return { ...v, title: real.title || v.title };
+          return { ...v, title: real.title || v.title, _author: real.author || '' };
         })
       );
-      materialsPlan.materials.video_options = verified.filter(Boolean);
+      let vids = verified.filter(Boolean);
+
+      // For B1+ drop English-teaching content even if the model slipped one in.
+      if (!lowLevel) {
+        const eslTitle = /\b(learn english|english lesson|english conversation|english class|esl|ielts|toefl|vocabulary|useful phrases|useful expressions|phrases (for|to use)|speak english|english speaking|english with|role[- ]?play|dialogue|grammar)\b/i;
+        const eslAuthor = /english|esl\b|ielts|toefl|vocabulary|fluency|speakenglish/i;
+        vids = vids.filter(v => !eslTitle.test(v.title || '') && !eslAuthor.test(v._author || ''));
+      }
+      materialsPlan.materials.video_options = vids.map(({ _author, ...rest }) => rest);
     }
 
     // Safety net: drop duplicate URLs in either list, in case the model
@@ -122,7 +137,7 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
       });
     }
     if (materialsPlan.materials) {
-      materialsPlan.materials.video_options = dedupeByUrl(materialsPlan.materials.video_options);
+      materialsPlan.materials.video_options = (dedupeByUrl(materialsPlan.materials.video_options) || []).slice(0, 4);
       materialsPlan.materials.article_options = dedupeByUrl(materialsPlan.materials.article_options);
     }
 
@@ -171,7 +186,7 @@ Respond with STRICT JSON only (no markdown fences, no commentary, no trailing co
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 3000,
+        max_tokens: 3500,
         messages: [{ role: 'user', content: introPrompt }]
       })
     });
@@ -225,7 +240,7 @@ async function verifyVideoExists(url) {
     const r = await fetch(oembedUrl);
     if (!r.ok) return null;
     const data = await r.json();
-    return { title: data.title };
+    return { title: data.title, author: data.author_name || '' };
   } catch (e) {
     return null;
   }
