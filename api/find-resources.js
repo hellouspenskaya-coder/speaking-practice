@@ -39,7 +39,7 @@ Topic: "${topic}"
 
 Use web search to find real, currently-live, authentic English-language sources on this topic:
 
-(a) SIX candidate videos (the best FOUR will be kept), each between 3 and 15 minutes long (this is just a rough search filter — do NOT report or worry about the exact duration in your output). Videos MUST be hosted on YouTube or Vimeo ONLY (a youtube.com/youtu.be or vimeo.com URL) — no other platform. Give DIFFERENT video URLs — never return the same video twice.
+(a) SIX candidate videos (the best FOUR will be kept), each SHORT: between 3 and 10 minutes long. HARD LIMIT: never longer than 10 minutes — no full-length films, documentaries, lectures, podcasts, livestreams or compilations; if a video's length is 10+ minutes or unclear, skip it. Prefer videos around 4-8 minutes. (The real length is re-checked automatically afterwards, so do not write the duration in your output.) Videos MUST be hosted on YouTube or Vimeo ONLY (a youtube.com/youtu.be or vimeo.com URL) — no other platform. Give DIFFERENT video URLs — never return the same video twice.
 ${videoRules}
 
 (b) TWO candidate articles, each readable in UNDER 10 MINUTES (roughly 400-1100 words). Give two DIFFERENT article URLs — never return the same article twice. For "length", give an honest estimated reading time based on the actual word count (roughly 200 words/minute), e.g. "4 min read".
@@ -106,7 +106,7 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
         materialsPlan.materials.video_options.map(async (v) => {
           const real = await verifyVideoExists(v.url);
           if (!real) return null;
-          return { ...v, title: real.title || v.title, _author: real.author || '' };
+          return { ...v, title: real.title || v.title, _author: real.author || '', _seconds: real.seconds };
         })
       );
       let vids = verified.filter(Boolean);
@@ -117,7 +117,15 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
         const eslAuthor = /english|esl\b|ielts|toefl|vocabulary|fluency|speakenglish/i;
         vids = vids.filter(v => !eslTitle.test(v.title || '') && !eslAuthor.test(v._author || ''));
       }
-      materialsPlan.materials.video_options = vids.map(({ _author, ...rest }) => rest);
+      // Duration: keep only 2-10 minute videos. Unknown length is kept but
+      // flagged and sorted last, so Anna can check it herself.
+      const MAX_SEC = 10 * 60, MIN_SEC = 2 * 60;
+      vids = vids.filter(v => v._seconds == null || (v._seconds >= MIN_SEC && v._seconds <= MAX_SEC));
+      vids.sort((a, b) => (a._seconds == null) - (b._seconds == null));
+      materialsPlan.materials.video_options = vids.map(({ _author, _seconds, ...rest }) => ({
+        ...rest,
+        length: _seconds == null ? 'length unknown — check before using' : Math.max(1, Math.round(_seconds / 60)) + ' min'
+      }));
     }
 
     // Safety net: drop duplicate URLs in either list, in case the model
@@ -240,7 +248,40 @@ async function verifyVideoExists(url) {
     const r = await fetch(oembedUrl);
     if (!r.ok) return null;
     const data = await r.json();
-    return { title: data.title, author: data.author_name || '' };
+    let seconds = null;
+    if (isYouTube) {
+      seconds = await youtubeDurationSeconds(url);
+    } else if (typeof data.duration === 'number') {
+      seconds = data.duration; // Vimeo oEmbed includes duration in seconds
+    }
+    return { title: data.title, author: data.author_name || '', seconds };
+  } catch (e) {
+    return null;
+  }
+}
+
+
+// YouTube's oEmbed has no duration, so read lengthSeconds from the watch page.
+// Returns a number of seconds, or null if it can't be determined.
+async function youtubeDurationSeconds(url) {
+  try {
+    const u = new URL(url);
+    let id = null;
+    if (u.hostname.replace(/^www\./, '') === 'youtu.be') id = u.pathname.slice(1).split('/')[0];
+    else if (u.pathname.startsWith('/shorts/') || u.pathname.startsWith('/embed/')) id = u.pathname.split('/')[2];
+    else id = u.searchParams.get('v');
+    if (!id) return null;
+    const r = await fetch('https://www.youtube.com/watch?v=' + encodeURIComponent(id) + '&hl=en', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cookie': 'CONSENT=YES+1; SOCS=CAI'
+      }
+    });
+    if (!r.ok) return null;
+    const html = await r.text();
+    const m = html.match(/"lengthSeconds":"(\d+)"/);
+    return m ? parseInt(m[1], 10) : null;
   } catch (e) {
     return null;
   }
