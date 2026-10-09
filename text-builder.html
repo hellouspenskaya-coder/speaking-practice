@@ -166,6 +166,7 @@
       <button id="editBtn">Edit text</button>
       <button id="aiBackBtn" class="hidden">Back to AI version</button>
       <button id="adaptBtn">Adapt to level</button>
+      <button id="readaptBtn" class="hidden">Adapt again</button>
       <button id="replaceBtn">Replace paragraph</button>
       <button id="anotherBtn">Find another article</button>
       <button class="primary" id="buildBtn">Generate words and questions</button>
@@ -406,12 +407,14 @@ function updateAdaptUi() {
   $('adaptBtn').textContent = adapted ? 'Use original wording' : `Adapt to ${lvl}`;
   $('adaptBtn').disabled = lvl === 'C1' && !adapted;
   $('aiBackBtn').classList.toggle('hidden', !(aiText && passage !== aiText));
+  $('readaptBtn').classList.toggle('hidden', !(adaptedFor !== null && lvl !== 'C1'));
 }
 
 async function adaptNow() {
   const lvl = $('level').value;
   if (lvl === 'C1') return;
   $('adaptBtn').disabled = true;
+  $('readaptBtn').disabled = true;
   $('buildBtn').disabled = true;
   setStatus('buildStatus', 'Adapting the text to ' + lvl + '…');
   try {
@@ -426,6 +429,7 @@ async function adaptNow() {
     setStatus('buildStatus', err.message, true);
   } finally {
     $('buildBtn').disabled = false;
+    $('readaptBtn').disabled = false;
     updateAdaptUi();
   }
 }
@@ -464,6 +468,8 @@ $('aiBackBtn').addEventListener('click', () => {
   adaptedFor = $('level').value;
   applyText(aiText);
 });
+
+$('readaptBtn').addEventListener('click', () => adaptNow());
 
 $('adaptBtn').addEventListener('click', () => {
   if (adaptedFor !== null && passage !== original) {
