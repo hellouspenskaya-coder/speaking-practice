@@ -667,11 +667,14 @@ async function refineVideos(card, stats) {
   }));
 
   let tooLong = 0;
+  const hidden = []; // what was filtered out here, so it's visible why
   rows.forEach(r => {
     const sec = Number(r.dataset.seconds || 0);
-    if (r.dataset.drop === '1') { r.remove(); }
-    else if (sec && sec > MAX_SEC) { tooLong++; r.remove(); }
-    else if (sec && sec < MIN_SEC) { tooLong++; r.remove(); }
+    const title = r.querySelector('a').textContent;
+    const fmt = (x) => x >= 3600 ? (Math.floor(x / 3600) + ' h ' + Math.round((x % 3600) / 60) + ' min') : (x < 120 ? x + ' sec' : Math.round(x / 60) + ' min');
+    if (r.dataset.drop === '1') { hidden.push({ title, url: r.dataset.url, why: 'unavailable' }); r.remove(); }
+    else if (sec && sec > MAX_SEC) { tooLong++; hidden.push({ title, url: r.dataset.url, why: fmt(sec) }); r.remove(); }
+    else if (sec && sec < MIN_SEC) { tooLong++; hidden.push({ title, url: r.dataset.url, why: fmt(sec) }); r.remove(); }
   });
 
   // Known-length videos first, keep at most KEEP.
@@ -684,6 +687,13 @@ async function refineVideos(card, stats) {
   if (head) head.textContent = 'Video · ' + shown + ' (2–10 min) — open, process in Twee, paste the finished link below';
   if (!shown) {
     list.innerHTML = '<p style="margin:10px 0 0; color:var(--ink-soft);">No suitable videos (2–10 min) found — try searching again.</p>';
+  }
+  if (hidden.length) {
+    const det = document.createElement('details');
+    det.style.cssText = 'margin:6px 0 0; font-size:12px; color:var(--ink-soft);';
+    det.innerHTML = '<summary style="cursor:pointer;">' + hidden.length + ' hidden (wrong length or unavailable)</summary>' +
+      hidden.map(h => '<div style="margin:4px 0 0 12px;"><a href="' + escapeHtml(h.url) + '" target="_blank" rel="noopener">' + escapeHtml(h.title) + '</a> — ' + escapeHtml(h.why) + '</div>').join('');
+    list.appendChild(det);
   }
   if (shown < 3 && stats) {
     const parts = [];
