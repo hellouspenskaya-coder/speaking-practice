@@ -39,7 +39,7 @@ Topic: "${topic}"
 
 Use web search to find real, currently-live, authentic English-language sources on this topic:
 
-(a) SIX candidate videos (the best FOUR will be kept), each SHORT: between 3 and 10 minutes long. HARD LIMIT: never longer than 10 minutes — no full-length films, documentaries, lectures, podcasts, livestreams or compilations; if a video's length is 10+ minutes or unclear, skip it. Prefer videos around 4-8 minutes. (The real length is re-checked automatically afterwards, so do not write the duration in your output.) Videos MUST be hosted on YouTube or Vimeo ONLY (a youtube.com/youtu.be or vimeo.com URL) — no other platform. Give DIFFERENT video URLs — never return the same video twice.
+(a) EIGHT candidate videos (the best few will be kept), each SHORT: between 3 and 10 minutes long. HARD LIMIT: never longer than 10 minutes — no full-length films, documentaries, lectures, podcasts, livestreams or compilations; if a video's length is 10+ minutes or unclear, skip it. Prefer videos around 4-8 minutes. (The real length is re-checked automatically afterwards, so do not write the duration in your output.) Videos MUST be hosted on YouTube or Vimeo ONLY (a youtube.com/youtu.be or vimeo.com URL) — no other platform. Give DIFFERENT video URLs — never return the same video twice.
 ${videoRules}
 
 (b) TWO candidate articles, each readable in UNDER 10 MINUTES (roughly 400-1100 words). Give two DIFFERENT article URLs — never return the same article twice. For "length", give an honest estimated reading time based on the actual word count (roughly 200 words/minute), e.g. "4 min read".
@@ -89,7 +89,9 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
 
     // Safety net: drop any video candidate that isn't actually YouTube/Vimeo,
     // in case the model didn't follow the platform restriction.
+    let videoStats = null;
     if (materialsPlan.materials && Array.isArray(materialsPlan.materials.video_options)) {
+      videoStats = { asked: materialsPlan.materials.video_options.length };
       materialsPlan.materials.video_options = materialsPlan.materials.video_options.filter(v => {
         try {
           const host = new URL(v.url).hostname.replace(/^www\./, '');
@@ -98,6 +100,8 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
           return false;
         }
       });
+
+      videoStats.platformOk = materialsPlan.materials.video_options.length;
 
       // Real existence check via the platforms' own oEmbed endpoints (free,
       // no API key needed). Drops dead/invented links and replaces the
@@ -110,6 +114,7 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
         })
       );
       let vids = verified.filter(Boolean);
+      videoStats.exist = vids.length;
 
       // For B1+ drop English-teaching content even if the model slipped one in.
       if (!lowLevel) {
@@ -117,15 +122,19 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
         const eslAuthor = /english|esl\b|ielts|toefl|vocabulary|fluency|speakenglish/i;
         vids = vids.filter(v => !eslTitle.test(v.title || '') && !eslAuthor.test(v._author || ''));
       }
-      // Duration: keep only 2-10 minute videos. Unknown length is kept but
-      // flagged and sorted last, so Anna can check it herself.
+      videoStats.afterEsl = vids.length;
+      // Duration: if the server could read it, keep only 2-10 minute videos.
+      // YouTube often blocks server-side lookups (LOGIN_REQUIRED), so when the
+      // length is unknown the video is flagged `measure: true` and the browser
+      // (lesson-assembler.html) checks it with the YouTube player instead.
       const MAX_SEC = 10 * 60, MIN_SEC = 2 * 60;
       vids = vids.filter(v => v._seconds == null || (v._seconds >= MIN_SEC && v._seconds <= MAX_SEC));
+      videoStats.afterLength = vids.length;
       vids.sort((a, b) => (a._seconds == null) - (b._seconds == null));
-      materialsPlan.materials.video_options = vids.map(({ _author, _seconds, _why, ...rest }) => ({
-        ...rest,
-        length: _seconds == null ? 'length unknown — check before using' + (_why ? ' (' + _why + ')' : '') : Math.max(1, Math.round(_seconds / 60)) + ' min'
-      }));
+      materialsPlan.materials.video_options = vids.map(({ _author, _seconds, _why, ...rest }) =>
+        _seconds == null
+          ? { ...rest, measure: true }
+          : { ...rest, length: Math.max(1, Math.round(_seconds / 60)) + ' min', seconds: _seconds });
     }
 
     // Safety net: drop duplicate URLs in either list, in case the model
@@ -145,7 +154,7 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
       });
     }
     if (materialsPlan.materials) {
-      materialsPlan.materials.video_options = (dedupeByUrl(materialsPlan.materials.video_options) || []).slice(0, 4);
+      materialsPlan.materials.video_options = (dedupeByUrl(materialsPlan.materials.video_options) || []).slice(0, 6);
       materialsPlan.materials.article_options = dedupeByUrl(materialsPlan.materials.article_options);
     }
 
@@ -206,7 +215,7 @@ Respond with STRICT JSON only (no markdown fences, no commentary, no trailing co
     const introText = (introData.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
     const introPlan = JSON.parse(sanitizeJson(extractJson(introText)));
 
-    res.status(200).json({ ...materialsPlan, ...introPlan });
+    res.status(200).json({ ...materialsPlan, ...introPlan, video_stats: videoStats });
   } catch (err) {
     res.status(500).json({ error: 'Could not find material: ' + (err.message || 'unknown error') + '. Try a different topic or try again — sometimes just retrying helps.' });
   }

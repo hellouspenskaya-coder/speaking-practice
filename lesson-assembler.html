@@ -575,6 +575,131 @@ document.getElementById('suggestBtn').addEventListener('click', async () => {
 // picks in Twee, and pastes the resulting task links into the fields below.
 // No vocabulary is auto-extracted anymore — she pulls words from Twee
 // herself into the "Words for the trainers" field.
+// ---- Video length check in the browser -------------------------------------
+// YouTube blocks server-side length lookups, so unknown lengths are measured
+// here with the YouTube player (hidden, from the user's own connection).
+function loadYouTubeApi() {
+  if (window.YT && window.YT.Player) return Promise.resolve();
+  if (window.__ytApiPromise) return window.__ytApiPromise;
+  window.__ytApiPromise = new Promise((resolve, reject) => {
+    const prev = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => { if (prev) prev(); resolve(); };
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    tag.onerror = () => reject(new Error('api'));
+    document.head.appendChild(tag);
+    setTimeout(() => reject(new Error('api timeout')), 10000);
+  });
+  return window.__ytApiPromise;
+}
+
+function youtubeIdFromUrl(url) {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, '');
+    if (host === 'youtu.be') return u.pathname.slice(1).split('/')[0] || null;
+    if (host.endsWith('youtube.com')) {
+      if (u.pathname.startsWith('/shorts/') || u.pathname.startsWith('/embed/')) return u.pathname.split('/')[2] || null;
+      return u.searchParams.get('v');
+    }
+  } catch (e) {}
+  return null;
+}
+
+function measureYouTube(id) {
+  return loadYouTubeApi().then(() => new Promise(resolve => {
+    const holder = document.createElement('div');
+    holder.style.cssText = 'position:fixed; left:-9999px; top:0; width:220px; height:130px; overflow:hidden;';
+    const box = document.createElement('div');
+    holder.appendChild(box);
+    document.body.appendChild(holder);
+    let done = false, player = null, poll = null, timer = null, ticks = 0;
+    const finish = (result) => {
+      if (done) return;
+      done = true;
+      clearInterval(poll); clearTimeout(timer);
+      try { if (player && player.destroy) player.destroy(); } catch (e) {}
+      holder.remove();
+      resolve(result);
+    };
+    player = new YT.Player(box, {
+      width: '220', height: '130', videoId: id,
+      playerVars: { controls: 0, autoplay: 0, rel: 0, playsinline: 1 },
+      events: {
+        onReady: () => {
+          poll = setInterval(() => {
+            ticks++;
+            const d = player.getDuration ? player.getDuration() : 0;
+            if (d > 0) {
+              try { player.pauseVideo(); } catch (e) {}
+              finish({ seconds: Math.round(d) });
+              return;
+            }
+            // Some videos only report their length once playback has started.
+            if (ticks === 8) { try { player.mute(); player.playVideo(); } catch (e) {} }
+          }, 300);
+        },
+        onError: (e) => finish({ error: e && e.data })
+      }
+    });
+    timer = setTimeout(() => finish({ error: 'timeout' }), 12000);
+  })).catch(() => ({ error: 'api' }));
+}
+
+async function refineVideos(card, stats) {
+  const MAX_SEC = 10 * 60, MIN_SEC = 2 * 60, KEEP = 4;
+  const list = card.querySelector('#videoList');
+  if (!list) return;
+  const rows = Array.from(list.querySelectorAll('[data-video-row]'));
+  await Promise.all(rows.filter(r => r.dataset.measure === '1').map(async r => {
+    const span = r.querySelector('.vlen');
+    const id = youtubeIdFromUrl(r.dataset.url);
+    if (!id) { span.textContent = '(length unknown — check manually)'; return; }
+    const res = await measureYouTube(id);
+    if (res.seconds) {
+      r.dataset.seconds = String(res.seconds);
+      span.textContent = '(' + Math.max(1, Math.round(res.seconds / 60)) + ' min)';
+    } else if (res.error === 100) {
+      r.dataset.drop = '1'; // video removed or private
+    } else {
+      span.textContent = '(length unknown — check manually)';
+    }
+  }));
+
+  let tooLong = 0;
+  rows.forEach(r => {
+    const sec = Number(r.dataset.seconds || 0);
+    if (r.dataset.drop === '1') { r.remove(); }
+    else if (sec && sec > MAX_SEC) { tooLong++; r.remove(); }
+    else if (sec && sec < MIN_SEC) { tooLong++; r.remove(); }
+  });
+
+  // Known-length videos first, keep at most KEEP.
+  const left = Array.from(list.querySelectorAll('[data-video-row]'));
+  left.sort((a, b) => (a.dataset.seconds ? 0 : 1) - (b.dataset.seconds ? 0 : 1));
+  left.forEach((r, i) => { if (i < KEEP) list.appendChild(r); else r.remove(); });
+
+  const shown = Math.min(left.length, KEEP);
+  const head = card.querySelector('#videoHeader');
+  if (head) head.textContent = 'Video · ' + shown + ' (2–10 min) — open, process in Twee, paste the finished link below';
+  if (!shown) {
+    list.innerHTML = '<p style="margin:10px 0 0; color:var(--ink-soft);">No suitable videos (2–10 min) found — try searching again.</p>';
+  }
+  if (shown < 3 && stats) {
+    const parts = [];
+    if (stats.asked != null) parts.push(stats.asked + ' candidates proposed');
+    if (stats.asked > stats.platformOk) parts.push((stats.asked - stats.platformOk) + ' not on YouTube/Vimeo');
+    if (stats.platformOk > stats.exist) parts.push((stats.platformOk - stats.exist) + ' dead or unavailable');
+    if (stats.exist > stats.afterEsl) parts.push((stats.exist - stats.afterEsl) + ' English-teaching');
+    if (stats.afterEsl > stats.afterLength) parts.push((stats.afterEsl - stats.afterLength) + ' outside 2–10 min');
+    if (tooLong) parts.push(tooLong + ' outside 2–10 min (checked here)');
+    const note = document.createElement('p');
+    note.style.cssText = 'margin:6px 0 0; color:var(--ink-soft); font-size:12px;';
+    note.textContent = 'Why so few: ' + parts.join(', ') + '. Try searching again.';
+    list.appendChild(note);
+  }
+}
+
 let resourceState = { materials: { article_options: [], video_options: [] } };
 
 document.getElementById('findResourceBtn').addEventListener('click', async () => {
@@ -633,11 +758,26 @@ document.getElementById('findResourceBtn').addEventListener('click', async () =>
       `;
     }
 
+    function videoList(options) {
+      if (!options || !options.length) return `<p style="margin:10px 0 0; color:var(--ink-soft);">Video: no suitable candidates found — try searching again later.</p>`;
+      const items = options.map(m => `
+        <div data-video-row data-url="${escapeHtml(m.url)}" data-measure="${m.measure ? '1' : ''}" ${m.seconds ? `data-seconds="${m.seconds}"` : ''} style="margin-bottom:10px;">
+          <a href="${escapeHtml(m.url)}" target="_blank" rel="noopener">${escapeHtml(m.title)}</a>
+          <span class="vlen" style="color:var(--ink-soft); font-size:12px;">${m.measure ? '(checking length…)' : (m.length ? '(' + escapeHtml(m.length) + ')' : '')}</span>
+        </div>
+      `).join('');
+      return `
+        <div class="type-tag" id="videoHeader" style="margin-top:12px;">Video · ${options.length} — open, process in Twee, paste the finished link below</div>
+        <div id="videoList">${items}</div>
+      `;
+    }
+
     card.innerHTML =
-      candidateList(out.materials.video_options, 'Video') +
+      videoList(out.materials.video_options) +
       candidateList(out.materials.article_options, 'Article') +
       `<p style="margin:10px 0 0; color:var(--ink-soft); font-size:12px;">Title, target, warm-up, and questions below are auto-filled — check them before assembling.</p>`;
     card.classList.add('show');
+    refineVideos(card, out.video_stats); // measure unknown lengths in the browser (not awaited)
   } catch (e) {
     card.innerHTML = `<div class="type-tag" style="color:var(--bad);">Didn't work</div>${e.message || 'Try a different topic.'}`;
     card.classList.add('show');
