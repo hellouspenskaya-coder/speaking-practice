@@ -1052,36 +1052,51 @@ async function textAdapt(req, res) {
     return;
   }
   const how = lvl === 'B1'
-    ? `- Use mostly CEFR A2-B1 vocabulary and grammar. Average sentence length about 15 words, never more than 25. Split long sentences. Replace rare or abstract words with common ones.
-- Keep a few useful academic words (for example "contribute to", "factor", "outcome") as learning targets.`
+    ? `- This is a real B1 text, clearly easier than the original. Use mostly everyday CEFR A2-B1 words and simple grammar (active voice where possible, no long noun chains, no stacked clauses).
+- Sentences: about 12 words on average, NEVER more than 18 words. One idea per sentence. Split every long sentence.
+- Replace specialist jargon, rare, abstract or low-frequency words with common ones or with a short plain explanation (for example "workers who load and unload a ship" instead of "stevedores"). Keep only 3 or 4 key subject terms that the learner really needs, and make their meaning clear from the sentence around them.
+- Keep a few useful academic words (for example "contribute to", "factor", "outcome", "tend to") as learning targets.`
     : `- Keep a clearly academic register, but replace unusually rare words and untangle sentences longer than 30 words.
 - Do not simplify the grammar more than necessary.`;
-  const prompt = `You adapt an authentic text for an adult ${lvl} learner of English. Field: ${area || 'general academic English'}.
+  const prompt = (feedback) => `You adapt an authentic text for an adult ${lvl} learner of English. Field: ${area || 'general academic English'}.
 
 ORIGINAL:
 """
 ${text}
 """
 
-Rewrite it as ONE paragraph of 55 to 110 words.
+Rewrite it as ONE paragraph of 55 to 120 words.
 Rules:
 ${how}
-- Keep the meaning and every claim. Do not add facts, examples or opinions. Do not remove a claim.
+- Keep the meaning and the main claims. Do not add facts, examples or opinions. You may shorten secondary detail (long lists of examples) to keep the text easy.
 - KEEP the author's cautious wording (appear to, may, tends to, suggest, likely ...) and keep the same degree of certainty. Never make a claim stronger or weaker.
 - KEEP reference words such as which, this, these, it, they where they make sense, because learners are trained on them.
-- KEEP the key subject terms of the field, even if difficult.
-- No citations, no brackets, no quotation marks around the text, no headings, no commentary.
+- No citations, no brackets, no quotation marks around the text, no headings, no commentary.${feedback ? '\n- IMPORTANT: ' + feedback : ''}
 
 Reply with STRICT JSON only: {"text":"the adapted paragraph"}`;
 
-  let out;
+  const sentStats = (t) => {
+    const lens = splitSentences(t).map(wordCount);
+    return { avg: lens.reduce((x, y) => x + y, 0) / (lens.length || 1), max: Math.max(0, ...lens) };
+  };
+  const tooHard = (t) => {
+    const st = sentStats(t);
+    return lvl === 'B1' ? (st.avg > 16 || st.max > 22) : (st.max > 36);
+  };
+
+  let adapted = '';
   try {
-    out = extractJsonObject(await callSonnet(prompt, 900));
+    let out = extractJsonObject(await callSonnet(prompt(''), 900));
+    adapted = String(out.text || '').replace(/\s+/g, ' ').trim();
+    if (tooHard(adapted)) {
+      out = extractJsonObject(await callSonnet(prompt('Your previous version was still too hard: its sentences were too long. Make it simpler: split sentences so none is longer than 18 words, and replace difficult words with common ones.'), 900));
+      const second = String(out.text || '').replace(/\s+/g, ' ').trim();
+      if (second) adapted = second;
+    }
   } catch (err) {
     res.status(502).json({ error: 'Could not adapt the text: ' + err.message });
     return;
   }
-  const adapted = String(out.text || '').replace(/\s+/g, ' ').trim();
   const awc = wordCount(adapted);
   if (awc < 40 || awc > 140 || /[\[\]{}*#]/.test(adapted) || !/[.!?]["\u201d)]?$/.test(adapted)) {
     res.status(502).json({ error: 'The adapted text did not come out right. Try again.' });
