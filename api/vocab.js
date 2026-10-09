@@ -772,7 +772,7 @@ async function textAreas(req, res) {
 }
 
 async function textSearch(req, res) {
-  const { area, topic, level, exclude } = req.body || {};
+  const { area, topic, level, exclude, openOnly } = req.body || {};
   if (!area && !topic) {
     res.status(400).json({ error: 'Give an area or a topic.' });
     return;
@@ -787,7 +787,9 @@ async function textSearch(req, res) {
   const prompt = `An English teacher needs a readable source text for an adult ${level || 'B2'} learner.
 Field: "${area || ''}"${topic ? `\nTopic: "${topic}"` : ''}
 
-Use web search to find 4 DIFFERENT real articles whose full text is freely readable as a normal HTML web page (not a PDF) and is openly licensed under Creative Commons Attribution (CC BY). Good sources: Frontiers journals, PLOS ONE, BMC journals, MDPI journals, and PubMed Central articles with a CC BY licence. Prefer review or conceptual articles with a clear introduction or discussion over dense statistics papers.
+${openOnly
+    ? 'Use web search to find 4 DIFFERENT real articles whose full text is freely readable as a normal HTML web page (not a PDF) and is openly licensed under Creative Commons Attribution (CC BY). Good sources: Frontiers journals, PLOS ONE, BMC journals, MDPI journals, and PubMed Central articles with a CC BY licence. Prefer review or conceptual articles with a clear introduction or discussion over dense statistics papers.'
+    : 'Use web search to find 5 DIFFERENT real articles on this topic whose full text can be read for free as a normal HTML web page (not a PDF, not behind a paywall or login, not just an abstract). Any reputable source is fine: open-access or subscription journals that show full text, university or institute pages, professional bodies, industry or government reports in HTML, quality magazines. Prefer explanatory, review or discussion-style articles over dense statistics papers.'}
 All URLs must be real ones you found via search. Never invent a URL.${avoid}
 
 Reply with STRICT JSON only, no commentary, no markdown fences:
@@ -799,7 +801,7 @@ Reply with STRICT JSON only, no commentary, no markdown fences:
     body: JSON.stringify({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
-      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 4 }],
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 5 }],
       messages: [{ role: 'user', content: prompt }]
     })
   });
@@ -820,27 +822,49 @@ Reply with STRICT JSON only, no commentary, no markdown fences:
       out.push({ title: String(c.title || u.hostname), url: u.href });
     } catch (e) { /* ignore bad url */ }
   });
-  res.status(200).json({ candidates: out.slice(0, 4) });
+  res.status(200).json({ candidates: out.slice(0, openOnly ? 4 : 5) });
+}
+
+function pastedPage(raw) {
+  const paragraphs = [];
+  String(raw || '').split(/\n\s*\n/).forEach((chunk) => {
+    const clean = stripCitations(chunk.replace(/\s+/g, ' ').trim());
+    const wc = wordCount(clean);
+    if (wc < 25 || wc > 260) return;
+    const sentences = splitSentences(clean);
+    if (sentences.length < 2) return;
+    paragraphs.push({ sentences, words: wc });
+  });
+  return paragraphs;
 }
 
 async function textFetch(req, res) {
-  const { url, area, topic, level } = req.body || {};
-  let u;
-  try { u = new URL(url); } catch (e) { res.status(400).json({ error: 'That is not a valid link.' }); return; }
-  if (!/^https?:$/.test(u.protocol) || isPrivateHost(u.hostname)) {
-    res.status(400).json({ error: 'That link cannot be used.' });
-    return;
-  }
+  const { url, area, topic, level, pasted } = req.body || {};
+  let u = null;
   let page;
-  try {
-    page = await fetchArticlePage(u.href);
-  } catch (err) {
-    res.status(422).json({ error: err.message });
-    return;
-  }
-  if (!page.paragraphs.length) {
-    res.status(422).json({ error: 'Could not find readable paragraphs on this page.' });
-    return;
+  if (pasted) {
+    // Teacher's own text: no fetching, no licence detection. Same excerpt picking.
+    page = { title: '', authors: '', journal: '', license: 'not stated', licenseOk: false, paragraphs: pastedPage(pasted) };
+    if (!page.paragraphs.length) {
+      res.status(422).json({ error: 'Paste at least one paragraph of 25 to 260 words (with a blank line between paragraphs).' });
+      return;
+    }
+  } else {
+    try { u = new URL(url); } catch (e) { res.status(400).json({ error: 'That is not a valid link.' }); return; }
+    if (!/^https?:$/.test(u.protocol) || isPrivateHost(u.hostname)) {
+      res.status(400).json({ error: 'That link cannot be used.' });
+      return;
+    }
+    try {
+      page = await fetchArticlePage(u.href);
+    } catch (err) {
+      res.status(422).json({ error: err.message });
+      return;
+    }
+    if (!page.paragraphs.length) {
+      res.status(422).json({ error: 'No readable paragraphs (probably a paywall, an abstract-only page or a page that blocks automatic reading).' });
+      return;
+    }
   }
 
   const list = page.paragraphs.slice(0, 40).map((p, i) =>
@@ -882,7 +906,7 @@ Reply with STRICT JSON only: {"picks":[{"p":3,"from":1,"to":3}]}`;
     return;
   }
   res.status(200).json({
-    article: { title: page.title, url: u.href, authors: page.authors, journal: page.journal, license: page.license, licenseOk: page.licenseOk },
+    article: { title: page.title, url: u ? u.href : '', authors: page.authors, journal: page.journal, license: page.license, licenseOk: page.licenseOk },
     picks: picks.slice(0, 5)
   });
 }

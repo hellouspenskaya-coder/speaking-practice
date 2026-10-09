@@ -109,9 +109,37 @@
         <input type="text" id="url" placeholder="https://www.frontiersin.org/..." autocomplete="off" />
       </div>
     </div>
-    <label class="checkline" style="margin-top:4px;"><input type="checkbox" id="adapt" /> Adapt the wording to the level (B1 and B2). Keeps cautious wording, reference words and key terms.</label>
+    <div class="row">
+      <div>
+        <label for="srcMode">Search in</label>
+        <select id="srcMode">
+          <option value="any" selected>Any article that can be read</option>
+          <option value="open">Open-access (CC BY) only</option>
+        </select>
+      </div>
+      <div></div>
+    </div>
+    <details id="pasteBlock" style="margin-top:8px;">
+      <summary style="cursor:pointer;font-size:14px;">Or paste your own text (any source, PDF, book)</summary>
+      <label for="pasteText" style="margin-top:8px;">Text (paragraphs separated by a blank line)</label>
+      <textarea id="pasteText" style="min-height:140px;" placeholder="Paste one or more paragraphs here. If it is longer than about 130 words, a good excerpt is chosen from it."></textarea>
+      <div class="row">
+        <div>
+          <label for="pasteTitle">Source title</label>
+          <input type="text" id="pasteTitle" placeholder="Title of the article or book" autocomplete="off" />
+        </div>
+        <div>
+          <label for="pasteAuthors">Author(s) (optional)</label>
+          <input type="text" id="pasteAuthors" autocomplete="off" />
+        </div>
+      </div>
+      <label for="pasteUrl">Link (optional)</label>
+      <input type="text" id="pasteUrl" placeholder="https://..." autocomplete="off" />
+    </details>
+    <label class="checkline" style="margin-top:8px;"><input type="checkbox" id="adapt" /> Adapt the wording to the level (B1 and B2). Keeps cautious wording, reference words and key terms.</label>
     <button class="primary" id="findBtn">Find text</button>
     <p class="status" id="findStatus"></p>
+    <div id="failList" class="meta hidden" style="margin-top:8px;"></div>
   </div>
 
   <div id="textCard" class="card hidden">
@@ -119,7 +147,7 @@
     <p class="meta" id="srcLine"></p>
     <p id="licenseNote" class="meta" style="margin-top:8px;"></p>
     <div id="licenseAck" class="hidden" style="margin-top:8px;">
-      <label class="checkline"><input type="checkbox" id="licenseCheck" /> I have checked that I may use this text in a teaching product.</label>
+      <label class="checkline"><input type="checkbox" id="licenseCheck" /> I am using a short excerpt for teaching, with credit to the source, and I have checked that this is fine for my use.</label>
     </div>
     <p class="passage" id="passage"></p>
     <div id="editBlock" class="hidden">
@@ -237,25 +265,57 @@ async function api(body) {
 })();
 
 // ---- step 1: find ----
+function linkOf(c) {
+  return `<a href="${escapeHtml(c.url)}" target="_blank" rel="noopener">${escapeHtml(c.title || c.url)}</a>`;
+}
+
 async function findText(more) {
   const area = $('area').value.trim();
   const topic = $('topic').value.trim();
   const url = $('url').value.trim();
-  const useUrl = Boolean(url) && !more;
-  if (!useUrl && !area && !topic) {
-    setStatus('findStatus', 'Enter an area or a topic, or paste an article link.', true);
+  const pasted = $('pasteText').value.trim();
+  const usePaste = Boolean(pasted) && !more;
+  const useUrl = !usePaste && Boolean(url) && !more;
+  const openOnly = $('srcMode').value === 'open';
+  $('failList').classList.add('hidden');
+  if (!usePaste && !useUrl && !area && !topic) {
+    setStatus('findStatus', 'Enter an area or a topic, paste an article link, or paste your own text.', true);
     return;
   }
   const btns = [$('findBtn'), $('anotherBtn')];
   btns.forEach(b => b.disabled = true);
-  setStatus('findStatus', useUrl ? 'Reading the article…' : 'Searching for open-access articles…');
+  setStatus('findStatus', usePaste ? 'Preparing your text…' : useUrl ? 'Reading the article…' : 'Searching for articles…');
+  const failed = [];
   try {
+    if (usePaste) {
+      const title = $('pasteTitle').value.trim();
+      if (!title) throw new Error('Add the source title (so the set can credit it).');
+      const pu = $('pasteUrl').value.trim();
+      const info = { title, url: pu, authors: $('pasteAuthors').value.trim(), journal: '', license: 'not stated', licenseOk: false };
+      let list;
+      if (wordCount(pasted) <= 130) {
+        if (wordCount(pasted) < 30) throw new Error('The text is too short (at least 30 words).');
+        list = [{ text: pasted.replace(/\s+/g, ' ').trim() }];
+      } else {
+        const result = await api({ action: 'textFetch', pasted, area, topic, level: $('level').value });
+        list = result.picks;
+      }
+      article = info;
+      picks = list;
+      pickIdx = 0;
+      userUrlMode = true;
+      words = [];
+      taps = [];
+      showPassage(picks[0].text);
+      setStatus('findStatus', '');
+      return;
+    }
     let candidates;
     if (useUrl) {
       candidates = [{ title: url, url, user: true }];
       tried = [];
     } else {
-      const found = await api({ action: 'textSearch', area, topic, level: $('level').value, exclude: tried });
+      const found = await api({ action: 'textSearch', area, topic, level: $('level').value, exclude: tried, openOnly });
       candidates = found.candidates || [];
       if (!candidates.length) throw new Error('No new articles found. Try a different topic.');
     }
@@ -268,9 +328,13 @@ async function findText(more) {
         result = await api({ action: 'textFetch', url: c.url, area, topic, level: $('level').value });
       } catch (e) {
         if (useUrl) throw e;
+        failed.push({ ...c, reason: e.message });
         continue;
       }
-      if (!c.user && !result.article.licenseOk) continue;
+      if (!c.user && openOnly && !result.article.licenseOk) {
+        failed.push({ ...c, reason: 'not confirmed as plain CC BY' });
+        continue;
+      }
       article = result.article;
       picks = result.picks;
       pickIdx = 0;
@@ -281,10 +345,20 @@ async function findText(more) {
       ok = true;
       break;
     }
-    if (!ok) throw new Error('None of the articles found could be used (not readable or not CC BY). Try again or paste a link.');
+    if (!ok) {
+      const e = new Error('None of the articles found could be read automatically. You can open them yourself and paste an excerpt (see "paste your own text"), or try again.');
+      e.failed = failed;
+      throw e;
+    }
     setStatus('findStatus', '');
   } catch (err) {
     setStatus('findStatus', err.message, true);
+    const list = err.failed || [];
+    if (list.length) {
+      $('failList').innerHTML = 'Tried:<br>' + list.map(f => `• ${linkOf(f)} (${escapeHtml(f.reason)})`).join('<br>');
+      $('failList').classList.remove('hidden');
+      $('pasteBlock').open = true;
+    }
   } finally {
     btns.forEach(b => b.disabled = false);
   }
@@ -295,10 +369,10 @@ function showPassage(text) {
   adaptedFor = null;
   aiText = null;
   const a = article;
-  $('srcLine').innerHTML = `<a href="${escapeHtml(a.url)}" target="_blank" rel="noopener">${escapeHtml(a.title)}</a>${a.authors ? ' · ' + escapeHtml(a.authors) : ''}${a.journal ? ' · ' + escapeHtml(a.journal) : ''}`;
+  $('srcLine').innerHTML = `${a.url ? `<a href="${escapeHtml(a.url)}" target="_blank" rel="noopener">${escapeHtml(a.title)}</a>` : escapeHtml(a.title)}${a.authors ? ' · ' + escapeHtml(a.authors) : ''}${a.journal ? ' · ' + escapeHtml(a.journal) : ''}`;
   $('licenseNote').innerHTML = a.licenseOk
     ? `<span class="badge ok">${escapeHtml(a.license)}</span> Credit and licence are added to the set automatically.`
-    : `<span class="badge warn">Licence: ${escapeHtml(a.license)}</span> The licence could not be confirmed as plain CC BY.`;
+    : `<span class="badge warn">Licence: ${escapeHtml(a.license)}</span> The licence is not confirmed as open. Short excerpt with credit; the decision to use it is yours. Adapting the wording makes a bigger change than quoting, so keep it to what you need.`;
   $('licenseAck').classList.toggle('hidden', a.licenseOk);
   $('licenseCheck').checked = false;
   $('replaceBtn').disabled = picks.length <= 1;

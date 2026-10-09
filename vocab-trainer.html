@@ -2307,8 +2307,12 @@ function renderReading() {
     `<span class="hl-word" data-id="${escapeAttr(tokens[i].id)}">${tokens[i].text}</span>`);
 
   const src = passage.source || {};
-  const srcLine = src.url
-    ? `Source: <a href="${escapeAttr(src.url)}" target="_blank" rel="noopener">${escapeHtml(src.title || src.url)}</a>${src.authors ? ' · ' + escapeHtml(src.authors) : ''}${src.journal ? ' · ' + escapeHtml(src.journal) : ''}${src.license ? ' · ' + escapeHtml(src.license) : ''}. Excerpt shortened, citations removed${src.adaptedFor ? ', wording adapted for ' + escapeHtml(src.adaptedFor) : ''}.`
+  const licShown = src.license && !/unknown|not stated/i.test(src.license) ? ' · ' + escapeHtml(src.license) : '';
+  const srcName = src.url
+    ? `<a href="${escapeAttr(src.url)}" target="_blank" rel="noopener">${escapeHtml(src.title || src.url)}</a>`
+    : escapeHtml(src.title || '');
+  const srcLine = (src.url || src.title)
+    ? `Source: ${srcName}${src.authors ? ' · ' + escapeHtml(src.authors) : ''}${src.journal ? ' · ' + escapeHtml(src.journal) : ''}${licShown}. Excerpt shortened, citations removed${src.adaptedFor ? ', wording adapted for ' + escapeHtml(src.adaptedFor) : ''}.`
     : '';
 
   app.innerHTML = `

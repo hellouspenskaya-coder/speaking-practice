@@ -55,6 +55,7 @@ The trainer falls back to the browser's built-in speech synthesis whenever a set
   (highlighted words, tap for the English definition), then the word gallery, then reading-skill taps
   (hedge / reference / paraphrase / main idea), then the usual word practice plus the new `contextGap` mode.
 - New backend actions inside `api/vocab.js` (no new function files): `textAreas`, `textSearch`, `textFetch`, `textBuild`.
+- Search mode: "Any article that can be read" (default) or "Open-access (CC BY) only". For any other source, paste your own text with a source title (no fetching, no licence detection). When no article can be read, the builder lists the tried links with reasons. Non-open sources need your confirmation tick before publishing.
 - The passage is never written by the model: the server fetches a CC BY article page and builds the excerpt from
   its own sentences, word for word (citations removed). Source, authors and licence are stored in `passage.source`
   and shown under the text.
