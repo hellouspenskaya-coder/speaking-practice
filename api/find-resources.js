@@ -106,7 +106,7 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
         materialsPlan.materials.video_options.map(async (v) => {
           const real = await verifyVideoExists(v.url);
           if (!real) return null;
-          return { ...v, title: real.title || v.title, _author: real.author || '', _seconds: real.seconds };
+          return { ...v, title: real.title || v.title, _author: real.author || '', _seconds: real.seconds, _why: real.why };
         })
       );
       let vids = verified.filter(Boolean);
@@ -122,9 +122,9 @@ Respond with your FINAL message containing STRICT JSON only (no markdown fences,
       const MAX_SEC = 10 * 60, MIN_SEC = 2 * 60;
       vids = vids.filter(v => v._seconds == null || (v._seconds >= MIN_SEC && v._seconds <= MAX_SEC));
       vids.sort((a, b) => (a._seconds == null) - (b._seconds == null));
-      materialsPlan.materials.video_options = vids.map(({ _author, _seconds, ...rest }) => ({
+      materialsPlan.materials.video_options = vids.map(({ _author, _seconds, _why, ...rest }) => ({
         ...rest,
-        length: _seconds == null ? 'length unknown — check before using' : Math.max(1, Math.round(_seconds / 60)) + ' min'
+        length: _seconds == null ? 'length unknown — check before using' + (_why ? ' (' + _why + ')' : '') : Math.max(1, Math.round(_seconds / 60)) + ' min'
       }));
     }
 
@@ -248,29 +248,84 @@ async function verifyVideoExists(url) {
     const r = await fetch(oembedUrl);
     if (!r.ok) return null;
     const data = await r.json();
-    let seconds = null;
+    let seconds = null, why = '';
     if (isYouTube) {
-      seconds = await youtubeDurationSeconds(url);
+      const d = await youtubeDuration(url);
+      seconds = d.seconds; why = d.why;
     } else if (typeof data.duration === 'number') {
       seconds = data.duration; // Vimeo oEmbed includes duration in seconds
-    }
-    return { title: data.title, author: data.author_name || '', seconds };
+    } else why = 'vimeo: no duration';
+    return { title: data.title, author: data.author_name || '', seconds, why };
   } catch (e) {
     return null;
   }
 }
 
 
-// YouTube's oEmbed has no duration, so read lengthSeconds from the watch page.
-// Returns a number of seconds, or null if it can't be determined.
-async function youtubeDurationSeconds(url) {
+// YouTube's oEmbed has no duration, so we try several sources in order:
+//  1. YouTube Data API (only if YOUTUBE_API_KEY is set in Vercel) — most reliable
+//  2. YouTube's internal player endpoint (no key needed)
+//  3. the watch page's embedded lengthSeconds
+// Returns { seconds, why } — seconds is null if every source failed, and
+// `why` says what happened so it can be shown next to the video.
+function youtubeId(url) {
   try {
     const u = new URL(url);
-    let id = null;
-    if (u.hostname.replace(/^www\./, '') === 'youtu.be') id = u.pathname.slice(1).split('/')[0];
-    else if (u.pathname.startsWith('/shorts/') || u.pathname.startsWith('/embed/')) id = u.pathname.split('/')[2];
-    else id = u.searchParams.get('v');
-    if (!id) return null;
+    if (u.hostname.replace(/^www\./, '') === 'youtu.be') return u.pathname.slice(1).split('/')[0] || null;
+    if (u.pathname.startsWith('/shorts/') || u.pathname.startsWith('/embed/')) return u.pathname.split('/')[2] || null;
+    return u.searchParams.get('v');
+  } catch (e) { return null; }
+}
+
+function parseIsoDuration(iso) {
+  const m = /^P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/.exec(iso || '');
+  if (!m) return null;
+  return (+m[1] || 0) * 86400 + (+m[2] || 0) * 3600 + (+m[3] || 0) * 60 + (+m[4] || 0);
+}
+
+async function youtubeDuration(url) {
+  const id = youtubeId(url);
+  if (!id) return { seconds: null, why: 'no video id' };
+  const why = [];
+
+  if (process.env.YOUTUBE_API_KEY) {
+    try {
+      const r = await fetch('https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=' +
+        encodeURIComponent(id) + '&key=' + encodeURIComponent(process.env.YOUTUBE_API_KEY));
+      if (r.ok) {
+        const d = await r.json();
+        const sec = parseIsoDuration(d.items && d.items[0] && d.items[0].contentDetails && d.items[0].contentDetails.duration);
+        if (sec != null) return { seconds: sec, why: '' };
+        why.push('api: no data');
+      } else why.push('api ' + r.status);
+    } catch (e) { why.push('api error'); }
+  }
+
+  try {
+    const r = await fetch('https://www.youtube.com/youtubei/v1/player?prettyPrint=false', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'com.google.android.youtube/20.10.38 (Linux; U; Android 11) gzip',
+        'X-YouTube-Client-Name': '3',
+        'X-YouTube-Client-Version': '20.10.38'
+      },
+      body: JSON.stringify({
+        context: { client: { clientName: 'ANDROID', clientVersion: '20.10.38', androidSdkVersion: 30, hl: 'en', gl: 'US' } },
+        videoId: id,
+        contentCheckOk: true,
+        racyCheckOk: true
+      })
+    });
+    if (r.ok) {
+      const d = await r.json();
+      const sec = parseInt(d.videoDetails && d.videoDetails.lengthSeconds, 10);
+      if (!isNaN(sec)) return { seconds: sec, why: '' };
+      why.push('player: ' + ((d.playabilityStatus && d.playabilityStatus.status) || 'no data'));
+    } else why.push('player ' + r.status);
+  } catch (e) { why.push('player error'); }
+
+  try {
     const r = await fetch('https://www.youtube.com/watch?v=' + encodeURIComponent(id) + '&hl=en', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
@@ -278,13 +333,15 @@ async function youtubeDurationSeconds(url) {
         'Cookie': 'CONSENT=YES+1; SOCS=CAI'
       }
     });
-    if (!r.ok) return null;
-    const html = await r.text();
-    const m = html.match(/"lengthSeconds":"(\d+)"/);
-    return m ? parseInt(m[1], 10) : null;
-  } catch (e) {
-    return null;
-  }
+    if (r.ok) {
+      const html = await r.text();
+      const m = html.match(/"lengthSeconds":"(\d+)"/);
+      if (m) return { seconds: parseInt(m[1], 10), why: '' };
+      why.push('page: no length');
+    } else why.push('page ' + r.status);
+  } catch (e) { why.push('page error'); }
+
+  return { seconds: null, why: why.join('; ') };
 }
 
 module.exports.config = { maxDuration: 60 };
