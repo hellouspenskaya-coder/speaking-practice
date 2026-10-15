@@ -115,7 +115,7 @@ function assemblePdfText(pages) {
   // ("References Akiskal H. S. (2000) ..."), or the "Address for correspondence" block
   const isRefHead = function (t) {
     if (/^(references|bibliography|works cited|literature|reference list)$/i.test(t.replace(/[:\s]+$/, ''))) return true;
-    return /^(references|bibliography|works cited|reference list)\s+[A-Z][A-Za-z\u00C0-\u024F'\u2019-]+,?\s+[A-Z]\./.test(t) && /\((1[89]\d\d|20\d\d)[a-z]?\)/.test(t.slice(0, 220));
+    return /^(references|bibliography|works cited|reference list)\s/i.test(t) && /^\S+(\s\S+)?\s+[A-Z][A-Za-z\u00C0-\u024F'\u2019-]+,?\s+[A-Z]\./.test(t) && /\((1[89]\d\d|20\d\d)[a-z]?\)/.test(t.slice(0, 220));
   };
   for (let i = Math.floor(texts.length * 0.4); i < texts.length; i++) {
     if (isRefHead(texts[i]) || /^address for correspondence/i.test(texts[i])) {
