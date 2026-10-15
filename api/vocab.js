@@ -848,7 +848,7 @@ function pastedPage(raw) {
 async function textFetch(req, res) {
   const { url, area, topic, level, pasted } = req.body || {};
   const want = Math.max(1, Math.min(10, Number((req.body || {}).count) || 1));
-  const askFor = Math.max(5, want);
+  const askFor = want > 1 ? want + 4 : 5;  // ask for a few extra: some picks fail the checks below
   let u = null;
   let page;
   if (pasted) {
@@ -891,7 +891,7 @@ Reply with STRICT JSON only: {"picks":[{"p":3,"from":1,"to":3,"label":"short ide
 
   let picksRaw;
   try {
-    picksRaw = extractJsonObject(await callHaiku(prompt, 1200)).picks || [];
+    picksRaw = extractJsonObject(await callHaiku(prompt, 2000)).picks || [];
   } catch (err) {
     res.status(502).json({ error: 'Could not choose an excerpt: ' + err.message });
     return;

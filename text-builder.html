@@ -147,6 +147,19 @@
           <input type="file" id="imgFiles" accept="image/*" multiple />
         </div>
       </div>
+      <div class="row">
+        <div>
+          <label for="pageFrom">PDF pages: from (optional)</label>
+          <input type="number" id="pageFrom" min="1" placeholder="1" style="width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:8px;font-size:14px;" />
+        </div>
+        <div>
+          <label for="pageTo">to (up to 60 pages at a time)</label>
+          <input type="number" id="pageTo" min="1" placeholder="last" style="width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:8px;font-size:14px;" />
+        </div>
+        <div style="flex:0 0 auto;min-width:0;align-self:flex-end;">
+          <button id="readPagesBtn" disabled>Read these pages</button>
+        </div>
+      </div>
       <p class="status" id="loadStatus"></p>
       <label for="pasteText" style="margin-top:8px;">Text (paragraphs separated by a blank line)</label>
       <textarea id="pasteText" style="min-height:140px;" placeholder="Paste one or more paragraphs here. If it is longer than about 130 words, a good excerpt is chosen from it."></textarea>
@@ -164,13 +177,15 @@
       <input type="text" id="pasteUrl" placeholder="https://..." autocomplete="off" />
     </details>
     <label class="checkline" style="margin-top:8px;"><input type="checkbox" id="adapt" /> Adapt the wording to the level (B1 and B2). Keeps cautious wording, reference words and key terms.</label>
-    <button class="primary" id="findBtn">Find text</button>
+    <button class="primary" id="findBtn">Get excerpts</button>
     <p class="status" id="findStatus"></p>
     <div id="failList" class="meta hidden" style="margin-top:8px;"></div>
   </div>
 
   <div id="packCard" class="card hidden">
     <h2>Excerpts found</h2>
+    <label for="packSource">Source title (credited in every set)</label>
+    <input type="text" id="packSource" autocomplete="off" style="margin-bottom:10px;" />
     <p class="meta" style="margin-bottom:8px;">Tick the excerpts you want as separate sets. You can edit each label.</p>
     <div id="packList"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
@@ -330,10 +345,14 @@ function startFromPicks(info, list, count) {
   words = [];
   taps = [];
   userUrlMode = false;
+  const fewer = count > 1 && list.length < count
+    ? 'Found ' + list.length + ' suitable excerpt' + (list.length === 1 ? '' : 's') + ' in this text (you asked for ' + count + ').' : '';
   if (count > 1 && list.length > 1) {
     picks = [];
     showPack(list);
+    if (fewer) setStatus('packStatus', fewer);
   } else {
+    if (fewer) setStatus('findStatus', fewer);
     picks = list;
     pickIdx = 0;
     showPassage(picks[0].text);
@@ -383,8 +402,8 @@ async function findText(more) {
       usePaste = true;
     }
     if (usePaste) {
-      await processPasted(pasted, count);
       setStatus('findStatus', '');
+      await processPasted(pasted, count);
       return;
     }
     let candidates;
@@ -407,8 +426,8 @@ async function findText(more) {
         if (useUrl && /PDF/i.test(e.message)) {
           setStatus('findStatus', 'Downloading the PDF…');
           await loadPdfFromUrl(url);
-          await processPasted($('pasteText').value.trim(), count);
           setStatus('findStatus', '');
+          await processPasted($('pasteText').value.trim(), count);
           return;
         }
         if (useUrl) throw e;
@@ -422,6 +441,7 @@ async function findText(more) {
       startFromPicks(result.article, result.picks, count);
       userUrlMode = Boolean(c.user);
       ok = true;
+      setStatus('findStatus', $('findStatus').textContent.indexOf('Found ') === 0 ? $('findStatus').textContent : '');
       break;
     }
     if (!ok) {
@@ -429,7 +449,6 @@ async function findText(more) {
       e.failed = failed;
       throw e;
     }
-    setStatus('findStatus', '');
   } catch (err) {
     setStatus('findStatus', err.message, true);
     const list = err.failed || [];
@@ -467,20 +486,31 @@ async function getPdfjs() {
   try { return await pdfjsReady; } catch (e) { pdfjsReady = null; throw e; }
 }
 
-async function pdfBytesToText(bytes) {
+function pageRange() {
+  const f = parseInt($('pageFrom').value, 10);
+  const t = parseInt($('pageTo').value, 10);
+  return { from: f > 0 ? f : 0, to: t > 0 ? t : 0 };
+}
+
+async function pdfBytesToText(bytes, from, to) {
   const lib = await getPdfjs();
   const pdf = await lib.getDocument({ data: bytes }).promise;
+  const total = pdf.numPages;
+  const a = Math.max(1, Math.min(total, from || 1));
+  let b = Math.min(total, to || (a + 59));
+  if (b < a) throw new Error('"to" must not be smaller than "from" (the PDF has ' + total + ' pages).');
+  let capped = false;
+  if (b - a + 1 > 60) { b = a + 59; capped = true; }
   const pages = [];
-  const n = Math.min(pdf.numPages, 60);
-  for (let i = 1; i <= n; i++) {
+  for (let i = a; i <= b; i++) {
     const tc = await (await pdf.getPage(i)).getTextContent();
     pages.push(pdfItemsToLines(tc.items));
   }
   let meta = {};
   try { meta = (await pdf.getMetadata()).info || {}; } catch (e) { /* no metadata */ }
   const text = assemblePdfText(pages);
-  if (wordCount(text) < 60) throw new Error('No readable text in this PDF (maybe a scan). Use screenshots of the pages instead.');
-  return { text, title: meta.Title || '', author: meta.Author || '', pages: n };
+  if (wordCount(text) < 60) throw new Error('No readable text on pages ' + a + '–' + b + ' (maybe a scan, or the pages are empty). Use screenshots instead, or other pages.');
+  return { text, title: meta.Title || '', author: meta.Author || '', from: a, to: b, total, capped, userRange: Boolean(from || to) };
 }
 
 function nameFromFile(name) {
@@ -491,18 +521,29 @@ function usableTitle(t) {
   return t.length >= 5 && !/(microsoft word|untitled|\.docx?$|\.pdf$|\.indd)/i.test(t) ? t : '';
 }
 
-function afterTextLoaded(note) {
+function afterTextLoaded(note, auto) {
   $('pasteBlock').open = true;
   if (clampCount() === 1) $('pickCount').value = 6;
-  setStatus('loadStatus', note + ' Check it below, then press "Find text".');
+  setStatus('loadStatus', auto ? note : note + ' Check it below, then press "Get excerpts".');
 }
 
-function fillFromPdf(res, srcUrl, fileName) {
+let lastPdf = null; // the PDF that was loaded last, so other pages can be read without choosing it again
+
+function fillFromPdf(res, srcUrl, fileName, keepFields) {
   $('pasteText').value = res.text;
-  if (!$('pasteTitle').value.trim()) $('pasteTitle').value = usableTitle(res.title) || nameFromFile(fileName || (srcUrl ? srcUrl.split('/').pop().split('?')[0] : ''));
-  if (!$('pasteAuthors').value.trim() && res.author && res.author.length < 80) $('pasteAuthors').value = res.author;
-  if (srcUrl) $('pasteUrl').value = srcUrl;
-  afterTextLoaded('Text loaded: ' + wordCount(res.text) + ' words from ' + res.pages + ' pages.');
+  if (!keepFields) {
+    $('pasteTitle').value = usableTitle(res.title) || guessTitle(res.text) || nameFromFile(fileName || (srcUrl ? srcUrl.split('/').pop().split('?')[0] : ''));
+    $('pasteAuthors').value = res.author && res.author.length < 80 ? res.author : '';
+    $('pasteUrl').value = srcUrl || '';
+  }
+  const partial = res.total > (res.to - res.from + 1);
+  const needRange = partial && !res.userRange;
+  let note = 'Text loaded: ' + wordCount(res.text) + ' words from pages ' + res.from + '–' + res.to + (partial ? ' of ' + res.total : '') + '.';
+  if (needRange) note += ' This PDF has ' + res.total + ' pages, only these were read. For other pages, enter "from" and "to" and press "Read these pages".';
+  if (res.capped) note += ' At most 60 pages are read at a time.';
+  afterTextLoaded(note, !needRange);
+  $('readPagesBtn').disabled = false;
+  return !needRange; // true when the excerpts can be proposed straight away
 }
 
 async function loadPdfFromUrl(url) {
@@ -510,8 +551,9 @@ async function loadPdfFromUrl(url) {
   const bin = atob(got.base64);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  const res = await pdfBytesToText(bytes);
-  $('pasteText').value = '';
+  const r = pageRange();
+  const res = await pdfBytesToText(bytes, r.from, r.to);
+  lastPdf = { bytes, name: '', url };
   fillFromPdf(res, url, '');
 }
 
@@ -520,12 +562,28 @@ $('pdfFile').addEventListener('change', async (e) => {
   if (!file) return;
   setStatus('loadStatus', 'Reading the PDF…');
   try {
-    const res = await pdfBytesToText(new Uint8Array(await file.arrayBuffer()));
-    fillFromPdf(res, '', file.name);
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const r = pageRange();
+    const res = await pdfBytesToText(bytes, r.from, r.to);
+    lastPdf = { bytes, name: file.name, url: '' };
+    if (fillFromPdf(res, '', file.name)) findText(false);
   } catch (err) {
     setStatus('loadStatus', err.message, true);
   }
   e.target.value = '';
+});
+
+$('readPagesBtn').addEventListener('click', async () => {
+  if (!lastPdf) return;
+  const r = pageRange();
+  if (!r.from && !r.to) { setStatus('loadStatus', 'Enter the first and last page to read.', true); return; }
+  setStatus('loadStatus', 'Reading the pages…');
+  try {
+    const res = await pdfBytesToText(lastPdf.bytes, r.from, r.to);
+    if (fillFromPdf(res, lastPdf.url, lastPdf.name, true)) findText(false);
+  } catch (err) {
+    setStatus('loadStatus', err.message, true);
+  }
 });
 
 async function imageToJpeg(file) {
@@ -593,6 +651,7 @@ function showPack(list) {
   packItems = list.map((p, i) => ({ text: p.text, label: p.label || ('Part ' + (i + 1)), words: p.words || wordCount(p.text), checked: i < 3 }));
   ['textCard', 'wordsCard', 'tapsCard', 'publishCard'].forEach(id => $(id).classList.add('hidden'));
   $('seriesName').value = String(article.title || '').slice(0, 60);
+  $('packSource').value = article.title || '';
   renderPack();
   $('packCard').classList.remove('hidden');
   setStatus('packStatus', '');
@@ -625,6 +684,7 @@ function updatePackBtn() {
 }
 
 $('packBuildBtn').addEventListener('click', () => buildPack());
+$('packSource').addEventListener('input', () => { if (article) article.title = $('packSource').value.trim() || article.title; });
 
 async function buildPack() {
   const sel = packItems.filter(x => x.checked);

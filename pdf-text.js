@@ -138,4 +138,32 @@ function assemblePdfText(pages) {
   return texts.join('\n\n');
 }
 
-if (typeof module !== 'undefined') module.exports = { pdfItemsToLines: pdfItemsToLines, assemblePdfText: assemblePdfText };
+
+function toTitleCase(t) {
+  const small = /^(a|an|the|of|in|on|and|or|to|for|with|at|by|from)$/;
+  let afterDash = true;
+  return t.toLowerCase().split(' ').map(function (w, i) {
+    const keepSmall = i > 0 && !afterDash && small.test(w);
+    afterDash = /^[–—:-]$/.test(w);
+    return keepSmall ? w : w.charAt(0).toUpperCase() + w.slice(1);
+  }).join(' ');
+}
+
+// A title from the first short lines of the text, for PDFs without a title in their metadata
+function guessTitle(text) {
+  const paras = String(text || '').split(/\n\s*\n/).map(function (x) { return x.replace(/\s+/g, ' ').trim(); }).filter(Boolean);
+  const parts = [];
+  for (let i = 0; i < Math.min(paras.length, 4); i++) {
+    const p = paras[i];
+    if (p.split(' ').length > 14 || /[.?!]$/.test(p) || /\d{4}|published|journal|issn|@|http|abstract/i.test(p)) break;
+    parts.push(p);
+    if (parts.length === 3) break;
+  }
+  let t = parts.join(' ').trim();
+  if (t.length < 8 || t.length > 140 || t.split(' ').length < 3) return '';
+  const letters = t.replace(/[^A-Za-z]/g, '');
+  if (letters && letters === letters.toUpperCase()) t = toTitleCase(t);
+  return t;
+}
+
+if (typeof module !== 'undefined') module.exports = { pdfItemsToLines: pdfItemsToLines, assemblePdfText: assemblePdfText, guessTitle: guessTitle };
