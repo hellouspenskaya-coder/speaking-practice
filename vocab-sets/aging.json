@@ -1,0 +1,226 @@
+{
+  "topic": "Aging",
+  "level": "B1",
+  "modes": [
+    "matchingDef",
+    "fillLetters"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "influence",
+      "definition": "The power to affect someone's opinions or decisions, or to have an effect on something.",
+      "example": "Her parents had a big influence on her choice of career.",
+      "phonetic": "ˈɪnfluəns",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "influence",
+          "pos": "noun"
+        },
+        {
+          "form": "influence",
+          "pos": "verb"
+        },
+        {
+          "form": "influential",
+          "pos": "adjective"
+        },
+        {
+          "form": "influenced",
+          "pos": "verb"
+        }
+      ],
+      "wordFormationSentence": "Social media is becoming an ___ force in modern society.",
+      "wordFormationAnswer": "influential",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "grant",
+      "definition": "To give or allow something officially, or a sum of money given by an organization for a specific purpose.",
+      "example": "The university granted him a scholarship to study engineering.",
+      "phonetic": "ɡrɑːnt",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": true,
+      "pastSimple": "granted",
+      "pastParticiple": "granted",
+      "verbSentence": "The government has ___ money to help rebuild the city after the flood.",
+      "verbAnswer": "granted"
+    },
+    {
+      "id": "item_3",
+      "type": "phrase",
+      "text": "figure out",
+      "definition": "To understand or solve something by thinking about it carefully.",
+      "example": "I spent an hour trying to figure out how to use the new software.",
+      "phonetic": "",
+      "chunks": [
+        "figure",
+        "out"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_4",
+      "type": "phrase",
+      "text": "carry around",
+      "definition": "To hold or transport something with you from place to place.",
+      "example": "She carries around a notebook so she can write down ideas whenever she gets them.",
+      "phonetic": "",
+      "chunks": [
+        "carry",
+        "around"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "person carrying backpack",
+      "imageQuery": "",
+      "illustrable": true,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_5",
+      "type": "phrase",
+      "text": "makes sense",
+      "definition": "To be logical, clear, or easy to understand.",
+      "example": "The explanation makes sense now that I've read the instructions carefully.",
+      "phonetic": "",
+      "chunks": [
+        "makes",
+        "sense"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "src": "builder",
+          "label": "Fill each gap with the right word",
+          "strip": [],
+          "text": "Maria was sixty-five and wanted to start painting again. She didn't have money, so she applied for a government {1} to buy materials. While waiting for approval, she tried to {2} why she felt sad. Her daughter's {3} had always stopped her from pursuing art. Now it {4} to ignore those old doubts. Maria decided to {5} a sketchbook every day, even before the money arrived. Three months later, the grant was approved. She finally began painting and felt alive again.",
+          "gaps": [
+            {
+              "a": "grant",
+              "b": "grant"
+            },
+            {
+              "a": "figure out",
+              "b": "figure out"
+            },
+            {
+              "a": "influence",
+              "b": "influence"
+            },
+            {
+              "a": "makes sense",
+              "b": "makes sense"
+            },
+            {
+              "a": "carry around",
+              "b": "carry around"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
