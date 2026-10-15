@@ -56,6 +56,8 @@ The trainer falls back to the browser's built-in speech synthesis whenever a set
   (hedge / reference / paraphrase / main idea), then the usual word practice plus the new `contextGap` mode.
 - New backend actions inside `api/vocab.js` (no new function files): `textAreas`, `textSearch`, `textFetch`, `textBuild`.
 - Search mode: "Any article that can be read" (default) or "Open-access (CC BY) only". For any other source, paste your own text with a source title (no fetching, no licence detection). When no article can be read, the builder lists the tried links with reasons. Non-open sources need your confirmation tick before publishing.
+- Sources: a link to an article or a PDF (the PDF is downloaded by the server and read in the browser), a PDF file from your computer, screenshots or photos of pages (also Ctrl+V), or pasted text. Page numbers, running headers and the reference list are removed from PDFs; images are read by the model, so check rare words.
+- Several sets from one source: set "Excerpts to propose" to 2-10. Tick the excerpts you want, press Build; each becomes its own set (tabs 1, 2, 3 …) with words and questions. Publish them together with a shared series name, a short label per set and an optional number (1/6). Each set gets its own link; the Notion cards are created one per set.
 - The passage is never written by the model: the server fetches a CC BY article page and builds the excerpt from
   its own sentences, word for word (citations removed). Source, authors and licence are stored in `passage.source`
   and shown under the text.

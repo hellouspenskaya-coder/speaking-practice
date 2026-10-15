@@ -40,6 +40,8 @@ module.exports = async function handler(req, res) {
     if (action === 'textAreas') return await textAreas(req, res);
     if (action === 'textSearch') return await textSearch(req, res);
     if (action === 'textFetch') return await textFetch(req, res);
+    if (action === 'pdfFetch') return await pdfFetch(req, res);
+    if (action === 'textOcr') return await textOcr(req, res);
     if (action === 'textBuild') return await textBuild(req, res);
     if (action === 'textAdapt') return await textAdapt(req, res);
     if (action === 'storyBuild') return await storyBuild(req, res);
@@ -827,10 +829,15 @@ Reply with STRICT JSON only, no commentary, no markdown fences:
 
 function pastedPage(raw) {
   const paragraphs = [];
-  String(raw || '').split(/\n\s*\n/).forEach((chunk) => {
+  const SKIP = /(©|copyright|all rights reserved|https?:\/\/|www\.|doi\b|@|ISSN|\bFigure\s*\d|\bTable\s*\d)/i;
+  String(raw || '').slice(0, 80000).split(/\n\s*\n/).forEach((chunk) => {
     const clean = stripCitations(chunk.replace(/\s+/g, ' ').trim());
     const wc = wordCount(clean);
     if (wc < 25 || wc > 260) return;
+    if (!/[.?!]["”)]?$/.test(clean)) return;
+    if (SKIP.test(clean)) return;
+    const digitTokens = (clean.match(/\S*\d\S*/g) || []).length;
+    if (digitTokens / wc > 0.06) return;
     const sentences = splitSentences(clean);
     if (sentences.length < 2) return;
     paragraphs.push({ sentences, words: wc });
@@ -840,6 +847,8 @@ function pastedPage(raw) {
 
 async function textFetch(req, res) {
   const { url, area, topic, level, pasted } = req.body || {};
+  const want = Math.max(1, Math.min(10, Number((req.body || {}).count) || 1));
+  const askFor = Math.max(5, want);
   let u = null;
   let page;
   if (pasted) {
@@ -867,22 +876,22 @@ async function textFetch(req, res) {
     }
   }
 
-  const list = page.paragraphs.slice(0, 40).map((p, i) =>
+  const list = page.paragraphs.slice(0, pasted ? 90 : 40).map((p, i) =>
     `P${i + 1} (${p.words} words): ` + p.sentences.map((s, k) => `[${k + 1}] ${s}`).join(' ')
   ).join('\n\n');
   const prompt = `You are choosing short reading excerpts for an adult ${level || 'B2'} English learner studying: ${area || 'general academic English'}${topic ? ` (topic: ${topic})` : ''}.
 
-Below are numbered paragraphs from one article, each split into numbered sentences. Choose up to 5 excerpts. Each excerpt is 2 to 5 CONSECUTIVE sentences from ONE paragraph, between 55 and 110 words in total.
+Below are numbered paragraphs from one article, each split into numbered sentences. Choose up to ${askFor} excerpts. Each excerpt is 2 to 5 CONSECUTIVE sentences from ONE paragraph, between 55 and 110 words in total.
 
-Good excerpts: understandable on their own (no "this study", "our participants", "as shown above", figures or tables), explain an idea or argue a point, contain academic features such as cautious wording (may, appears to, tends to), reference words (which, this, these) and useful subject vocabulary. Prefer introduction and discussion style paragraphs. Avoid methods and statistics. Different excerpts should come from different paragraphs where possible. Put the best excerpt first.
+Good excerpts: understandable on their own (no "this study", "our participants", "as shown above", figures or tables), explain an idea or argue a point, contain academic features such as cautious wording (may, appears to, tends to), reference words (which, this, these) and useful subject vocabulary. Prefer introduction and discussion style paragraphs. Avoid methods and statistics. Different excerpts should come from different paragraphs where possible. Put the best excerpt first. For each excerpt also write a short English label of 3 to 6 words naming its idea (for example "what depression is" or "why hedging matters"), no quotation marks.
 
 ${list}
 
-Reply with STRICT JSON only: {"picks":[{"p":3,"from":1,"to":3}]}`;
+Reply with STRICT JSON only: {"picks":[{"p":3,"from":1,"to":3,"label":"short idea label"}]}`;
 
   let picksRaw;
   try {
-    picksRaw = extractJsonObject(await callHaiku(prompt, 600)).picks || [];
+    picksRaw = extractJsonObject(await callHaiku(prompt, 1200)).picks || [];
   } catch (err) {
     res.status(502).json({ error: 'Could not choose an excerpt: ' + err.message });
     return;
@@ -899,7 +908,8 @@ Reply with STRICT JSON only: {"picks":[{"p":3,"from":1,"to":3}]}`;
     const wc = wordCount(text);
     if (wc < 45 || wc > 130 || seenText.has(text)) return;
     seenText.add(text);
-    picks.push({ text, words: wc });
+    const label = String(pk.label || '').replace(/["“”]/g, '').replace(/\s+/g, ' ').trim().slice(0, 60);
+    picks.push({ text, words: wc, label });
   });
   if (!picks.length) {
     res.status(422).json({ error: 'No suitable excerpt found in this article.' });
@@ -907,8 +917,73 @@ Reply with STRICT JSON only: {"picks":[{"p":3,"from":1,"to":3}]}`;
   }
   res.status(200).json({
     article: { title: page.title, url: u ? u.href : '', authors: page.authors, journal: page.journal, license: page.license, licenseOk: page.licenseOk },
-    picks: picks.slice(0, 5)
+    picks: picks.slice(0, want > 1 ? want : 5)
   });
+}
+
+// ---------- PDF by link (returned to the browser, which extracts the text) ----------
+
+async function pdfFetch(req, res) {
+  const { url } = req.body || {};
+  let u;
+  try { u = new URL(url); } catch (e) { res.status(400).json({ error: 'That is not a valid link.' }); return; }
+  if (!/^https?:$/.test(u.protocol) || isPrivateHost(u.hostname)) {
+    res.status(400).json({ error: 'That link cannot be used.' });
+    return;
+  }
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 25000);
+  let buf;
+  try {
+    const resp = await fetch(u.href, { headers: { 'User-Agent': TEXT_UA, Accept: 'application/pdf,*/*' }, redirect: 'follow', signal: ctrl.signal });
+    if (!resp.ok) throw new Error('The site answered with status ' + resp.status + ' (it may block automatic downloads)');
+    const len = Number(resp.headers.get('content-length') || 0);
+    if (len > 3200000) throw new Error('This PDF is larger than 3 MB. Download it and load the file instead.');
+    buf = Buffer.from(await resp.arrayBuffer());
+  } catch (err) {
+    const msg = err.name === 'AbortError' ? 'The download timed out' : err.message;
+    res.status(422).json({ error: msg + '. You can download the PDF yourself and load the file instead.' });
+    return;
+  } finally {
+    clearTimeout(timer);
+  }
+  if (buf.length > 3200000) {
+    res.status(422).json({ error: 'This PDF is larger than 3 MB. Download it and load the file instead.' });
+    return;
+  }
+  if (buf.slice(0, 5).toString('latin1') !== '%PDF-') {
+    res.status(422).json({ error: 'The link did not give a PDF file (maybe a login or a web page).' });
+    return;
+  }
+  res.status(200).json({ base64: buf.toString('base64'), bytes: buf.length });
+}
+
+// ---------- text from a photo or screenshot of a page ----------
+
+async function textOcr(req, res) {
+  const { image, mediaType } = req.body || {};
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) { res.status(500).json({ error: 'ANTHROPIC_API_KEY is not set in Vercel.' }); return; }
+  const mt = ['image/jpeg', 'image/png', 'image/webp'].includes(mediaType) ? mediaType : '';
+  if (!mt || typeof image !== 'string' || image.length < 200) { res.status(400).json({ error: 'Send a JPEG, PNG or WebP image.' }); return; }
+  if (image.length > 4000000) { res.status(400).json({ error: 'The image is too large. Try a smaller screenshot.' }); return; }
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 3000,
+      messages: [{ role: 'user', content: [
+        { type: 'image', source: { type: 'base64', media_type: mt, data: image } },
+        { type: 'text', text: 'Transcribe the main body text of this page exactly as written, in reading order. Separate paragraphs with one blank line and join the lines of a paragraph into one line. Leave out page numbers, running headers and footers, footnotes, figure captions and any menus or buttons. Do not translate, correct, summarise or comment. If there is no readable text, reply with exactly: NO TEXT' }
+      ] }]
+    })
+  });
+  const data = await resp.json();
+  if (!resp.ok) { res.status(resp.status).json({ error: (data.error && data.error.message) || 'Anthropic API error (image).' }); return; }
+  const text = (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('\n').trim();
+  if (!text || /^NO TEXT$/i.test(text)) { res.status(422).json({ error: 'No readable text found in this image.' }); return; }
+  res.status(200).json({ text });
 }
 
 async function textBuild(req, res) {

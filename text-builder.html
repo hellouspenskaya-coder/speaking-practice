@@ -74,6 +74,19 @@
   .checkline { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--text); margin: 0 0 10px; }
   .checkline input { margin-top: 3px; }
   details.orig { margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 12px; }
+  .tabs.hidden { display: none; }
+  .tabs button { font-size: 12px; padding: 6px 10px; }
+  .tabs button.on { background: var(--blue-light); border-color: var(--blue); color: var(--blue); font-weight: 600; }
+  .pack-row { display: flex; gap: 10px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--border); }
+  .pack-row:first-of-type { border-top: none; }
+  .pack-row input[type=checkbox] { margin-top: 9px; }
+  .pack-row .body { flex: 1; min-width: 0; }
+  .pack-row .txt { font-size: 14px; line-height: 1.55; margin: 6px 0 0; color: var(--text); }
+  .pack-title { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--border); font-size: 13px; }
+  .pack-title .t { flex: 1; min-width: 0; }
+  .pack-link { margin-bottom: 12px; }
+  .pack-link .ttl { font-size: 13px; font-weight: 600; margin: 0 0 4px; }
   details.orig p { margin: 8px 0 0; line-height: 1.6; color: var(--text); }
 </style>
 </head>
@@ -105,7 +118,7 @@
         <input type="text" id="topic" placeholder="attachment and resilience" autocomplete="off" />
       </div>
       <div>
-        <label for="url">Or paste an article link (optional)</label>
+        <label for="url">Or paste an article or PDF link (optional)</label>
         <input type="text" id="url" placeholder="https://www.frontiersin.org/..." autocomplete="off" />
       </div>
     </div>
@@ -117,10 +130,24 @@
           <option value="open">Open-access (CC BY) only</option>
         </select>
       </div>
-      <div></div>
+      <div>
+        <label for="pickCount">Excerpts to propose (1 = a single set)</label>
+        <input type="number" id="pickCount" min="1" max="10" value="1" style="width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:8px;font-size:14px;" />
+      </div>
     </div>
     <details id="pasteBlock" style="margin-top:8px;">
-      <summary style="cursor:pointer;font-size:14px;">Or paste your own text (any source, PDF, book)</summary>
+      <summary style="cursor:pointer;font-size:14px;">Or load a PDF or screenshots, or paste your own text</summary>
+      <div class="row" style="margin-top:8px;">
+        <div>
+          <label for="pdfFile">PDF file</label>
+          <input type="file" id="pdfFile" accept="application/pdf,.pdf" />
+        </div>
+        <div>
+          <label for="imgFiles">Screenshots or photos of pages (or paste an image with Ctrl+V)</label>
+          <input type="file" id="imgFiles" accept="image/*" multiple />
+        </div>
+      </div>
+      <p class="status" id="loadStatus"></p>
       <label for="pasteText" style="margin-top:8px;">Text (paragraphs separated by a blank line)</label>
       <textarea id="pasteText" style="min-height:140px;" placeholder="Paste one or more paragraphs here. If it is longer than about 130 words, a good excerpt is chosen from it."></textarea>
       <div class="row">
@@ -142,8 +169,19 @@
     <div id="failList" class="meta hidden" style="margin-top:8px;"></div>
   </div>
 
+  <div id="packCard" class="card hidden">
+    <h2>Excerpts found</h2>
+    <p class="meta" style="margin-bottom:8px;">Tick the excerpts you want as separate sets. You can edit each label.</p>
+    <div id="packList"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+      <button class="primary" id="packBuildBtn">Build sets</button>
+    </div>
+    <p class="status" id="packStatus"></p>
+  </div>
+
   <div id="textCard" class="card hidden">
     <h2>2. Text</h2>
+    <div id="tabsBar" class="tabs hidden"></div>
     <p class="meta" id="srcLine"></p>
     <p id="licenseNote" class="meta" style="margin-top:8px;"></p>
     <div id="licenseAck" class="hidden" style="margin-top:8px;">
@@ -197,8 +235,17 @@
 
   <div id="publishCard" class="card hidden">
     <h2>5. Publish</h2>
-    <label for="title">Set title</label>
-    <input type="text" id="title" autocomplete="off" style="margin-bottom:12px;" />
+    <div id="singleTitle">
+      <label for="title">Set title</label>
+      <input type="text" id="title" autocomplete="off" style="margin-bottom:12px;" />
+    </div>
+    <div id="packPub" class="hidden" style="margin-bottom:12px;">
+      <label for="seriesName">Series name (the same part in every title)</label>
+      <input type="text" id="seriesName" autocomplete="off" style="margin-bottom:8px;" />
+      <label class="checkline"><input type="checkbox" id="numbering" checked /> Add the number to each title (1/6, 2/6 …)</label>
+      <p class="meta" style="margin-bottom:4px;">Titles of the sets. Untick a set to leave it out; edit the label after the series name.</p>
+      <div id="packTitles"></div>
+    </div>
     <label for="areaPub">Area (goes to Notion)</label>
     <input type="text" id="areaPub" list="areaList" placeholder="psychology" autocomplete="off" style="margin-bottom:12px;" />
     <label class="checkline"><input type="checkbox" id="cloze" checked /> Add "Complete the text" at the end (the same text with gaps).</label>
@@ -208,6 +255,7 @@
       <button id="downloadBtn">Download JSON instead</button>
     </div>
     <p class="status err" id="publishError"></p>
+    <div id="packLinks" class="linkbox hidden"></div>
     <div id="linkBox" class="linkbox hidden">
       <input type="text" id="linkOutput" readonly />
       <button id="copyBtn">Copy link</button>
@@ -216,6 +264,7 @@
   </div>
 </div>
 
+<script src="pdf-text.js"></script>
 <script>
 const MODES = ['listening', 'fillLetters', 'letterScramble', 'dictationNoImage', 'matchingDef', 'contextGap', 'phraseBuilder'];
 
@@ -230,6 +279,9 @@ let userUrlMode = false;
 let original = '';
 let aiText = null;     // last AI-adapted version, so it can be restored after manual edits
 let adaptedFor = null; // level the current passage was adapted for, or null for the original wording
+let drafts = [];       // pack mode: one draft per set built from the same source
+let curDraft = -1;
+let packItems = [];
 
 const $ = (id) => document.getElementById(id);
 
@@ -270,44 +322,68 @@ function linkOf(c) {
   return `<a href="${escapeHtml(c.url)}" target="_blank" rel="noopener">${escapeHtml(c.title || c.url)}</a>`;
 }
 
+function clampCount() { return Math.max(1, Math.min(10, parseInt($('pickCount').value, 10) || 1)); }
+function looksPdf(u) { return /\.pdf($|[?#])/i.test(u); }
+
+function startFromPicks(info, list, count) {
+  article = info;
+  words = [];
+  taps = [];
+  userUrlMode = false;
+  if (count > 1 && list.length > 1) {
+    picks = [];
+    showPack(list);
+  } else {
+    picks = list;
+    pickIdx = 0;
+    showPassage(picks[0].text);
+  }
+}
+
+async function processPasted(pasted, count) {
+  const title = $('pasteTitle').value.trim();
+  if (!title) throw new Error('Add the source title (so the set can credit it).');
+  const info = { title, url: $('pasteUrl').value.trim(), authors: $('pasteAuthors').value.trim(), journal: '', license: 'not stated', licenseOk: false };
+  let list;
+  if (wordCount(pasted) <= 130) {
+    if (wordCount(pasted) < 30) throw new Error('The text is too short (at least 30 words).');
+    list = [{ text: pasted.replace(/\s+/g, ' ').trim(), label: '' }];
+  } else {
+    const result = await api({ action: 'textFetch', pasted, area: $('area').value.trim(), topic: $('topic').value.trim(), level: $('level').value, count });
+    list = result.picks;
+  }
+  startFromPicks(info, list, count);
+}
+
 async function findText(more) {
   const area = $('area').value.trim();
   const topic = $('topic').value.trim();
   const url = $('url').value.trim();
-  const pasted = $('pasteText').value.trim();
-  const usePaste = Boolean(pasted) && !more;
-  const useUrl = !usePaste && Boolean(url) && !more;
+  let pasted = $('pasteText').value.trim();
+  let usePaste = Boolean(pasted) && !more;
+  let useUrl = !usePaste && Boolean(url) && !more;
   const openOnly = $('srcMode').value === 'open';
+  const count = clampCount();
   $('failList').classList.add('hidden');
   if (!usePaste && !useUrl && !area && !topic) {
     setStatus('findStatus', 'Enter an area or a topic, paste an article link, or paste your own text.', true);
     return;
   }
+  resetPack();
   const btns = [$('findBtn'), $('anotherBtn')];
   btns.forEach(b => b.disabled = true);
   setStatus('findStatus', usePaste ? 'Preparing your text…' : useUrl ? 'Reading the article…' : 'Searching for articles…');
   const failed = [];
   try {
+    if (useUrl && looksPdf(url)) {
+      setStatus('findStatus', 'Downloading the PDF…');
+      await loadPdfFromUrl(url);
+      pasted = $('pasteText').value.trim();
+      useUrl = false;
+      usePaste = true;
+    }
     if (usePaste) {
-      const title = $('pasteTitle').value.trim();
-      if (!title) throw new Error('Add the source title (so the set can credit it).');
-      const pu = $('pasteUrl').value.trim();
-      const info = { title, url: pu, authors: $('pasteAuthors').value.trim(), journal: '', license: 'not stated', licenseOk: false };
-      let list;
-      if (wordCount(pasted) <= 130) {
-        if (wordCount(pasted) < 30) throw new Error('The text is too short (at least 30 words).');
-        list = [{ text: pasted.replace(/\s+/g, ' ').trim() }];
-      } else {
-        const result = await api({ action: 'textFetch', pasted, area, topic, level: $('level').value });
-        list = result.picks;
-      }
-      article = info;
-      picks = list;
-      pickIdx = 0;
-      userUrlMode = true;
-      words = [];
-      taps = [];
-      showPassage(picks[0].text);
+      await processPasted(pasted, count);
       setStatus('findStatus', '');
       return;
     }
@@ -326,8 +402,15 @@ async function findText(more) {
       tried.push(c.url);
       let result;
       try {
-        result = await api({ action: 'textFetch', url: c.url, area, topic, level: $('level').value });
+        result = await api({ action: 'textFetch', url: c.url, area, topic, level: $('level').value, count });
       } catch (e) {
+        if (useUrl && /PDF/i.test(e.message)) {
+          setStatus('findStatus', 'Downloading the PDF…');
+          await loadPdfFromUrl(url);
+          await processPasted($('pasteText').value.trim(), count);
+          setStatus('findStatus', '');
+          return;
+        }
         if (useUrl) throw e;
         failed.push({ ...c, reason: e.message });
         continue;
@@ -336,13 +419,8 @@ async function findText(more) {
         failed.push({ ...c, reason: 'not confirmed as plain CC BY' });
         continue;
       }
-      article = result.article;
-      picks = result.picks;
-      pickIdx = 0;
+      startFromPicks(result.article, result.picks, count);
       userUrlMode = Boolean(c.user);
-      words = [];
-      taps = [];
-      showPassage(picks[0].text);
       ok = true;
       break;
     }
@@ -365,16 +443,334 @@ async function findText(more) {
   }
 }
 
-function showPassage(text) {
-  original = text;
-  adaptedFor = null;
-  aiText = null;
+// ---- loading a PDF or screenshots into the text box ----
+const PDFJS_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+let pdfjsReady = null;
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const el = document.createElement('script');
+    el.src = src;
+    el.onload = resolve;
+    el.onerror = () => reject(new Error('Could not load the PDF reader. Check the connection and try again.'));
+    document.head.appendChild(el);
+  });
+}
+async function getPdfjs() {
+  if (!pdfjsReady) {
+    pdfjsReady = (async () => {
+      await loadScript(PDFJS_BASE + 'pdf.min.js');
+      const code = await (await fetch(PDFJS_BASE + 'pdf.worker.min.js')).text();
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+      return window.pdfjsLib;
+    })();
+  }
+  try { return await pdfjsReady; } catch (e) { pdfjsReady = null; throw e; }
+}
+
+async function pdfBytesToText(bytes) {
+  const lib = await getPdfjs();
+  const pdf = await lib.getDocument({ data: bytes }).promise;
+  const pages = [];
+  const n = Math.min(pdf.numPages, 60);
+  for (let i = 1; i <= n; i++) {
+    const tc = await (await pdf.getPage(i)).getTextContent();
+    pages.push(pdfItemsToLines(tc.items));
+  }
+  let meta = {};
+  try { meta = (await pdf.getMetadata()).info || {}; } catch (e) { /* no metadata */ }
+  const text = assemblePdfText(pages);
+  if (wordCount(text) < 60) throw new Error('No readable text in this PDF (maybe a scan). Use screenshots of the pages instead.');
+  return { text, title: meta.Title || '', author: meta.Author || '', pages: n };
+}
+
+function nameFromFile(name) {
+  return decodeURIComponent(String(name || '')).replace(/\.pdf$/i, '').replace(/[_\-]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function usableTitle(t) {
+  t = String(t || '').trim();
+  return t.length >= 5 && !/(microsoft word|untitled|\.docx?$|\.pdf$|\.indd)/i.test(t) ? t : '';
+}
+
+function afterTextLoaded(note) {
+  $('pasteBlock').open = true;
+  if (clampCount() === 1) $('pickCount').value = 6;
+  setStatus('loadStatus', note + ' Check it below, then press "Find text".');
+}
+
+function fillFromPdf(res, srcUrl, fileName) {
+  $('pasteText').value = res.text;
+  if (!$('pasteTitle').value.trim()) $('pasteTitle').value = usableTitle(res.title) || nameFromFile(fileName || (srcUrl ? srcUrl.split('/').pop().split('?')[0] : ''));
+  if (!$('pasteAuthors').value.trim() && res.author && res.author.length < 80) $('pasteAuthors').value = res.author;
+  if (srcUrl) $('pasteUrl').value = srcUrl;
+  afterTextLoaded('Text loaded: ' + wordCount(res.text) + ' words from ' + res.pages + ' pages.');
+}
+
+async function loadPdfFromUrl(url) {
+  const got = await api({ action: 'pdfFetch', url });
+  const bin = atob(got.base64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const res = await pdfBytesToText(bytes);
+  $('pasteText').value = '';
+  fillFromPdf(res, url, '');
+}
+
+$('pdfFile').addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  setStatus('loadStatus', 'Reading the PDF…');
+  try {
+    const res = await pdfBytesToText(new Uint8Array(await file.arrayBuffer()));
+    fillFromPdf(res, '', file.name);
+  } catch (err) {
+    setStatus('loadStatus', err.message, true);
+  }
+  e.target.value = '';
+});
+
+async function imageToJpeg(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const im = new Image();
+      im.onload = () => resolve(im);
+      im.onerror = () => reject(new Error('Could not open this image.'));
+      im.src = url;
+    });
+    const scale = Math.min(1, 1800 / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.naturalWidth * scale);
+    c.height = Math.round(img.naturalHeight * scale);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.85).split(',')[1];
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+async function ocrFiles(files) {
+  const texts = [];
+  try {
+    for (let i = 0; i < files.length; i++) {
+      setStatus('loadStatus', 'Reading image ' + (i + 1) + ' of ' + files.length + '…');
+      const image = await imageToJpeg(files[i]);
+      const out = await api({ action: 'textOcr', image, mediaType: 'image/jpeg' });
+      texts.push(out.text);
+    }
+    const box = $('pasteText');
+    box.value = (box.value.trim() ? box.value.trim() + '\n\n' : '') + texts.join('\n\n');
+    afterTextLoaded('Text read from ' + texts.length + ' image' + (texts.length === 1 ? '' : 's') + ' (' + wordCount(box.value) + ' words). Check the spelling of rare words.');
+  } catch (err) {
+    setStatus('loadStatus', err.message, true);
+  }
+}
+
+$('imgFiles').addEventListener('change', (e) => {
+  const files = Array.from(e.target.files || []);
+  if (files.length) ocrFiles(files);
+  e.target.value = '';
+});
+document.addEventListener('paste', (e) => {
+  const files = Array.from((e.clipboardData && e.clipboardData.files) || []).filter(f => /^image\//.test(f.type));
+  if (!files.length) return;
+  e.preventDefault();
+  $('pasteBlock').open = true;
+  ocrFiles(files);
+});
+
+// ---- several sets from one source ("pack") ----
+function resetPack() {
+  drafts = [];
+  curDraft = -1;
+  packItems = [];
+  $('packCard').classList.add('hidden');
+  $('tabsBar').classList.add('hidden');
+  $('packLinks').classList.add('hidden');
+  updatePublishMode();
+}
+
+function showPack(list) {
+  packItems = list.map((p, i) => ({ text: p.text, label: p.label || ('Part ' + (i + 1)), words: p.words || wordCount(p.text), checked: i < 3 }));
+  ['textCard', 'wordsCard', 'tapsCard', 'publishCard'].forEach(id => $(id).classList.add('hidden'));
+  $('seriesName').value = String(article.title || '').slice(0, 60);
+  renderPack();
+  $('packCard').classList.remove('hidden');
+  setStatus('packStatus', '');
+  $('packCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderPack() {
+  const box = $('packList');
+  box.innerHTML = '';
+  packItems.forEach((it) => {
+    const row = document.createElement('div');
+    row.className = 'pack-row';
+    row.innerHTML = `
+      <input type="checkbox" ${it.checked ? 'checked' : ''} aria-label="Use this excerpt" />
+      <div class="body">
+        <input type="text" value="${escapeHtml(it.label)}" aria-label="Label" style="font-weight:600;" />
+        <p class="txt">${escapeHtml(it.text)}</p>
+        <p class="meta" style="margin-top:4px;">${it.words} words</p>
+      </div>`;
+    row.querySelector('input[type=checkbox]').addEventListener('change', e => { it.checked = e.target.checked; updatePackBtn(); });
+    row.querySelector('input[type=text]').addEventListener('input', e => { it.label = e.target.value; });
+    box.appendChild(row);
+  });
+  updatePackBtn();
+}
+
+function updatePackBtn() {
+  const n = packItems.filter(x => x.checked).length;
+  $('packBuildBtn').textContent = n ? 'Build ' + n + ' set' + (n === 1 ? '' : 's') : 'Build sets';
+}
+
+$('packBuildBtn').addEventListener('click', () => buildPack());
+
+async function buildPack() {
+  const sel = packItems.filter(x => x.checked);
+  if (!sel.length) { setStatus('packStatus', 'Tick at least one excerpt.', true); return; }
+  if (drafts.length && !window.confirm('Building again replaces the sets you already built (and your edits to them). Continue?')) return;
+  const lvl = $('level').value;
+  const area = $('area').value.trim();
+  const doAdapt = $('adapt').checked && lvl !== 'C1';
+  $('packBuildBtn').disabled = true;
+  drafts = sel.map(x => ({ label: x.label.trim() || 'Part', text: x.text, original: x.text, aiText: null, adaptedFor: null, words: [], taps: [], include: true, error: '' }));
+  curDraft = -1;
+  let done = 0;
+  const total = drafts.length;
+  setStatus('packStatus', 'Building 0 of ' + total + '…');
+  const work = async (d) => {
+    try {
+      if (doAdapt) {
+        try {
+          const o = await api({ action: 'textAdapt', passage: d.original, level: lvl, area });
+          d.text = o.text; d.aiText = o.text; d.adaptedFor = lvl;
+        } catch (e) {
+          d.error = 'Adaptation failed (' + e.message + '), original wording kept. ';
+        }
+      }
+      const b = await api({ action: 'textBuild', passage: d.text, level: lvl, area });
+      d.words = b.words.map(w => Object.assign({ keep: true }, w));
+      d.taps = b.taps.map(t => Object.assign({ keep: true }, t));
+    } catch (e) {
+      d.error += 'Words and questions failed: ' + e.message + ' Open this set and press Generate.';
+    }
+    done++;
+    setStatus('packStatus', 'Building ' + done + ' of ' + total + '…');
+  };
+  const queue = drafts.slice();
+  await Promise.all(Array.from({ length: Math.min(3, queue.length) }, async () => {
+    while (queue.length) await work(queue.shift());
+  }));
+  if (!$('areaPub').value.trim()) $('areaPub').value = area;
+  setStatus('packStatus', '');
+  $('packBuildBtn').disabled = false;
+  $('publishCard').classList.remove('hidden');
+  loadDraft(0);
+  $('textCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function snapshotInto(d) {
+  d.text = passage; d.original = original; d.aiText = aiText; d.adaptedFor = adaptedFor; d.words = words; d.taps = taps;
+}
+function saveCurrent() {
+  if (curDraft >= 0 && drafts[curDraft]) snapshotInto(drafts[curDraft]);
+}
+
+function loadDraft(i) {
+  saveCurrent();
+  curDraft = i;
+  const d = drafts[i];
+  original = d.original; aiText = d.aiText; adaptedFor = d.adaptedFor; passage = d.text; words = d.words; taps = d.taps;
+  renderSource();
+  $('textCard').classList.remove('hidden');
+  closeEditor();
+  setStatus('buildStatus', d.error || '', Boolean(d.error));
+  renderPassage();
+  updateAdaptUi();
+  const has = words.length > 0;
+  $('wordsCard').classList.toggle('hidden', !has);
+  $('tapsCard').classList.toggle('hidden', !has);
+  if (has) { renderWords(); renderTaps(); }
+  $('publishCard').classList.remove('hidden');
+  renderTabs();
+  updatePublishMode();
+}
+
+function renderTabs() {
+  const bar = $('tabsBar');
+  bar.innerHTML = '';
+  drafts.forEach((d, i) => {
+    const b = document.createElement('button');
+    const ready = i === curDraft ? words.length > 0 : d.words.length > 0;
+    b.textContent = (i + 1) + ' · ' + (d.label.length > 26 ? d.label.slice(0, 25) + '…' : d.label) + (ready ? '' : ' (!)');
+    if (i === curDraft) b.className = 'on';
+    b.addEventListener('click', () => { if (i !== curDraft) loadDraft(i); });
+    bar.appendChild(b);
+  });
+  bar.classList.toggle('hidden', !drafts.length);
+}
+
+function packTitle(d, n, total) {
+  const series = $('seriesName').value.trim();
+  const base = series ? series + ' · ' + d.label : d.label;
+  return base + ($('numbering').checked ? ' (' + n + '/' + total + ')' : '');
+}
+
+function renderPackTitles() {
+  const box = $('packTitles');
+  box.innerHTML = '';
+  const total = drafts.filter(d => d.include).length;
+  let n = 0;
+  drafts.forEach((d) => {
+    if (d.include) n++;
+    const ready = d.words.filter(w => w.keep).length >= 4;
+    const row = document.createElement('div');
+    row.className = 'pack-title';
+    row.innerHTML = `
+      <input type="checkbox" ${d.include ? 'checked' : ''} aria-label="Publish this set" />
+      <div class="t">
+        <input type="text" value="${escapeHtml(d.label)}" aria-label="Label" style="margin-bottom:4px;" />
+        <span class="meta">${d.include ? escapeHtml(packTitle(d, n, total)) : 'left out'}${ready ? '' : ' · <span style="color:var(--danger)">needs words and questions (open its tab and press Generate)</span>'}</span>
+      </div>`;
+    row.querySelector('input[type=checkbox]').addEventListener('change', e => { d.include = e.target.checked; renderPackTitles(); updatePublishMode(true); });
+    row.querySelector('input[type=text]').addEventListener('input', e => { d.label = e.target.value; renderTabs(); row.querySelector('.meta').firstChild.textContent = d.include ? packTitle(d, Math.max(1, n), total) : 'left out'; });
+    box.appendChild(row);
+  });
+}
+$('seriesName').addEventListener('input', renderPackTitles);
+$('numbering').addEventListener('change', renderPackTitles);
+
+function updatePublishMode(skipTitles) {
+  const pack = drafts.length > 0;
+  $('singleTitle').classList.toggle('hidden', pack);
+  $('packPub').classList.toggle('hidden', !pack);
+  $('downloadBtn').classList.toggle('hidden', pack);
+  $('replaceBtn').classList.toggle('hidden', pack);
+  if (pack) {
+    saveCurrent();
+    if (!skipTitles) renderPackTitles();
+    const n = drafts.filter(d => d.include).length;
+    $('publishBtn').textContent = 'Publish ' + n + ' set' + (n === 1 ? '' : 's');
+  } else {
+    $('publishBtn').textContent = 'Publish';
+  }
+}
+
+function renderSource() {
   const a = article;
   $('srcLine').innerHTML = `${a.url ? `<a href="${escapeHtml(a.url)}" target="_blank" rel="noopener">${escapeHtml(a.title)}</a>` : escapeHtml(a.title)}${a.authors ? ' · ' + escapeHtml(a.authors) : ''}${a.journal ? ' · ' + escapeHtml(a.journal) : ''}`;
   $('licenseNote').innerHTML = a.licenseOk
     ? `<span class="badge ok">${escapeHtml(a.license)}</span> Credit and licence are added to the set automatically.`
     : `<span class="badge warn">Licence: ${escapeHtml(a.license)}</span> The licence is not confirmed as open. Short excerpt with credit; the decision to use it is yours. Adapting the wording makes a bigger change than quoting, so keep it to what you need.`;
   $('licenseAck').classList.toggle('hidden', a.licenseOk);
+}
+
+function showPassage(text) {
+  original = text;
+  adaptedFor = null;
+  aiText = null;
+  renderSource();
   $('licenseCheck').checked = false;
   $('replaceBtn').disabled = picks.length <= 1;
   $('replaceBtn').textContent = picks.length <= 1 ? 'No other paragraphs' : `Replace paragraph (${pickIdx + 1} of ${picks.length})`;
@@ -386,7 +782,8 @@ function showPassage(text) {
 // Puts a text on screen and clears everything generated from the previous one.
 function applyText(text) {
   passage = text;
-  ['wordsCard', 'tapsCard', 'publishCard'].forEach(id => $(id).classList.add('hidden'));
+  ['wordsCard', 'tapsCard'].forEach(id => $(id).classList.add('hidden'));
+  if (!drafts.length) $('publishCard').classList.add('hidden');
   words = [];
   taps = [];
   $('linkBox').classList.add('hidden');
@@ -419,8 +816,9 @@ async function adaptNow() {
   setStatus('buildStatus', 'Adapting the text to ' + lvl + '…');
   try {
     const forText = original;
+    const di = curDraft;
     const out = await api({ action: 'textAdapt', passage: forText, level: lvl, area: $('area').value.trim() });
-    if (original !== forText) return; // another paragraph was chosen meanwhile
+    if (original !== forText || curDraft !== di) return; // another paragraph was chosen meanwhile
     adaptedFor = lvl;
     aiText = out.text;
     applyText(out.text);
@@ -521,6 +919,7 @@ $('buildBtn').addEventListener('click', async () => {
     renderPassage();
     ['wordsCard', 'tapsCard', 'publishCard'].forEach(id => $(id).classList.remove('hidden'));
     setStatus('buildStatus', '');
+    if (drafts.length) { drafts[curDraft].error = ''; renderTabs(); updatePublishMode(); }
     $('wordsCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (err) {
     setStatus('buildStatus', err.message, true);
@@ -628,23 +1027,27 @@ function makeItem(w, idx) {
 }
 
 function buildSetData() {
-  const keptWords = words.filter(w => w.keep && w.text.trim() && w.definition.trim());
-  const keptTaps = taps.filter(t => t.keep).map(t => ({
+  return buildSetDataFrom({ text: passage, original, adaptedFor, words, taps }, $('title').value.trim());
+}
+
+function buildSetDataFrom(d, title) {
+  const keptWords = d.words.filter(w => w.keep && w.text.trim() && w.definition.trim());
+  const keptTaps = d.taps.filter(t => t.keep).map(t => ({
     kind: t.kind, prompt: t.prompt, context: t.context, mark: t.mark, correct: t.correct, wrong: t.wrong, explain: t.explain
   }));
   return {
     kind: 'textSet',
-    topic: $('title').value.trim() || 'Reading set',
+    topic: title || 'Reading set',
     level: $('level').value,
     area: $('areaPub').value.trim(),
     modes: MODES,
     antonymPairs: [],
     passage: {
-      text: passage,
+      text: d.text,
       cloze: $('cloze').checked,
       source: {
         title: article.title, url: article.url, authors: article.authors || '', journal: article.journal || '', license: article.license,
-        ...(adaptedFor !== null && passage !== original ? { adaptedFor } : {})
+        ...(d.adaptedFor !== null && d.text !== d.original ? { adaptedFor: d.adaptedFor } : {})
       },
       taps: keptTaps
     },
@@ -661,7 +1064,72 @@ function checkReady() {
   return '';
 }
 
+async function publishPack() {
+  saveCurrent();
+  const inc = drafts.filter(d => d.include);
+  setStatus('publishError', '');
+  if (!inc.length) { setStatus('publishError', 'Tick at least one set to publish.', true); return; }
+  if (!article.licenseOk && !$('licenseCheck').checked) { setStatus('publishError', 'Confirm that you may use this text (tick the box under the licence note in the Text card).', true); return; }
+  if (!$('areaPub').value.trim()) { setStatus('publishError', 'Choose an Area (for example psychology). Without it the Notion card has no Area.', true); return; }
+  for (const d of inc) {
+    if (d.words.filter(w => w.keep).length < 4) { setStatus('publishError', 'Set "' + d.label + '": generate the words and keep at least 4 (open its tab).', true); return; }
+  }
+  if (!$('reviewed').checked) { setStatus('publishError', 'Tick the box to confirm you checked the texts, definitions and answers.', true); return; }
+  $('publishBtn').disabled = true;
+  const box = $('packLinks');
+  box.innerHTML = '';
+  box.classList.remove('hidden');
+  const lines = [];
+  let notionBad = 0;
+  let notionOn = false;
+  try {
+    for (let i = 0; i < inc.length; i++) {
+      setStatus('publishError', 'Publishing ' + (i + 1) + ' of ' + inc.length + '…');
+      const d = inc[i];
+      const title = packTitle(d, i + 1, inc.length);
+      const data = buildSetDataFrom(d, title);
+      const slug = slugify(title) + '-' + Math.random().toString(36).slice(2, 5);
+      const result = await api({ action: 'save', slug, data });
+      const link = window.location.origin + result.trainerLink;
+      lines.push(title + ' — ' + link);
+      if (result.notion && result.notion.attempted) { notionOn = true; if (!result.notion.ok) notionBad++; }
+      const row = document.createElement('div');
+      row.className = 'pack-link';
+      row.innerHTML = '<p class="ttl"></p><input type="text" readonly /><button>Copy link</button>';
+      row.querySelector('.ttl').textContent = title;
+      row.querySelector('input').value = link;
+      row.querySelector('button').addEventListener('click', (e) => {
+        navigator.clipboard.writeText(link);
+        e.target.textContent = 'Copied';
+        setTimeout(() => { e.target.textContent = 'Copy link'; }, 1500);
+      });
+      box.appendChild(row);
+    }
+    const all = document.createElement('button');
+    all.textContent = 'Copy all (titles and links)';
+    all.addEventListener('click', () => {
+      navigator.clipboard.writeText(lines.join('\n'));
+      all.textContent = 'Copied';
+      setTimeout(() => { all.textContent = 'Copy all (titles and links)'; }, 1500);
+    });
+    box.appendChild(all);
+    const note = document.createElement('p');
+    note.className = 'meta';
+    note.style.marginTop = '8px';
+    note.textContent = notionOn
+      ? (notionBad ? 'Links created, but Notion failed for ' + notionBad + ' set(s).' : 'All sets added to Assignments in Notion (type: text set).')
+      : 'Not logged in Notion (the Notion connection is not configured).';
+    box.appendChild(note);
+    setStatus('publishError', '');
+  } catch (err) {
+    setStatus('publishError', 'Could not save set ' + (lines.length + 1) + ': ' + err.message + (lines.length ? ' The sets above were published.' : ''), true);
+  } finally {
+    $('publishBtn').disabled = false;
+  }
+}
+
 $('publishBtn').addEventListener('click', async () => {
+  if (drafts.length) return publishPack();
   const problem = checkReady();
   if (problem) { setStatus('publishError', problem, true); return; }
   setStatus('publishError', '');
