@@ -111,9 +111,14 @@ function assemblePdfText(pages) {
     return out.replace(/\s+/g, ' ').trim();
   }).filter(Boolean);
 
-  // 4. cut at the reference list
+  // 4. cut at the reference list: a "References" heading alone, or glued to the first entry
+  // ("References Akiskal H. S. (2000) ..."), or the "Address for correspondence" block
+  const isRefHead = function (t) {
+    if (/^(references|bibliography|works cited|literature|reference list)$/i.test(t.replace(/[:\s]+$/, ''))) return true;
+    return /^(references|bibliography|works cited|reference list)\s+[A-Z][A-Za-z\u00C0-\u024F'\u2019-]+,?\s+[A-Z]\./.test(t) && /\((1[89]\d\d|20\d\d)[a-z]?\)/.test(t.slice(0, 220));
+  };
   for (let i = Math.floor(texts.length * 0.4); i < texts.length; i++) {
-    if (/^(references|bibliography|works cited|literature)$/i.test(texts[i].replace(/[:\s]+$/, '')) || /^(references|bibliography)\s+[A-Z][a-z]+,\s+[A-Z]\./.test(texts[i])) {
+    if (isRefHead(texts[i]) || /^address for correspondence/i.test(texts[i])) {
       texts = texts.slice(0, i);
       break;
     }
