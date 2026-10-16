@@ -1,5 +1,16 @@
 {
   "functions": {
-    "api/vocab.js": { "maxDuration": 60 }
-  }
+    "api/vocab.js": {
+      "maxDuration": 60
+    },
+    "api/send-sets.js": {
+      "maxDuration": 60
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/send-sets",
+      "schedule": "0 6 * * *"
+    }
+  ]
 }
