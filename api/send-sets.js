@@ -42,10 +42,11 @@ module.exports = async (req, res) => {
     for (const email of plan.emails) {
       const student = studentById.get(email.studentId);
       try {
-        let code = student.accessCode;
-        if (!code) { code = crypto.randomBytes(9).toString('base64url'); await setAccessCode(student.id, code); }
+        const isNewCode = !student.accessCode;
+        const code = student.accessCode || crypto.randomBytes(9).toString('base64url');
         const q = `s=${encodeURIComponent(student.id)}&c=${encodeURIComponent(code)}`;
         const pageUrl = `${site}/my-sets.html?${q}`;
+        if (isNewCode) await setAccessCode(student.id, code, pageUrl); // also saves the link in Notion for Anna
         const unsubscribeUrl = `${site}/api/unsubscribe?${q}`;
         const msg = buildEmail({ name: student.name, items: email.items, pageUrl, unsubscribeUrl });
         await sendEmail({ to: email.to, ...msg, unsubscribeUrl });
