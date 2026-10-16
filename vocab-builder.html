@@ -263,6 +263,13 @@
   <div class="card">
     <h2>Publish</h2>
     <p class="sub" style="margin-bottom:12px;">Generates one shared link. Every student uses the same link.</p>
+    <label for="trackPub">Email track (optional)</label>
+    <select id="trackPub" style="margin-bottom:8px;"><option value="">None: do not send by email</option></select>
+    <div id="orderWrap" style="display:none;">
+      <label for="orderPub">Position in the track (optional)</label>
+      <input type="number" id="orderPub" step="any" placeholder="empty = at the end" />
+      <p class="sub" style="margin:4px 0 12px;">To insert between sets numbered 40 and 50, type 45.</p>
+    </div>
     <div class="actions-row">
       <button class="primary" id="publishBtn">Generate link</button>
       <button id="downloadBtn">Download JSON instead</button>
@@ -1200,6 +1207,18 @@ function slugify(topic) {
   return topic.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'set';
 }
 
+(async function loadTracks() {
+  try {
+    const r = await fetch('/api/vocab', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'tracks' }) });
+    const data = await r.json();
+    const sel = document.getElementById('trackPub');
+    (data.tracks || []).forEach(t => { const o = document.createElement('option'); o.value = t.id; o.textContent = t.name; sel.appendChild(o); });
+  } catch (e) { /* tracks are optional */ }
+})();
+document.getElementById('trackPub').addEventListener('change', (e) => {
+  document.getElementById('orderWrap').style.display = e.target.value ? '' : 'none';
+});
+
 document.getElementById('publishBtn').addEventListener('click', async () => {
   const errorBox = document.getElementById('publishError');
   errorBox.classList.remove('open');
@@ -1220,7 +1239,9 @@ document.getElementById('publishBtn').addEventListener('click', async () => {
     const response = await fetch('/api/vocab', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'save', slug, data })
+      body: JSON.stringify({ action: 'save', slug, data,
+        track: document.getElementById('trackPub').value || undefined,
+        order: document.getElementById('orderPub').value === '' ? undefined : Number(document.getElementById('orderPub').value) })
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Save failed');

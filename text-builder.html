@@ -263,6 +263,13 @@
     </div>
     <label for="areaPub">Area (goes to Notion)</label>
     <input type="text" id="areaPub" list="areaList" placeholder="psychology" autocomplete="off" style="margin-bottom:12px;" />
+    <label for="trackPub">Email track (optional)</label>
+    <select id="trackPub" style="margin-bottom:8px;"><option value="">None: do not send by email</option></select>
+    <div id="orderWrap" class="hidden">
+      <label for="orderPub">Position in the track (optional)</label>
+      <input type="number" id="orderPub" step="any" placeholder="empty = at the end" style="margin-bottom:4px;" />
+      <p class="meta" style="margin-bottom:12px;">To insert between sets numbered 40 and 50, type 45. A series is added at the end in the order shown.</p>
+    </div>
     <label class="checkline"><input type="checkbox" id="cloze" checked /> Add "Complete the text" at the end (the same text with gaps).</label>
     <label class="checkline"><input type="checkbox" id="reviewed" /> I have checked the text, the definitions and the answers.</label>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -323,6 +330,16 @@ async function api(body) {
   if (!resp.ok) throw new Error(data.error || ('Server error ' + resp.status));
   return data;
 }
+
+// ---- email tracks from Notion ----
+(async function loadTracks() {
+  try {
+    const data = await api({ action: 'tracks' });
+    $('trackPub').innerHTML = '<option value="">None: do not send by email</option>' +
+      (data.tracks || []).map(t => `<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join('');
+  } catch (e) { /* tracks are optional */ }
+})();
+$('trackPub').addEventListener('change', () => { $('orderWrap').classList.toggle('hidden', !$('trackPub').value); });
 
 // ---- areas from Notion ----
 (async function loadAreas() {
@@ -1149,7 +1166,7 @@ async function publishPack() {
       const title = packTitle(d, i + 1, inc.length);
       const data = buildSetDataFrom(d, title);
       const slug = slugify(title) + '-' + Math.random().toString(36).slice(2, 5);
-      const result = await api({ action: 'save', slug, data });
+      const result = await api({ action: 'save', slug, data, track: $('trackPub').value || undefined });
       const link = window.location.origin + result.trainerLink;
       lines.push(title + ' — ' + link);
       if (result.notion && result.notion.attempted) { notionOn = true; if (!result.notion.ok) notionBad++; }
@@ -1197,7 +1214,7 @@ $('publishBtn').addEventListener('click', async () => {
   const data = buildSetData();
   const slug = slugify(data.topic) + '-' + Math.random().toString(36).slice(2, 5);
   try {
-    const result = await api({ action: 'save', slug, data });
+    const result = await api({ action: 'save', slug, data, track: $('trackPub').value || undefined, order: $('orderPub').value === '' ? undefined : Number($('orderPub').value) });
     $('linkOutput').value = window.location.origin + result.trainerLink;
     $('linkBox').classList.remove('hidden');
     const n = $('notionNote');

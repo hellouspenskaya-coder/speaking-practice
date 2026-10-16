@@ -38,6 +38,7 @@ module.exports = async function handler(req, res) {
     if (action === 'listSets') return await listSets(req, res);
     if (action === 'repairImages') return await repairImages(req, res);
     if (action === 'textAreas') return await textAreas(req, res);
+    if (action === 'tracks') return await listTracksAction(req, res);
     if (action === 'textSearch') return await textSearch(req, res);
     if (action === 'textFetch') return await textFetch(req, res);
     if (action === 'pdfFetch') return await pdfFetch(req, res);
@@ -332,7 +333,7 @@ async function searchImages(req, res) {
 }
 
 async function saveSet(req, res) {
-  const { slug, data } = req.body;
+  const { slug, data, track, order } = req.body;
   if (!slug || !data) {
     res.status(400).json({ error: 'Missing slug or data' });
     return;
@@ -413,7 +414,7 @@ async function saveSet(req, res) {
   } else {
     notion.attempted = true;
     try {
-      await addToAssignmentsDatabase(data, fullLink);
+      await addToAssignmentsDatabase(data, fullLink, { track, order });
       notion.ok = true;
     } catch (err) {
       // A Notion failure must never lose the set — it's already committed.
@@ -430,7 +431,7 @@ async function saveSet(req, res) {
   });
 }
 
-async function addToAssignmentsDatabase(data, fullLink) {
+async function addToAssignmentsDatabase(data, fullLink, delivery = {}) {
   const dbId = process.env.NOTION_ASSIGNMENTS_DATABASE_ID;
 
   // Anna wants every vocab practice assignment marked "short", regardless
@@ -438,6 +439,16 @@ async function addToAssignmentsDatabase(data, fullLink) {
   const timeRequired = 'short';
 
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+  // Email delivery: optional Track (relation) and Order. Order defaults to "end of the track".
+  let trackProps = {};
+  if (delivery.track) {
+    let order = Number(delivery.order);
+    if (delivery.order === undefined || delivery.order === null || delivery.order === '' || Number.isNaN(order)) {
+      order = await require('../lib/set-delivery/notion').nextOrder(delivery.track);
+    }
+    trackProps = { 'Track': { relation: [{ id: delivery.track }] }, 'Order': { number: order } };
+  }
   const isTextSet = data.kind === 'textSet';
 
   const response = await fetch('https://api.notion.com/v1/pages', {
@@ -459,6 +470,7 @@ async function addToAssignmentsDatabase(data, fullLink) {
         'Time required': { multi_select: [{ name: timeRequired }] },
         'URL': { url: fullLink },
         'created': { date: { start: today } },
+        ...trackProps,
         // Area is only filled for text sets; Notion creates a new option
         // automatically the first time a new area name is used.
         ...(isTextSet && data.area ? { 'Area': { multi_select: [{ name: String(data.area).slice(0, 100) }] } } : {})
@@ -751,6 +763,15 @@ async function fetchArticlePage(url) {
     paragraphs.push({ sentences, words: wc });
   }
   return { title, authors, journal, license, licenseOk, paragraphs };
+}
+
+async function listTracksAction(req, res) {
+  try {
+    if (!process.env.NOTION_TOKEN) return res.status(200).json({ tracks: [] });
+    res.status(200).json({ tracks: await require('../lib/set-delivery/notion').listTracks() });
+  } catch (err) {
+    res.status(200).json({ tracks: [], error: err.message });
+  }
 }
 
 async function textAreas(req, res) {
