@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>My sets · Anna | WeTalk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F5F0;--card:#fff;--line:#E4E0D6;--ink:#1E2321;--muted:#5F6662;--accent:#1F6F5B;--accent-soft:#E3F0EB;--accent-ink:#165244}
+@media (prefers-color-scheme:dark){:root{--bg:#161A18;--card:#1F2522;--line:#2E3631;--ink:#ECEFEC;--muted:#A3ACA6;--accent:#5FBFA3;--accent-soft:#21342E;--accent-ink:#9FE0CB}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;padding:32px 16px 48px}
+main{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.brand{font-size:14px;color:var(--muted)}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;margin:0}
+h1{font-size:34px;line-height:1.15}
+.sub{font-size:16px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.card h2{font-size:24px;line-height:1.25}
+.pill{background:var(--accent-soft);color:var(--accent-ink);font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px}
+.meta{font-size:14px;color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:10px;background:var(--accent);color:#fff;font-size:16px;font-weight:600;text-decoration:none;align-self:flex-start}
+.btn:hover{filter:brightness(.92)}
+.item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.item .t{font-size:16px;font-weight:500}
+.item a{font-size:15px;font-weight:500;color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center;white-space:nowrap}
+.note{font-size:14px;line-height:1.5;color:var(--muted)}
+</style>
+</head>
+<body>
+<main id="app"><div class="sub">Loading…</div></main>
+<script>
+(function(){
+  var app=document.getElementById('app');
+  var q=new URLSearchParams(location.search);
+  function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+  function fmt(d){if(!d)return '';var x=new Date(d+'T00:00:00');return x.toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
+  function fail(){app.textContent='';app.appendChild(el('h1',null,'This link is not valid'));app.appendChild(el('p','sub','Please message Anna for a new one.'));}
+  if(!q.get('s')||!q.get('c')){fail();return;}
+  fetch('/api/my-sets?s='+encodeURIComponent(q.get('s'))+'&c='+encodeURIComponent(q.get('c')))
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(data){
+      app.textContent='';
+      var head=el('div');head.style.cssText='display:flex;flex-direction:column;gap:6px';
+      head.appendChild(el('div','brand','Anna | WeTalk'));
+      head.appendChild(el('h1',null,'Hi, '+(data.name||'there')));
+      head.appendChild(el('div','sub','Your short practice sets, all in one place'));
+      app.appendChild(head);
+      var list=data.deliveries||[];
+      if(!list.length){app.appendChild(el('p','sub','Your first set will arrive by email soon.'));return;}
+      var newest=list[0].sent;
+      var fresh=list.filter(function(d){return d.sent===newest;});
+      var older=list.filter(function(d){return d.sent!==newest;});
+      var today=new Date().toLocaleDateString('en-CA');
+      fresh.forEach(function(d){
+        var c=el('div','card');
+        var r=el('div','row');
+        r.appendChild(el('span','pill',newest===today?'New today':'Latest'));
+        r.appendChild(el('span','meta',d.label));
+        c.appendChild(r);
+        c.appendChild(el('h2',null,d.title));
+        var a=el('a','btn','Open set');a.href=d.url;c.appendChild(a);
+        app.appendChild(c);
+      });
+      if(older.length){
+        var sec=el('div');sec.appendChild(el('h3',null,'Earlier sets'));sec.firstChild.style.cssText='font-size:20px;margin-bottom:4px';
+        older.forEach(function(d){
+          var it=el('div','item');
+          var l=el('div');l.appendChild(el('div','t',d.title));l.appendChild(el('div','meta',d.label+' · sent '+fmt(d.sent)));
+          var a=el('a',null,'Open again');a.href=d.url;
+          it.appendChild(l);it.appendChild(a);sec.appendChild(it);
+        });
+        app.appendChild(sec);
+      }
+      app.appendChild(el('div','note','This page is just for you. Bookmark it to find all your sets in one place.'));
+    })
+    .catch(fail);
+})();
+</script>
+</body>
+</html>

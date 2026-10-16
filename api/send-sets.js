@@ -9,7 +9,7 @@
 
 const crypto = require('crypto');
 const { planDelivery } = require('../lib/set-delivery/plan');
-const { loadData, setSentTo, updateSubscription, setAccessCode } = require('../lib/set-delivery/notion');
+const { loadData, setSentTo, logDelivery, updateSubscription, setAccessCode } = require('../lib/set-delivery/notion');
 const { buildEmail, sendEmail } = require('../lib/set-delivery/email');
 
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Vilnius' }).format(new Date()); // YYYY-MM-DD
@@ -55,6 +55,7 @@ module.exports = async (req, res) => {
           const ids = [...new Set([...(set.sentTo || []), student.id])];
           set.sentTo = ids;
           await setSentTo(item.setId, ids);
+          try { await logDelivery({ studentId: student.id, set: { ...set, label: item.label }, today: today() }); } catch (e) { /* the email already went out; the log is secondary */ }
         }
         sent.push(email.to);
       } catch (e) {
