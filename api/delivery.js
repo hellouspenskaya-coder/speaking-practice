@@ -5,12 +5,14 @@
 const send = require('../lib/set-delivery/send');
 const page = require('../lib/set-delivery/page');
 const unsubscribe = require('../lib/set-delivery/unsubscribe');
+const backfill = require('../lib/set-delivery/backfill');
 
 module.exports = async (req, res) => {
   const action = (req.query && req.query.action) || '';
   if (action === 'send') return send(req, res);
   if (action === 'page') return page(req, res);
   if (action === 'unsubscribe') return unsubscribe(req, res);
+  if (action === 'backfill') return backfill(req, res);
   return res.status(404).json({ error: 'Not found' });
 };
 module.exports.config = { maxDuration: 60 };
