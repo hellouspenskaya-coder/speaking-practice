@@ -3,13 +3,13 @@
     "api/vocab.js": {
       "maxDuration": 60
     },
-    "api/send-sets.js": {
+    "api/delivery.js": {
       "maxDuration": 60
     }
   },
   "crons": [
     {
-      "path": "/api/send-sets",
+      "path": "/api/delivery?action=send",
       "schedule": "0 6 * * *"
     }
   ]

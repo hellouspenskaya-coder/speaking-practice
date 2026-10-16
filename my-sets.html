@@ -40,7 +40,7 @@ h1{font-size:34px;line-height:1.15}
   function fmt(d){if(!d)return '';var x=new Date(d+'T00:00:00');return x.toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
   function fail(){app.textContent='';app.appendChild(el('h1',null,'This link is not valid'));app.appendChild(el('p','sub','Please message Anna for a new one.'));}
   if(!q.get('s')||!q.get('c')){fail();return;}
-  fetch('/api/my-sets?s='+encodeURIComponent(q.get('s'))+'&c='+encodeURIComponent(q.get('c')))
+  fetch('/api/delivery?action=page&s='+encodeURIComponent(q.get('s'))+'&c='+encodeURIComponent(q.get('c')))
     .then(function(r){if(!r.ok)throw 0;return r.json();})
     .then(function(data){
       app.textContent='';
