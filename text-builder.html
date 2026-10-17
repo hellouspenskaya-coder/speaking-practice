@@ -266,9 +266,10 @@
     <label for="trackPub">Email track (optional)</label>
     <select id="trackPub" style="margin-bottom:8px;"><option value="">None: do not send by email</option></select>
     <div id="orderWrap" class="hidden">
-      <label for="orderPub">Position in the track (optional)</label>
-      <input type="number" id="orderPub" step="any" placeholder="empty = at the end" style="margin-bottom:4px;" />
-      <p class="meta" style="margin-bottom:12px;">To insert between sets numbered 40 and 50, type 45. A series is added at the end in the order shown.</p>
+      <label for="posPub">Position in the track</label>
+      <select id="posPub" style="margin-bottom:4px;"><option value="end">At the end</option></select>
+      <input type="hidden" id="orderPub" />
+      <p class="meta" style="margin-bottom:12px;">Sets are listed in the order they will be sent. A series is always added at the end, in the order shown.</p>
     </div>
     <label class="checkline"><input type="checkbox" id="cloze" checked /> Add "Complete the text" at the end (the same text with gaps).</label>
     <label class="checkline"><input type="checkbox" id="reviewed" /> I have checked the text, the definitions and the answers.</label>
@@ -339,7 +340,37 @@ async function api(body) {
       (data.tracks || []).map(t => `<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join('');
   } catch (e) { /* tracks are optional */ }
 })();
-$('trackPub').addEventListener('change', () => { $('orderWrap').classList.toggle('hidden', !$('trackPub').value); });
+$('trackPub').addEventListener('change', () => { $('orderWrap').classList.toggle('hidden', !$('trackPub').value); loadTrackSets(); });
+// Position picker: the writer chooses "after which set"; the number is worked out here.
+let trackSetList = [];
+function updateOrderValue() {
+  const v = $('posPub').value, out = $('orderPub');
+  if (v === 'end' || trackSetList.length === 0) { out.value = ''; return; }
+  const ords = trackSetList.map(s => s.order).filter(o => o != null);
+  if (v === 'start') { const first = ords[0]; out.value = first == null ? '' : (first > 0 ? first / 2 : first - 10); return; }
+  const i = Number(v), cur = trackSetList[i].order;
+  if (cur == null) { out.value = ''; return; }
+  const next = trackSetList.slice(i + 1).map(s => s.order).find(o => o != null && o > cur);
+  out.value = next == null ? cur + 10 : (cur + next) / 2;
+}
+async function loadTrackSets() {
+  const id = $('trackPub').value;
+  $('posPub').innerHTML = '<option value="end">At the end</option>';
+  trackSetList = [];
+  $('orderPub').value = '';
+  if (!id) return;
+  try {
+    const data = await api({ action: 'trackSets', track: id });
+    trackSetList = data.sets || [];
+  } catch (e) { /* position stays "at the end" */ }
+  const short = t => t.length > 70 ? t.slice(0, 67) + '...' : t;
+  $('posPub').innerHTML = '<option value="end">At the end</option>' +
+    (trackSetList.length ? '<option value="start">At the very beginning</option>' : '') +
+    trackSetList.map((s, i) => `<option value="${i}">After: ${short(s.title).replace(/&/g,'&amp;').replace(/</g,'&lt;')}${s.sent ? ` (already sent to ${s.sent})` : ''}</option>`).join('');
+  updateOrderValue();
+}
+$('posPub').addEventListener('change', updateOrderValue);
+
 
 // ---- areas from Notion ----
 (async function loadAreas() {

@@ -39,6 +39,7 @@ module.exports = async function handler(req, res) {
     if (action === 'repairImages') return await repairImages(req, res);
     if (action === 'textAreas') return await textAreas(req, res);
     if (action === 'tracks') return await listTracksAction(req, res);
+    if (action === 'trackSets') return await trackSetsAction(req, res);
     if (action === 'textSearch') return await textSearch(req, res);
     if (action === 'textFetch') return await textFetch(req, res);
     if (action === 'pdfFetch') return await pdfFetch(req, res);
@@ -763,6 +764,16 @@ async function fetchArticlePage(url) {
     paragraphs.push({ sentences, words: wc });
   }
   return { title, authors, journal, license, licenseOk, paragraphs };
+}
+
+async function trackSetsAction(req, res) {
+  try {
+    const { track } = req.body || {};
+    if (!process.env.NOTION_TOKEN || !track) return res.status(200).json({ sets: [] });
+    res.status(200).json({ sets: await require('../lib/set-delivery/notion').listTrackSets(track) });
+  } catch (err) {
+    res.status(200).json({ sets: [], error: err.message });
+  }
 }
 
 async function listTracksAction(req, res) {
