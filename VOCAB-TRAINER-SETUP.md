@@ -96,3 +96,7 @@ The trainer falls back to the browser's built-in speech synthesis whenever a set
   tap a word, then its gap (or the gap first). Two wrong tries on one gap reveal the answer, as in the typed version.
 - Stories that need a changed form (irregular verbs: bank `lend`, answer `lent`) stay typed, unchanged.
 - No new data fields; builder stories and preposition stories switch to tapping automatically.
+
+## Reading player and going back (trainer)
+- The text page reads aloud one sentence at a time: Listen / Pause, "‹ Sentence" and "Sentence ›". Tapping Listen on a word or a sentence again while it is being read stops it. Reading stops when the student leaves the page.
+- Every screen is a step in the browser history, so the browser's Back button (and the "‹ Back" button in each exercise) goes to the previous step. From the first exercise it leads to the word overview, and from there "‹ Text" opens the text page. Going back lets the student answer again, but no points are added a second time.

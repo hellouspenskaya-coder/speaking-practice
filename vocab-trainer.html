@@ -194,6 +194,39 @@ const MAX_GROUP_SIZE = 6;
 let setData = null;
 let queue = [];
 let stepIndex = 0;
+let suppressNav = false;
+let readingStop = null; // stops the sentence player on the reading page, when it exists
+
+// Screens are pushed to the browser history, so the browser's Back button goes to the
+// previous step instead of leaving the trainer.
+function pushNav(state) {
+  if (suppressNav || isWorksheet) return;
+  const cur = history.state;
+  if (cur && cur.t === state.t && cur.i === state.i) return;
+  try { history.pushState(state, ''); } catch (e) { /* history not available */ }
+}
+
+function stopAllSpeech() {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  if (readingStop) readingStop();
+}
+
+window.addEventListener('popstate', (e) => {
+  if (isWorksheet || !setData) return;
+  stopAllSpeech();
+  activeTimers.forEach(id => { clearTimeout(id); clearInterval(id); });
+  activeTimers = [];
+  const st = e.state;
+  suppressNav = true;
+  try {
+    if (st && st.t === 'reading' && setData.passage && setData.passage.text) renderReading();
+    else if (st && st.t === 'done') renderDone();
+    else if (st && st.t === 'step' && queue.length) { stepIndex = Math.min(st.i, queue.length); renderStep(); }
+    else renderGallery();
+  } finally {
+    suppressNav = false;
+  }
+});
 let wrongItemIds = new Set();
 let score = 0;
 let streak = 0;
@@ -219,13 +252,17 @@ async function init() {
   if (isWorksheet) {
     renderWorksheet();
   } else if (setData.passage && setData.passage.text) {
+    try { history.replaceState({ t: 'reading' }, ''); } catch (e) { /* ignore */ }
     renderReading();
   } else {
+    try { history.replaceState({ t: 'gallery' }, ''); } catch (e) { /* ignore */ }
     renderGallery();
   }
 }
 
 function renderGallery() {
+  stopAllSpeech();
+  pushNav({ t: 'gallery' });
   const items = setData.items || [];
   const verbItems = items.filter(i => i.isVerb && i.pastSimple && i.pastParticiple);
   app.innerHTML = `
@@ -252,6 +289,7 @@ function renderGallery() {
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
       <p style="font-size:16px;font-weight:600;margin:0;">${escapeHtml(setData.topic||'Word set')}</p>
       <div style="display:flex;gap:8px;">
+        ${setData.passage && setData.passage.text ? `<button id="backToText" style="padding:10px 14px;font-size:14px;">&lsaquo; Text</button>` : ''}
         ${verbItems.length ? `<button id="printBtn" style="padding:10px 14px;font-size:14px;">Print list</button>` : ''}
         <button class="primary" id="startBtn" style="padding:10px 18px;font-size:14px;">Start practice</button>
       </div>
@@ -269,6 +307,8 @@ function renderGallery() {
   });
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', () => printVerbList(verbItems));
+  const backToText = document.getElementById('backToText');
+  if (backToText) backToText.addEventListener('click', () => renderReading());
   const gallery = document.getElementById('gallery');
   items.forEach((item, idx) => {
     const tile = document.createElement('div');
@@ -952,7 +992,10 @@ function renderStep() {
     renderDone();
     return;
   }
+  stopAllSpeech();
+  pushNav({ t: 'step', i: stepIndex });
   const step = queue[stepIndex];
+  const revisit = Boolean(step.done); // going back and answering again: no points
   const total = queue.length;
   const percent = Math.round((stepIndex / total) * 100);
 
@@ -965,20 +1008,32 @@ function renderStep() {
       <span>${modeLabel(step.mode)}</span>
       <span class="top-right">
         <span>${stepIndex + 1} / ${total}</span>
+        <button class="skip-btn" id="prevBtn">&lsaquo; Back</button>
         <button class="skip-btn" id="wordsBtn">Words</button>
         <button class="skip-btn" id="skipBtn">Skip &rsaquo;</button>
       </span>
     </div>
     <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
+    ${revisit ? '<p id="revisitNote" style="font-size:12px;color:var(--muted);margin:6px 0 0;">Practising again: no extra points.</p>' : ''}
     <div class="card" id="cardArea"></div>
   `;
 
   const cardArea = document.getElementById('cardArea');
 
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    stopAllSpeech();
+    if (history.length > 1) history.back();
+    else if (stepIndex > 0) { stepIndex -= 1; renderStep(); }
+    else renderGallery();
+  });
+
   document.getElementById('skipBtn').addEventListener('click', () => {
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    streak = 0;
-    if (step.kind === 'single') wrongItemIds.add(step.item.id);
+    stopAllSpeech();
+    if (!revisit) {
+      streak = 0;
+      if (step.kind === 'single') wrongItemIds.add(step.item.id);
+    }
+    step.done = true;
     stepIndex += 1;
     renderStep();
   });
@@ -986,19 +1041,23 @@ function renderStep() {
   document.getElementById('wordsBtn').addEventListener('click', () => openWordsPanel(cardArea, step));
 
   const onDone = (wasCorrect) => {
-    if (step.kind === 'single' && !wasCorrect) wrongItemIds.add(step.item.id);
-    awardPoints(wasCorrect);
+    if (!revisit) {
+      if (step.kind === 'single' && !wasCorrect) wrongItemIds.add(step.item.id);
+      awardPoints(wasCorrect);
+    }
+    step.done = true;
     stepIndex += 1;
     renderStep();
   };
 
   if (step.kind === 'passageCloze') {
-    renderPassageCloze(cardArea, () => { stepIndex += 1; renderStep(); });
+    renderPassageCloze(cardArea, () => { step.done = true; stepIndex += 1; renderStep(); });
   } else if (step.kind === 'passageTap') {
     renderPassageTap(cardArea, step.tap, onDone);
   } else if (step.kind === 'story') {
     renderStory(cardArea, step, () => {
-      if (step.lastInBlock) bumpStoryRuns();
+      if (step.lastInBlock && !revisit) bumpStoryRuns();
+      step.done = true;
       stepIndex += 1;
       renderStep();
     });
@@ -1115,8 +1174,18 @@ function speak(item, useSentence) {
 // Speaks an arbitrary string via the browser's built-in synthesiser — used
 // where there's no "item" to hang the text off, e.g. dictating a verb's
 // past form rather than the item's own base-form text.
+let lastSpoken = '';
+let lastSpokenAt = 0;
 function speakText(text) {
   if ('speechSynthesis' in window) {
+    // tapping Listen again while the same text is still being read stops it
+    if (window.speechSynthesis.speaking && lastSpoken === text && Date.now() - lastSpokenAt > 600) {
+      window.speechSynthesis.cancel();
+      lastSpoken = '';
+      return;
+    }
+    lastSpoken = text;
+    lastSpokenAt = Date.now();
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-GB';
@@ -2295,6 +2364,8 @@ function renderAntonyms(container, item, answer, onDone) {
 function escapeRegex(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
 function renderReading() {
+  stopAllSpeech();
+  pushNav({ t: 'reading' });
   const passage = setData.passage;
   const items = (setData.items || []).filter(i => i.passageForm && i.definition);
   let html = escapeHtml(passage.text);
@@ -2328,6 +2399,8 @@ function renderReading() {
     <div id="defBox" style="display:none;margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--teal-light);text-align:left;font-size:15px;line-height:1.5;"></div>
     <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
       <button id="readListen">&#128266; Listen</button>
+      <button id="readPrevS" title="Previous sentence">&lsaquo; Sentence</button>
+      <button id="readNextS" title="Next sentence">Sentence &rsaquo;</button>
       <button class="primary" id="readNext" style="flex:1;">Continue</button>
     </div>
     ${srcLine ? `<p style="font-size:12px;color:var(--muted);margin:16px 0 0;line-height:1.5;">${srcLine}</p>` : ''}
@@ -2343,11 +2416,55 @@ function renderReading() {
       defBox.innerHTML = `<strong>${escapeHtml(it.text)}</strong> &mdash; ${escapeHtml(it.definition)}`;
     });
   });
-  document.getElementById('readListen').addEventListener('click', () => speakText(passage.text));
+  setupReadingPlayer(passage.text);
   document.getElementById('readNext').addEventListener('click', () => {
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    stopAllSpeech();
     renderGallery();
   });
+}
+
+// Reads the text one sentence at a time, so it can be paused and moved back or forward by a sentence.
+function setupReadingPlayer(text) {
+  const sents = (String(text).match(/[^.!?]+(?:[.!?]+["\u201d')\]]*)(?:\s+|$)|[^.!?]+$/g) || [String(text)])
+    .map(x => x.trim()).filter(Boolean);
+  const btn = document.getElementById('readListen');
+  const prev = document.getElementById('readPrevS');
+  const next = document.getElementById('readNextS');
+  let idx = 0;
+  let playing = false;
+  let token = 0;
+  const canSpeak = 'speechSynthesis' in window;
+  const update = () => { btn.innerHTML = playing ? '&#9208; Pause' : '&#128266; Listen'; };
+  const speakFrom = (i) => {
+    if (!canSpeak) return;
+    window.speechSynthesis.cancel();
+    token += 1;
+    const mine = token;
+    idx = Math.max(0, Math.min(sents.length - 1, i));
+    playing = true;
+    update();
+    const u = new SpeechSynthesisUtterance(sents[idx]);
+    u.lang = 'en-GB';
+    u.rate = 0.85;
+    const advance = () => {
+      if (mine !== token) return;
+      if (idx < sents.length - 1) speakFrom(idx + 1);
+      else { playing = false; idx = 0; update(); }
+    };
+    u.onend = advance;
+    u.onerror = advance;
+    window.speechSynthesis.speak(u);
+  };
+  const pause = () => {
+    token += 1;
+    if (canSpeak) window.speechSynthesis.cancel();
+    playing = false;
+    update();
+  };
+  readingStop = () => { token += 1; playing = false; readingStop = null; };
+  btn.addEventListener('click', () => { if (playing) pause(); else speakFrom(idx); });
+  prev.addEventListener('click', () => speakFrom(idx - 1));
+  next.addEventListener('click', () => speakFrom(idx + 1));
 }
 
 function buildPassageTapSteps(data) {
@@ -2937,6 +3054,8 @@ function renderStoryTap(container, story, onFinish) {
 }
 
 function renderDone() {
+  stopAllSpeech();
+  pushNav({ t: 'done' });
   const percent = answeredCount ? Math.round((correctCount / answeredCount) * 100) : 0;
   const sticker = pickSticker(percent);
   const stars = starCount(percent);
