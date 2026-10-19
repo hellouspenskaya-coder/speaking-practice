@@ -100,3 +100,8 @@ The trainer falls back to the browser's built-in speech synthesis whenever a set
 ## Reading player and going back (trainer)
 - The text page reads aloud one sentence at a time: Listen / Pause, "‹ Sentence" and "Sentence ›". Tapping Listen on a word or a sentence again while it is being read stops it. Reading stops when the student leaves the page.
 - Every screen is a step in the browser history, so the browser's Back button (and the "‹ Back" button in each exercise) goes to the previous step. From the first exercise it leads to the word overview, and from there "‹ Text" opens the text page. Going back lets the student answer again, but no points are added a second time.
+
+## Editing a published text set
+- In the Text Set Builder, open "Edit a published set", paste the set's link (the one students get) and press Open, or open `text-builder.html?set=NAME`. The text, words and questions load; change what you need and press "Save changes". The link stays the same and the Notion card is not changed.
+- Everything else saved in the set (stories, audio, extra fields) is kept. The original wording is not stored in the set, so "Adapt" and "Use original wording" are not available for an opened set; edit the text by hand ("Edit text") or generate the words and questions again.
+- The email track and its order are chosen when a set is first published and cannot be changed here.

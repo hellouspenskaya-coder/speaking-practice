@@ -95,6 +95,16 @@
   <h1>Text Set Builder</h1>
   <p class="sub">A short real text, highlighted words with definitions, reading-skill questions, and word practice. Opens in the same trainer as your word sets.</p>
 
+  <details class="card" id="editOpenCard">
+    <summary style="cursor:pointer;font-size:15px;font-weight:600;">Edit a published set</summary>
+    <p class="meta" style="margin:10px 0 8px;">Paste the link you send to students. The text, words and questions open here, and saving updates the same link (the Notion card is not changed).</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <input type="text" id="editLink" placeholder="https://…/vocab-trainer.html?set=…" autocomplete="off" style="flex:1;min-width:200px;" />
+      <button id="editOpenBtn">Open</button>
+    </div>
+    <p class="status" id="editOpenStatus"></p>
+  </details>
+
   <div class="card">
     <h2>1. Find a text</h2>
     <div class="row">
@@ -263,7 +273,7 @@
     </div>
     <label for="areaPub">Area (goes to Notion)</label>
     <input type="text" id="areaPub" list="areaList" placeholder="psychology" autocomplete="off" style="margin-bottom:12px;" />
-    <label for="trackPub">Email track (optional)</label>
+    <label for="trackPub" id="trackLabel">Email track (optional)</label>
     <select id="trackPub" style="margin-bottom:8px;"><option value="">None: do not send by email</option></select>
     <div id="orderWrap" class="hidden">
       <label for="posPub">Position in the track</label>
@@ -305,6 +315,10 @@ let adaptedFor = null; // level the current passage was adapted for, or null for
 let drafts = [];       // pack mode: one draft per set built from the same source
 let curDraft = -1;
 let packItems = [];
+let editSlug = null;          // set while a published set is open for editing
+let editExtras = null;        // saved fields of that set which this page does not edit
+let editPassageExtras = null;
+let editSourceExtras = null;
 
 const $ = (id) => document.getElementById(id);
 
@@ -437,6 +451,7 @@ async function findText(more) {
     return;
   }
   resetPack();
+  leaveEdit();
   const btns = [$('findBtn'), $('anotherBtn')];
   btns.forEach(b => b.disabled = true);
   setStatus('findStatus', usePaste ? 'Preparing your text…' : useUrl ? 'Reading the article…' : 'Searching for articles…');
@@ -684,6 +699,99 @@ document.addEventListener('paste', (e) => {
   ocrFiles(files);
 });
 
+// ---- opening a published set for editing ----
+function leaveEdit() {
+  editSlug = null;
+  editExtras = null;
+  editPassageExtras = null;
+  editSourceExtras = null;
+  if ($('publishBtn')) $('publishBtn').textContent = 'Publish';
+}
+
+function slugFromLink(v) {
+  const m = String(v || '').match(/[?&]set=([A-Za-z0-9-]+)/) || String(v || '').trim().match(/^([A-Za-z0-9-]+)$/);
+  return m ? m[1].toLowerCase() : '';
+}
+
+async function openExisting(slug) {
+  setStatus('editOpenStatus', 'Opening…');
+  try {
+    let data;
+    try {
+      const r = await fetch('/vocab-sets/' + slug + '.json', { cache: 'no-store' });
+      if (!r.ok) throw new Error('not found');
+      data = await r.json();
+    } catch (e) {
+      throw new Error('No set was found for this link.');
+    }
+    if (!data.passage || !data.passage.text) throw new Error('This is not a text set. Only text sets (with a reading text) can be opened here.');
+    resetPack();
+    const src = data.passage.source || {};
+    const lic = src.license || 'not stated';
+    article = {
+      title: src.title || '', url: src.url || '', authors: src.authors || '', journal: src.journal || '', license: lic,
+      licenseOk: /^CC BY \d/i.test(lic) && !/not plain/i.test(lic)
+    };
+    editSlug = slug;
+    editExtras = {};
+    Object.keys(data).forEach(k => { if (!['kind', 'topic', 'level', 'area', 'modes', 'antonymPairs', 'passage', 'items'].includes(k)) editExtras[k] = data[k]; });
+    editPassageExtras = {};
+    Object.keys(data.passage).forEach(k => { if (!['text', 'cloze', 'source', 'taps'].includes(k)) editPassageExtras[k] = data.passage[k]; });
+    editSourceExtras = {};
+    Object.keys(src).forEach(k => { if (!['title', 'url', 'authors', 'journal', 'license', 'adaptedFor'].includes(k)) editSourceExtras[k] = src[k]; });
+    picks = [];
+    pickIdx = 0;
+    tried = [];
+    $('area').value = data.area || '';
+    $('areaPub').value = data.area || '';
+    if (['B1', 'B2', 'C1'].includes(data.level)) $('level').value = data.level;
+    $('title').value = data.topic || '';
+    $('cloze').checked = data.passage.cloze !== false;
+    $('reviewed').checked = false;
+    adaptedFor = src.adaptedFor || null;
+    original = adaptedFor ? '' : data.passage.text;
+    aiText = null;
+    passage = data.passage.text;
+    words = (data.items || []).map(it => ({
+      keep: true, text: it.text || '', passageForm: it.passageForm || it.text || '', type: it.type || 'word',
+      definition: it.definition || '', example: it.example || '', chunks: it.chunks || [], raw: it
+    }));
+    taps = (data.passage.taps || []).map(t => Object.assign({ keep: true }, t));
+    renderSource();
+    $('licenseCheck').checked = true; // it was confirmed when the set was first published
+    $('replaceBtn').disabled = true;
+    $('replaceBtn').textContent = 'No other paragraphs';
+    $('textCard').classList.remove('hidden');
+    closeEditor();
+    renderPassage();
+    updateAdaptUi();
+    renderWords();
+    renderTaps();
+    ['wordsCard', 'tapsCard', 'publishCard'].forEach(id => $(id).classList.remove('hidden'));
+    $('linkBox').classList.add('hidden');
+    $('packLinks').classList.add('hidden');
+    updatePublishMode();
+    setStatus('editOpenStatus', 'Editing "' + (data.topic || slug) + '". Change the text, definitions or questions, then press "Save changes" at the bottom. The link stays the same.');
+    $('textCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    setStatus('editOpenStatus', err.message, true);
+  }
+}
+
+$('editOpenBtn').addEventListener('click', () => {
+  const slug = slugFromLink($('editLink').value);
+  if (!slug) { setStatus('editOpenStatus', 'Paste the full link of the set (it contains ?set=…).', true); return; }
+  openExisting(slug);
+});
+(function openFromUrl() {
+  const q = new URLSearchParams(window.location.search).get('set');
+  if (q) {
+    $('editOpenCard').open = true;
+    $('editLink').value = q;
+    openExisting(q.toLowerCase());
+  }
+})();
+
 // ---- several sets from one source ("pack") ----
 function resetPack() {
   drafts = [];
@@ -861,8 +969,13 @@ function updatePublishMode(skipTitles) {
     const n = drafts.filter(d => d.include).length;
     $('publishBtn').textContent = 'Publish ' + n + ' set' + (n === 1 ? '' : 's');
   } else {
-    $('publishBtn').textContent = 'Publish';
+    $('publishBtn').textContent = editSlug ? 'Save changes' : 'Publish';
   }
+  // the email track is chosen when a set is first published; it cannot be changed here
+  const hideTrack = Boolean(editSlug) && !pack;
+  $('trackLabel').classList.toggle('hidden', hideTrack);
+  $('trackPub').classList.toggle('hidden', hideTrack);
+  if (hideTrack) { $('trackPub').value = ''; $('orderWrap').classList.add('hidden'); }
 }
 
 function renderSource() {
@@ -913,6 +1026,13 @@ function updateAdaptUi() {
   $('adaptBtn').disabled = lvl === 'C1' && !adapted;
   $('aiBackBtn').classList.toggle('hidden', !(aiText && passage !== aiText));
   $('readaptBtn').classList.toggle('hidden', !(adaptedFor !== null && lvl !== 'C1'));
+  if (!original) { // an opened set: the original wording was not saved, so it cannot be restored
+    $('origBox').classList.add('hidden');
+    $('adaptBtn').classList.add('hidden');
+    $('readaptBtn').classList.add('hidden');
+  } else {
+    $('adaptBtn').classList.remove('hidden');
+  }
 }
 
 async function adaptNow() {
@@ -1100,7 +1220,7 @@ function renderTaps() {
 function slugify(t) { return String(t).toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'text-set'; }
 
 function makeItem(w, idx) {
-  return {
+  const fresh = {
     id: 'item_' + (idx + 1),
     type: w.type,
     text: w.text.trim(),
@@ -1132,6 +1252,12 @@ function makeItem(w, idx) {
     verbAnswer: '',
     passageForm: w.passageForm
   };
+  if (!w.raw) return fresh;
+  // a word from an opened set: keep every saved field, change only what this page edits
+  return Object.assign({}, w.raw, {
+    id: w.raw.id || fresh.id, type: fresh.type, text: fresh.text, definition: fresh.definition,
+    example: fresh.example, chunks: fresh.chunks, passageForm: fresh.passageForm
+  });
 }
 
 function buildSetData() {
@@ -1139,11 +1265,15 @@ function buildSetData() {
 }
 
 function buildSetDataFrom(d, title) {
+  const extras = editSlug ? (editExtras || {}) : {};
+  const passageExtras = editSlug ? (editPassageExtras || {}) : {};
+  const sourceExtras = editSlug ? (editSourceExtras || {}) : {};
   const keptWords = d.words.filter(w => w.keep && w.text.trim() && w.definition.trim());
   const keptTaps = d.taps.filter(t => t.keep).map(t => ({
     kind: t.kind, prompt: t.prompt, context: t.context, mark: t.mark, correct: t.correct, wrong: t.wrong, explain: t.explain
   }));
   return {
+    ...extras,
     kind: 'textSet',
     topic: title || 'Reading set',
     level: $('level').value,
@@ -1151,15 +1281,29 @@ function buildSetDataFrom(d, title) {
     modes: MODES,
     antonymPairs: [],
     passage: {
+      ...passageExtras,
       text: d.text,
       cloze: $('cloze').checked,
       source: {
+        ...sourceExtras,
         title: article.title, url: article.url, authors: article.authors || '', journal: article.journal || '', license: article.license,
         ...(d.adaptedFor !== null && d.text !== d.original ? { adaptedFor: d.adaptedFor } : {})
       },
       taps: keptTaps
     },
-    items: keptWords.map(makeItem)
+    items: (() => {
+      const used = new Set(keptWords.filter(w => w.raw && w.raw.id).map(w => w.raw.id));
+      let next = 1;
+      return keptWords.map((w, i) => {
+        const it = makeItem(w, i);
+        if (!(w.raw && w.raw.id)) {
+          while (used.has('item_' + next)) next++;
+          it.id = 'item_' + next;
+          used.add(it.id);
+        }
+        return it;
+      });
+    })()
   };
 }
 
@@ -1243,13 +1387,16 @@ $('publishBtn').addEventListener('click', async () => {
   setStatus('publishError', '');
   $('publishBtn').disabled = true;
   const data = buildSetData();
-  const slug = slugify(data.topic) + '-' + Math.random().toString(36).slice(2, 5);
+  const slug = editSlug || (slugify(data.topic) + '-' + Math.random().toString(36).slice(2, 5));
   try {
     const result = await api({ action: 'save', slug, data, track: $('trackPub').value || undefined, order: $('orderPub').value === '' ? undefined : Number($('orderPub').value) });
     $('linkOutput').value = window.location.origin + result.trainerLink;
     $('linkBox').classList.remove('hidden');
     const n = $('notionNote');
-    if (result.notion && result.notion.attempted) {
+    if (result.notion && result.notion.reason === 'existing_set') {
+      n.textContent = 'Saved. The link is the same as before; the Notion card was not changed.';
+      n.style.color = 'var(--success)';
+    } else if (result.notion && result.notion.attempted) {
       n.textContent = result.notion.ok ? 'Added to Assignments in Notion (type: text set).' : 'Link created, but Notion failed: ' + result.notion.error;
       n.style.color = result.notion.ok ? 'var(--success)' : 'var(--danger)';
     } else {
