@@ -1176,6 +1176,7 @@ Rewrite it as ONE paragraph of 55 to 120 words.
 Rules:
 ${how}
 - Keep the meaning and the main claims. Do not add facts, examples or opinions. You may shorten secondary detail (long lists of examples) to keep the text easy.
+- Do NOT add anything that is not in the ORIGINAL: no definitions, no expansions of abbreviations, no explanations, no new examples. If an abbreviation (for example PPE) is not explained in the original, leave it exactly as it is.
 - KEEP the author's cautious wording (appear to, may, tends to, suggest, likely ...) and keep the same degree of certainty. Never make a claim stronger or weaker.
 - KEEP reference words such as which, this, these, it, they where they make sense, because learners are trained on them.
 - No citations, no brackets, no quotation marks around the text, no headings, no commentary.${feedback ? '\n- IMPORTANT: ' + feedback : ''}

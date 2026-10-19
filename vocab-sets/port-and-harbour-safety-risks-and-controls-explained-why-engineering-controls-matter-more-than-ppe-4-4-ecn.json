@@ -14,7 +14,7 @@
   ],
   "antonymPairs": [],
   "passage": {
-    "text": "After an accident at a port, people often blame PPE first. PPE means protective equipment, such as helmets or gloves. It tends to get blamed because it is easy to see. However, most official accident reports tell a different story. They suggest that a deeper safety problem actually caused the incident. For example, a physical barrier may not have been in place. Or a required safety check was not completed. Or a dangerous area was not closed off. PPE was simply the last protection the worker had. It appears to have failed, but the real problem came earlier.",
+    "text": "After an accident at a port, people often blame PPE first. PPE means personal protective equipment, such as helmets or gloves. It tends to get blamed because it is easy to see. However, most official accident reports tell a different story. They suggest that a deeper safety problem actually caused the incident. For example, a physical barrier may not have been in place. Or a required safety check was not completed. Or a dangerous area was not closed off. PPE was simply the last protection the worker had. It appears to have failed, but the real problem came earlier.",
     "cloze": true,
     "source": {
       "title": "Port and Harbour Safety: Risks and Controls Explained",
@@ -65,11 +65,12 @@
     {
       "id": "item_1",
       "type": "phrase",
-      "text": "protective equipment",
+      "text": "personal protective equipment",
       "definition": "clothing or gear worn to keep workers safe from injury",
-      "example": "PPE means protective equipment, such as helmets or gloves.",
+      "example": "PPE means personal protective equipment, such as helmets or gloves.",
       "phonetic": "",
       "chunks": [
+        "personal",
         "protective",
         "equipment"
       ],
@@ -95,7 +96,7 @@
       "pastParticiple": "",
       "verbSentence": "",
       "verbAnswer": "",
-      "passageForm": "protective equipment"
+      "passageForm": "personal protective equipment"
     },
     {
       "id": "item_2",
