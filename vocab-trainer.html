@@ -738,6 +738,20 @@ function closeOverlay() {
 // Splits a phrase's chunks into head/tail at the teacher-chosen point
 // (defaults to 1 word, e.g. "cook" / "dinner"). Clamped so a bad stored
 // value can never produce an empty half.
+// After a correct answer the next step comes by itself; after a wrong one the student
+// reads the right answer for as long as needed and moves on with the Next button.
+function advance(correct, onDone, ms) {
+  if (correct) { activeTimers.push(setTimeout(() => onDone(true), ms)); return; }
+  const area = document.getElementById('cardArea') || document.body;
+  const b = document.createElement('button');
+  b.className = 'primary wide';
+  b.style.marginTop = '14px';
+  b.textContent = 'Next \u203a';
+  let used = false;
+  b.addEventListener('click', () => { if (used) return; used = true; b.disabled = true; onDone(false); });
+  area.appendChild(b);
+}
+
 function phraseSplit(item) {
   const chunks = item.chunks || [];
   const splitAt = Math.min(Math.max(item.phraseSplitIndex || 1, 1), Math.max(1, chunks.length - 1));
@@ -1227,7 +1241,7 @@ function renderMultipleChoice(container, item, onDone) {
         grid.parentElement.appendChild(fb);
       }
       grid.querySelectorAll('.img-choice').forEach(c => c.style.pointerEvents = 'none');
-      activeTimers.push(setTimeout(() => onDone(correct), correct ? 700 : 2500));
+      advance(correct, onDone, 700);
     });
     grid.appendChild(div);
   });
@@ -1264,7 +1278,7 @@ function renderMultipleChoiceReverse(container, item, onDone) {
         fb.textContent = `It's "${item.text}"`;
         grid.parentElement.appendChild(fb);
       }
-      activeTimers.push(setTimeout(() => onDone(correct), correct ? 700 : 2500));
+      advance(correct, onDone, 700);
     });
     grid.appendChild(btn);
   });
@@ -1327,7 +1341,7 @@ function renderListening(container, item, onDone) {
         feedback.textContent = `It was "${item.text}"`;
       }
       grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
-      activeTimers.push(setTimeout(() => onDone(correct), correct ? 700 : 2500));
+      advance(correct, onDone, 700);
     });
     grid.appendChild(btn);
   });
@@ -1389,7 +1403,7 @@ function renderFillLetters(container, item, onDone) {
     feedback.className = `feedback ${correct ? 'correct' : 'wrong'}`;
     feedback.textContent = correct ? 'Correct!' : `Not quite — it's "${word}"`;
     document.getElementById('checkBtn').disabled = true;
-    activeTimers.push(setTimeout(() => onDone(correct), correct ? 900 : 2500));
+    advance(correct, onDone, 900);
   });
 }
 
@@ -1431,7 +1445,7 @@ function renderPrepositions(container, item, onDone) {
         document.getElementById('feedback').appendChild(fb);
       }
       grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
-      activeTimers.push(setTimeout(() => onDone(isCorrect), isCorrect ? 700 : 2500));
+      advance(isCorrect, onDone, 700);
     });
     grid.appendChild(btn);
   });
@@ -1469,7 +1483,7 @@ function renderWordFormation(container, item, onDone) {
         document.getElementById('feedback').appendChild(fb);
       }
       grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
-      activeTimers.push(setTimeout(() => onDone(isCorrect), isCorrect ? 700 : 2500));
+      advance(isCorrect, onDone, 700);
     });
     grid.appendChild(btn);
   });
@@ -1508,7 +1522,7 @@ function renderCollocations(container, item, onDone) {
         document.getElementById('feedback').appendChild(fb);
       }
       grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
-      activeTimers.push(setTimeout(() => onDone(isCorrect), isCorrect ? 700 : 2500));
+      advance(isCorrect, onDone, 700);
     });
     grid.appendChild(btn);
   });
@@ -1555,7 +1569,7 @@ function renderVerbForms(container, item, onDone) {
         document.getElementById('feedback').appendChild(fb);
       }
       grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
-      activeTimers.push(setTimeout(() => onDone(isCorrect), isCorrect ? 700 : 2500));
+      advance(isCorrect, onDone, 700);
     });
     grid.appendChild(btn);
   });
@@ -1818,7 +1832,7 @@ function renderDictation(container, item, onDone, withImage) {
     feedback.textContent = correct ? 'Correct!' : `Not quite — it's "${item.text}"`;
     input.disabled = true;
     document.getElementById('checkBtn').disabled = true;
-    activeTimers.push(setTimeout(() => onDone(correct), correct ? 900 : 2500));
+    advance(correct, onDone, 900);
   }
 
   document.getElementById('checkBtn').addEventListener('click', check);
@@ -1862,7 +1876,7 @@ function renderLetterScramble(container, item, onDone) {
     const feedback = document.getElementById('feedback');
     feedback.className = `feedback ${correct ? 'correct' : 'wrong'}`;
     feedback.textContent = correct ? 'Correct!' : `Not quite — it's "${word}"`;
-    activeTimers.push(setTimeout(() => onDone(correct), correct ? 900 : 2500));
+    advance(correct, onDone, 900);
   }
 
   pool.innerHTML = '';
@@ -1930,7 +1944,7 @@ function renderPhraseBuilder(container, item, onDone) {
     const feedback = document.getElementById('feedback');
     feedback.className = `feedback ${correct ? 'correct' : 'wrong'}`;
     feedback.textContent = correct ? 'Correct!' : `Not quite — it's "${chunks.join(' ')}"`;
-    activeTimers.push(setTimeout(() => onDone(correct), correct ? 900 : 2500));
+    advance(correct, onDone, 900);
   }
 
   poolEl.innerHTML = '';
@@ -2218,7 +2232,7 @@ function renderWhatsMissing(container, items, onDone) {
         feedback.textContent = `It was "${missingItem.text}"`;
         wordGrid.parentElement.appendChild(feedback);
       }
-      activeTimers.push(setTimeout(() => onDone(correct), correct ? 700 : 2500));
+      advance(correct, onDone, 700);
     });
     wordGrid.appendChild(btn);
   });
@@ -2379,7 +2393,7 @@ function renderAntonyms(container, item, answer, onDone) {
         feedback.className = 'feedback wrong';
         feedback.textContent = `The opposite of "${item.text}" is "${answer.text}"`;
       }
-      activeTimers.push(setTimeout(() => onDone(correct), correct ? 700 : 2500));
+      advance(correct, onDone, 700);
     });
     grid.appendChild(btn);
   });
@@ -2538,7 +2552,7 @@ function renderPassageTap(container, tap, onDone) {
       fb.textContent = tap.explain || (isCorrect ? 'Correct' : 'Not quite');
       document.getElementById('feedback').appendChild(fb);
       grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
-      activeTimers.push(setTimeout(() => onDone(isCorrect), tap.explain ? (isCorrect ? 2400 : 4200) : (isCorrect ? 700 : 2500)));
+      advance(isCorrect, onDone, tap.explain ? 2400 : 700);
     });
     grid.appendChild(btn);
   });
@@ -2791,7 +2805,7 @@ function renderContextGap(container, item, onDone) {
         document.getElementById('feedback').appendChild(fb);
       }
       grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
-      activeTimers.push(setTimeout(() => onDone(isCorrect), isCorrect ? 700 : 2800));
+      advance(isCorrect, onDone, 700);
     });
     grid.appendChild(btn);
   });
