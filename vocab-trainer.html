@@ -2742,7 +2742,13 @@ function renderPassageCloze(container, onFinish) {
 // the other highlighted words, exactly as they appear in the text.
 function renderContextGap(container, item, onDone) {
   const form = item.passageForm;
-  const others = shuffle((setData.items || []).filter(i => i.id !== item.id && i.passageForm)).slice(0, 3);
+  // Three options only. Before a blank that follows "a"/"an", the wrong options are words with the
+  // other article, so no second word can fit: the article rules them out, and that is a fair clue.
+  const pool = shuffle((setData.items || []).filter(i => i.id !== item.id && i.passageForm));
+  const art = (String(item.example || '').match(new RegExp('(?<![A-Za-z])(an?)\\s+' + escapeRegex(form), 'i')) || [])[1];
+  const startsVowel = function (t) { return /^[aeiou]/i.test(t); };
+  const wrongArticle = function (o) { return !!art && ((art.toLowerCase() === 'an') !== startsVowel(o.passageForm)); };
+  const others = pool.filter(wrongArticle).concat(pool.filter(function (o) { return !wrongArticle(o); })).slice(0, 2);
   const options = shuffle([form].concat(others.map(o => o.passageForm)));
   const re = new RegExp('(?<![A-Za-z])' + escapeRegex(escapeHtml(form)) + '(?![A-Za-z])', 'i');
   const sentenceHtml = escapeHtml(item.example).replace(re,
