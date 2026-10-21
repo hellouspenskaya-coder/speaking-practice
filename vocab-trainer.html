@@ -740,15 +740,15 @@ function closeOverlay() {
 // value can never produce an empty half.
 // After a correct answer the next step comes by itself; after a wrong one the student
 // reads the right answer for as long as needed and moves on with the Next button.
-function advance(correct, onDone, ms) {
-  if (correct) { activeTimers.push(setTimeout(() => onDone(true), ms)); return; }
+function advance(correct, onDone, ms, alwaysButton) {
+  if (correct && !alwaysButton) { activeTimers.push(setTimeout(() => onDone(true), ms)); return; }
   const area = document.getElementById('cardArea') || document.body;
   const b = document.createElement('button');
   b.className = 'primary wide';
   b.style.marginTop = '14px';
   b.textContent = 'Next \u203a';
   let used = false;
-  b.addEventListener('click', () => { if (used) return; used = true; b.disabled = true; onDone(false); });
+  b.addEventListener('click', () => { if (used) return; used = true; b.disabled = true; onDone(!!correct); });
   area.appendChild(b);
 }
 
@@ -2552,7 +2552,7 @@ function renderPassageTap(container, tap, onDone) {
       fb.textContent = tap.explain || (isCorrect ? 'Correct' : 'Not quite');
       document.getElementById('feedback').appendChild(fb);
       grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
-      advance(isCorrect, onDone, tap.explain ? 2400 : 700);
+      advance(isCorrect, onDone, 700, true);
     });
     grid.appendChild(btn);
   });
