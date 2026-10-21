@@ -116,6 +116,8 @@
   .word-choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
   .center-msg { text-align: center; padding: 60px 0; color: var(--muted); }
   .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; }
+  .score-pill.bump { animation: pillBump 0.6s ease-out; }
+  @keyframes pillBump { 0% { transform: scale(1); background: #fff; } 35% { transform: scale(1.12); background: var(--teal-light); } 100% { transform: scale(1); background: #fff; } }
   .score-pill { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-weight: 600; color: var(--teal); }
   .phase-pill { background: var(--teal-light); border: 1px solid #b8e6da; border-radius: 20px; padding: 4px 12px; font-weight: 600; color: var(--teal); }
   .streak-pill { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 20px; padding: 4px 12px; font-weight: 600; color: #ea580c; }
@@ -741,6 +743,7 @@ function closeOverlay() {
 // After a correct answer the next step comes by itself; after a wrong one the student
 // reads the right answer for as long as needed and moves on with the Next button.
 function advance(correct, onDone, ms, alwaysButton) {
+  answered(!!correct);
   if (correct && !alwaysButton) { activeTimers.push(setTimeout(() => onDone(true), ms)); return; }
   const area = document.getElementById('cardArea') || document.body;
   const b = document.createElement('button');
@@ -1011,6 +1014,8 @@ function renderStep() {
   pushNav({ t: 'step', i: stepIndex });
   const step = queue[stepIndex];
   const revisit = Boolean(step.done); // going back and answering again: no points
+  currentRevisit = revisit;
+  awardedEarly = false;
   const total = queue.length;
   const percent = Math.round((stepIndex / total) * 100);
 
@@ -1058,8 +1063,9 @@ function renderStep() {
   const onDone = (wasCorrect) => {
     if (!revisit) {
       if (step.kind === 'single' && !wasCorrect) wrongItemIds.add(step.item.id);
-      awardPoints(wasCorrect);
+      if (!awardedEarly) awardPoints(wasCorrect);
     }
+    awardedEarly = false;
     step.done = true;
     stepIndex += 1;
     renderStep();
@@ -1111,6 +1117,16 @@ function renderStep() {
   }
 }
 
+// Points are given at the moment of the answer, on the same screen as the question,
+// not when the next step opens. onDone then skips them.
+let currentRevisit = false;
+let awardedEarly = false;
+function answered(wasCorrect) {
+  if (currentRevisit || awardedEarly) return;
+  awardedEarly = true;
+  awardPoints(wasCorrect);
+}
+
 function awardPoints(wasCorrect) {
   answeredCount += 1;
   if (wasCorrect) {
@@ -1125,6 +1141,13 @@ function awardPoints(wasCorrect) {
   } else {
     streak = 0;
   }
+  const pill = document.getElementById('scorePill');
+  if (pill) {
+    pill.textContent = `${score} points`;
+    if (wasCorrect) { pill.classList.remove('bump'); void pill.offsetWidth; pill.classList.add('bump'); }
+  }
+  const sp = document.getElementById('streakPill');
+  if (sp) { sp.innerHTML = `&#128293; ${streak} in a row`; sp.classList.toggle('hidden', streak < 2); }
 }
 
 function showPointPop(text) {
@@ -1648,7 +1671,7 @@ function renderPhraseMatch(container, items, onDone) {
         setTimeout(() => btn.classList.remove('wrong'), 400);
       }
       selectedHead = null;
-      if (matched.size === items.length) setTimeout(() => onDone(true), 700);
+      if (matched.size === items.length) (answered(true), setTimeout(() => onDone(true), 700));
     });
     wrap.appendChild(btn);
     tailsCol.appendChild(wrap);
@@ -1712,7 +1735,7 @@ function renderVerbFormsTyping(container, item, onDone) {
     if (bothCorrect) {
       feedback.className = 'feedback correct';
       feedback.textContent = 'Correct!';
-      setTimeout(() => onDone(true), 900);
+      (answered(true), setTimeout(() => onDone(true), 900));
     } else {
       feedback.className = 'feedback wrong';
       const parts = [];
@@ -1787,7 +1810,7 @@ function renderVerbFormsDictation(container, item, onDone) {
     if (bothCorrect) {
       feedback.className = 'feedback correct';
       feedback.textContent = 'Correct!';
-      setTimeout(() => onDone(true), 900);
+      (answered(true), setTimeout(() => onDone(true), 900));
     } else {
       feedback.className = 'feedback wrong';
       const parts = [];
@@ -2046,7 +2069,7 @@ function renderMatchingDef(container, items, onDone) {
         setTimeout(() => btn.classList.remove('wrong'), 400);
       }
       selectedWord = null;
-      if (matched.size === items.length) activeTimers.push(setTimeout(() => onDone(true), 700));
+      if (matched.size === items.length) activeTimers.push((answered(true), setTimeout(() => onDone(true), 700)));
     });
     wrapper.appendChild(btn);
     defsCol.appendChild(wrapper);
@@ -2131,7 +2154,7 @@ function renderMatching(container, items, onDone) {
         setTimeout(() => div.classList.remove('wrong'), 400);
       }
       selectedWord = null;
-      if (matched.size === items.length) activeTimers.push(setTimeout(() => onDone(true), 700));
+      if (matched.size === items.length) activeTimers.push((answered(true), setTimeout(() => onDone(true), 700)));
     });
     wrapper.appendChild(div);
     imagesCol.appendChild(wrapper);
@@ -2329,7 +2352,7 @@ function renderAntonymMatching(container, pairs, onDone) {
       }
       selectedLeft = null;
       leftCol.querySelectorAll('button').forEach(b => b.style.outline = 'none');
-      if (matched.size === pairs.length * 2) activeTimers.push(setTimeout(() => onDone(true), 700));
+      if (matched.size === pairs.length * 2) activeTimers.push((answered(true), setTimeout(() => onDone(true), 700)));
     });
     wrap.appendChild(btn);
     rightCol.appendChild(wrap);
