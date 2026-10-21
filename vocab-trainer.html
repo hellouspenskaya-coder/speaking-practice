@@ -1287,7 +1287,10 @@ function renderListening(container, item, onDone) {
     });
   };
   const pool = shuffle(setData.items.filter(i => i.id !== item.id));
-  const ordered = pool.filter(c => !inSentence(c.text)).concat(pool.filter(c => inSentence(c.text)));
+  // Words that occur in the sentence are never offered, even if that leaves fewer options.
+  // Only if nothing else is left (a tiny set) do they come back, so the step can still run.
+  const clean = pool.filter(c => !inSentence(c.text));
+  const ordered = clean.length ? clean : pool;
   for (const cand of ordered) {
     if (distractors.length >= 3) break;
     const lower = cand.text.toLowerCase();
