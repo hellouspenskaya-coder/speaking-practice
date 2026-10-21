@@ -748,13 +748,37 @@ function advance(correct, onDone, ms, alwaysButton) {
   if (correct && !alwaysButton) { activeTimers.push(setTimeout(() => onDone(true), ms)); return; }
   const area = document.getElementById('cardArea') || document.body;
   const b = document.createElement('button');
-  b.className = 'primary wide';
+  b.className = 'primary wide swipe-next';
   b.style.marginTop = '14px';
   b.textContent = 'Next \u203a';
   let used = false;
   b.addEventListener('click', () => { if (used) return; used = true; b.disabled = true; onDone(!!correct); });
   area.appendChild(b);
 }
+
+// Swipe right-to-left = the Next button, but only while a Next/Continue button is on screen.
+// Before an answer nothing happens, so a stray swipe cannot skip a task.
+(function () {
+  let sx = 0, sy = 0, ok = false;
+  document.addEventListener('touchstart', function (e) {
+    ok = false;
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    if (t.clientX > window.innerWidth - 24) return; // the browser's own edge gesture
+    const el = e.target;
+    if (el && el.closest && el.closest('button:not(:disabled), input, textarea, select, a, [contenteditable]')) return;
+    sx = t.clientX; sy = t.clientY; ok = true;
+  }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (!ok) return;
+    ok = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - sx, dy = t.clientY - sy;
+    if (dx > -80 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
+    const btn = document.querySelector('.swipe-next');
+    if (btn && !btn.disabled && btn.offsetParent !== null) btn.click();
+  }, { passive: true });
+})();
 
 function phraseSplit(item) {
   const chunks = item.chunks || [];
@@ -1748,7 +1772,7 @@ function renderVerbFormsTyping(container, item, onDone) {
       if (!participleOk) parts.push(`past participle is "${item.pastParticiple}"`);
       feedback.innerHTML = `<p>${escapeHtml(parts.join(', '))}</p>`;
       const continueBtn = document.createElement('button');
-      continueBtn.className = 'primary wide';
+      continueBtn.className = 'primary wide swipe-next';
       continueBtn.textContent = 'Continue';
       continueBtn.style.marginTop = '10px';
       continueBtn.addEventListener('click', () => onDone(false));
@@ -1823,7 +1847,7 @@ function renderVerbFormsDictation(container, item, onDone) {
       if (!participleOk) parts.push(`past participle is "${item.pastParticiple}"`);
       feedback.innerHTML = `<p>${escapeHtml(parts.join(', '))}</p>`;
       const continueBtn = document.createElement('button');
-      continueBtn.className = 'primary wide';
+      continueBtn.className = 'primary wide swipe-next';
       continueBtn.textContent = 'Continue';
       continueBtn.style.marginTop = '10px';
       continueBtn.addEventListener('click', () => onDone(false));
