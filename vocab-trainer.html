@@ -101,7 +101,8 @@
   .letter-tile { width: 44px; height: 44px; padding: 0; font-size: 18px; font-weight: 500; }
   .letter-tile.used { visibility: hidden; }
   .word-tile { padding: 8px 14px; font-size: 15px; font-weight: 500; }
-  .fill-boxes { display: flex; justify-content: center; gap: 6px; margin: 16px 0; }
+  .fill-boxes { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 16px 0; }
+  .fill-gap { width: 14px; }
   .fill-box { width: 36px; height: 44px; text-align: center; font-size: 18px; border: 1px solid var(--border); border-radius: 8px; }
   .fill-box.given { display: flex; align-items: center; justify-content: center; background: #f1f5f9; color: var(--muted); font-weight: 500; }
   .feedback { font-size: 13px; margin-top: 10px; padding: 8px 10px; border-radius: 8px; }
@@ -185,7 +186,7 @@ const isWorksheet = params.get('worksheet') === '1';
 const app = document.getElementById('app');
 
 const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'contextGap', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping', 'verbFormsDictation'];
-const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'contextGap', 'phraseBuilder', 'prepositions', 'collocations'];
+const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'contextGap', 'fillLetters', 'phraseBuilder', 'prepositions', 'collocations'];
 const GROUP_MODES = ['matching', 'matchingDef', 'whatsMissing', 'phraseMatch'];
 // Most pictures shown at once in matching / what's missing.
 // Kept low so a beginner can actually hold them in mind.
@@ -783,7 +784,7 @@ function eligibleSingleModes(item, enabledModes) {
     if (!enabledModes.includes(m)) return false;
     if ((m === 'multipleChoice' || m === 'multipleChoiceReverse') && !canUsePictures) return false;
     if (m === 'listening' && !canUseListening) return false;
-    if (m === 'contextGap' && !canUseContextGap) return false;
+    if (m === 'contextGap' && (!canUseContextGap || setData.kind === 'textSet')) return false;
     if (m === 'dictation' && !item.image) return false;
     if (m === 'prepositions' && !canUsePrepositions) return false;
     if (m === 'wordFormation' && !canUseWordFormation) return false;
@@ -1337,8 +1338,15 @@ function renderFillLetters(container, item, onDone) {
   const word = item.text.toLowerCase();
   const letters = word.split('');
   const blanks = new Set();
-  const numBlanks = Math.max(1, Math.floor(letters.length / 2));
-  while (blanks.size < numBlanks) blanks.add(Math.floor(Math.random() * letters.length));
+  // Only real letters can be blanked; in a phrase the first letter of every word stays visible.
+  const cands = [];
+  letters.forEach((ch, i) => {
+    if (!/[a-z]/.test(ch)) return;
+    if (item.type === 'phrase' && (i === 0 || !/[a-z]/.test(letters[i - 1]))) return;
+    cands.push(i);
+  });
+  const numBlanks = Math.max(1, Math.floor(cands.length / 2));
+  shuffle(cands).slice(0, numBlanks).forEach(i => blanks.add(i));
 
   container.innerHTML = `
     ${imageBox(item)}
@@ -1357,6 +1365,10 @@ function renderFillLetters(container, item, onDone) {
       input.maxLength = 1;
       input.dataset.index = i;
       boxes.appendChild(input);
+    } else if (ch === ' ') {
+      const gap = document.createElement('div');
+      gap.className = 'fill-gap';
+      boxes.appendChild(gap);
     } else {
       const div = document.createElement('div');
       div.className = 'fill-box given';
