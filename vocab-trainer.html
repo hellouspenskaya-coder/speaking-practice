@@ -1276,7 +1276,19 @@ function renderListening(container, item, onDone) {
   const targetLower = item.text.toLowerCase();
   const seen = new Set([targetLower]);
   const distractors = [];
-  for (const cand of shuffle(setData.items.filter(i => i.id !== item.id))) {
+  // A word that also occurs in the spoken sentence would be a second correct answer,
+  // so those words are only used when there are not enough other choices.
+  const sentence = (item.example || item.text).toLowerCase();
+  const inSentence = function (t) {
+    const words = t.toLowerCase().replace(/[^a-z' -]/g, ' ').split(/\s+/).filter(Boolean);
+    const stem = function (w) { return w.length > 5 ? w.slice(0, w.length - 2) : w; };
+    return words.length > 0 && words.every(function (w) {
+      return new RegExp('\\b' + stem(w).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(sentence);
+    });
+  };
+  const pool = shuffle(setData.items.filter(i => i.id !== item.id));
+  const ordered = pool.filter(c => !inSentence(c.text)).concat(pool.filter(c => inSentence(c.text)));
+  for (const cand of ordered) {
     if (distractors.length >= 3) break;
     const lower = cand.text.toLowerCase();
     if (seen.has(lower)) continue;
