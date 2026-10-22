@@ -1,0 +1,212 @@
+{
+  "kind": "textSet",
+  "topic": "Roubal: Aesthetic Diagnosis · Part 4/10",
+  "level": "C1",
+  "area": "psychology",
+  "modes": [
+    "listening",
+    "fillLetters",
+    "letterScramble",
+    "dictationNoImage",
+    "matchingDef",
+    "phraseBuilder"
+  ],
+  "antonymPairs": [],
+  "passage": {
+    "text": "When a therapist meets a client, they encounter an enormous amount of complex information. This information comes from various sources: the therapist's senses, their emotional and bodily experiences, and their immediate thoughts and intuitive insights. It also comes from previous personal and professional experiences that arise during the meeting, as well as from theoretical concepts and assumptions assimilated during their education. To process all of this information, a therapist needs filters and concepts that help them organise it in a meaningful way. This is necessary for good enough therapy and for contact that is healing rather than re-traumatising. It is also necessary for identifying realistic treatment aims and procedures, and for providing a foundation for responsible creativity on the part of the therapist.",
+    "cloze": true,
+    "source": {
+      "title": "Article Aesthetic Diagnosis in Gestalt Therapy",
+      "url": "",
+      "authors": "Jan Roubal",
+      "journal": "",
+      "license": "not stated",
+      "adaptedFor": "C1"
+    },
+    "taps": [
+      {
+        "kind": "hedge",
+        "prompt": "Which sentence sounds more cautious?",
+        "context": null,
+        "mark": null,
+        "correct": "This is necessary for good enough therapy and for contact that is healing rather than re-traumatising.",
+        "wrong": [
+          "This is essential for excellent therapy and for contact that is healing rather than re-traumatising."
+        ],
+        "explain": "The phrase 'good enough' softens the requirement; the therapist need not be perfect."
+      },
+      {
+        "kind": "reference",
+        "prompt": "What does \"It\" refer to?",
+        "context": "It also comes from previous personal and professional experiences that arise during the meeting, as well as from theoretical concepts and assumptions assimilated during their education.",
+        "mark": "It",
+        "correct": "information",
+        "wrong": [
+          "the meeting",
+          "their education"
+        ],
+        "explain": "The pronoun 'It' refers back to 'information' from the previous sentence."
+      },
+      {
+        "kind": "paraphrase",
+        "prompt": "Which sentence means the same?",
+        "context": "To process all of this information, a therapist needs filters and concepts that help them organise it in a meaningful way.",
+        "mark": null,
+        "correct": "Therapists require organizational frameworks to make sense of the complex information they encounter.",
+        "wrong": [
+          "Therapists need filters to prevent information from reaching their mind.",
+          "Therapists organize information using only their intuitive insights."
+        ],
+        "explain": "Both alternatives misrepresent the purpose or method of information organization."
+      },
+      {
+        "kind": "mainIdea",
+        "prompt": "What is the main idea of the text?",
+        "context": null,
+        "mark": null,
+        "correct": "Therapists must organize complex information from multiple sources using structured concepts to provide effective, ethical treatment.",
+        "wrong": [
+          "Therapists should rely on intuitive insights rather than theoretical frameworks.",
+          "Processing client information requires no specialized filtering or organizational tools."
+        ],
+        "explain": "The excerpt emphasizes that organized processing of diverse information is essential for good therapy."
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "encounter",
+      "definition": "come into contact with or face something for the first time",
+      "example": "When a therapist meets a client, they encounter an enormous amount of complex information.",
+      "phonetic": "",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": "",
+      "passageForm": "encounter"
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "assimilate",
+      "definition": "absorb and integrate knowledge or information into one's understanding",
+      "example": "It also comes from previous personal and professional experiences that arise during the meeting, as well as from theoretical concepts and assumptions assimilated during their education.",
+      "phonetic": "",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": "",
+      "passageForm": "assimilated"
+    },
+    {
+      "id": "item_3",
+      "type": "phrase",
+      "text": "intuitive insights",
+      "definition": "immediate understanding or knowledge without conscious analytical reasoning",
+      "example": "This information comes from various sources: the therapist's senses, their emotional and bodily experiences, and their immediate thoughts and intuitive insights.",
+      "phonetic": "",
+      "chunks": [
+        "intuitive",
+        "insights"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": "",
+      "passageForm": "intuitive insights"
+    },
+    {
+      "id": "item_4",
+      "type": "phrase",
+      "text": "responsible creativity",
+      "definition": "flexible, innovative therapeutic approach guided by ethical principles and safety",
+      "example": "It is also necessary for identifying realistic treatment aims and procedures, and for providing a foundation for responsible creativity on the part of the therapist.",
+      "phonetic": "",
+      "chunks": [
+        "responsible",
+        "creativity"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": "",
+      "passageForm": "responsible creativity"
+    }
+  ]
+}
