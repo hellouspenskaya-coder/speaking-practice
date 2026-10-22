@@ -458,6 +458,15 @@ function renderItems() {
   const copyBtn = document.getElementById('copyWordsBtn');
   copyBtn.style.display = items.length ? 'inline-block' : 'none';
   emptyHint.style.display = items.length ? 'none' : 'block';
+
+  // Rebuilding the whole list wipes every card body, so remember which cards
+  // were open (and where the page was scrolled) and put both back afterwards.
+  // Without this, removing one word collapsed every other open card and the
+  // picture candidates found for them disappeared.
+  const openIds = Array.from(list.querySelectorAll('.item-body.open'))
+    .map(b => b.id.replace(/^body-/, ''));
+  const scrollY = window.scrollY;
+
   list.innerHTML = '';
   updateManualPairDropdowns();
 
@@ -496,6 +505,15 @@ function renderItems() {
       renderItems();
     });
   });
+
+  // Re-open the cards that were open before the rebuild (skip any that were
+  // just removed). renderItemBody puts the saved picture candidates back.
+  openIds.forEach(id => {
+    if (!items.some(i => i.id === id)) return;
+    const body = document.getElementById(`body-${id}`);
+    if (body) { body.classList.add('open'); renderItemBody(id); }
+  });
+  window.scrollTo(0, scrollY);
 }
 
 function statusLabel(item) {
@@ -703,7 +721,14 @@ function renderItemBody(id) {
   }
   body.querySelector('.gen-audio-btn').addEventListener('click', () => generateAudioFor(item));
 
-  if (item.image) renderImageCandidates(item, [{ full: item.image, thumb: item.image }], item.image);
+  // Show the candidates found earlier (kept on the item in memory, never
+  // saved) so a rebuilt card still offers the whole choice; fall back to just
+  // the chosen picture when no search has been run in this session.
+  if (item._candidates && item._candidates.length) {
+    renderImageCandidates(item, item._candidates, item.image);
+  } else if (item.image) {
+    renderImageCandidates(item, [{ full: item.image, thumb: item.image }], item.image);
+  }
 }
 
 function escapeHtml(s) {
@@ -895,6 +920,10 @@ function showImageSearchError(item, message) {
 }
 
 function renderImageCandidates(item, images, selectedUrl) {
+  // Keep the list on the item itself (memory only — buildSetDataCore saves a
+  // fixed set of fields, so this never reaches the saved set). Done before the
+  // grid lookup so results that arrive while the card is closed are not lost.
+  item._candidates = images;
   const grid = document.getElementById(`images-${item.id}`);
   if (!grid) return;
   grid.innerHTML = '';
