@@ -620,16 +620,30 @@ async function loadPdfFromUrl(url) {
   fillFromPdf(res, url, '');
 }
 
+async function pdfPageCount(bytes) {
+  const lib = await getPdfjs();
+  const pdf = await lib.getDocument({ data: bytes.slice(0) }).promise;
+  return pdf.numPages;
+}
+
 $('pdfFile').addEventListener('change', async (e) => {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
-  setStatus('loadStatus', 'Reading the PDF…');
+  setStatus('loadStatus', 'Opening the PDF…');
   try {
     const bytes = new Uint8Array(await file.arrayBuffer());
-    const r = pageRange();
-    const res = await pdfBytesToText(bytes, r.from, r.to);
     lastPdf = { bytes, name: file.name, url: '' };
-    if (fillFromPdf(res, '', file.name)) findText(false);
+    const r = pageRange();
+    if (r.from || r.to) {
+      // pages were already entered: read them straight away
+      const res = await pdfBytesToText(bytes, r.from, r.to);
+      if (fillFromPdf(res, '', file.name)) findText(false);
+    } else {
+      // otherwise wait: the pages are chosen first, then "Read these pages"
+      const n = await pdfPageCount(bytes);
+      $('readPagesBtn').disabled = false;
+      setStatus('loadStatus', 'PDF opened: ' + n + ' pages. Enter the first and last page, then press "Read these pages".');
+    }
   } catch (err) {
     setStatus('loadStatus', err.message, true);
   }
