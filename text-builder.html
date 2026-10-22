@@ -281,6 +281,10 @@
     <input type="text" id="areaPub" list="areaList" placeholder="psychology" autocomplete="off" style="margin-bottom:12px;" />
     <label for="trackPub" id="trackLabel">Email track (optional)</label>
     <select id="trackPub" style="margin-bottom:8px;"><option value="">None: do not send by email</option></select>
+    <div id="trackExtra">
+      <input type="text" id="newTrackName" class="hidden" placeholder="Name of the new track, for example Roubal: depression" autocomplete="off" style="margin-bottom:8px;" />
+      <p class="meta" style="margin-bottom:8px;">The track is created in Notion when you publish. A track with the same name is reused. <a href="#" id="refreshTracks">Refresh the list</a></p>
+    </div>
     <div id="orderWrap" class="hidden">
       <label for="posPub">Position in the track</label>
       <select id="posPub" style="margin-bottom:4px;"><option value="end">At the end</option></select>
@@ -353,14 +357,35 @@ async function api(body) {
 }
 
 // ---- email tracks from Notion ----
-(async function loadTracks() {
+async function loadTracks(selectId) {
   try {
     const data = await api({ action: 'tracks' });
+    const keep = selectId || $('trackPub').value;
     $('trackPub').innerHTML = '<option value="">None: do not send by email</option>' +
-      (data.tracks || []).map(t => `<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join('');
+      (data.tracks || []).map(t => `<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join('') +
+      '<option value="__new__">+ New track…</option>';
+    if (keep && [...$('trackPub').options].some(o => o.value === keep)) $('trackPub').value = keep;
+    syncTrackUi();
   } catch (e) { /* tracks are optional */ }
-})();
-$('trackPub').addEventListener('change', () => { $('orderWrap').classList.toggle('hidden', !$('trackPub').value); loadTrackSets(); });
+}
+loadTracks();
+function syncTrackUi() {
+  const v = $('trackPub').value;
+  $('newTrackName').classList.toggle('hidden', v !== '__new__');
+  $('orderWrap').classList.toggle('hidden', !v || v === '__new__');
+}
+$('refreshTracks').addEventListener('click', (e) => { e.preventDefault(); loadTracks(); });
+// A new track is created in Notion at publish time; this returns the track id to use ('' for none).
+async function resolveTrack() {
+  const v = $('trackPub').value;
+  if (v !== '__new__') return v || '';
+  const name = $('newTrackName').value.trim();
+  if (!name) throw new Error('Type a name for the new track (or choose "None").');
+  const t = await api({ action: 'createTrack', name });
+  await loadTracks(t.id);
+  return t.id;
+}
+$('trackPub').addEventListener('change', () => { syncTrackUi(); loadTrackSets(); });
 // Position picker: the writer chooses "after which set"; the number is worked out here.
 let trackSetList = [];
 function updateOrderValue() {
@@ -378,7 +403,7 @@ async function loadTrackSets() {
   $('posPub').innerHTML = '<option value="end">At the end</option>';
   trackSetList = [];
   $('orderPub').value = '';
-  if (!id) return;
+  if (!id || id === '__new__') return;
   try {
     const data = await api({ action: 'trackSets', track: id });
     trackSetList = data.sets || [];
@@ -1007,7 +1032,8 @@ function updatePublishMode(skipTitles) {
   const hideTrack = Boolean(editSlug) && !pack;
   $('trackLabel').classList.toggle('hidden', hideTrack);
   $('trackPub').classList.toggle('hidden', hideTrack);
-  if (hideTrack) { $('trackPub').value = ''; $('orderWrap').classList.add('hidden'); }
+  $('trackExtra').classList.toggle('hidden', hideTrack);
+  if (hideTrack) { $('trackPub').value = ''; $('orderWrap').classList.add('hidden'); $('newTrackName').classList.add('hidden'); }
 }
 
 function renderSource() {
@@ -1414,13 +1440,14 @@ async function publishPack() {
   let notionBad = 0;
   let notionOn = false;
   try {
+    const trackId = await resolveTrack();
     for (let i = 0; i < inc.length; i++) {
       setStatus('publishError', 'Publishing ' + (i + 1) + ' of ' + inc.length + '…');
       const d = inc[i];
       const title = packTitle(d, i + 1, inc.length);
       const data = buildSetDataFrom(d, title);
       const slug = slugify(title) + '-' + Math.random().toString(36).slice(2, 5);
-      const result = await api({ action: 'save', slug, data, track: $('trackPub').value || undefined });
+      const result = await api({ action: 'save', slug, data, track: trackId || undefined });
       const link = window.location.origin + result.trainerLink;
       lines.push(title + ' — ' + link);
       if (result.notion && result.notion.attempted) { notionOn = true; if (!result.notion.ok) notionBad++; }
@@ -1468,7 +1495,8 @@ $('publishBtn').addEventListener('click', async () => {
   const data = buildSetData();
   const slug = editSlug || (slugify(data.topic) + '-' + Math.random().toString(36).slice(2, 5));
   try {
-    const result = await api({ action: 'save', slug, data, track: $('trackPub').value || undefined, order: $('orderPub').value === '' ? undefined : Number($('orderPub').value) });
+    const singleTrack = await resolveTrack();
+    const result = await api({ action: 'save', slug, data, track: singleTrack || undefined, order: $('orderPub').value === '' ? undefined : Number($('orderPub').value) });
     $('linkOutput').value = window.location.origin + result.trainerLink;
     $('linkBox').classList.remove('hidden');
     const n = $('notionNote');

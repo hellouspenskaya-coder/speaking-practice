@@ -39,6 +39,7 @@ module.exports = async function handler(req, res) {
     if (action === 'repairImages') return await repairImages(req, res);
     if (action === 'textAreas') return await textAreas(req, res);
     if (action === 'tracks') return await listTracksAction(req, res);
+    if (action === 'createTrack') return await createTrackAction(req, res);
     if (action === 'trackSets') return await trackSetsAction(req, res);
     if (action === 'textSearch') return await textSearch(req, res);
     if (action === 'textFetch') return await textFetch(req, res);
@@ -774,6 +775,16 @@ async function trackSetsAction(req, res) {
     res.status(200).json({ sets: await require('../lib/set-delivery/notion').listTrackSets(track) });
   } catch (err) {
     res.status(200).json({ sets: [], error: err.message });
+  }
+}
+
+async function createTrackAction(req, res) {
+  try {
+    if (!process.env.NOTION_TOKEN) { res.status(400).json({ error: 'Notion is not connected.' }); return; }
+    const t = await require('../lib/set-delivery/notion').ensureTrack((req.body || {}).name);
+    res.status(200).json(t);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 }
 
