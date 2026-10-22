@@ -557,7 +557,7 @@ function pageRange() {
 
 async function pdfBytesToText(bytes, from, to) {
   const lib = await getPdfjs();
-  const pdf = await lib.getDocument({ data: bytes }).promise;
+  const pdf = await lib.getDocument({ data: bytes.slice(0) }).promise;
   const total = pdf.numPages;
   const a = Math.max(1, Math.min(total, from || 1));
   let b = Math.min(total, to || (a + 59));
