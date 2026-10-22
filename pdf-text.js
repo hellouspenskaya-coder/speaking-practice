@@ -35,7 +35,8 @@ function pdfItemsToLines(items) {
       text += p.s;
       prevEnd = p.x + p.w;
     });
-    return { text: text.replace(/\s+/g, ' ').trim(), y: r.y, h: r.h };
+    const first = r.parts[0], last = r.parts[r.parts.length - 1];
+    return { text: text.replace(/\s+/g, ' ').trim(), y: r.y, h: r.h, x0: first.x, x1: last.x + last.w };
   }).filter(function (l) { return l.text !== ''; });
 }
 
@@ -84,6 +85,14 @@ function assemblePdfText(pages) {
     const gaps = [];
     for (let i = 1; i < kept.length; i++) gaps.push(Math.abs(kept[i - 1].y - kept[i].y));
     const typical = median(gaps) || 12;
+    // Text block edges on this page (most lines run from the left to the right edge).
+    // Used when paragraphs are not separated by extra space: a paragraph ends on a short
+    // line that finishes a sentence, and may start with an indent.
+    const lefts = kept.map(function (l) { return l.x0; }).filter(function (v) { return typeof v === 'number'; });
+    const rights = kept.map(function (l) { return l.x1; }).filter(function (v) { return typeof v === 'number'; });
+    const edgeL = lefts.length ? median(lefts) : 0;
+    const edgeR = rights.length ? rights.slice().sort(function (a, b) { return a - b; })[Math.floor(rights.length * 0.85)] : 0;
+    const blockW = Math.max(1, edgeR - edgeL);
     kept.forEach(function (l, i) {
       if (i === 0) {
         // a new page: continue the paragraph only if it clearly was cut in the middle
@@ -93,7 +102,10 @@ function assemblePdfText(pages) {
       } else {
         const gap = Math.abs(kept[i - 1].y - l.y);
         const bigGap = gap > typical * 1.45;
-        if (bigGap) flush();
+        const prev = kept[i - 1];
+        const prevShort = typeof prev.x1 === 'number' && prev.x1 < edgeR - 0.12 * blockW && /[.?!:"\u201d)\]]$/.test(prev.text);
+        const indented = typeof l.x0 === 'number' && l.x0 > edgeL + Math.max(6, 0.9 * l.h) && l.x0 < edgeL + 0.2 * blockW && /^[A-Z\u201c"(]/.test(l.text);
+        if (bigGap || prevShort || indented) flush();
       }
       cur.push(l.text);
     });
@@ -126,7 +138,7 @@ function assemblePdfText(pages) {
     }
     return -1;
   };
-  for (let i = Math.floor(texts.length * 0.4); i < texts.length; i++) {
+  for (let i = Math.floor(texts.length * 0.25); i < texts.length; i++) {
     const at = refStart(texts[i]);
     if (at >= 0 || /^address for correspondence/i.test(texts[i])) {
       const keep = at > 0 ? texts[i].slice(0, at).trim() : '';

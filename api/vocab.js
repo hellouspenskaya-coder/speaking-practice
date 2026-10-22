@@ -861,7 +861,7 @@ Reply with STRICT JSON only, no commentary, no markdown fences:
 
 function pastedPage(raw) {
   const paragraphs = [];
-  const SKIP = /(©|copyright|all rights reserved|https?:\/\/|www\.|doi\b|@|ISSN|\bFigure\s*\d|\bTable\s*\d)/i;
+  const SKIP = /(©|copyright|all rights reserved|https?:\/\/|www\.|doi\b|@|ISSN|\bFigure\s*\d|\bTable\s*\d|^(author contributions?|conflicts? of interest|funding|acknowledg(e)?ments?|supplementary|data availability)\b)/i;
   String(raw || '').slice(0, 80000).split(/\n\s*\n/).forEach((chunk) => {
     const clean = stripCitations(chunk.replace(/\s+/g, ' ').trim());
     const wc = wordCount(clean);
@@ -913,7 +913,7 @@ async function textFetch(req, res) {
   ).join('\n\n');
   const prompt = `You are choosing short reading excerpts for an adult ${level || 'B2'} English learner studying: ${area || 'general academic English'}${topic ? ` (topic: ${topic})` : ''}.
 
-Below are numbered paragraphs from one article, each split into numbered sentences. Choose up to ${askFor} excerpts. Each excerpt is 2 to 5 CONSECUTIVE sentences from ONE paragraph, between 55 and 110 words in total.
+Below are numbered paragraphs from one article, each split into numbered sentences. Choose up to ${askFor} excerpts. Each excerpt is 2 to 6 CONSECUTIVE sentences from ONE paragraph, between 65 and 115 words in total (never shorter than 65 words). Always give as many excerpts as you are asked for if the article has enough good paragraphs: the level only decides how technical a passage may be, it is not a reason to return fewer excerpts.
 
 Good excerpts: understandable on their own (no "this study", "our participants", "as shown above", figures or tables), explain an idea or argue a point, contain academic features such as cautious wording (may, appears to, tends to), reference words (which, this, these) and useful subject vocabulary. Prefer introduction and discussion style paragraphs. Avoid methods and statistics. Different excerpts should come from different paragraphs where possible. Put the best excerpt first. For each excerpt also write a short English label of 3 to 6 words naming its idea (for example "what depression is" or "why hedging matters"), no quotation marks.
 
@@ -938,18 +938,41 @@ Reply with STRICT JSON only: {"picks":[{"p":3,"from":1,"to":3,"label":"short ide
     if (to < from) return;
     const text = para.sentences.slice(from - 1, to).join(' ');
     const wc = wordCount(text);
-    if (wc < 45 || wc > 130 || seenText.has(text)) return;
+    if (wc < 60 || wc > 130 || seenText.has(text)) return;
     seenText.add(text);
     const label = String(pk.label || '').replace(/["“”]/g, '').replace(/\s+/g, ' ').trim().slice(0, 60);
-    picks.push({ text, words: wc, label });
+    picks.push({ text, words: wc, label, p: Number(pk.p) || 0, from, to });
   });
+  // Not enough good picks: fill up with plain consecutive sentences from paragraphs not used yet
+  // (and from the unused rest of long paragraphs), 65 to 115 words each.
+  if (want > 1 && picks.length < want) {
+    const taken = new Map();
+    picks.forEach((pk) => { const e = taken.get(pk.p) || 0; taken.set(pk.p, Math.max(e, pk.to)); });
+    const extra = [];
+    page.paragraphs.forEach((para, idx) => {
+      let at = (taken.get(idx + 1) || 0); // sentences already used in this paragraph
+      while (at < para.sentences.length) {
+        let k = at, acc = [];
+        while (k < para.sentences.length && wordCount(acc.concat(para.sentences[k]).join(' ')) <= 115) { acc.push(para.sentences[k]); k++; }
+        const text = acc.join(' ');
+        const wc = wordCount(text);
+        if (wc >= 65 && !seenText.has(text)) { seenText.add(text); extra.push({ text, words: wc, label: '', p: idx + 1, from: at + 1, to: k }); }
+        if (!acc.length) break;
+        at = k;
+      }
+    });
+    // spread the extra picks over the article, then add as many as needed
+    const need = want - picks.length;
+    const step = extra.length / Math.max(1, need);
+    for (let i = 0; i < need && extra.length; i++) picks.push(extra[Math.min(extra.length - 1, Math.floor(i * step))]);
+  }
   if (!picks.length) {
     res.status(422).json({ error: 'No suitable excerpt found in this article.' });
     return;
   }
   res.status(200).json({
     article: { title: page.title, url: u ? u.href : '', authors: page.authors, journal: page.journal, license: page.license, licenseOk: page.licenseOk },
-    picks: picks.slice(0, want > 1 ? want : 5)
+    picks: picks.slice(0, want > 1 ? want : 5).map((pk) => ({ text: pk.text, words: pk.words, label: pk.label }))
   });
 }
 
@@ -1176,7 +1199,7 @@ ORIGINAL:
 ${text}
 """
 
-Rewrite it as ONE paragraph of 55 to 120 words.
+Rewrite it as ONE paragraph of ${lvl === 'B1' ? '55 to 120' : Math.max(60, Math.round(wc * 0.85)) + ' to ' + Math.min(140, Math.round(wc * 1.2))} words.${lvl === 'B1' ? '' : ' Do NOT shorten it: keep all the content and the length of the original (the result must have at least 85% of its words); make it easier by splitting and untangling sentences, not by cutting.'}
 Rules:
 ${how}
 - Keep the meaning and the main claims. Do not add facts, examples or opinions. You may shorten secondary detail (long lists of examples) to keep the text easy.
@@ -1210,7 +1233,7 @@ Reply with STRICT JSON only: {"text":"the adapted paragraph"}`;
     return;
   }
   const awc = wordCount(adapted);
-  if (awc < 40 || awc > 140 || /[\[\]{}*#]/.test(adapted) || !/[.!?]["\u201d)]?$/.test(adapted)) {
+  if (awc < (lvl === 'B1' ? 40 : Math.max(55, Math.round(wc * 0.7))) || awc > 150 || /[\[\]{}*#]/.test(adapted) || !/[.!?]["\u201d)]?$/.test(adapted)) {
     res.status(502).json({ error: 'The adapted text did not come out right. Try again.' });
     return;
   }
