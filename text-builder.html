@@ -186,7 +186,7 @@
       <label for="pasteUrl">Link (optional)</label>
       <input type="text" id="pasteUrl" placeholder="https://..." autocomplete="off" />
     </details>
-    <label class="checkline" style="margin-top:8px;"><input type="checkbox" id="adapt" /> Adapt the wording to the level (B1 and B2). Keeps cautious wording, reference words and key terms.</label>
+    <label class="checkline" style="margin-top:8px;"><input type="checkbox" id="adapt" /> Adapt the wording to the level (B1, B2, and a lighter C1). Keeps cautious wording, reference words and key terms.</label>
     <button class="primary" id="findBtn">Get excerpts</button>
     <p class="status" id="findStatus"></p>
     <div id="failList" class="meta hidden" style="margin-top:8px;"></div>
@@ -862,7 +862,7 @@ async function buildPack() {
   if (drafts.length && !window.confirm('Building again replaces the sets you already built (and your edits to them). Continue?')) return;
   const lvl = $('level').value;
   const area = $('area').value.trim();
-  const doAdapt = $('adapt').checked && lvl !== 'C1';
+  const doAdapt = $('adapt').checked;
   $('packBuildBtn').disabled = true;
   drafts = sel.map(x => ({ label: x.label.trim() || 'Part', text: x.text, original: x.text, aiText: null, adaptedFor: null, words: [], taps: [], include: true, error: '' }));
   curDraft = -1;
@@ -1011,7 +1011,7 @@ function showPassage(text) {
   $('replaceBtn').textContent = picks.length <= 1 ? 'No other paragraphs' : `Replace paragraph (${pickIdx + 1} of ${picks.length})`;
   $('textCard').classList.remove('hidden');
   applyText(text);
-  if ($('adapt').checked && $('level').value !== 'C1') adaptNow();
+  if ($('adapt').checked) adaptNow();
 }
 
 // Puts a text on screen and clears everything generated from the previous one.
