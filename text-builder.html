@@ -250,6 +250,12 @@
       </div>
       <p class="status" id="addStatus"></p>
     </div>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+      <button id="moreWordsBtn">Suggest other words</button>
+      <p class="status" id="moreStatus"></p>
+      <div id="moreWords"></div>
+      <button id="moreAddBtn" class="primary hidden" style="margin-top:8px;">Add ticked words</button>
+    </div>
   </div>
 
   <div id="tapsCard" class="card hidden">
@@ -818,7 +824,7 @@ function resetPack() {
 }
 
 function showPack(list) {
-  packItems = list.map((p, i) => ({ text: p.text, label: p.label || ('Part ' + (i + 1)), words: p.words || wordCount(p.text), checked: i < 3 }));
+  packItems = list.map((p, i) => ({ text: p.text, label: 'Part ' + (i + 1), words: p.words || wordCount(p.text), checked: i < 3 }));
   ['textCard', 'wordsCard', 'tapsCard', 'publishCard'].forEach(id => $(id).classList.add('hidden'));
   $('seriesName').value = String(article.title || '').slice(0, 60);
   $('packSource').value = article.title || '';
@@ -838,11 +844,16 @@ function renderPack() {
       <input type="checkbox" ${it.checked ? 'checked' : ''} aria-label="Use this excerpt" />
       <div class="body">
         <input type="text" value="${escapeHtml(it.label)}" aria-label="Label" style="font-weight:600;" />
-        <p class="txt">${escapeHtml(it.text)}</p>
-        <p class="meta" style="margin-top:4px;">${it.words} words</p>
+        <textarea class="txt" rows="6" aria-label="Excerpt text" style="width:100%;font:inherit;line-height:1.6;">${escapeHtml(it.text)}</textarea>
+        <p class="meta" style="margin-top:4px;"><span class="wc">${it.words}</span> words · you can edit the text here</p>
       </div>`;
     row.querySelector('input[type=checkbox]').addEventListener('change', e => { it.checked = e.target.checked; updatePackBtn(); });
     row.querySelector('input[type=text]').addEventListener('input', e => { it.label = e.target.value; });
+    row.querySelector('textarea').addEventListener('input', e => {
+      it.text = e.target.value.replace(/\s+/g, ' ').trim();
+      it.words = wordCount(it.text);
+      row.querySelector('.wc').textContent = it.words;
+    });
     box.appendChild(row);
   });
   updatePackBtn();
@@ -912,6 +923,7 @@ function loadDraft(i) {
   curDraft = i;
   const d = drafts[i];
   original = d.original; aiText = d.aiText; adaptedFor = d.adaptedFor; passage = d.text; words = d.words; taps = d.taps;
+  moreSuggested = []; renderMoreWords();
   renderSource();
   $('textCard').classList.remove('hidden');
   closeEditor();
@@ -943,8 +955,14 @@ function renderTabs() {
 
 function packTitle(d, n, total) {
   const series = $('seriesName').value.trim();
+  const numbered = $('numbering').checked;
+  // a default "Part N" label follows the order among the sets that are kept: "Part 3/6"
+  if (/^Part \d+$/.test(d.label)) {
+    const part = 'Part ' + n + (numbered ? '/' + total : '');
+    return series ? series + ' · ' + part : part;
+  }
   const base = series ? series + ' · ' + d.label : d.label;
-  return base + ($('numbering').checked ? ' (' + n + '/' + total + ')' : '');
+  return base + (numbered ? ' (' + n + '/' + total + ')' : '');
 }
 
 function renderPackTitles() {
@@ -1205,6 +1223,55 @@ $('addWordBtn').addEventListener('click', () => {
   setStatus('addStatus', '');
   renderWords();
   renderPassage();
+});
+
+let moreSuggested = [];
+function renderMoreWords() {
+  const box = $('moreWords');
+  box.innerHTML = '';
+  moreSuggested.forEach((w) => {
+    const row = document.createElement('div');
+    row.className = 'word-row';
+    row.innerHTML = `
+      <input type="checkbox" aria-label="Add ${escapeHtml(w.text)}" />
+      <div class="word-fields">
+        <p class="form-line">In the text: <span class="hl">${escapeHtml(w.passageForm)}</span> · ${w.type}</p>
+        <input type="text" value="${escapeHtml(w.text)}" style="margin-bottom:6px;font-weight:600;" aria-label="Word" />
+        <textarea aria-label="Definition">${escapeHtml(w.definition)}</textarea>
+      </div>`;
+    row.querySelector('input[type=checkbox]').addEventListener('change', e => { w.pick = e.target.checked; });
+    row.querySelector('input[type=text]').addEventListener('input', e => { w.text = e.target.value; });
+    row.querySelector('textarea').addEventListener('input', e => { w.definition = e.target.value; });
+    box.appendChild(row);
+  });
+  $('moreAddBtn').classList.toggle('hidden', !moreSuggested.length);
+}
+
+$('moreWordsBtn').addEventListener('click', async () => {
+  $('moreWordsBtn').disabled = true;
+  setStatus('moreStatus', 'Looking for more words…');
+  try {
+    const have = words.map(w => w.passageForm).concat(moreSuggested.map(w => w.passageForm));
+    const out = await api({ action: 'textMoreWords', passage, level: $('level').value, area: $('area').value.trim(), have });
+    const fresh = (out.words || []).filter(w => !have.some(h => h.toLowerCase() === w.passageForm.toLowerCase()));
+    moreSuggested = moreSuggested.filter(w => w.pick).concat(fresh);
+    renderMoreWords();
+    setStatus('moreStatus', fresh.length ? 'Tick the words you want and press "Add ticked words".' : 'No new words this time.');
+  } catch (e) {
+    setStatus('moreStatus', e.message, true);
+  }
+  $('moreWordsBtn').disabled = false;
+});
+
+$('moreAddBtn').addEventListener('click', () => {
+  const chosen = moreSuggested.filter(w => w.pick);
+  if (!chosen.length) { setStatus('moreStatus', 'Tick at least one word.', true); return; }
+  chosen.forEach(w => { words.push({ keep: true, text: w.text, passageForm: w.passageForm, type: w.type, definition: w.definition, example: w.example, chunks: w.chunks }); });
+  moreSuggested = moreSuggested.filter(w => !w.pick);
+  renderMoreWords();
+  renderWords();
+  renderPassage();
+  setStatus('moreStatus', chosen.length + ' word' + (chosen.length === 1 ? '' : 's') + ' added.');
 });
 
 function renderTaps() {

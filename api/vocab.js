@@ -46,6 +46,7 @@ module.exports = async function handler(req, res) {
     if (action === 'textOcr') return await textOcr(req, res);
     if (action === 'textBuild') return await textBuild(req, res);
     if (action === 'textAdapt') return await textAdapt(req, res);
+    if (action === 'textMoreWords') return await textMoreWords(req, res);
     if (action === 'storyBuild') return await storyBuild(req, res);
     res.status(400).json({ error: `Unknown action: ${action}` });
   } catch (err) {
@@ -679,7 +680,7 @@ function metaAll(html, name) {
 // (2019) and numbered ones like [12] or [3-5].
 function stripCitations(text) {
   return String(text)
-    .replace(/\s*\[(?:\d+(?:\s*[-\u2013,]\s*\d+)*)\]/g, '')
+    .replace(/\s*\[\s*(?:\d+(?:\s*[-\u2013,;]\s*\d+)*)\s*\]/g, '')
     .replace(/\s*\(([^()]*)\)/g, (m, inner) => {
       const hasYear = /(?:19|20)\d{2}[a-z]?/.test(inner);
       if (!hasYear) return m;
@@ -1143,6 +1144,64 @@ Options must be short (max 20 words).`;
   res.status(200).json({ title: norm(out.title) || 'Reading set', words: words.slice(0, 9), taps: taps.slice(0, 5) });
 }
 
+
+
+// ---------- more word suggestions for an excerpt ----------
+
+async function textMoreWords(req, res) {
+  const { passage, level, area, have } = req.body || {};
+  const text = String(passage || '').trim();
+  const wc = wordCount(text);
+  if (wc < 30 || wc > 300) {
+    res.status(400).json({ error: 'The passage should be between 30 and 300 words.' });
+    return;
+  }
+  const lvl = level || 'B2';
+  const haveList = (Array.isArray(have) ? have : []).map((x) => String(x || '').trim()).filter(Boolean).slice(0, 30);
+  const prompt = `You help an English teacher. Below is a short excerpt in the field: ${area || 'general academic English'}. The learner's level is ${lvl}.
+
+EXCERPT:
+"""
+${text}
+"""
+
+ALREADY CHOSEN (do not suggest these again): ${haveList.length ? haveList.join('; ') : 'none'}
+
+Suggest 6 MORE useful words or fixed expressions for a ${lvl} learner from this excerpt: academic vocabulary and field terms, no proper names, no very basic words.
+- "passageForm" must be copied EXACTLY from the excerpt (same inflection and spelling).
+- "text" is the dictionary form (for a phrase, the base phrase).
+- "definition": simple English, max 12 words, easier words than the target, true to the meaning in THIS excerpt, never containing the target word itself.
+
+Reply with STRICT JSON only: {"words":[{"text":"base form","passageForm":"exact characters in the excerpt","type":"word or phrase","definition":"..."}]}`;
+  let out;
+  try {
+    out = extractJsonObject(await callHaiku(prompt, 1500));
+  } catch (err) {
+    res.status(502).json({ error: 'Could not suggest words: ' + err.message });
+    return;
+  }
+  const norm = (x) => String(x || '').replace(/\s+/g, ' ').trim();
+  const sentences = splitSentences(text);
+  const taken = new Set(haveList.map((x) => x.toLowerCase()));
+  const words = [];
+  (out.words || []).forEach((w) => {
+    const form = norm(w.passageForm);
+    if (!form || !w.definition) return;
+    const m = text.match(new RegExp('(?<![A-Za-z])' + escapeRegExp(form) + '(?![A-Za-z])', 'i'));
+    if (!m) return;
+    const actual = m[0];
+    if (taken.has(actual.toLowerCase())) return;
+    taken.add(actual.toLowerCase());
+    const example = sentences.find((x) => new RegExp('(?<![A-Za-z])' + escapeRegExp(actual) + '(?![A-Za-z])', 'i').test(x)) || '';
+    const isPhrase = /\s/.test(actual) || w.type === 'phrase';
+    words.push({ text: norm(w.text) || actual, passageForm: actual, type: isPhrase ? 'phrase' : 'word', definition: norm(w.definition), example, chunks: isPhrase ? actual.split(/\s+/) : [] });
+  });
+  if (!words.length) {
+    res.status(502).json({ error: 'No new words came back. Try again.' });
+    return;
+  }
+  res.status(200).json({ words: words.slice(0, 8) });
+}
 
 // ---------- adaptation of an excerpt to a level ----------
 
