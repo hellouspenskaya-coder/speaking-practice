@@ -1153,12 +1153,16 @@ async function textAdapt(req, res) {
     res.status(400).json({ error: 'The passage should be between 30 and 260 words.' });
     return;
   }
-  const lvl = ['B1', 'B2'].includes(level) ? level : null;
+  const lvl = ['B1', 'B2', 'C1'].includes(level) ? level : null;
   if (!lvl) {
-    res.status(400).json({ error: 'Adaptation is available for B1 and B2. C1 keeps the original wording.' });
+    res.status(400).json({ error: 'Choose a level: B1, B2 or C1.' });
     return;
   }
-  const how = lvl === 'B1'
+  const how = lvl === 'C1'
+    ? `- A lighter C1 version: still a demanding academic text, but easier to read than the original. Keep the academic register and the key terms.
+- Sentences: about 20 words on average, NEVER more than 30 words. Split sentences that are longer, and untangle stacked subordinate clauses and long participle phrases.
+- Replace only the most unusual or overloaded words and noun chains with clearer academic wording. Do not make the vocabulary simpler than B2 where a precise academic word is natural.`
+    : lvl === 'B1'
     ? `- This is a real B1 text, clearly easier than the original. Use mostly everyday CEFR A2-B1 words and simple grammar (active voice where possible, no long noun chains, no stacked clauses).
 - Sentences: about 12 words on average, NEVER more than 18 words. One idea per sentence. Split every long sentence.
 - Replace specialist jargon, rare, abstract or low-frequency words with common ones or with a short plain explanation (for example "workers who load and unload a ship" instead of "stevedores"). Keep only 3 or 4 key subject terms that the learner really needs, and make their meaning clear from the sentence around them.
@@ -1189,7 +1193,7 @@ Reply with STRICT JSON only: {"text":"the adapted paragraph"}`;
   };
   const tooHard = (t) => {
     const st = sentStats(t);
-    return lvl === 'B1' ? (st.avg > 16 || st.max > 22) : (st.max > 36);
+    return lvl === 'B1' ? (st.avg > 16 || st.max > 22) : lvl === 'C1' ? (st.avg > 24 || st.max > 32) : (st.max > 36);
   };
 
   let adapted = '';
@@ -1197,7 +1201,7 @@ Reply with STRICT JSON only: {"text":"the adapted paragraph"}`;
     let out = extractJsonObject(await callSonnet(prompt(''), 900));
     adapted = String(out.text || '').replace(/\s+/g, ' ').trim();
     if (tooHard(adapted)) {
-      out = extractJsonObject(await callSonnet(prompt('Your previous version was still too hard: its sentences were too long. Make it simpler: split sentences so none is longer than 18 words, and replace difficult words with common ones.'), 900));
+      out = extractJsonObject(await callSonnet(prompt('Your previous version was still too hard: its sentences were too long. Make it simpler: split sentences so none is longer than ' + (lvl === 'C1' ? '30' : '18') + ' words, and replace difficult words with clearer ones.'), 900));
       const second = String(out.text || '').replace(/\s+/g, ' ').trim();
       if (second) adapted = second;
     }

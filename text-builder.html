@@ -1035,11 +1035,10 @@ function updateAdaptUi() {
   $('origText').textContent = adapted ? original : '';
   $('adaptNote').innerHTML = adapted
     ? `<span class="badge ok">Adapted for ${escapeHtml(adaptedFor)}</span> Check that the meaning and the level of certainty match the original.`
-    : (lvl === 'C1' ? 'C1 keeps the original wording.' : '');
-  $('adaptBtn').textContent = adapted ? 'Use original wording' : `Adapt to ${lvl}`;
-  $('adaptBtn').disabled = lvl === 'C1' && !adapted;
+    : (lvl === 'C1' ? 'C1 keeps the original wording. "Adapt to C1 (lighter)" shortens the longest sentences but keeps the academic register.' : '');
+  $('adaptBtn').textContent = adapted ? 'Use original wording' : (lvl === 'C1' ? 'Adapt to C1 (lighter)' : `Adapt to ${lvl}`);
   $('aiBackBtn').classList.toggle('hidden', !(aiText && passage !== aiText));
-  $('readaptBtn').classList.toggle('hidden', !(adaptedFor !== null && lvl !== 'C1'));
+  $('readaptBtn').classList.toggle('hidden', adaptedFor === null);
   if (!original) { // an opened set: the original wording was not saved, so it cannot be restored
     $('origBox').classList.add('hidden');
     $('adaptBtn').classList.add('hidden');
@@ -1051,7 +1050,6 @@ function updateAdaptUi() {
 
 async function adaptNow() {
   const lvl = $('level').value;
-  if (lvl === 'C1') return;
   $('adaptBtn').disabled = true;
   $('readaptBtn').disabled = true;
   $('buildBtn').disabled = true;
