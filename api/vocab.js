@@ -187,18 +187,21 @@ No preamble, no markdown fences, no explanation - JSON only.`;
 function escapeRegExpGap(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
 async function generateGaps(req, res) {
-  const { items, level } = req.body;
-  if (!Array.isArray(items) || items.length < 4) {
-    res.status(400).json({ error: 'At least 4 words are needed for this mode' });
+  const { items, level, known } = req.body;
+  if (!Array.isArray(items) || items.length === 0) {
+    res.status(400).json({ error: 'Nothing to write' });
     return;
   }
   const cefr = level || 'A1';
+  // items: words that still need a sentence. known: forms of words that already have one (they
+  // stay in the list of options the new sentences are checked against, but are not rewritten).
+  const knownForms = (Array.isArray(known) ? known : []).map((k) => String(k || '').trim()).filter(Boolean);
   const words = items.map((i) => ({ id: String(i.id), text: String(i.text || '').trim(), type: i.type }));
   try {
     const CHUNK = 10;
     const chunks = [];
     for (let i = 0; i < words.length; i += CHUNK) chunks.push(words.slice(i, i + CHUNK));
-    const all = words.map((w) => w.text);
+    const all = words.map((w) => w.text).concat(knownForms);
     const written = (await Promise.all(chunks.map(async (chunk) => {
       const prompt = `You are writing gap-fill sentences for ${cefr}-level English learners (use only vocabulary and grammar they know).
 Learners will see the sentence with ONE blank and must pick the missing word from a list made of the other words of the same set. The set: ${JSON.stringify(all)}.
@@ -227,13 +230,13 @@ Respond with ONLY a JSON array: [{"id":"...","sentence":"...","form":"..."}] - n
       if (hits.length !== 1) return;
       good.push({ id: String(w.id), sentence, form });
     });
-    if (good.length < 4) {
+    if (!good.length) {
       res.status(200).json({ gaps: [] });
       return;
     }
 
     // Step 2: which other forms would also fit?
-    const forms = good.map((g) => g.form);
+    const forms = good.map((g) => g.form).concat(knownForms);
     const checkPrompt = `Here are gap-fill sentences. Each has one blank (___). The options are this list of words/forms: ${JSON.stringify(forms)}.
 For EACH sentence, list every option from the list, other than the intended answer, that would ALSO make a grammatically correct and sensible sentence in the blank. Be strict about meaning but think about real learners: if a reasonable person could accept it, list it. If no other option fits, return an empty list.
 
