@@ -266,6 +266,11 @@
     <p class="sub" style="margin-bottom:12px;">Generates one shared link. Every student uses the same link.</p>
     <label for="trackPub">Email track (optional)</label>
     <select id="trackPub" style="margin-bottom:8px;"><option value="">None: do not send by email</option></select>
+    <div id="trackExtra" style="display:none;">
+      <input type="text" id="newTrackName" placeholder="Name of the new track, for example Words B1" autocomplete="off" style="margin-bottom:8px;" />
+      <p class="sub" style="margin:0 0 8px;">The track is created in Notion when you generate the link. A track with the same name is reused.</p>
+    </div>
+    <p class="sub" style="margin:0 0 10px;"><a href="#" id="refreshTracks">Refresh the track list</a></p>
     <div id="orderWrap" style="display:none;">
       <label for="posPub">Position in the track</label>
       <select id="posPub"><option value="end">At the end</option></select>
@@ -1347,19 +1352,43 @@ function slugify(topic) {
   return topic.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'set';
 }
 
-(async function loadTracks() {
-  try {
-    const r = await fetch('/api/vocab', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'tracks' }) });
-    const data = await r.json();
-    const sel = document.getElementById('trackPub');
-    (data.tracks || []).forEach(t => { const o = document.createElement('option'); o.value = t.id; o.textContent = t.name; sel.appendChild(o); });
-  } catch (e) { /* tracks are optional */ }
-})();
 const $ = id => document.getElementById(id);
-$('trackPub').addEventListener('change', (e) => {
-  $('orderWrap').style.display = e.target.value ? '' : 'none';
-  loadTrackSets();
-});
+async function vocabApi(body) {
+  const r = await fetch('/api/vocab', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || ('Server error ' + r.status));
+  return data;
+}
+async function loadTracks(selectId) {
+  try {
+    const data = await vocabApi({ action: 'tracks' });
+    const keep = selectId || $('trackPub').value;
+    $('trackPub').innerHTML = '<option value="">None: do not send by email</option>' +
+      (data.tracks || []).map(t => `<option value="${escapeAttr(t.id)}">${escapeHtml(t.name)}</option>`).join('') +
+      '<option value="__new__">+ New track…</option>';
+    if (keep && [...$('trackPub').options].some(o => o.value === keep)) $('trackPub').value = keep;
+    syncTrackUi();
+  } catch (e) { /* tracks are optional */ }
+}
+loadTracks();
+function syncTrackUi() {
+  const v = $('trackPub').value;
+  $('trackExtra').style.display = v === '__new__' ? '' : 'none';
+  $('orderWrap').style.display = (!v || v === '__new__') ? 'none' : '';
+}
+$('refreshTracks').addEventListener('click', (e) => { e.preventDefault(); loadTracks(); });
+// A new track is created in Notion when the link is generated; returns the track id to use ('' for none).
+async function resolveTrack() {
+  const v = $('trackPub').value;
+  if (v !== '__new__') return v || '';
+  const name = $('newTrackName').value.trim();
+  if (!name) throw new Error('Type a name for the new track (or choose "None").');
+  const t = await vocabApi({ action: 'createTrack', name });
+  await loadTracks(t.id);
+  await loadTrackSets();
+  return t.id;
+}
+$('trackPub').addEventListener('change', () => { syncTrackUi(); loadTrackSets(); });
 // Position picker: the writer chooses "after which set"; the number is worked out here.
 let trackSetList = [];
 function updateOrderValue() {
@@ -1377,7 +1406,7 @@ async function loadTrackSets() {
   $('posPub').innerHTML = '<option value="end">At the end</option>';
   trackSetList = [];
   $('orderPub').value = '';
-  if (!id) return;
+  if (!id || id === '__new__') return;
   try {
     const data = await fetch('/api/vocab', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'trackSets', track: id }) }).then(r => r.json());
     trackSetList = data.sets || [];
@@ -1408,11 +1437,12 @@ document.getElementById('publishBtn').addEventListener('click', async () => {
   const data = buildSetData();
   const slug = slugify(data.topic);
   try {
+    const trackId = await resolveTrack();
     const response = await fetch('/api/vocab', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'save', slug, data,
-        track: document.getElementById('trackPub').value || undefined,
+        track: trackId || undefined,
         order: document.getElementById('orderPub').value === '' ? undefined : Number(document.getElementById('orderPub').value) })
     });
     const result = await response.json();
