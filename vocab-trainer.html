@@ -930,7 +930,10 @@ function buildSession(data) {
   shuffle(items).forEach(item => {
     const pool = eligibleSingleModes(item, enabledModes);
     if (!pool.length) return;
-    const specialized = pool.filter(m => SPECIALIZED_MODES.includes(m));
+    // Verb-form typing/dictation only train the forms, not the meaning. For single irregular verbs that is the point
+    // (they stay exclusive); phrasal verbs ("take off") are phrases, so these two are just one more option among the others.
+    const specialized = pool.filter(m => SPECIALIZED_MODES.includes(m)
+      && !(item.type === 'phrase' && (m === 'verbFormsTyping' || m === 'verbFormsDictation')));
     const finalPool = specialized.length ? specialized : pool;
     singleSteps.push({ kind: 'single', item, pool: finalPool, phase: 'practice' });
   });
