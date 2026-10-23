@@ -633,6 +633,22 @@ function renderItemBody(id) {
       <p id="wfValidation-${id}" style="font-size:12px; margin:4px 0 0;"></p>
     </div>
     ` : ''}
+    ${!isPhrase ? `
+    <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:10px;">
+      <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); margin-bottom:8px;">
+        <input type="checkbox" class="is-verb-toggle" ${item.isVerb ? 'checked' : ''} style="width:auto;" />
+        This word is a verb: forms for the three "Verb forms" modes (filled in by the AI, edit if wrong)
+      </label>
+      <div class="field-row">
+        <label>Past simple</label>
+        <input type="text" data-field="pastSimple" value="${escapeAttr(item.pastSimple || '')}" placeholder="saw" />
+      </div>
+      <div class="field-row">
+        <label>Past participle</label>
+        <input type="text" data-field="pastParticiple" value="${escapeAttr(item.pastParticiple || '')}" placeholder="seen" />
+      </div>
+    </div>
+    ` : ''}
     <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:10px;">
       <p style="font-size:12px; color:var(--muted); margin:0 0 8px;">Sentence with a gap ("Choose the word in context") — written by the AI when you tick that mode; edit here if needed</p>
       <div class="field-row">
@@ -722,6 +738,8 @@ function renderItemBody(id) {
     });
   });
 
+  const verbToggle = body.querySelector('.is-verb-toggle');
+  if (verbToggle) verbToggle.addEventListener('change', () => { item.isVerb = verbToggle.checked; });
   body.querySelector('.gen-content-btn').addEventListener('click', () => generateContentFor([item]));
   body.querySelector('.image-query-input').addEventListener('input', (e) => {
     item.imageQuery = e.target.value;
