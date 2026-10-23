@@ -1,0 +1,324 @@
+{
+  "topic": "Air Travel UpInt 3A - 3/3",
+  "level": "B2",
+  "modes": [
+    "multipleChoice",
+    "multipleChoiceReverse",
+    "matchingDef",
+    "listening",
+    "contextGap",
+    "fillLetters",
+    "verbFormsTyping",
+    "verbFormsDictation"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "phrase",
+      "text": "check in",
+      "definition": "to arrive at an airport or hotel and officially register that you are there",
+      "example": "We checked in two hours before the flight.",
+      "phonetic": "",
+      "chunks": [
+        "check",
+        "in"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "check in airport",
+      "imageQuery": "check in airport",
+      "illustrable": true,
+      "wantsImage": true,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": true,
+      "pastSimple": "checked in",
+      "pastParticiple": "checked in",
+      "verbSentence": "",
+      "verbAnswer": "",
+      "gapSentence": "We checked in at the desk and left our suitcases there.",
+      "gapForm": "checked in",
+      "gapRivals": [
+        "dropped off"
+      ]
+    },
+    {
+      "id": "item_2",
+      "type": "phrase",
+      "text": "drop off",
+      "definition": "to take someone or something to a place in a car and leave them there",
+      "example": "My brother dropped me off at the terminal.",
+      "phonetic": "",
+      "chunks": [
+        "drop",
+        "off"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": true,
+      "pastSimple": "dropped off",
+      "pastParticiple": "dropped off",
+      "verbSentence": "",
+      "verbAnswer": "",
+      "gapSentence": "My neighbour kindly dropped off the keys at my flat before I left.",
+      "gapForm": "dropped off",
+      "gapRivals": [
+        "picked up"
+      ]
+    },
+    {
+      "id": "item_3",
+      "type": "phrase",
+      "text": "fill in",
+      "definition": "to write information in the empty spaces of a form",
+      "example": "I filled in the immigration form on the plane.",
+      "phonetic": "",
+      "chunks": [
+        "fill",
+        "in"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "filling form",
+      "imageQuery": "filling form",
+      "illustrable": true,
+      "wantsImage": true,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": true,
+      "pastSimple": "filled in",
+      "pastParticiple": "filled in",
+      "verbSentence": "",
+      "verbAnswer": "",
+      "gapSentence": "I filled in the customs form during the flight.",
+      "gapForm": "filled in",
+      "gapRivals": []
+    },
+    {
+      "id": "item_4",
+      "type": "phrase",
+      "text": "get off",
+      "definition": "to leave a plane, bus, train or boat",
+      "example": "We got off the plane and walked to passport control.",
+      "phonetic": "",
+      "chunks": [
+        "get",
+        "off"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "get off plane",
+      "imageQuery": "get off plane",
+      "illustrable": true,
+      "wantsImage": true,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": true,
+      "pastSimple": "got off",
+      "pastParticiple": "got off",
+      "verbSentence": "",
+      "verbAnswer": "",
+      "gapSentence": "When the plane stopped, we got off and walked to passport control.",
+      "gapForm": "got off",
+      "gapRivals": []
+    },
+    {
+      "id": "item_5",
+      "type": "phrase",
+      "text": "get on",
+      "definition": "to enter a plane, bus, train or boat",
+      "example": "We got on the bus just before it left.",
+      "phonetic": "",
+      "chunks": [
+        "get",
+        "on"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "get on plane",
+      "imageQuery": "get on plane",
+      "illustrable": true,
+      "wantsImage": true,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": true,
+      "pastSimple": "got on",
+      "pastParticiple": "got on",
+      "verbSentence": "",
+      "verbAnswer": "",
+      "gapSentence": "The gate opened, and we got on the plane after showing our boarding passes.",
+      "gapForm": "got on",
+      "gapRivals": []
+    },
+    {
+      "id": "item_6",
+      "type": "phrase",
+      "text": "pick up",
+      "definition": "to collect someone or something from a place",
+      "example": "I picked up my suitcase from the carousel and walked to the exit.",
+      "phonetic": "",
+      "chunks": [
+        "pick",
+        "up"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": true,
+      "pastSimple": "picked up",
+      "pastParticiple": "picked up",
+      "verbSentence": "",
+      "verbAnswer": "",
+      "gapSentence": "I picked up my suitcase from the carousel and walked to the exit.",
+      "gapForm": "picked up",
+      "gapRivals": [
+        "dropped off"
+      ]
+    },
+    {
+      "id": "item_7",
+      "type": "phrase",
+      "text": "take off",
+      "definition": "to leave the ground and start to fly",
+      "example": "The plane took off twenty minutes late.",
+      "phonetic": "",
+      "chunks": [
+        "take",
+        "off"
+      ],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "airplane take off",
+      "imageQuery": "airplane take off",
+      "illustrable": true,
+      "wantsImage": true,
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [],
+      "wordFormationSentence": "",
+      "wordFormationAnswer": "",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": true,
+      "pastSimple": "took off",
+      "pastParticiple": "taken off",
+      "verbSentence": "",
+      "verbAnswer": "",
+      "gapSentence": "The plane was delayed and finally took off at half past nine.",
+      "gapForm": "took off",
+      "gapRivals": []
+    }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "src": "claude",
+          "label": "Put each phrasal verb in the past simple",
+          "strip": [],
+          "text": "Last Friday I flew to Madrid for a conference. A taxi {1} my colleague at the terminal, and she was already late. We {2} at the desk and left our suitcases. Before security, I {3} a short health form for the airline. At the gate a long queue waited, and we {4} the plane last. The flight was smooth, and the plane {5} on time. In Madrid we {6} the plane quickly, and a driver {7} our group at the exit.",
+          "gaps": [
+            {
+              "a": "dropped off",
+              "b": "drop off"
+            },
+            {
+              "a": "checked in",
+              "b": "check in"
+            },
+            {
+              "a": "filled in",
+              "b": "fill in"
+            },
+            {
+              "a": "got on",
+              "b": "get on"
+            },
+            {
+              "a": "took off",
+              "b": "take off"
+            },
+            {
+              "a": "got off",
+              "b": "get off"
+            },
+            {
+              "a": "picked up",
+              "b": "pick up"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
