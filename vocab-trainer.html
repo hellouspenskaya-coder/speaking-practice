@@ -839,7 +839,8 @@ function eligibleSingleModes(item, enabledModes) {
   const canUsePrepositions = item.requiresPreposition && item.correctPreposition && item.prepositionSentence;
   const wordFormationAnswerValid = Array.isArray(item.wordFamily) && item.wordFormationAnswer
     && item.wordFamily.some(f => f.form && f.form.toLowerCase() === item.wordFormationAnswer.toLowerCase());
-  const canUseWordFormation = Array.isArray(item.wordFamily) && item.wordFamily.length >= 2
+  const canUseWordFormation = Array.isArray(item.wordFamily)
+    && new Set(item.wordFamily.map(f => String(f.form || '').toLowerCase()).filter(Boolean)).size >= 2
     && item.wordFormationSentence && wordFormationAnswerValid;
   const canUseCollocations = item.isCollocation && item.collocationSentence && item.collocationAnswer
     && Array.isArray(item.collocationDistractors) && item.collocationDistractors.length >= 3;
@@ -1535,7 +1536,7 @@ function renderPrepositions(container, item, onDone) {
 // the point of the exercise, so this is the one place "wrong" options are
 // deliberately close to the right answer rather than clearly-different. ---
 function renderWordFormation(container, item, onDone) {
-  const forms = shuffle(item.wordFamily.map(f => f.form));
+  const forms = shuffle([...new Set(item.wordFamily.map(f => f.form))]);
   const correct = item.wordFormationAnswer;
   const sentenceHtml = escapeHtml(item.wordFormationSentence).replace('___', '<u style="text-decoration:none;border-bottom:2px solid var(--border);padding:0 8px;">&nbsp;&nbsp;&nbsp;&nbsp;</u>');
 

@@ -666,11 +666,11 @@ function renderItemBody(id) {
   function updateWfValidation() {
     const el = document.getElementById(`wfValidation-${id}`);
     if (!el) return;
-    const forms = (item.wordFamily || []).map(f => f.form.toLowerCase());
+    const forms = [...new Set((item.wordFamily || []).map(f => f.form.toLowerCase()))];
     const answer = (item.wordFormationAnswer || '').toLowerCase();
     if (!forms.length && !answer) { el.textContent = ''; return; }
     if (forms.length < 2) {
-      el.textContent = 'Need at least 2 forms for this exercise to appear.';
+      el.textContent = 'Need at least 2 DIFFERENT forms for this exercise to appear.';
       el.style.color = 'var(--muted)';
     } else if (!answer || !forms.includes(answer)) {
       el.textContent = 'Answer must exactly match one of the forms above — exercise won\'t show otherwise.';
@@ -822,9 +822,19 @@ async function generateContentFor(itemsToGenerate) {
       item.requiresPreposition = Boolean(generated.requiresPreposition);
       item.correctPreposition = generated.correctPreposition || '';
       item.prepositionSentence = generated.prepositionSentence || '';
-      item.wordFamily = Array.isArray(generated.wordFamily) ? generated.wordFamily : [];
-      item.wordFormationSentence = generated.wordFormationSentence || '';
-      item.wordFormationAnswer = generated.wordFormationAnswer || '';
+      // The model sometimes lists the same form twice ("bark, bark": noun and verb look identical).
+      // Equal forms give nothing to choose from, so duplicates are dropped; fewer than 2 left = no exercise.
+      const seenForms = new Set();
+      item.wordFamily = (Array.isArray(generated.wordFamily) ? generated.wordFamily : []).filter(f => {
+        const k = f && f.form ? String(f.form).trim().toLowerCase() : '';
+        if (!k || seenForms.has(k)) return false;
+        seenForms.add(k);
+        return true;
+      });
+      const hasChoice = item.wordFamily.length >= 2;
+      item.wordFormationSentence = hasChoice ? (generated.wordFormationSentence || '') : '';
+      item.wordFormationAnswer = hasChoice ? (generated.wordFormationAnswer || '') : '';
+      if (!hasChoice) item.wordFamily = [];
       item.isCollocation = Boolean(generated.isCollocation);
       item.collocationSentence = generated.collocationSentence || '';
       item.collocationAnswer = generated.collocationAnswer || '';
@@ -1149,10 +1159,11 @@ async function generateGapSentences() {
       const g = byId.get(String(i.id));
       if (g) { i.gapSentence = g.gapSentence; i.gapForm = g.gapForm; i.gapRivals = g.gapRivals || []; got++; }
     });
+    renderItems();   // show the new sentences in the open word cards (open cards and scroll position are kept)
     const missing = todo.length - got;
     note.textContent = got + ' gap sentence' + (got === 1 ? '' : 's') + ' ready.' +
       (missing > 0 ? ' ' + missing + ' word(s) got none; the mode skips them.' : '');
-    if (missing > 0 && data.stats) {
+    if (missing > 0 && data.stats && data.stats.asked !== undefined) {
       const st = data.stats;
       note.textContent += ' [asked ' + st.asked + ', AI wrote ' + st.written + ', usable ' + st.valid + ', double-checked ' + st.checked + (st.dropped && st.dropped.length ? '; dropped: ' + st.dropped.join('; ') : '') + ']';
     }
