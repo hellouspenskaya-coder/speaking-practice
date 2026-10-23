@@ -258,6 +258,7 @@
   <div class="card">
     <h2>Practice modes for this set</h2>
     <div class="modes-grid" id="modesGrid"></div>
+    <p id="gapNote" style="font-size:12px;margin:8px 0 0;color:var(--muted);display:none;"></p>
   </div>
 
   <div class="card">
@@ -294,6 +295,7 @@ const MODES = [
   { id: 'matching', label: 'Matching (picture)' },
   { id: 'matchingDef', label: 'Matching (definition)' },
   { id: 'listening', label: 'Listening' },
+  { id: 'contextGap', label: 'Choose the word in context (sentence with a gap)' },
   { id: 'fillLetters', label: 'Fill missing letters' },
   { id: 'letterScramble', label: 'Letter scramble' },
   { id: 'dictation', label: 'Dictation (with picture)' },
@@ -1087,6 +1089,48 @@ function renderModes() {
 }
 renderModes();
 
+// "Choose the word in context": the sentences are written (and checked for a single fitting
+// word) by the AI the moment the mode is ticked, and again for words that were added later.
+let gapBusy = false;
+async function generateGapSentences() {
+  const note = document.getElementById('gapNote');
+  const box = document.querySelector('#modesGrid input[data-mode="contextGap"]');
+  if (!box || !box.checked || gapBusy) return;
+  const todo = items.filter(i => !(i.gapSentence && i.gapForm) && !i.passageForm && i.text);
+  note.style.display = 'block';
+  if (items.length < 4) { note.textContent = 'This mode needs at least 4 words in the set.'; return; }
+  if (!todo.length) { note.textContent = 'Every word already has a gap sentence.'; return; }
+  gapBusy = true;
+  note.innerHTML = 'Writing and checking gap sentences… (a few seconds)';
+  try {
+    const r = await fetch('/api/vocab', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'gaps', level: document.getElementById('levelSelect').value,
+        items: items.map(i => ({ id: i.id, text: i.text, type: i.type })) })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Failed');
+    const byId = new Map((data.gaps || []).map(g => [g.id, g]));
+    let got = 0;
+    items.forEach(i => {
+      if (i.gapSentence && i.gapForm) return;
+      const g = byId.get(String(i.id));
+      if (g) { i.gapSentence = g.gapSentence; i.gapForm = g.gapForm; i.gapRivals = g.gapRivals || []; got++; }
+    });
+    const missing = todo.length - got;
+    note.textContent = got + ' gap sentence' + (got === 1 ? '' : 's') + ' ready.' +
+      (missing > 0 ? ' ' + missing + ' word(s) got none (the AI could not make the word the only fit); the mode skips them.' : '');
+  } catch (e) {
+    note.textContent = 'Could not write the gap sentences: ' + e.message + '. Untick and tick the mode to try again.';
+  } finally { gapBusy = false; }
+}
+document.getElementById('modesGrid').addEventListener('change', (e) => {
+  if (e.target && e.target.dataset && e.target.dataset.mode === 'contextGap') {
+    if (e.target.checked) generateGapSentences();
+    else document.getElementById('gapNote').style.display = 'none';
+  }
+});
+
 function getEnabledModes() {
   return Array.from(document.querySelectorAll('#modesGrid input[type=checkbox]'))
     .filter(cb => cb.checked)
@@ -1129,7 +1173,8 @@ function buildSetDataCore() {
       pastParticiple: i.pastParticiple || '',
       verbSentence: i.verbSentence || '',
       verbAnswer: i.verbAnswer || '',
-      ...(i.passageForm ? { passageForm: i.passageForm } : {})
+      ...(i.passageForm ? { passageForm: i.passageForm } : {}),
+      ...(i.gapSentence && i.gapForm ? { gapSentence: i.gapSentence, gapForm: i.gapForm, gapRivals: i.gapRivals || [] } : {})
     }))
   };
 }

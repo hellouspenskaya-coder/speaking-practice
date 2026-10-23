@@ -798,6 +798,28 @@ function shuffle(arr) {
   return a;
 }
 
+// Sentence and answer form for the "Choose the word in context" mode. Sets made by the builder carry
+// gapSentence / gapForm (the word may be inflected: dogs, wrote); text sets use the excerpt's own sentence.
+function gapSentenceOf(i) { return i.gapSentence || i.example || ''; }
+function gapFormOf(i) { return i.gapForm || i.passageForm || ''; }
+function gapOptionsFor(item) {
+  const sentenceLower = gapSentenceOf(item).toLowerCase();
+  const rivals = new Set((item.gapRivals || []).map(r => String(r).toLowerCase()));
+  const self = gapFormOf(item).toLowerCase();
+  const seen = new Set([self]);
+  const out = [];
+  (setData.items || []).forEach(o => {
+    if (o.id === item.id) return;
+    const f = gapFormOf(o);
+    if (!f || seen.has(f.toLowerCase()) || rivals.has(f.toLowerCase())) return;
+    // a word already written in the sentence would be a free elimination
+    if (new RegExp('(?<![A-Za-z-])' + escapeRegex(f.toLowerCase()) + '(?![A-Za-z-])').test(sentenceLower)) return;
+    seen.add(f.toLowerCase());
+    out.push(o);
+  });
+  return out;
+}
+
 function eligibleSingleModes(item, enabledModes) {
   const base = item.type === 'phrase' ? SINGLE_PHRASE_MODES : SINGLE_WORD_MODES;
   // Picture-based questions need the item itself AND enough other pictured
@@ -809,9 +831,11 @@ function eligibleSingleModes(item, enabledModes) {
   // (all familiar to the student) rather than invented rhymes, so it
   // needs at least 3 other items to offer a real four-way choice.
   const canUseListening = (setData.items || []).filter(i => i.id !== item.id).length >= 3;
-  const contextGapForms = (setData.items || []).filter(i => i.passageForm).length;
-  const canUseContextGap = Boolean(item.passageForm && item.example
-    && item.example.toLowerCase().includes(item.passageForm.toLowerCase()) && contextGapForms >= 4);
+  const contextGapForms = (setData.items || []).filter(i => gapFormOf(i)).length;
+  const itemGapForm = gapFormOf(item);
+  const canUseContextGap = Boolean(itemGapForm && gapSentenceOf(item)
+    && gapSentenceOf(item).toLowerCase().includes(itemGapForm.toLowerCase())
+    && contextGapForms >= 4 && gapOptionsFor(item).length >= 2);
   const canUsePrepositions = item.requiresPreposition && item.correctPreposition && item.prepositionSentence;
   const wordFormationAnswerValid = Array.isArray(item.wordFamily) && item.wordFormationAnswer
     && item.wordFamily.some(f => f.form && f.form.toLowerCase() === item.wordFormationAnswer.toLowerCase());
@@ -2825,21 +2849,20 @@ function renderPassageCloze(container, onFinish) {
 // The sentence from the text with the word blanked out; the options are
 // the other highlighted words, exactly as they appear in the text.
 function renderContextGap(container, item, onDone) {
-  const form = item.passageForm;
+  const form = gapFormOf(item);
+  const sentence = gapSentenceOf(item);
   // Three options only. Before a blank that follows "a"/"an", the wrong options are words with the
   // other article, so no second word can fit: the article rules them out, and that is a fair clue.
-  const sentenceLower = String(item.example || '').toLowerCase();
-  const allOthers = shuffle((setData.items || []).filter(i => i.id !== item.id && i.passageForm));
-  // A word already written in the sentence is never offered as a wrong option (it would be a free elimination).
-  const notInSentence = allOthers.filter(o => !new RegExp('(?<![A-Za-z-])' + escapeRegex(o.passageForm.toLowerCase()) + '(?![A-Za-z-])').test(sentenceLower));
-  const pool = notInSentence.length >= 2 ? notInSentence : allOthers;
-  const art = (String(item.example || '').match(new RegExp('(?<![A-Za-z])(an?)\\s+' + escapeRegex(form), 'i')) || [])[1];
+  // Words the AI marked as also fitting the sentence (gapRivals) and words already in the sentence are never offered.
+  const pool = gapOptionsFor(item);
+  const art = (String(sentence).match(new RegExp('(?<![A-Za-z])(an?)\\s+' + escapeRegex(form), 'i')) || [])[1];
   const startsVowel = function (t) { return /^[aeiou]/i.test(t); };
-  const wrongArticle = function (o) { return !!art && ((art.toLowerCase() === 'an') !== startsVowel(o.passageForm)); };
-  const others = pool.filter(wrongArticle).concat(pool.filter(function (o) { return !wrongArticle(o); })).slice(0, 2);
-  const options = shuffle([form].concat(others.map(o => o.passageForm)));
+  const wrongArticle = function (o) { return !!art && ((art.toLowerCase() === 'an') !== startsVowel(gapFormOf(o))); };
+  const shuffledPool = shuffle(pool);
+  const others = shuffledPool.filter(wrongArticle).concat(shuffledPool.filter(function (o) { return !wrongArticle(o); })).slice(0, 2);
+  const options = shuffle([form].concat(others.map(o => gapFormOf(o))));
   const re = new RegExp('(?<![A-Za-z])' + escapeRegex(escapeHtml(form)) + '(?![A-Za-z])', 'i');
-  const sentenceHtml = escapeHtml(item.example).replace(re,
+  const sentenceHtml = escapeHtml(sentence).replace(re,
     '<u style="text-decoration:none;border-bottom:2px solid var(--border);padding:0 8px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>');
   container.innerHTML = `
     <p class="mode-label">Choose the word that fits</p>

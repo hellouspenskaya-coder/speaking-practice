@@ -32,6 +32,7 @@ module.exports = async function handler(req, res) {
   try {
     if (action === 'content') return await generateContent(req, res);
     if (action === 'antonyms') return await findAntonyms(req, res);
+    if (action === 'gaps') return await generateGaps(req, res);
     if (action === 'audio') return await generateAudio(req, res);
     if (action === 'images') return await searchImages(req, res);
     if (action === 'save') return await saveSet(req, res);
@@ -176,6 +177,88 @@ No preamble, no markdown fences, no explanation - JSON only.`;
 
   const text = await callHaiku(prompt, 3000);
   return extractJsonArray(text);
+}
+
+// ---------- "Choose the word in context" sentences ----------
+// Optional mode. For every word the model writes one sentence in which the word (in whatever
+// form fits: dog -> dogs, write -> wrote) is the only sensible choice among the set's words.
+// Step 1 writes the sentences; step 2 checks, for every sentence, which OTHER forms from the
+// set would also fit. Those "rivals" are saved with the item and never offered as wrong options.
+function escapeRegExpGap(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+async function generateGaps(req, res) {
+  const { items, level } = req.body;
+  if (!Array.isArray(items) || items.length < 4) {
+    res.status(400).json({ error: 'At least 4 words are needed for this mode' });
+    return;
+  }
+  const cefr = level || 'A1';
+  const words = items.map((i) => ({ id: String(i.id), text: String(i.text || '').trim(), type: i.type }));
+  try {
+    const CHUNK = 10;
+    const chunks = [];
+    for (let i = 0; i < words.length; i += CHUNK) chunks.push(words.slice(i, i + CHUNK));
+    const all = words.map((w) => w.text);
+    const written = (await Promise.all(chunks.map(async (chunk) => {
+      const prompt = `You are writing gap-fill sentences for ${cefr}-level English learners (use only vocabulary and grammar they know).
+Learners will see the sentence with ONE blank and must pick the missing word from a list made of the other words of the same set. The set: ${JSON.stringify(all)}.
+
+For each word below write ONE natural sentence that contains it. Rules:
+- The word may change form to fit the sentence (plural, -ing, past simple, past participle, third person -s), or stay as it is. "form" is the exact characters used in the sentence.
+- Make the sentence so clear that this word is the ONLY one of the set that fits the blank, both in meaning and in grammar. Give strong context clues; do not use vague sentences like "I like ___".
+- Do NOT put any other word of the set in the sentence.
+- The form must appear exactly once in the sentence, and be a whole word (or whole phrase for phrases).
+- No quotation marks inside the sentence.
+
+Words: ${JSON.stringify(chunk.map((w) => ({ id: w.id, text: w.text, type: w.type })))}
+
+Respond with ONLY a JSON array: [{"id":"...","sentence":"...","form":"..."}] - no preamble, no markdown.`;
+      return extractJsonArray(await callHaiku(prompt, 3000));
+    }))).flat();
+
+    const byId = new Map(words.map((w) => [w.id, w]));
+    const good = [];
+    written.forEach((w) => {
+      if (!w || !byId.has(String(w.id))) return;
+      const sentence = String(w.sentence || '').trim();
+      const form = String(w.form || '').trim();
+      if (!sentence || !form) return;
+      const hits = sentence.match(new RegExp('(?<![A-Za-z])' + escapeRegExpGap(form) + '(?![A-Za-z])', 'gi')) || [];
+      if (hits.length !== 1) return;
+      good.push({ id: String(w.id), sentence, form });
+    });
+    if (good.length < 4) {
+      res.status(200).json({ gaps: [] });
+      return;
+    }
+
+    // Step 2: which other forms would also fit?
+    const forms = good.map((g) => g.form);
+    const checkPrompt = `Here are gap-fill sentences. Each has one blank (___). The options are this list of words/forms: ${JSON.stringify(forms)}.
+For EACH sentence, list every option from the list, other than the intended answer, that would ALSO make a grammatically correct and sensible sentence in the blank. Be strict about meaning but think about real learners: if a reasonable person could accept it, list it. If no other option fits, return an empty list.
+
+Sentences:
+${good.map((g) => JSON.stringify({ id: g.id, answer: g.form, sentence: g.sentence.replace(new RegExp('(?<![A-Za-z])' + escapeRegExpGap(g.form) + '(?![A-Za-z])', 'i'), '___') })).join('\n')}
+
+Respond with ONLY a JSON array: [{"id":"...","rivals":["...","..."]}] - no preamble, no markdown.`;
+    let checks = [];
+    try { checks = extractJsonArray(await callHaiku(checkPrompt, 3000)); } catch (e) { checks = []; }
+    const rivalsById = new Map();
+    checks.forEach((c) => {
+      if (c && Array.isArray(c.rivals)) rivalsById.set(String(c.id), c.rivals.map((r) => String(r)).filter((r) => forms.some((f) => f.toLowerCase() === r.toLowerCase())));
+    });
+    const gaps = good.map((g) => ({
+      id: g.id,
+      gapSentence: g.sentence,
+      gapForm: g.form,
+      gapRivals: rivalsById.get(g.id) || [],
+      // If the check call failed for this sentence we cannot vouch for it.
+      checked: rivalsById.has(g.id)
+    })).filter((g) => g.checked).map(({ checked, ...rest }) => rest);
+    res.status(200).json({ gaps });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 }
 
 async function findAntonyms(req, res) {
