@@ -215,50 +215,61 @@ For each word below write ONE natural sentence that contains it. Rules:
 
 Words: ${JSON.stringify(chunk.map((w) => ({ id: w.id, text: w.text, type: w.type })))}
 
-Respond with ONLY a JSON array: [{"id":"...","sentence":"...","form":"..."}] - no preamble, no markdown.`;
+Respond with ONLY a JSON array, one object per word: [{"id":"(copy the id)","text":"(the word)","sentence":"...","form":"..."}] - no preamble, no markdown.`;
       return extractJsonArray(await callHaiku(prompt, 3000));
     }))).flat();
 
     const byId = new Map(words.map((w) => [w.id, w]));
+    const byText = new Map(words.map((w) => [w.text.toLowerCase(), w]));
     const good = [];
+    const dropped = [];
     written.forEach((w) => {
-      if (!w || !byId.has(String(w.id))) return;
+      if (!w) return;
+      // The model sometimes echoes the word instead of the id; accept either.
+      const src = byId.get(String(w.id)) || byText.get(String(w.text || w.word || '').toLowerCase());
+      if (!src) { dropped.push('unknown id'); return; }
       const sentence = String(w.sentence || '').trim();
       const form = String(w.form || '').trim();
-      if (!sentence || !form) return;
+      if (!sentence || !form) { dropped.push(src.text + ': empty'); return; }
       const hits = sentence.match(new RegExp('(?<![A-Za-z])' + escapeRegExpGap(form) + '(?![A-Za-z])', 'gi')) || [];
-      if (hits.length !== 1) return;
-      good.push({ id: String(w.id), sentence, form });
+      if (hits.length !== 1) { dropped.push(src.text + ': "' + form + '" found ' + hits.length + 'x'); return; }
+      if (!good.some((g) => g.id === src.id)) good.push({ id: src.id, sentence, form });
     });
+    const stats = { asked: words.length, written: written.length, valid: good.length, checked: 0, dropped: dropped.slice(0, 6) };
     if (!good.length) {
-      res.status(200).json({ gaps: [] });
+      res.status(200).json({ gaps: [], stats });
       return;
     }
 
-    // Step 2: which other forms would also fit?
+    // Step 2: which other forms would also fit? (one retry if the reply is unusable)
     const forms = good.map((g) => g.form).concat(knownForms);
+    const blank = (g) => g.sentence.replace(new RegExp('(?<![A-Za-z])' + escapeRegExpGap(g.form) + '(?![A-Za-z])', 'i'), '___');
     const checkPrompt = `Here are gap-fill sentences. Each has one blank (___). The options are this list of words/forms: ${JSON.stringify(forms)}.
 For EACH sentence, list every option from the list, other than the intended answer, that would ALSO make a grammatically correct and sensible sentence in the blank. Be strict about meaning but think about real learners: if a reasonable person could accept it, list it. If no other option fits, return an empty list.
 
 Sentences:
-${good.map((g) => JSON.stringify({ id: g.id, answer: g.form, sentence: g.sentence.replace(new RegExp('(?<![A-Za-z])' + escapeRegExpGap(g.form) + '(?![A-Za-z])', 'i'), '___') })).join('\n')}
+${good.map((g) => JSON.stringify({ id: g.id, answer: g.form, sentence: blank(g) })).join('\n')}
 
-Respond with ONLY a JSON array: [{"id":"...","rivals":["...","..."]}] - no preamble, no markdown.`;
+Respond with ONLY a JSON array with one object per sentence: [{"id":"...","answer":"...","rivals":["...","..."]}] - no preamble, no markdown.`;
     let checks = [];
-    try { checks = extractJsonArray(await callHaiku(checkPrompt, 3000)); } catch (e) { checks = []; }
-    const rivalsById = new Map();
-    checks.forEach((c) => {
-      if (c && Array.isArray(c.rivals)) rivalsById.set(String(c.id), c.rivals.map((r) => String(r)).filter((r) => forms.some((f) => f.toLowerCase() === r.toLowerCase())));
+    for (let attempt = 0; attempt < 2 && !checks.length; attempt++) {
+      try { checks = extractJsonArray(await callHaiku(checkPrompt, 3000)); } catch (e) { checks = []; }
+    }
+    const rivalsFor = (g) => {
+      const c = checks.find((x) => x && (String(x.id) === g.id || String(x.answer || '').toLowerCase() === g.form.toLowerCase()));
+      if (!c || !Array.isArray(c.rivals)) return null;
+      return c.rivals.map((r) => String(r)).filter((r) => forms.some((f) => f.toLowerCase() === r.toLowerCase()) && r.toLowerCase() !== g.form.toLowerCase());
+    };
+    const gaps = [];
+    good.forEach((g) => {
+      const rivals = rivalsFor(g);
+      // Without the check we cannot promise that only one word fits, so the sentence is not used.
+      if (rivals === null) return;
+      gaps.push({ id: g.id, gapSentence: g.sentence, gapForm: g.form, gapRivals: rivals });
     });
-    const gaps = good.map((g) => ({
-      id: g.id,
-      gapSentence: g.sentence,
-      gapForm: g.form,
-      gapRivals: rivalsById.get(g.id) || [],
-      // If the check call failed for this sentence we cannot vouch for it.
-      checked: rivalsById.has(g.id)
-    })).filter((g) => g.checked).map(({ checked, ...rest }) => rest);
-    res.status(200).json({ gaps });
+    stats.checked = gaps.length;
+    
+    res.status(200).json({ gaps, stats });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

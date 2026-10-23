@@ -1151,7 +1151,11 @@ async function generateGapSentences() {
     });
     const missing = todo.length - got;
     note.textContent = got + ' gap sentence' + (got === 1 ? '' : 's') + ' ready.' +
-      (missing > 0 ? ' ' + missing + ' word(s) got none (the AI could not make the word the only fit); the mode skips them.' : '');
+      (missing > 0 ? ' ' + missing + ' word(s) got none; the mode skips them.' : '');
+    if (missing > 0 && data.stats) {
+      const st = data.stats;
+      note.textContent += ' [asked ' + st.asked + ', AI wrote ' + st.written + ', usable ' + st.valid + ', double-checked ' + st.checked + (st.dropped && st.dropped.length ? '; dropped: ' + st.dropped.join('; ') : '') + ']';
+    }
   } catch (e) {
     note.textContent = 'Could not write the gap sentences: ' + e.message + '. Untick and tick the mode to try again.';
   } finally { gapBusy = false; }
