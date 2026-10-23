@@ -4,6 +4,7 @@
   "modes": [
     "matchingDef",
     "listening",
+    "contextGap",
     "fillLetters",
     "letterScramble",
     "dictationNoImage"
@@ -39,7 +40,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "passageForm": "first"
     },
     {
       "id": "item_2",
@@ -70,7 +72,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "passageForm": "second"
     },
     {
       "id": "item_3",
@@ -101,7 +104,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "passageForm": "third"
     },
     {
       "id": "item_4",
@@ -132,7 +136,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "passageForm": "fourth"
     },
     {
       "id": "item_5",
@@ -163,7 +168,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "passageForm": "fifth"
     },
     {
       "id": "item_6",
@@ -194,7 +200,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "passageForm": "sixth"
     },
     {
       "id": "item_7",
@@ -225,7 +232,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "passageForm": "seventh"
     },
     {
       "id": "item_8",
@@ -256,7 +264,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "passageForm": "eighth"
     },
     {
       "id": "item_9",
@@ -287,7 +296,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "passageForm": "ninth"
     },
     {
       "id": "item_10",
@@ -318,7 +328,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "passageForm": "tenth"
     }
   ]
 }

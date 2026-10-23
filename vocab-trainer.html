@@ -2828,7 +2828,11 @@ function renderContextGap(container, item, onDone) {
   const form = item.passageForm;
   // Three options only. Before a blank that follows "a"/"an", the wrong options are words with the
   // other article, so no second word can fit: the article rules them out, and that is a fair clue.
-  const pool = shuffle((setData.items || []).filter(i => i.id !== item.id && i.passageForm));
+  const sentenceLower = String(item.example || '').toLowerCase();
+  const allOthers = shuffle((setData.items || []).filter(i => i.id !== item.id && i.passageForm));
+  // A word already written in the sentence is never offered as a wrong option (it would be a free elimination).
+  const notInSentence = allOthers.filter(o => !new RegExp('(?<![A-Za-z-])' + escapeRegex(o.passageForm.toLowerCase()) + '(?![A-Za-z-])').test(sentenceLower));
+  const pool = notInSentence.length >= 2 ? notInSentence : allOthers;
   const art = (String(item.example || '').match(new RegExp('(?<![A-Za-z])(an?)\\s+' + escapeRegex(form), 'i')) || [])[1];
   const startsVowel = function (t) { return /^[aeiou]/i.test(t); };
   const wrongArticle = function (o) { return !!art && ((art.toLowerCase() === 'an') !== startsVowel(o.passageForm)); };
