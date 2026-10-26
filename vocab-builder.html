@@ -336,6 +336,14 @@ async function maybeLoadExistingSet() {
     document.getElementById('levelSelect').value = data.level || 'A1';
     idCounter = 0;
     items = (data.items || []).map(i => ({ ...i, id: i.id || ('item_' + (++idCounter)), status: 'loaded' }));
+    // New words must get ids that no loaded word already has. The counter used to
+    // start from 0 here, so words added to an opened set were numbered item_1,
+    // item_2... again: two cards shared one id, "Edit" opened the wrong card and
+    // pictures were attached to the wrong word.
+    idCounter = items.reduce((max, i) => {
+      const n = parseInt(String(i.id).replace(/\D/g, ''), 10);
+      return Number.isFinite(n) && n > max ? n : max;
+    }, idCounter);
     antonymPairs = data.antonymPairs || [];
     const KNOWN_KEYS = ['topic', 'level', 'modes', 'antonymPairs', 'items', 'stories'];
     loadedExtras = {};
