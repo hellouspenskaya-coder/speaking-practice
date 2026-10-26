@@ -360,6 +360,15 @@ async function maybeLoadExistingSet() {
       }, 50);
     }
     renderItems();
+    // A set opened from its link may still have words with no picture (for
+    // example a set made from a list). Show the Pixabay candidates for them
+    // right away, same as after "Generate content", so the teacher only has
+    // to pick instead of pressing "Find images" word by word. Only words that
+    // explicitly want a picture and have none are searched, so finished sets
+    // and text-only sets cost no requests.
+    setTimeout(() => {
+      autoFetchImages(items.filter(i => i.wantsImage === true && !i.image)).catch(() => {});
+    }, 300);
   } catch (e) { /* not found or not yet created — silent */ }
 }
 maybeLoadExistingSet();
