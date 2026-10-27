@@ -189,7 +189,7 @@ const isWorksheet = params.get('worksheet') === '1';
 const app = document.getElementById('app');
 
 const SINGLE_WORD_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'contextGap', 'fillLetters', 'letterScramble', 'dictation', 'dictationNoImage', 'prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping', 'verbFormsDictation'];
-const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'contextGap', 'fillLetters', 'phraseBuilder', 'prepositions', 'collocations', 'verbFormsTyping', 'verbFormsDictation'];
+const SINGLE_PHRASE_MODES = ['multipleChoice', 'multipleChoiceReverse', 'listening', 'contextGap', 'fillLetters', 'phraseBuilder', 'questionAnswer', 'questionAnswerListen', 'prepositions', 'collocations', 'verbFormsTyping', 'verbFormsDictation'];
 const GROUP_MODES = ['matching', 'matchingDef', 'whatsMissing', 'phraseMatch'];
 // Most pictures shown at once in matching / what's missing.
 // Kept low so a beginner can actually hold them in mind.
@@ -856,6 +856,7 @@ function eligibleSingleModes(item, enabledModes) {
     if (m === 'listening' && !canUseListening) return false;
     if (m === 'contextGap' && (!canUseContextGap || setData.kind === 'textSet')) return false;
     if (m === 'dictation' && !item.image) return false;
+    if ((m === 'questionAnswer' || m === 'questionAnswerListen') && !item.qaAnswer) return false;
     if (m === 'prepositions' && !canUsePrepositions) return false;
     if (m === 'wordFormation' && !canUseWordFormation) return false;
     if (m === 'collocations' && !canUseCollocations) return false;
@@ -925,7 +926,7 @@ function buildSession(data) {
   // they shouldn't have to compete on equal odds with generic modes like
   // Listening that are eligible for almost every word. Whenever an item
   // qualifies for a specialized mode, guarantee it's the one used.
-  const SPECIALIZED_MODES = ['prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping', 'verbFormsDictation'];
+  const SPECIALIZED_MODES = ['questionAnswer', 'questionAnswerListen', 'prepositions', 'wordFormation', 'collocations', 'verbForms', 'verbFormsTyping', 'verbFormsDictation'];
   const singleSteps = [];
   shuffle(items).forEach(item => {
     const pool = eligibleSingleModes(item, enabledModes);
@@ -1154,6 +1155,8 @@ function renderStep() {
     else if (step.mode === 'fillLetters') renderFillLetters(cardArea, step.item, onDone);
     else if (step.mode === 'letterScramble') renderLetterScramble(cardArea, step.item, onDone);
     else if (step.mode === 'phraseBuilder') renderPhraseBuilder(cardArea, step.item, onDone);
+    else if (step.mode === 'questionAnswer') renderQuestionAnswer(cardArea, step.item, onDone, false);
+    else if (step.mode === 'questionAnswerListen') renderQuestionAnswer(cardArea, step.item, onDone, true);
   } else if (step.kind === 'antonym') {
     renderAntonyms(cardArea, step.item, step.answer, onDone);
   } else if (step.kind === 'antonymMatching') {
@@ -1230,6 +1233,8 @@ function modeLabel(mode) {
     fillLetters: 'Fill in the letters',
     letterScramble: 'Build the word',
     phraseBuilder: 'Build the phrase',
+    questionAnswer: 'Choose the answer',
+    questionAnswerListen: 'Listen and answer',
     matching: 'Matching',
     matchingDef: 'Match the definition',
     whatsMissing: "What's missing?",
@@ -1421,6 +1426,77 @@ function renderListening(container, item, onDone) {
       }
       grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
       advance(correct, onDone, 700);
+    });
+    grid.appendChild(btn);
+  });
+}
+
+
+// --- Question -> answer: the officer asks, the student taps what to say.
+// Wrong options are written by hand per question (item.qaWrong) so that no wrong option is also a
+// valid answer ("On holiday." and "On business." both fit "What is the purpose of your visit?").
+// Without enough hand-written ones, other questions' answers are used. In the "listen" variant
+// the question is only heard; its words appear on request.
+function qaOptions(item) {
+  const correct = item.qaAnswer;
+  const seen = new Set([correct.toLowerCase()]);
+  const wrong = [];
+  (item.qaWrong || []).forEach(w => {
+    if (w && !seen.has(String(w).toLowerCase())) { seen.add(String(w).toLowerCase()); wrong.push(w); }
+  });
+  if (wrong.length < 2) {
+    shuffle(setData.items.filter(i => i.id !== item.id && i.qaAnswer)).forEach(o => {
+      if (wrong.length >= 2) return;
+      const a = o.qaAnswer;
+      if (!seen.has(a.toLowerCase())) { seen.add(a.toLowerCase()); wrong.push(a); }
+    });
+  }
+  return shuffle([correct, ...wrong.slice(0, 2)]);
+}
+
+function renderQuestionAnswer(container, item, onDone, listenOnly) {
+  const options = qaOptions(item);
+  container.innerHTML = `
+    <button class="play-btn" id="playBtn"><span class="icon">&#128266;</span> ${listenOnly ? 'Listen to the officer' : 'Listen'}</button>
+    ${listenOnly
+      ? `<p class="definition" id="qText" style="display:none;font-size:20px;font-weight:600;color:var(--text,inherit);">${escapeHtml(item.text)}</p>
+         <button id="showBtn" style="margin:6px 0;">Show the words</button>`
+      : `<p class="definition" style="font-size:20px;font-weight:600;color:var(--text,inherit);">${escapeHtml(item.text)}</p>`}
+    <p class="mode-label" style="margin-top:16px;">What do you say?</p>
+    <div class="word-choice-grid" id="qaGrid"></div>
+    <div id="feedback"></div>
+  `;
+  const say = () => speakText(item.text);
+  document.getElementById('playBtn').addEventListener('click', say);
+  if (listenOnly) {
+    document.getElementById('showBtn').addEventListener('click', () => {
+      document.getElementById('qText').style.display = '';
+      document.getElementById('showBtn').style.display = 'none';
+    });
+    activeTimers.push(setTimeout(() => { try { say(); } catch (e) {} }, 350));
+  }
+  const grid = document.getElementById('qaGrid');
+  options.forEach(text => {
+    const btn = document.createElement('button');
+    btn.className = 'word-tile';
+    btn.textContent = text;
+    btn.addEventListener('click', () => {
+      const correct = text === item.qaAnswer;
+      btn.classList.add(correct ? 'correct' : 'wrong');
+      if (!correct) {
+        const correctBtn = [...grid.querySelectorAll('.word-tile')].find(b => b.textContent === item.qaAnswer);
+        if (correctBtn) correctBtn.classList.add('correct');
+        const feedback = document.getElementById('feedback');
+        feedback.className = 'feedback wrong';
+        feedback.textContent = `Better: "${item.qaAnswer}"`;
+      }
+      if (listenOnly) {
+        document.getElementById('qText').style.display = '';
+        const sb = document.getElementById('showBtn'); if (sb) sb.style.display = 'none';
+      }
+      grid.querySelectorAll('.word-tile').forEach(b => b.disabled = true);
+      speakText(item.qaAnswer);
+      advance(correct, onDone, 1400);
     });
     grid.appendChild(btn);
   });

@@ -105,3 +105,13 @@ The trainer falls back to the browser's built-in speech synthesis whenever a set
 - In the Text Set Builder, open "Edit a published set", paste the set's link (the one students get) and press Open, or open `text-builder.html?set=NAME`. The text, words and questions load; change what you need and press "Save changes". The link stays the same and the Notion card is not changed.
 - Everything else saved in the set (stories, audio, extra fields) is kept. The original wording is not stored in the set, so "Adapt" and "Use original wording" are not available for an opened set; edit the text by hand ("Edit text") or generate the words and questions again.
 - The email track and its order are chosen when a set is first published and cannot be changed here.
+
+## Question → answer modes (added 2026-10-27)
+
+- Two new modes for phrase items: `questionAnswer` ("Choose the answer": the question is shown and can be played) and
+  `questionAnswerListen` ("Listen and answer": the question is only heard, its words appear on request).
+- An item takes part when it has `qaAnswer` (the correct reply) and, best, `qaWrong` (2 hand-written wrong replies, none of
+  which may also fit the question). Without enough `qaWrong`, other questions' answers are used as wrong options.
+- Such items are "specialized": each gets one question→answer step per session, instead of the generic phrase modes.
+- The builder lists both modes and keeps `qaAnswer`/`qaWrong` when a set is opened and saved again, but has no fields to edit
+  them yet; the airport sets (airport-2, -3, -6, -7, -9) carry them in their JSON.

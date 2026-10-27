@@ -314,7 +314,9 @@ const MODES = [
   { id: 'verbForms', label: 'Verb forms (B1+)' },
   { id: 'verbFormsTyping', label: 'Verb forms (write them)' },
   { id: 'verbFormsDictation', label: 'Verb forms (dictation)' },
-  { id: 'phraseMatch', label: 'Match the phrase' }
+  { id: 'phraseMatch', label: 'Match the phrase' },
+  { id: 'questionAnswer', label: 'Question → choose the answer (needs answers on the questions)' },
+  { id: 'questionAnswerListen', label: 'Listen → choose the answer (needs answers on the questions)' }
 ];
 
 let antonymPairs = [];
@@ -1260,6 +1262,7 @@ function buildSetDataCore() {
       pastParticiple: i.pastParticiple || '',
       verbSentence: i.verbSentence || '',
       verbAnswer: i.verbAnswer || '',
+      ...(i.qaAnswer ? { qaAnswer: i.qaAnswer, qaWrong: i.qaWrong || [] } : {}),
       ...(i.passageForm ? { passageForm: i.passageForm } : {}),
       ...(i.gapSentence && i.gapForm ? { gapSentence: i.gapSentence, gapForm: i.gapForm, gapRivals: i.gapRivals || [] } : {})
     }))

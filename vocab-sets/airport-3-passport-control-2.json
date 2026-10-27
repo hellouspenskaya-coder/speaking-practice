@@ -4,7 +4,9 @@
   "modes": [
     "listening",
     "matchingDef",
-    "phraseBuilder"
+    "phraseBuilder",
+    "questionAnswer",
+    "questionAnswerListen"
   ],
   "antonymPairs": [],
   "items": [
@@ -44,7 +46,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "Yes, here it is.",
+      "qaWrong": [
+        "I'm from Lithuania.",
+        "Yes, I'm alone."
+      ]
     },
     {
       "id": "item_2",
@@ -116,7 +123,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "I'm from Lithuania.",
+      "qaWrong": [
+        "Yes, it's my first time.",
+        "Yes, here it is."
+      ]
     },
     {
       "id": "item_4",
@@ -188,7 +200,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "Yes, it's my first time.",
+      "qaWrong": [
+        "I'm from Lithuania.",
+        "Yes, here it is."
+      ]
     },
     {
       "id": "item_6",
@@ -298,7 +315,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "Yes, I'm alone.",
+      "qaWrong": [
+        "I'm from Lithuania.",
+        "Yes, here it is."
+      ]
     },
     {
       "id": "item_9",

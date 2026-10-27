@@ -4,7 +4,9 @@
   "modes": [
     "listening",
     "matchingDef",
-    "phraseBuilder"
+    "phraseBuilder",
+    "questionAnswer",
+    "questionAnswerListen"
   ],
   "antonymPairs": [],
   "items": [
@@ -41,7 +43,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "Nothing to declare.",
+      "qaWrong": [
+        "About two hundred euros.",
+        "Of course."
+      ]
     },
     {
       "id": "item_2",
@@ -112,7 +119,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "Clothes and gifts.",
+      "qaWrong": [
+        "Nothing to declare.",
+        "Of course."
+      ]
     },
     {
       "id": "item_4",
@@ -184,7 +196,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "No food.",
+      "qaWrong": [
+        "Clothes and gifts.",
+        "Of course."
+      ]
     },
     {
       "id": "item_6",
@@ -254,7 +271,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "Of course.",
+      "qaWrong": [
+        "No food.",
+        "About two hundred euros."
+      ]
     },
     {
       "id": "item_8",
@@ -326,7 +348,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "About two hundred euros.",
+      "qaWrong": [
+        "Of course.",
+        "Clothes and gifts."
+      ]
     },
     {
       "id": "item_10",

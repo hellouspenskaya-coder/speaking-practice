@@ -4,7 +4,9 @@
   "modes": [
     "listening",
     "matchingDef",
-    "phraseBuilder"
+    "phraseBuilder",
+    "questionAnswer",
+    "questionAnswerListen"
   ],
   "antonymPairs": [],
   "items": [
@@ -43,7 +45,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "For five days.",
+      "qaWrong": [
+        "At a hotel.",
+        "No, no liquids."
+      ]
     },
     {
       "id": "item_2",
@@ -114,7 +121,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "At a hotel.",
+      "qaWrong": [
+        "For five days.",
+        "Nothing to declare."
+      ]
     },
     {
       "id": "item_4",
@@ -185,7 +197,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "Okay, no problem.",
+      "qaWrong": [
+        "For five days.",
+        "At a hotel."
+      ]
     },
     {
       "id": "item_6",
@@ -257,7 +274,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "No, no liquids.",
+      "qaWrong": [
+        "At a hotel.",
+        "Okay, no problem."
+      ]
     },
     {
       "id": "item_8",
@@ -327,7 +349,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "Nothing to declare.",
+      "qaWrong": [
+        "For five days.",
+        "No, no liquids."
+      ]
     },
     {
       "id": "item_10",

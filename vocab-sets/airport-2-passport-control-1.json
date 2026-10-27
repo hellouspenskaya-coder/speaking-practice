@@ -4,7 +4,9 @@
   "modes": [
     "listening",
     "matchingDef",
-    "phraseBuilder"
+    "phraseBuilder",
+    "questionAnswer",
+    "questionAnswerListen"
   ],
   "antonymPairs": [],
   "items": [
@@ -40,7 +42,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "Here you are.",
+      "qaWrong": [
+        "For five days.",
+        "At a hotel."
+      ]
     },
     {
       "id": "item_2",
@@ -114,7 +121,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "On holiday.",
+      "qaWrong": [
+        "At a hotel.",
+        "For one week."
+      ]
     },
     {
       "id": "item_4",
@@ -219,7 +231,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "For five days.",
+      "qaWrong": [
+        "On holiday.",
+        "At a hotel."
+      ]
     },
     {
       "id": "item_7",
@@ -325,7 +342,12 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "qaAnswer": "At a hotel.",
+      "qaWrong": [
+        "For one week.",
+        "Here you are."
+      ]
     },
     {
       "id": "item_10",
