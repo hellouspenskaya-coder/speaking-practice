@@ -316,7 +316,7 @@ function renderGallery() {
   const gallery = document.getElementById('gallery');
   items.forEach((item, idx) => {
     const tile = document.createElement('div');
-    tile.style.cssText = 'border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;height:105px;';
+    tile.style.cssText = 'border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;min-height:105px;';
     const isFirstVerbDemo = idx === 0 && item.isVerb && item.pastSimple && item.pastParticiple;
 
     if (isFirstVerbDemo) {
@@ -327,7 +327,7 @@ function renderGallery() {
       tile.innerHTML = `
         <div class="flip-inner">
           <div class="flip-face">
-            <div style="height:70px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+            <div style="height:${(item.image || item.definition) ? 70 : 24}px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
               ${item.image
                 ? `<img src="${escapeAttr(item.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
                 : `<span style="font-size:11px;color:var(--muted);padding:4px;text-align:center;">${escapeHtml(item.definition||'')}</span>`}
@@ -343,7 +343,7 @@ function renderGallery() {
       `;
     } else {
       tile.innerHTML = `
-        <div style="height:70px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+        <div style="height:${(item.image || item.definition) ? 70 : 24}px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
           ${item.image
             ? `<img src="${escapeAttr(item.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
             : `<span style="font-size:11px;color:var(--muted);padding:4px;text-align:center;">${escapeHtml(item.definition||'')}</span>`}
@@ -2770,9 +2770,9 @@ function openWordsPanel(cardArea, step) {
     const grid = body.querySelector('#wpGrid');
     items.forEach(item => {
       const tile = document.createElement('div');
-      tile.style.cssText = 'border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;height:105px;';
+      tile.style.cssText = 'border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;min-height:105px;';
       tile.innerHTML = `
-        <div style="height:70px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+        <div style="height:${(item.image || item.definition) ? 70 : 24}px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;">
           ${item.image
             ? `<img src="${escapeAttr(item.image)}" alt="" style="width:100%;height:100%;object-fit:contain;background:#fff;" />`
             : `<span style="font-size:11px;color:var(--muted);padding:4px;text-align:center;">${escapeHtml(item.definition || '')}</span>`}
