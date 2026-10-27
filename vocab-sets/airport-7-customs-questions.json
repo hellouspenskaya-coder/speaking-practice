@@ -3,7 +3,6 @@
   "level": "A1",
   "modes": [
     "listening",
-    "matchingDef",
     "phraseBuilder",
     "questionAnswer",
     "questionAnswerListen"
@@ -14,7 +13,7 @@
       "id": "item_1",
       "type": "phrase",
       "text": "Anything to declare?",
-      "definition": "The officer asks about things to show.",
+      "definition": "",
       "example": "Anything to declare? Nothing to declare.",
       "phonetic": "",
       "chunks": [
@@ -54,7 +53,7 @@
       "id": "item_2",
       "type": "phrase",
       "text": "Nothing to declare.",
-      "definition": "You have nothing special to show.",
+      "definition": "",
       "example": "Anything to declare? Nothing to declare.",
       "phonetic": "",
       "chunks": [
@@ -89,7 +88,7 @@
       "id": "item_3",
       "type": "phrase",
       "text": "What's in your suitcase?",
-      "definition": "The officer asks what your things are.",
+      "definition": "",
       "example": "What's in your suitcase? Clothes and gifts.",
       "phonetic": "",
       "chunks": [
@@ -130,7 +129,7 @@
       "id": "item_4",
       "type": "phrase",
       "text": "Clothes and gifts.",
-      "definition": "You have shirts and presents.",
+      "definition": "",
       "example": "What's in your suitcase? Clothes and gifts.",
       "phonetic": "",
       "chunks": [
@@ -165,7 +164,7 @@
       "id": "item_5",
       "type": "phrase",
       "text": "Are you carrying any food?",
-      "definition": "The officer asks about things to eat.",
+      "definition": "",
       "example": "Are you carrying any food? No food.",
       "phonetic": "",
       "chunks": [
@@ -207,7 +206,7 @@
       "id": "item_6",
       "type": "phrase",
       "text": "No food.",
-      "definition": "You have nothing to eat.",
+      "definition": "",
       "example": "Are you carrying any food? No food.",
       "phonetic": "",
       "chunks": [
@@ -241,7 +240,7 @@
       "id": "item_7",
       "type": "phrase",
       "text": "Open your suitcase, please.",
-      "definition": "The officer wants to look inside.",
+      "definition": "",
       "example": "Open your suitcase, please.",
       "phonetic": "",
       "chunks": [
@@ -282,7 +281,7 @@
       "id": "item_8",
       "type": "phrase",
       "text": "Of course.",
-      "definition": "You say this and then open it.",
+      "definition": "",
       "example": "Open your suitcase, please. Of course.",
       "phonetic": "",
       "chunks": [
@@ -316,7 +315,7 @@
       "id": "item_9",
       "type": "phrase",
       "text": "How much cash do you have?",
-      "definition": "The officer asks how much money you have.",
+      "definition": "",
       "example": "How much cash do you have? About two hundred euros.",
       "phonetic": "",
       "chunks": [
@@ -359,7 +358,7 @@
       "id": "item_10",
       "type": "phrase",
       "text": "About two hundred euros.",
-      "definition": "You have around two hundred euros.",
+      "definition": "",
       "example": "How much cash do you have? About two hundred euros.",
       "phonetic": "",
       "chunks": [

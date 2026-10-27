@@ -3,7 +3,6 @@
   "level": "A1",
   "modes": [
     "listening",
-    "matchingDef",
     "phraseBuilder",
     "questionAnswer",
     "questionAnswerListen"
@@ -14,7 +13,7 @@
       "id": "item_1",
       "type": "phrase",
       "text": "Do you have a return ticket?",
-      "definition": "The officer asks about your ticket home.",
+      "definition": "",
       "example": "Do you have a return ticket? Yes, here it is.",
       "phonetic": "",
       "chunks": [
@@ -57,7 +56,7 @@
       "id": "item_2",
       "type": "phrase",
       "text": "Yes, here it is.",
-      "definition": "You show your ticket home.",
+      "definition": "",
       "example": "Do you have a return ticket? Yes, here it is.",
       "phonetic": "",
       "chunks": [
@@ -93,7 +92,7 @@
       "id": "item_3",
       "type": "phrase",
       "text": "Where are you from?",
-      "definition": "The officer asks about your country.",
+      "definition": "",
       "example": "Where are you from? I'm from Lithuania.",
       "phonetic": "",
       "chunks": [
@@ -134,7 +133,7 @@
       "id": "item_4",
       "type": "phrase",
       "text": "I'm from Lithuania.",
-      "definition": "You say the name of your country.",
+      "definition": "",
       "example": "Where are you from? I'm from Lithuania.",
       "phonetic": "",
       "chunks": [
@@ -169,7 +168,7 @@
       "id": "item_5",
       "type": "phrase",
       "text": "Is this your first visit?",
-      "definition": "The officer asks if you came here before.",
+      "definition": "",
       "example": "Is this your first visit? Yes, it's my first time.",
       "phonetic": "",
       "chunks": [
@@ -211,7 +210,7 @@
       "id": "item_6",
       "type": "phrase",
       "text": "Yes, it's my first time.",
-      "definition": "You never came here before.",
+      "definition": "",
       "example": "Is this your first visit? Yes, it's my first time.",
       "phonetic": "",
       "chunks": [
@@ -248,7 +247,7 @@
       "id": "item_7",
       "type": "phrase",
       "text": "No, I travel a lot.",
-      "definition": "You come here many times.",
+      "definition": "",
       "example": "Is this your first visit? No, I travel a lot.",
       "phonetic": "",
       "chunks": [
@@ -285,7 +284,7 @@
       "id": "item_8",
       "type": "phrase",
       "text": "Are you travelling alone?",
-      "definition": "The officer asks if people are with you.",
+      "definition": "",
       "example": "Are you travelling alone? Yes, I'm alone.",
       "phonetic": "",
       "chunks": [
@@ -326,7 +325,7 @@
       "id": "item_9",
       "type": "phrase",
       "text": "Yes, I'm alone.",
-      "definition": "Nobody is with you.",
+      "definition": "",
       "example": "Are you travelling alone? Yes, I'm alone.",
       "phonetic": "",
       "chunks": [
@@ -361,7 +360,7 @@
       "id": "item_10",
       "type": "phrase",
       "text": "No, I'm with my family.",
-      "definition": "Your family is with you.",
+      "definition": "",
       "example": "Are you travelling alone? No, I'm with my family.",
       "phonetic": "",
       "chunks": [

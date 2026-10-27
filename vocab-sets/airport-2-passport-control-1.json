@@ -3,7 +3,6 @@
   "level": "A1",
   "modes": [
     "listening",
-    "matchingDef",
     "phraseBuilder",
     "questionAnswer",
     "questionAnswerListen"
@@ -14,7 +13,7 @@
       "id": "item_1",
       "type": "phrase",
       "text": "Passport, please.",
-      "definition": "The officer wants to see your passport.",
+      "definition": "",
       "example": "Passport, please. Here you are.",
       "phonetic": "",
       "chunks": [
@@ -53,7 +52,7 @@
       "id": "item_2",
       "type": "phrase",
       "text": "Here you are.",
-      "definition": "You say this when you give something.",
+      "definition": "",
       "example": "Passport, please. Here you are.",
       "phonetic": "",
       "chunks": [
@@ -88,7 +87,7 @@
       "id": "item_3",
       "type": "phrase",
       "text": "What is the purpose of your visit?",
-      "definition": "The officer asks why you are here.",
+      "definition": "",
       "example": "What is the purpose of your visit? On holiday.",
       "phonetic": "",
       "chunks": [
@@ -132,7 +131,7 @@
       "id": "item_4",
       "type": "phrase",
       "text": "On holiday.",
-      "definition": "You say this when you come here to relax.",
+      "definition": "",
       "example": "What is the purpose of your visit? On holiday.",
       "phonetic": "",
       "chunks": [
@@ -166,7 +165,7 @@
       "id": "item_5",
       "type": "phrase",
       "text": "On business.",
-      "definition": "You say this when you come here for work.",
+      "definition": "",
       "example": "What is the purpose of your visit? On business.",
       "phonetic": "",
       "chunks": [
@@ -200,7 +199,7 @@
       "id": "item_6",
       "type": "phrase",
       "text": "How long are you staying?",
-      "definition": "The officer asks how many days you stay.",
+      "definition": "",
       "example": "How long are you staying? For five days.",
       "phonetic": "",
       "chunks": [
@@ -242,7 +241,7 @@
       "id": "item_7",
       "type": "phrase",
       "text": "For five days.",
-      "definition": "You stay here for five days.",
+      "definition": "",
       "example": "How long are you staying? For five days.",
       "phonetic": "",
       "chunks": [
@@ -277,7 +276,7 @@
       "id": "item_8",
       "type": "phrase",
       "text": "For one week.",
-      "definition": "You stay here for seven days.",
+      "definition": "",
       "example": "How long are you staying? For one week.",
       "phonetic": "",
       "chunks": [
@@ -312,7 +311,7 @@
       "id": "item_9",
       "type": "phrase",
       "text": "Where are you staying?",
-      "definition": "The officer asks where you sleep here.",
+      "definition": "",
       "example": "Where are you staying? At a hotel.",
       "phonetic": "",
       "chunks": [
@@ -353,7 +352,7 @@
       "id": "item_10",
       "type": "phrase",
       "text": "At a hotel.",
-      "definition": "You sleep in a hotel here.",
+      "definition": "",
       "example": "Where are you staying? At a hotel.",
       "phonetic": "",
       "chunks": [

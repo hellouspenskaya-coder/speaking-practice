@@ -3,7 +3,6 @@
   "level": "A1",
   "modes": [
     "listening",
-    "matchingDef",
     "phraseBuilder",
     "questionAnswer",
     "questionAnswerListen"
@@ -14,7 +13,7 @@
       "id": "item_1",
       "type": "phrase",
       "text": "Any liquids in your bag?",
-      "definition": "The officer asks about water or drinks.",
+      "definition": "",
       "example": "Any liquids in your bag? No.",
       "phonetic": "",
       "chunks": [
@@ -56,7 +55,7 @@
       "id": "item_2",
       "type": "phrase",
       "text": "No, no liquids.",
-      "definition": "You have no water or drinks.",
+      "definition": "",
       "example": "Any liquids in your bag? No, no liquids.",
       "phonetic": "",
       "chunks": [
@@ -91,7 +90,7 @@
       "id": "item_3",
       "type": "phrase",
       "text": "Yes, a bottle of water.",
-      "definition": "You have one bottle of water.",
+      "definition": "",
       "example": "Any liquids in your bag? Yes, a bottle of water.",
       "phonetic": "",
       "chunks": [
@@ -128,7 +127,7 @@
       "id": "item_4",
       "type": "phrase",
       "text": "Is this your bag?",
-      "definition": "The officer asks if the bag is yours.",
+      "definition": "",
       "example": "Is this your bag? Yes, it's mine.",
       "phonetic": "",
       "chunks": [
@@ -169,7 +168,7 @@
       "id": "item_5",
       "type": "phrase",
       "text": "Is this your laptop?",
-      "definition": "The officer asks if the computer is yours.",
+      "definition": "",
       "example": "Is this your laptop? Yes, it's mine.",
       "phonetic": "",
       "chunks": [
@@ -210,7 +209,7 @@
       "id": "item_6",
       "type": "phrase",
       "text": "Yes, it's mine.",
-      "definition": "You say the thing is yours.",
+      "definition": "",
       "example": "Is this your bag? Yes, it's mine.",
       "phonetic": "",
       "chunks": [
@@ -245,7 +244,7 @@
       "id": "item_7",
       "type": "phrase",
       "text": "Did you pack your bag yourself?",
-      "definition": "The officer asks if you put your things in.",
+      "definition": "",
       "example": "Did you pack your bag yourself? Yes, I did.",
       "phonetic": "",
       "chunks": [
@@ -288,7 +287,7 @@
       "id": "item_8",
       "type": "phrase",
       "text": "Yes, I did.",
-      "definition": "You put your things in the bag.",
+      "definition": "",
       "example": "Did you pack your bag yourself? Yes, I did.",
       "phonetic": "",
       "chunks": [
@@ -323,7 +322,7 @@
       "id": "item_9",
       "type": "phrase",
       "text": "Open your bag, please.",
-      "definition": "The officer wants to look inside.",
+      "definition": "",
       "example": "Open your bag, please.",
       "phonetic": "",
       "chunks": [
@@ -364,7 +363,7 @@
       "id": "item_10",
       "type": "phrase",
       "text": "Of course.",
-      "definition": "You say this and then open it.",
+      "definition": "",
       "example": "Open your bag, please. Of course.",
       "phonetic": "",
       "chunks": [
