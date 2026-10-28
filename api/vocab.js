@@ -207,7 +207,7 @@ async function generateGaps(req, res) {
 Learners will see the sentence with ONE blank and must pick the missing word from a list made of the other words of the same set. The set: ${JSON.stringify(all)}.
 
 For each word below write ONE natural sentence that contains it. Rules:
-- The word may change form to fit the sentence (plural, -ing, past simple, past participle, third person -s), or stay as it is. "form" is the exact characters used in the sentence.
+- The word may change form to fit the sentence (plural, -ing, past simple, past participle, third person -s, be -> is/was), or stay as it is. "form" is the exact characters used in the sentence, copied from it. Examples: target "be obsessed with", sentence "My brother is obsessed with football." -> form "is obsessed with"; target "eavesdrop", sentence "She eavesdropped on our talk." -> form "eavesdropped".
 - Make the sentence so clear that this word is the ONLY one of the set that fits the blank, both in meaning and in grammar. Give strong context clues; do not use vague sentences like "I like ___".
 - Do NOT put any other word of the set in the sentence.
 - The form must appear exactly once in the sentence, and be a whole word (or whole phrase for phrases).
@@ -223,6 +223,9 @@ Respond with ONLY a JSON array, one object per word: [{"id":"(copy the id)","tex
     const byText = new Map(words.map((w) => [w.text.toLowerCase(), w]));
     const good = [];
     const dropped = [];
+    const countForm = (sentence, form) =>
+      (sentence.match(new RegExp('(?<![A-Za-z])' + escapeRegExpGap(form) + '(?![A-Za-z])', 'gi')) || []).length;
+    const unmatched = [];
     written.forEach((w) => {
       if (!w) return;
       // The model sometimes echoes the word instead of the id; accept either.
@@ -230,12 +233,38 @@ Respond with ONLY a JSON array, one object per word: [{"id":"(copy the id)","tex
       if (!src) { dropped.push('unknown id'); return; }
       const sentence = String(w.sentence || '').trim();
       const form = String(w.form || '').trim();
-      if (!sentence || !form) { dropped.push(src.text + ': empty'); return; }
-      const hits = sentence.match(new RegExp('(?<![A-Za-z])' + escapeRegExpGap(form) + '(?![A-Za-z])', 'gi')) || [];
-      if (hits.length !== 1) { dropped.push(src.text + ': "' + form + '" found ' + hits.length + 'x'); return; }
-      if (!good.some((g) => g.id === src.id)) good.push({ id: src.id, sentence, form });
+      if (!sentence) { dropped.push(src.text + ': empty'); return; }
+      if (form && countForm(sentence, form) === 1) {
+        if (!good.some((g) => g.id === src.id)) good.push({ id: src.id, sentence, form });
+      } else {
+        // Typical case: the sentence uses "is obsessed with" / "eavesdropped" but "form" holds the base word.
+        unmatched.push({ src, sentence, gave: form });
+      }
     });
-    const stats = { asked: words.length, written: written.length, valid: good.length, checked: 0, dropped: dropped.slice(0, 6) };
+    // Repair pass: ask the model to copy the exact words out of its own sentence.
+    if (unmatched.length) {
+      try {
+        const fixPrompt = `For each item, the sentence contains the target word or phrase, possibly in a changed form (for example "be obsessed with" appears as "is obsessed with", "eavesdrop" as "eavesdropped", "moral judgment" as "moral judgments").
+Copy, character for character, the part of the sentence that fills the place of the target - the target in the form used there. It must be a contiguous piece of the sentence. If the target is not in the sentence at all, return an empty string.
+
+Items: ${JSON.stringify(unmatched.map((u) => ({ id: u.src.id, target: u.src.text, sentence: u.sentence })))}
+
+Respond with ONLY a JSON array: [{"id":"...","form":"..."}] - no preamble, no markdown.`;
+        const fixed = extractJsonArray(await callHaiku(fixPrompt, 2000));
+        unmatched.forEach((u) => {
+          const f = fixed.find((x) => x && String(x.id) === u.src.id);
+          const form = f ? String(f.form || '').trim() : '';
+          if (form && countForm(u.sentence, form) === 1) {
+            if (!good.some((g) => g.id === u.src.id)) good.push({ id: u.src.id, sentence: u.sentence, form });
+          } else {
+            dropped.push(u.src.text + ': "' + (form || u.gave) + '" not found once in "' + u.sentence.slice(0, 60) + '"');
+          }
+        });
+      } catch (e) {
+        unmatched.forEach((u) => dropped.push(u.src.text + ': repair failed'));
+      }
+    }
+    const stats = { asked: words.length, written: written.length, valid: good.length, checked: 0, dropped: dropped.slice(0, 8) };
     if (!good.length) {
       res.status(200).json({ gaps: [], stats });
       return;
