@@ -33,6 +33,7 @@ module.exports = async function handler(req, res) {
     if (action === 'content') return await generateContent(req, res);
     if (action === 'antonyms') return await findAntonyms(req, res);
     if (action === 'gaps') return await generateGaps(req, res);
+    if (action === 'qa') return await generateQa(req, res);
     if (action === 'audio') return await generateAudio(req, res);
     if (action === 'images') return await searchImages(req, res);
     if (action === 'save') return await saveSet(req, res);
@@ -299,6 +300,64 @@ Respond with ONLY a JSON array with one object per sentence: [{"id":"...","answe
     stats.checked = gaps.length;
     
     res.status(200).json({ gaps, stats });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+// ---------- "Question -> choose the answer" ----------
+// For items that are questions (or prompts that need a reply): one correct short reply and two wrong
+// replies, then a second call that removes any wrong reply that would also be acceptable.
+async function generateQa(req, res) {
+  const { items, level } = req.body;
+  if (!Array.isArray(items) || items.length === 0) {
+    res.status(400).json({ error: 'Nothing to write' });
+    return;
+  }
+  const cefr = level || 'A1';
+  const list = items.map((i) => ({ id: String(i.id), text: String(i.text || '').trim() })).filter((i) => i.text);
+  try {
+    const prompt = `You are writing replies for a "choose the answer" exercise for ${cefr}-level English learners (use only vocabulary and grammar they know).
+Below are phrases. Decide for each one whether it is a QUESTION or a request that a person answers with a short reply (for example "Any liquids in your bag?", "What is the purpose of your visit?", "Could you open your suitcase?"). If it is not (a statement, a single word, a label), skip it.
+For each question write:
+- "qaAnswer": ONE natural, short, correct reply (max 8 words) that a learner could really say.
+- "qaWrong": exactly 2 replies that are clearly WRONG for this question: they answer a different question or do not make sense here, but are still real English sentences. Neither may be an acceptable answer to the question, and both must be about the same length and style as the correct one.
+
+Phrases: ${JSON.stringify(list)}
+
+Respond with ONLY a JSON array: [{"id":"...","qaAnswer":"...","qaWrong":["...","..."]}] with entries only for the questions - no preamble, no markdown.`;
+    const made = extractJsonArray(await callHaiku(prompt, 3000));
+    const byId = new Map(list.map((i) => [i.id, i]));
+    const good = [];
+    made.forEach((m) => {
+      if (!m || !byId.has(String(m.id))) return;
+      const ans = String(m.qaAnswer || '').trim();
+      const wrong = (Array.isArray(m.qaWrong) ? m.qaWrong : []).map((w) => String(w).trim()).filter((w) => w && w.toLowerCase() !== ans.toLowerCase());
+      if (!ans || wrong.length < 1) return;
+      good.push({ id: String(m.id), q: byId.get(String(m.id)).text, qaAnswer: ans, qaWrong: wrong.slice(0, 2) });
+    });
+    let qa = good;
+    if (good.length) {
+      const checkPrompt = `For each question below, three replies are given as "wrong". For EACH wrong reply decide whether it would ALSO be an acceptable, sensible answer to the question. Be strict: if a reasonable person could answer that way, it counts as acceptable.
+
+Questions: ${good.map((g) => JSON.stringify({ id: g.id, question: g.q, wrong: g.qaWrong })).join('\n')}
+
+Respond with ONLY a JSON array: [{"id":"...","acceptable":["...copy the wrong replies that would also be acceptable..."]}] - one entry per question, empty list if none - no preamble, no markdown.`;
+      let checks = [];
+      for (let attempt = 0; attempt < 2 && !checks.length; attempt++) {
+        try { checks = extractJsonArray(await callHaiku(checkPrompt, 2000)); } catch (e) { checks = []; }
+      }
+      qa = [];
+      good.forEach((g) => {
+        const c = checks.find((x) => x && String(x.id) === g.id);
+        // Without the check we cannot promise the wrong replies are really wrong, so the question is skipped.
+        if (!c || !Array.isArray(c.acceptable)) return;
+        const bad = new Set(c.acceptable.map((a) => String(a).toLowerCase()));
+        const keep = g.qaWrong.filter((w) => !bad.has(w.toLowerCase()));
+        qa.push({ id: g.id, qaAnswer: g.qaAnswer, qaWrong: keep });
+      });
+    }
+    res.status(200).json({ qa, stats: { asked: list.length, questions: good.length, kept: qa.length } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

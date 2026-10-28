@@ -113,5 +113,7 @@ The trainer falls back to the browser's built-in speech synthesis whenever a set
 - An item takes part when it has `qaAnswer` (the correct reply) and, best, `qaWrong` (2 hand-written wrong replies, none of
   which may also fit the question). Without enough `qaWrong`, other questions' answers are used as wrong options.
 - Such items are "specialized": each gets one question→answer step per session, instead of the generic phrase modes.
-- The builder lists both modes and keeps `qaAnswer`/`qaWrong` when a set is opened and saved again, but has no fields to edit
-  them yet; the airport sets (airport-2, -3, -6, -7, -9) carry them in their JSON.
+- Builder: ticking either mode makes the AI pick out the phrases that are questions and write `qaAnswer` plus two `qaWrong`
+  (a second AI call removes wrong replies that would also fit). Every phrase card has "Right answer" / "Wrong answers" fields
+  (separate the two wrong ones with `|`) for editing; leave them empty for phrases that are not questions. Ticking again only
+  fills phrases that have no answer yet. The airport sets (airport-2, -3, -6, -7, -9) were written by hand.

@@ -259,6 +259,7 @@
     <h2>Practice modes for this set</h2>
     <div class="modes-grid" id="modesGrid"></div>
     <p id="gapNote" style="font-size:12px;margin:8px 0 0;color:var(--muted);display:none;"></p>
+    <p id="qaNote" style="font-size:12px;margin:8px 0 0;color:var(--muted);display:none;"></p>
   </div>
 
   <div class="card">
@@ -673,6 +674,19 @@ function renderItemBody(id) {
       </div>
     </div>
     ` : ''}
+    ${isPhrase ? `
+    <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:10px;">
+      <p style="font-size:12px; color:var(--muted); margin:0 0 8px;">Answer to this question ("Question → choose the answer" modes) — written by the AI when you tick those modes; edit here if needed. Leave empty if this phrase is not a question.</p>
+      <div class="field-row">
+        <label>Right answer</label>
+        <input type="text" data-field="qaAnswer" value="${escapeAttr(item.qaAnswer || '')}" placeholder="No, no liquids." />
+      </div>
+      <div class="field-row">
+        <label>Wrong answers</label>
+        <input type="text" data-field="qaWrongText" value="${escapeAttr((item.qaWrong || []).join(' | '))}" placeholder="Yes, it's mine. | Of course.   (two, separated by |; none of them may fit the question)" />
+      </div>
+    </div>
+    ` : ''}
     <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:10px;">
       <p style="font-size:12px; color:var(--muted); margin:0 0 8px;">Sentence with a gap ("Choose the word in context") — written by the AI when you tick that mode; edit here if needed</p>
       <div class="field-row">
@@ -745,6 +759,8 @@ function renderItemBody(id) {
         updateSplitPreview(id);
       } else if (field === 'wordFamilyForms') {
         item.wordFamily = input.value.split(',').map(s => s.trim()).filter(Boolean).map(form => ({ form, pos: '' }));
+      } else if (field === 'qaWrongText') {
+        item.qaWrong = input.value.split('|').map(x => x.trim()).filter(Boolean);
       } else if (field === 'gapRivalsText') {
         item.gapRivals = input.value.split(',').map(x => x.trim()).filter(Boolean);
       } else if (field === 'phraseSplitIndex') {
@@ -1213,10 +1229,50 @@ async function generateGapSentences() {
     note.textContent = 'Could not write the gap sentences: ' + e.message + '. Untick and tick the mode to try again.';
   } finally { gapBusy = false; }
 }
+// "Question -> choose the answer" / "Listen -> choose the answer": the AI picks out the items that are
+// questions and writes a correct reply plus two wrong ones (then checks the wrong ones really are wrong).
+let qaBusy = false;
+async function generateQaAnswers() {
+  const note = document.getElementById('qaNote');
+  if (qaBusy) return;
+  const todo = items.filter(i => !i.qaAnswer && i.text && i.type === 'phrase');
+  note.style.display = 'block';
+  if (!todo.length) { note.textContent = items.some(i => i.qaAnswer) ? 'Every question already has an answer.' : 'No phrases in the set: this mode works for questions written as phrases.'; return; }
+  qaBusy = true;
+  note.textContent = 'Looking for questions and writing answers… (a few seconds)';
+  try {
+    const r = await fetch('/api/vocab', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'qa', level: document.getElementById('levelSelect').value,
+        items: todo.map(i => ({ id: i.id, text: i.text })) })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Failed');
+    const byId = new Map((data.qa || []).map(g => [g.id, g]));
+    let got = 0;
+    items.forEach(i => {
+      if (i.qaAnswer) return;
+      const g = byId.get(String(i.id));
+      if (g) { i.qaAnswer = g.qaAnswer; i.qaWrong = g.qaWrong || []; got++; }
+    });
+    renderItems();
+    note.textContent = got + ' question' + (got === 1 ? '' : 's') + ' got an answer.' +
+      (todo.length - got > 0 ? ' ' + (todo.length - got) + ' phrase(s) were not questions or failed the check; the mode skips them.' : '') +
+      ' Check the answers in the word cards (open a word).';
+  } catch (e) {
+    note.textContent = 'Could not write the answers: ' + e.message + '. Untick and tick the mode to try again.';
+  } finally { qaBusy = false; }
+}
 document.getElementById('modesGrid').addEventListener('change', (e) => {
-  if (e.target && e.target.dataset && e.target.dataset.mode === 'contextGap') {
+  const m = e.target && e.target.dataset && e.target.dataset.mode;
+  if (m === 'contextGap') {
     if (e.target.checked) generateGapSentences();
     else document.getElementById('gapNote').style.display = 'none';
+  }
+  if (m === 'questionAnswer' || m === 'questionAnswerListen') {
+    const any = ['questionAnswer', 'questionAnswerListen'].some(id => { const c = document.querySelector('#modesGrid input[data-mode="' + id + '"]'); return c && c.checked; });
+    if (any) generateQaAnswers();
+    else document.getElementById('qaNote').style.display = 'none';
   }
 });
 
