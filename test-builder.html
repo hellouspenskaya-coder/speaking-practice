@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex">
+<title>Grammar Test Builder</title>
+<style>
+  :root {
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --success-light: #f0fdf4;
+    --bg: #f8fafc;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--text); margin: 0; padding: 24px 16px 80px;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px; }
+  .card h2 { font-size: 15px; font-weight: 600; margin: 0 0 12px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  input[type=text], select, textarea {
+    width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 14px; font-family: inherit; background: #fff; color: var(--text);
+  }
+  textarea { resize: vertical; min-height: 54px; line-height: 1.4; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .row > div { flex: 1; min-width: 150px; }
+  button {
+    font-family: inherit; font-size: 13px; padding: 8px 14px; border-radius: 8px;
+    border: 1px solid var(--border); background: #fff; color: var(--text); cursor: pointer;
+  }
+  button:hover { background: #f1f5f9; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+  button.primary:hover { background: #1d4ed8; }
+  .status { font-size: 13px; color: var(--muted); margin: 10px 0 0; min-height: 18px; }
+  .status.err { color: var(--danger); }
+  .hidden { display: none; }
+  .meta { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .item { border-top: 1px solid var(--border); padding: 12px 0; display: flex; gap: 10px; align-items: flex-start; }
+  .item:first-of-type { border-top: none; }
+  .item .n { font-weight: 600; min-width: 26px; padding-top: 8px; }
+  .item .body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .item .rm { padding: 6px 10px; color: var(--danger); }
+  .opt { display: flex; gap: 8px; align-items: center; }
+  .opt input[type=radio] { width: 18px; height: 18px; flex: none; }
+  .small { font-size: 12px; color: var(--muted); margin: 0; }
+  .inline { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .inline input { flex: 1; min-width: 120px; }
+  .linkbox { margin-top: 12px; padding: 12px; border-radius: 8px; background: var(--success-light); }
+  .linkbox input { margin-bottom: 8px; }
+  .checkline { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; margin: 0 0 10px; }
+  .checkline input { margin-top: 3px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Grammar Test Builder</h1>
+  <p class="sub">Paste an explanation of a grammar point (or just name the topic), choose the level, and get a 15-question test with a teacher's key. The student opens one link; the key prints as the last page.</p>
+
+  <div class="card">
+    <h2>1. What should the test cover?</h2>
+    <div class="row">
+      <div style="flex:3">
+        <label for="source">Grammar explanation or topic</label>
+        <textarea id="source" rows="8" placeholder="Paste the explanation (for example from Twee), or write the topic: Present Perfect vs Past Simple"></textarea>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="level">Level</label>
+        <select id="level">
+          <option>A1</option>
+          <option>A2</option>
+          <option selected>B1</option>
+          <option>B2</option>
+          <option>C1</option>
+        </select>
+      </div>
+      <div>
+        <label for="title">Title (optional)</label>
+        <input type="text" id="title" placeholder="Past Tenses" autocomplete="off" />
+      </div>
+    </div>
+    <button class="primary" id="genBtn">Write the test</button>
+    <p class="status" id="genStatus"></p>
+  </div>
+
+  <div id="draftBox" class="hidden">
+    <div class="card">
+      <h2>2. Check and edit</h2>
+      <div class="row">
+        <div>
+          <label for="dTopic">Title</label>
+          <input type="text" id="dTopic" autocomplete="off" />
+        </div>
+        <div style="flex:2">
+          <label for="dIntro">Line under the title</label>
+          <input type="text" id="dIntro" autocomplete="off" />
+        </div>
+      </div>
+      <p class="meta">Change any text, mark the right option, or remove a question you don't like. The teacher's key is built from the answers and explanations below.</p>
+    </div>
+    <div id="parts"></div>
+
+    <div class="card">
+      <h2>3. Publish</h2>
+      <label class="checkline"><input type="checkbox" id="reviewed" /> I checked the questions, answers and explanations.</label>
+      <button class="primary" id="publishBtn">Publish and get the link</button>
+      <button id="downloadBtn">Download JSON instead</button>
+      <p class="status" id="publishStatus"></p>
+      <div id="linkBox" class="linkbox hidden">
+        <label for="linkOutput">Link for the student</label>
+        <input type="text" id="linkOutput" readonly />
+        <button id="copyBtn">Copy link</button>
+        <a id="openLink" href="#" target="_blank" rel="noopener" style="margin-left:10px;font-size:13px;">Open the test</a>
+        <p class="meta" id="notionNote" style="margin-top:8px;"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const LET = ['a', 'b', 'c', 'd', 'e'];
+let draft = null;
+
+function setStatus(id, text, isErr) {
+  const el = $(id);
+  el.textContent = text || '';
+  el.classList.toggle('err', Boolean(isErr));
+}
+function slugify(t) { return String(t).toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'grammar'; }
+
+async function api(body) {
+  let resp;
+  try {
+    resp = await fetch('/api/vocab', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  } catch (e) {
+    throw new Error('No connection to the server.');
+  }
+  let data;
+  try { data = await resp.json(); } catch (e) { throw new Error('The server took too long or returned an unexpected answer (status ' + resp.status + ').'); }
+  if (!resp.ok) throw new Error(data.error || ('Server error ' + resp.status));
+  return data;
+}
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+// A text field bound to obj[key]
+function bind(obj, key, opts) {
+  opts = opts || {};
+  const i = opts.area ? el('textarea') : el('input');
+  if (!opts.area) i.type = 'text';
+  if (opts.area) i.rows = 2;
+  i.value = obj[key] == null ? '' : obj[key];
+  if (opts.placeholder) i.placeholder = opts.placeholder;
+  i.autocomplete = 'off';
+  i.addEventListener('input', () => { obj[key] = i.value; });
+  return i;
+}
+function labelled(text, node) {
+  const w = el('div');
+  w.appendChild(el('p', 'small', text));
+  w.appendChild(node);
+  return w;
+}
+
+function renderParts() {
+  const box = $('parts');
+  box.textContent = '';
+  let n = 1;
+  draft.parts.forEach((part, pi) => {
+    const card = el('div', 'card');
+    card.appendChild(el('h2', null, 'Part ' + (pi + 1) + '. ' + part.title + ' (' + part.items.length + ')'));
+    part.items.forEach((it, ii) => {
+      const row = el('div', 'item');
+      row.appendChild(el('div', 'n', part.type === 'write' ? (n + LET[ii]) : String(n)));
+      const body = el('div', 'body');
+
+      if (part.type === 'choice') {
+        body.appendChild(labelled('Sentence (keep exactly one ___ for the gap)', bind(it, 'q', { area: true })));
+        it.options.forEach((o, j) => {
+          const line = el('div', 'opt');
+          const r = el('input'); r.type = 'radio'; r.name = 'ans_' + pi + '_' + ii; r.checked = it.answer === j;
+          r.addEventListener('change', () => { it.answer = j; });
+          line.appendChild(r);
+          const t = el('input'); t.type = 'text'; t.value = o; t.autocomplete = 'off';
+          t.addEventListener('input', () => { it.options[j] = t.value; });
+          line.appendChild(t);
+          body.appendChild(line);
+        });
+        body.appendChild(el('p', 'small', 'The selected circle is the correct answer.'));
+        body.appendChild(labelled('Why (for the key)', bind(it, 'why')));
+      } else if (part.type === 'gap') {
+        const inline = el('div', 'inline');
+        inline.appendChild(labelled('Before the gap', bind(it, 'pre')));
+        inline.appendChild(labelled('Hint in brackets (optional)', bind(it, 'hint')));
+        inline.appendChild(labelled('After the gap', bind(it, 'post')));
+        body.appendChild(inline);
+        body.appendChild(labelled('Correct answer', bind(it, 'answer')));
+        body.appendChild(labelled('Why (for the key)', bind(it, 'why')));
+      } else if (part.type === 'fix') {
+        body.appendChild(labelled('Sentence with a mistake', bind(it, 'sentence')));
+        body.appendChild(labelled('Corrected sentence', bind(it, 'corrected')));
+        body.appendChild(labelled('Why (for the key)', bind(it, 'why')));
+      } else if (part.type === 'write') {
+        body.appendChild(labelled('The student writes a sentence about…', bind(it, 'prompt')));
+        body.appendChild(labelled('What to accept (for the key)', bind(it, 'criteria', { area: true })));
+        body.appendChild(labelled('Model sentence', bind(it, 'example')));
+      }
+      row.appendChild(body);
+
+      const rm = el('button', 'rm', 'Remove');
+      rm.type = 'button';
+      rm.addEventListener('click', () => {
+        if (part.items.length <= 1) { setStatus('publishStatus', 'A part needs at least one item.', true); return; }
+        part.items.splice(ii, 1);
+        renderParts();
+      });
+      row.appendChild(rm);
+      card.appendChild(row);
+      if (part.type === 'write') { /* letters, one number per part */ } else { n++; }
+    });
+    if (part.type === 'write') n++;
+    box.appendChild(card);
+  });
+}
+
+$('genBtn').addEventListener('click', async () => {
+  const source = $('source').value.trim();
+  if (source.length < 4) { setStatus('genStatus', 'Paste an explanation or write the topic first.', true); return; }
+  $('genBtn').disabled = true;
+  setStatus('genStatus', 'Writing the test… this takes about half a minute.');
+  try {
+    const r = await api({ action: 'testBuild', source, level: $('level').value, title: $('title').value.trim() || undefined });
+    draft = r.test;
+    $('dTopic').value = draft.topic;
+    $('dIntro').value = draft.intro || '';
+    $('draftBox').classList.remove('hidden');
+    $('linkBox').classList.add('hidden');
+    $('reviewed').checked = false;
+    renderParts();
+    setStatus('genStatus', 'Done. Check the questions below.');
+    $('draftBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    setStatus('genStatus', err.message, true);
+  } finally {
+    $('genBtn').disabled = false;
+  }
+});
+
+// What gets saved: trims text, recalculates the points for the parts.
+function buildData() {
+  const d = JSON.parse(JSON.stringify(draft));
+  d.topic = $('dTopic').value.trim() || draft.topic;
+  d.intro = $('dIntro').value.trim();
+  d.level = $('level').value;
+  d.parts.forEach((p) => {
+    if (p.type !== 'write') { p.max = p.items.length; p.pointsLabel = '1 point each'; }
+    p.items.forEach((it) => {
+      Object.keys(it).forEach((k) => {
+        if (typeof it[k] === 'string') it[k] = it[k].trim();
+        if (Array.isArray(it[k])) it[k] = it[k].map((x) => String(x).trim());
+      });
+    });
+  });
+  return d;
+}
+
+function checkReady() {
+  if (!draft) return 'Write the test first.';
+  if (!$('reviewed').checked) return 'Tick the box to confirm you checked the questions, answers and explanations.';
+  return '';
+}
+
+$('publishBtn').addEventListener('click', async () => {
+  const problem = checkReady();
+  if (problem) { setStatus('publishStatus', problem, true); return; }
+  setStatus('publishStatus', '');
+  $('publishBtn').disabled = true;
+  const data = buildData();
+  const slug = slugify(data.topic) + '-test-' + Math.random().toString(36).slice(2, 5);
+  try {
+    const result = await api({ action: 'save', slug, data });
+    const link = window.location.origin + result.trainerLink;
+    $('linkOutput').value = link;
+    $('openLink').href = link;
+    $('linkBox').classList.remove('hidden');
+    const n = $('notionNote');
+    if (result.notion && result.notion.attempted) {
+      n.textContent = result.notion.ok ? 'Added to Assignments in Notion (type: test).' : 'Link created, but Notion failed: ' + result.notion.error;
+      n.style.color = result.notion.ok ? 'var(--success)' : 'var(--danger)';
+    } else {
+      n.textContent = 'Not logged in Notion (the Notion connection is not configured).';
+      n.style.color = 'var(--muted)';
+    }
+  } catch (err) {
+    setStatus('publishStatus', 'Could not save: ' + err.message + ' You can use "Download JSON instead" and upload it to vocab-sets/ on GitHub.', true);
+  } finally {
+    $('publishBtn').disabled = false;
+  }
+});
+
+$('downloadBtn').addEventListener('click', () => {
+  const problem = checkReady();
+  if (problem) { setStatus('publishStatus', problem, true); return; }
+  const data = buildData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = slugify(data.topic) + '-test.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+$('copyBtn').addEventListener('click', () => {
+  $('linkOutput').select();
+  navigator.clipboard.writeText($('linkOutput').value);
+  $('copyBtn').textContent = 'Copied';
+  setTimeout(() => { $('copyBtn').textContent = 'Copy link'; }, 1500);
+});
+</script>
+</body>
+</html>

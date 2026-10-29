@@ -16,6 +16,8 @@
 //   action: "textBuild"  -> Haiku makes highlighted words + reading-skill taps for an excerpt
 //   action: "textAdapt"  -> Sonnet rewrites an excerpt for a lower level (teacher reviews it)
 //   action: "storyBuild" -> Haiku writes a short gap-fill story from the words of any set
+//   action: "testBuild"  -> Sonnet drafts a grammar test (4 parts + teacher's key) from pasted text or a topic
+//                           (a grammar test is saved with action "save", kind "grammarTest", and opens in grammar-test.html)
 
 const OWNER = 'hellouspenskaya-coder';
 const REPO = 'speaking-practice';
@@ -51,6 +53,7 @@ module.exports = async function handler(req, res) {
     if (action === 'textAdapt') return await textAdapt(req, res);
     if (action === 'textMoreWords') return await textMoreWords(req, res);
     if (action === 'storyBuild') return await storyBuild(req, res);
+    if (action === 'testBuild') return await testBuild(req, res);
     res.status(400).json({ error: `Unknown action: ${action}` });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -533,6 +536,14 @@ async function saveSet(req, res) {
     return;
   }
 
+  if (data.kind === 'grammarTest') {
+    const bad = validateGrammarTest(data);
+    if (bad) {
+      res.status(400).json({ error: bad });
+      return;
+    }
+  }
+
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
     res.status(500).json({ error: 'GITHUB_TOKEN is not set in Vercel environment variables' });
@@ -584,7 +595,9 @@ async function saveSet(req, res) {
     return;
   }
 
-  const trainerLink = `/vocab-trainer.html?set=${cleanSlug}`;
+  const trainerLink = data.kind === 'grammarTest'
+    ? `/grammar-test.html?set=${cleanSlug}`
+    : `/vocab-trainer.html?set=${cleanSlug}`;
   const fullLink = `${SITE_ORIGIN}${trainerLink}`;
 
   // Also file this as a row in the Assignments database — but only the
@@ -638,6 +651,7 @@ async function addToAssignmentsDatabase(data, fullLink, delivery = {}) {
     trackProps = { 'Track': { relation: [{ id: delivery.track }] }, 'Order': { number: order } };
   }
   const isTextSet = data.kind === 'textSet';
+  const isGrammarTest = data.kind === 'grammarTest';
 
   const response = await fetch('https://api.notion.com/v1/pages', {
     method: 'POST',
@@ -652,8 +666,8 @@ async function addToAssignmentsDatabase(data, fullLink, delivery = {}) {
         'Assignment Title': { title: [{ text: { content: data.topic || 'Untitled set' } }] },
         'Format': { select: { name: 'Individual' } },
         'Platform': { select: { name: 'practice' } },
-        'Skill': { multi_select: isTextSet ? [{ name: 'reading' }, { name: 'vocabulary' }] : [{ name: 'vocabulary' }] },
-        'Type': { multi_select: [{ name: isTextSet ? 'text set' : 'vocpractice' }] },
+        'Skill': { multi_select: isGrammarTest ? [{ name: 'grammar' }] : isTextSet ? [{ name: 'reading' }, { name: 'vocabulary' }] : [{ name: 'vocabulary' }] },
+        'Type': { multi_select: [{ name: isGrammarTest ? 'test' : isTextSet ? 'text set' : 'vocpractice' }] },
         'Level': { multi_select: [{ name: data.level || 'A1' }] },
         'Time required': { multi_select: [{ name: timeRequired }] },
         'URL': { url: fullLink },
@@ -661,7 +675,9 @@ async function addToAssignmentsDatabase(data, fullLink, delivery = {}) {
         ...trackProps,
         // Area is only filled for text sets; Notion creates a new option
         // automatically the first time a new area name is used.
-        ...(isTextSet && data.area ? { 'Area': { multi_select: [{ name: String(data.area).slice(0, 100) }] } } : {})
+        ...(isTextSet && data.area ? { 'Area': { multi_select: [{ name: String(data.area).slice(0, 100) }] } } : {}),
+        // Grammar tests: the grammar point goes into the Grammar text property.
+        ...(isGrammarTest ? { 'Grammar': { rich_text: [{ text: { content: String(data.topic || '').slice(0, 200) } }] } } : {})
       }
     })
   });
@@ -1567,4 +1583,146 @@ Reply with STRICT JSON only: {"text":"the story with **form|listword** marked wo
     return;
   }
   res.status(200).json({ text, gaps: marked.length });
+}
+
+// =====================================================================
+// GRAMMAR TESTS (action "testBuild"; saved with action "save", kind "grammarTest")
+// A test has four parts: choose / complete / find-and-correct / write,
+// plus a teacher's key that grammar-test.html prints as the last page.
+// =====================================================================
+
+const TEST_PARTS = [
+  { type: 'choice', title: 'Choose the correct option.', max: 5, pointsLabel: '1 point each' },
+  { type: 'gap', title: 'Complete the sentences with the correct form.', max: 6, pointsLabel: '1 point each' },
+  { type: 'fix', title: 'Find and correct the mistake in each sentence.', max: 3, pointsLabel: '1 point each' },
+  { type: 'write', title: 'Write your own sentences.', max: 2, pointsLabel: '2 points: 1 for correct form, 1 for meaning and use', prompt: 'Write two sentences:' }
+];
+
+function tstr(v, max) {
+  return String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, max || 300);
+}
+
+// Returns an error message, or null when the test is well-formed.
+function validateGrammarTest(d) {
+  if (!d || d.kind !== 'grammarTest') return 'Not a grammar test.';
+  if (!tstr(d.topic)) return 'The test needs a title.';
+  if (!Array.isArray(d.parts) || d.parts.length < 1 || d.parts.length > 6) return 'The test has no parts.';
+  for (const [pi, p] of d.parts.entries()) {
+    const where = 'Part ' + (pi + 1) + ': ';
+    if (!['choice', 'gap', 'fix', 'write'].includes(p.type)) return where + 'unknown part type.';
+    if (!tstr(p.title)) return where + 'missing title.';
+    if (!Number.isFinite(Number(p.max)) || Number(p.max) < 0) return where + 'missing points.';
+    if (!Array.isArray(p.items) || !p.items.length) return where + 'no items.';
+    for (const [ii, it] of p.items.entries()) {
+      const w = where + 'item ' + (ii + 1) + ': ';
+      if (p.type === 'choice') {
+        if (!tstr(it.q) || (String(it.q).match(/___/g) || []).length !== 1) return w + 'the sentence needs exactly one ___ gap.';
+        if (!Array.isArray(it.options) || it.options.length < 2 || it.options.length > 5 || it.options.some((o) => !tstr(o))) return w + 'needs 2 to 5 options.';
+        if (!Number.isInteger(it.answer) || it.answer < 0 || it.answer >= it.options.length) return w + 'the correct option is not set.';
+      } else if (p.type === 'gap') {
+        if (!tstr(it.pre) && !tstr(it.post)) return w + 'needs text around the gap.';
+        if (!tstr(it.answer)) return w + 'the answer is empty.';
+      } else if (p.type === 'fix') {
+        if (!tstr(it.sentence) || !tstr(it.corrected)) return w + 'needs the sentence and its correction.';
+        if (tstr(it.sentence) === tstr(it.corrected)) return w + 'the correction is the same as the sentence.';
+      } else if (p.type === 'write') {
+        if (!tstr(it.prompt)) return w + 'the prompt is empty.';
+      }
+    }
+  }
+  return null;
+}
+
+async function testBuild(req, res) {
+  const { source, level, title } = req.body || {};
+  const text = String(source || '').trim();
+  if (text.length < 4) {
+    res.status(400).json({ error: 'Paste an explanation of the grammar, or at least name the topic.' });
+    return;
+  }
+  if (text.length > 8000) {
+    res.status(400).json({ error: 'The text is too long (max about 8000 characters). Paste only the explanation.' });
+    return;
+  }
+  const lvl = ['A1', 'A2', 'B1', 'B2', 'C1'].includes(level) ? level : 'B1';
+
+  const prompt = `You are an experienced English teacher writing a short grammar test for ONE adult learner, level ${lvl}.
+
+GRAMMAR TO TEST (the teacher pasted this explanation or topic):
+"""
+${text}
+"""
+${title ? 'Suggested title: ' + tstr(title, 80) + '\n' : ''}
+Write a test that checks whether the learner can USE this grammar, not only recognise it. Return STRICT JSON only (no markdown fences) with exactly this shape:
+{
+ "topic": "short title naming the grammar, max 5 words",
+ "intro": "one short line listing what the test covers",
+ "choice": [ exactly 5 of {"q":"a sentence with exactly one ___","options":["...","...","..."],"answer":0,"why":"..."} ],
+ "gap": [ exactly 6 of {"pre":"text before the gap","hint":"the word or verb in brackets, or empty","post":"text after the gap","answer":"the correct form","why":"..."} ],
+ "fix": [ exactly 3 of {"sentence":"a sentence with exactly one mistake in the target grammar","corrected":"the same sentence corrected","why":"..."} ],
+ "write": [ exactly 2 of {"prompt":"what the learner writes a sentence about","criteria":"what to accept","example":"a model sentence"} ]
+}
+
+RULES:
+- Vocabulary and sentence length suit level ${lvl}. Everyday, neutral content; no current events, no names of real people.
+- Every item has exactly ONE correct answer. Choice distractors are plausible forms of the same grammar, never nonsense.
+- "answer" in "choice" is the index (0-2) of the correct option.
+- In "gap", the answer is exactly what the learner must type in the gap; if several forms are equally right, give the most natural one.
+- Cover the different points of the grammar across the items, do not repeat the same sentence pattern.
+- "why": plain English, max 15 words, names the rule (for the teacher's key).
+- "write" prompts must make the learner use the target grammar, e.g. "something you used to do as a child but don't do now".`;
+
+  let out;
+  try {
+    out = extractJsonObject(await callSonnet(prompt, 4000));
+  } catch (err) {
+    res.status(502).json({ error: 'Could not generate the test: ' + err.message });
+    return;
+  }
+
+  const shuffle = (a) => {
+    const arr = a.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
+  const take = (list, n) => (Array.isArray(list) ? list : []).slice(0, n);
+
+  const choice = take(out.choice, 5).map((c) => {
+    const options = (Array.isArray(c.options) ? c.options : []).map((o) => tstr(o, 80)).filter(Boolean).slice(0, 3);
+    const idx = Number.isInteger(c.answer) ? c.answer : -1;
+    const right = options[idx];
+    const mixed = shuffle(options);
+    return { q: tstr(c.q, 240), options: mixed, answer: right === undefined ? -1 : mixed.indexOf(right), why: tstr(c.why, 160) };
+  });
+  const gap = take(out.gap, 6).map((g) => ({ pre: tstr(g.pre, 200), hint: tstr(g.hint, 40), post: tstr(g.post, 200), answer: tstr(g.answer, 80), why: tstr(g.why, 160) }));
+  const fix = take(out.fix, 3).map((f) => ({ sentence: tstr(f.sentence, 240), corrected: tstr(f.corrected, 240), why: tstr(f.why, 160) }));
+  const write = take(out.write, 2).map((w) => ({ prompt: tstr(w.prompt, 160), criteria: tstr(w.criteria, 240), example: tstr(w.example, 240) }));
+
+  const test = {
+    kind: 'grammarTest',
+    topic: tstr(title || out.topic, 60) || 'Grammar',
+    level: lvl,
+    intro: tstr(out.intro, 200),
+    parts: [
+      { ...TEST_PARTS[0], items: choice },
+      { ...TEST_PARTS[1], items: gap },
+      { ...TEST_PARTS[2], items: fix },
+      { ...TEST_PARTS[3], items: write }
+    ]
+  };
+
+  const wanted = [5, 6, 3, 2];
+  const counts = [choice.length, gap.length, fix.length, write.length];
+  const problem = counts.some((c, i) => c !== wanted[i])
+    ? 'the draft came back incomplete.'
+    : validateGrammarTest(test);
+  if (problem) {
+    res.status(502).json({ error: 'The draft did not come out right (' + problem + ') Try again.' });
+    return;
+  }
+  res.status(200).json({ test });
 }

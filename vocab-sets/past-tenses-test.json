@@ -1,0 +1,57 @@
+{
+  "kind": "grammarTest",
+  "topic": "Past Tenses",
+  "level": "B1",
+  "intro": "Past Simple, Past Continuous, Past Perfect, Past Perfect Continuous, used to.",
+  "parts": [
+    {
+      "type": "choice",
+      "title": "Choose the correct option.",
+      "max": 5,
+      "pointsLabel": "1 point each",
+      "items": [
+        { "q": "Sarah ___ Paris in 2018.", "options": ["visited", "was visiting", "had visited"], "answer": 0, "why": "a finished action at a stated past time (in 2018): Past Simple." },
+        { "q": "When I got to the station, the train ___.", "options": ["left", "had left", "was leaving"], "answer": 1, "why": "the train left before I arrived: Past Perfect." },
+        { "q": "I ___ TV when the lights went out.", "options": ["watched", "was watching", "had watched"], "answer": 1, "why": "an action in progress, interrupted by another: Past Continuous." },
+        { "q": "We were exhausted because we ___ for six hours.", "options": ["walked", "were walking", "had been walking"], "answer": 2, "why": "duration up to a past moment (six hours): Past Perfect Continuous." },
+        { "q": "My grandfather ___ smoke, but he quit twenty years ago.", "options": ["was smoking", "had smoked", "used to"], "answer": 2, "why": "a past habit that no longer holds." }
+      ]
+    },
+    {
+      "type": "gap",
+      "title": "Put the verb in brackets into the correct past form.",
+      "max": 6,
+      "pointsLabel": "1 point each",
+      "items": [
+        { "pre": "By the time we arrived, the film", "hint": "start", "post": "already.", "answer": "had started", "why": "the film began before we arrived: Past Perfect." },
+        { "pre": "She", "hint": "cook", "post": "dinner when her husband came home.", "answer": "was cooking", "why": "an action in progress when her husband came home: Past Continuous." },
+        { "pre": "I was tired because I", "hint": "work", "post": "in the garden all morning.", "answer": "had been working", "why": "duration up to a past moment (all morning): Past Perfect Continuous." },
+        { "pre": "When I was a child, I", "hint": "be", "post": "afraid of dogs, but now I love them.", "answer": "used to be", "why": "a past state that is no longer true." },
+        { "pre": "Yesterday I", "hint": "meet", "post": "my old teacher in the street.", "answer": "met", "why": "a finished action at a stated time (yesterday): Past Simple." },
+        { "pre": "The floor was wet because it", "hint": "rain", "post": "all night.", "answer": "had been raining", "why": "a long process with a visible result in the past (all night): Past Perfect Continuous." }
+      ]
+    },
+    {
+      "type": "fix",
+      "title": "Find and correct the mistake in each sentence.",
+      "max": 3,
+      "pointsLabel": "1 point each",
+      "items": [
+        { "sentence": "I was having breakfast when the phone was ringing.", "corrected": "I was having breakfast when the phone rang.", "why": "a short action that interrupts a process takes Past Simple, not Continuous." },
+        { "sentence": "She didn't used to like coffee.", "corrected": "She didn't use to like coffee.", "why": "after didn't the verb is \"use\", without -d." },
+        { "sentence": "When he came, we already ate.", "corrected": "When he came, we had already eaten.", "why": "breakfast was finished before he came: Past Perfect." }
+      ]
+    },
+    {
+      "type": "write",
+      "title": "Write your own sentences.",
+      "max": 2,
+      "pointsLabel": "2 points: 1 for correct form, 1 for meaning and use",
+      "prompt": "Write two sentences about yourself:",
+      "items": [
+        { "prompt": "something you used to do as a child but don't do now", "criteria": "Accept any sentence with \"used to\" + verb about a past habit or state that no longer holds.", "example": "I used to collect stickers when I was a child." },
+        { "prompt": "what you had been doing for some time before today's lesson started", "criteria": "Accept any sentence with \"had been\" + -ing that states a duration or period before the lesson began.", "example": "I had been preparing materials for two hours before the lesson started." }
+      ]
+    }
+  ]
+}

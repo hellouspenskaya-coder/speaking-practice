@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Grammar test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F5F0;--card:#fff;--line:#E4E0D6;--ink:#1E2321;--muted:#5F6662;--accent:#1F6F5B;--accent-soft:#E3F0EB;--accent-ink:#165244;--field:#fff;--ok:#1a7f4b}
+@media (prefers-color-scheme:dark){:root{--bg:#161A18;--card:#1F2522;--line:#2E3631;--ink:#ECEFEC;--muted:#A3ACA6;--accent:#5FBFA3;--accent-soft:#21342E;--accent-ink:#9FE0CB;--field:#161A18;--ok:#7fd6a5}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:16px;line-height:1.55}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 72px}
+.brand{font-size:14px;color:var(--muted)}
+h1,h2{font-family:'Fraunces',Georgia,serif;font-weight:600;margin:0}
+h1{font-size:30px;line-height:1.15;margin:6px 0 4px}
+.lead{color:var(--muted);margin:0 0 18px}
+.part{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 20px 10px;margin:0 0 16px}
+.part h2{font-size:19px;line-height:1.3;margin:2px 0 2px}
+.pts{font-family:'DM Sans',system-ui,sans-serif;font-weight:400;font-size:13px;color:var(--muted)}
+.q{margin:14px 0}
+.num{font-weight:700;margin-right:4px}
+.opts{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 0 22px}
+.opts label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:6px 10px;border-radius:10px}
+.opts label:hover{background:var(--accent-soft)}
+.opts input{width:18px;height:18px;accent-color:var(--accent)}
+input[type=text],textarea{font:inherit;color:inherit;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:8px 11px}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+.gap{width:min(240px,100%);margin:0 4px}
+.hint{color:var(--muted)}
+.row{display:flex;align-items:center;gap:6px}
+.row .full{flex:1;min-width:0}
+.full{width:100%}
+textarea.full{margin-top:6px;min-height:48px;resize:vertical}
+.sub{margin:10px 0 2px;font-weight:600}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:22px 0 8px}
+button{font:inherit;border-radius:12px;padding:12px 22px;cursor:pointer;border:1px solid var(--accent)}
+.primary{background:var(--accent);color:#fff;font-weight:600;min-height:48px}
+.primary:hover{filter:brightness(.92)}
+.ghost{background:transparent;color:var(--accent);padding:8px 14px;font-size:14px;border-color:var(--line)}
+.ghost:hover{background:var(--accent-soft)}
+#status{font-size:14px;color:var(--ok);min-height:1.4em}
+#fallback{display:none;margin-top:10px}
+#fallback p{margin:0 0 6px;font-size:14px;color:var(--muted)}
+#fallback textarea{width:100%;min-height:220px;font-size:14px}
+.msg{text-align:center;padding:60px 0}
+.key{display:none}
+@media print{
+  @page{size:A4;margin:13mm 15mm}
+  :root{--bg:#fff;--card:#fff;--line:#000;--ink:#000;--muted:#333;--field:#fff;--accent:#000;--accent-soft:#fff}
+  body{background:#fff;color:#000;font-size:10.5pt;line-height:1.4}
+  .wrap{max-width:none;padding:0}
+  .brand,.actions,#fallback,#status{display:none!important}
+  h1{font-size:18pt;margin:0 0 2px}
+  .lead{margin:0 0 6px;font-size:10pt}
+  .part{border:none;border-radius:0;padding:0;margin:8px 0 0;background:none}
+  .part h2{font-size:11.5pt}
+  .q{margin:5px 0;break-inside:avoid}
+  .opts{margin:1px 0 0 16px;gap:0 16px}
+  .opts label{padding:0}
+  input[type=text],textarea{border:none;border-bottom:1px solid #000;border-radius:0;padding:1px 4px;background:none;color:#000}
+  .gap{width:150px}
+  textarea.full{min-height:0;resize:none;overflow:visible}
+  .key{display:block;break-before:page;page-break-before:always}
+  .key h2{font-size:12pt;margin:12px 0 2px}
+  .key p,.key li{font-size:10.5pt;margin:3px 0}
+  .key ul{padding-left:18px;margin:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="msg lead">Loading…</div></div>
+
+<script>
+(function () {
+  var app = document.getElementById('app');
+  var slug = (new URLSearchParams(location.search).get('set') || '').trim();
+  var T = null;
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function fail(msg) {
+    app.textContent = '';
+    var d = el('div', 'msg');
+    d.appendChild(el('h1', null, 'This link is not valid'));
+    d.appendChild(el('p', 'lead', msg || 'Please ask your teacher for a new one.'));
+    app.appendChild(d);
+  }
+  if (!/^[A-Za-z0-9-]+$/.test(slug)) { fail(); return; }
+
+  fetch('/vocab-sets/' + slug + '.json', { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+    .then(function (data) {
+      if (!data || data.kind !== 'grammarTest' || !Array.isArray(data.parts)) throw 0;
+      T = data;
+      render();
+    })
+    .catch(function () { fail(); });
+
+  var LET = ['a', 'b', 'c', 'd', 'e', 'f'];
+  var counter;
+
+  // helper: lay a sentence with a gap marker ___ out of text pieces
+  function render() {
+    document.title = (T.topic || 'Grammar') + ' test';
+    app.textContent = '';
+    counter = 1;
+    app.appendChild(el('div', 'brand', 'Anna | WeTalk'));
+    app.appendChild(el('h1', null, (T.topic || 'Grammar') + ': Test'));
+    if (T.intro) app.appendChild(el('p', 'lead', T.intro));
+
+    var form = el('form');
+    form.autocomplete = 'off';
+    form.addEventListener('submit', function (e) { e.preventDefault(); });
+
+    T.parts.forEach(function (part, pi) {
+      var sec = el('section', 'part');
+      var h = el('h2', null, 'Part ' + (pi + 1) + '. ' + part.title + ' ');
+      h.appendChild(el('span', 'pts', '(' + (part.pointsLabel || (part.max + ' points')) + ')'));
+      sec.appendChild(h);
+      part.startNum = counter;
+
+      if (part.type === 'choice') {
+        part.items.forEach(function (it) {
+          var n = counter++;
+          var q = el('div', 'q');
+          q.appendChild(el('span', 'num', n + '.'));
+          q.appendChild(document.createTextNode(it.q.replace('___', '______')));
+          var opts = el('div', 'opts');
+          it.options.forEach(function (o, j) {
+            var lab = el('label');
+            var r = el('input');
+            r.type = 'radio'; r.name = 'q' + n; r.value = o;
+            lab.appendChild(r);
+            lab.appendChild(document.createTextNode(' ' + LET[j] + ') ' + o));
+            opts.appendChild(lab);
+          });
+          q.appendChild(opts);
+          sec.appendChild(q);
+          it.n = n;
+        });
+      } else if (part.type === 'gap') {
+        part.items.forEach(function (it) {
+          var n = counter++;
+          var q = el('div', 'q');
+          q.appendChild(el('span', 'num', n + '.'));
+          if (it.pre) q.appendChild(document.createTextNode(it.pre + ' '));
+          var inp = el('input', 'gap');
+          inp.type = 'text'; inp.name = 'q' + n;
+          inp.setAttribute('aria-label', 'Answer ' + n);
+          inp.autocapitalize = 'off'; inp.spellcheck = false;
+          q.appendChild(inp);
+          if (it.hint) q.appendChild(el('span', 'hint', ' (' + it.hint + ')'));
+          if (it.post) q.appendChild(document.createTextNode(' ' + it.post));
+          sec.appendChild(q);
+          it.n = n;
+        });
+      } else if (part.type === 'fix') {
+        part.items.forEach(function (it) {
+          var n = counter++;
+          var q = el('div', 'q row');
+          q.appendChild(el('span', 'num', n + '.'));
+          var inp = el('input', 'full');
+          inp.type = 'text'; inp.name = 'q' + n; inp.value = it.sentence;
+          inp.setAttribute('aria-label', 'Correct sentence ' + n);
+          inp.spellcheck = false;
+          q.appendChild(inp);
+          sec.appendChild(q);
+          it.n = n;
+        });
+      } else if (part.type === 'write') {
+        var n = counter++;
+        part.n = n;
+        var q = el('div', 'q');
+        q.appendChild(el('span', 'num', n + '.'));
+        q.appendChild(document.createTextNode(part.prompt || 'Write your own sentences:'));
+        sec.appendChild(q);
+        part.items.forEach(function (it, j) {
+          var box = el('div', 'q');
+          box.appendChild(el('div', 'sub', LET[j] + ') ' + it.prompt));
+          var ta = el('textarea', 'full');
+          ta.name = 'q' + n + LET[j]; ta.rows = 2;
+          ta.setAttribute('aria-label', 'Sentence ' + n + LET[j]);
+          box.appendChild(ta);
+          sec.appendChild(box);
+        });
+      }
+      form.appendChild(sec);
+    });
+
+    var actions = el('div', 'actions');
+    var copyBtn = el('button', 'primary', 'Copy my answers');
+    copyBtn.type = 'button';
+    var printBtn = el('button', 'ghost', 'Print');
+    printBtn.type = 'button';
+    var status = el('span'); status.id = 'status'; status.setAttribute('role', 'status');
+    actions.appendChild(copyBtn); actions.appendChild(printBtn); actions.appendChild(status);
+    form.appendChild(actions);
+
+    var fb = el('div'); fb.id = 'fallback';
+    fb.appendChild(el('p', null, 'Your browser did not allow automatic copying. Select all the text below, copy it and paste it into the chat.'));
+    var fbt = el('textarea'); fbt.id = 'fallbackText'; fbt.readOnly = true;
+    fb.appendChild(fbt);
+    form.appendChild(fb);
+    app.appendChild(form);
+
+    app.appendChild(renderKey());
+
+    function say(m) { status.textContent = m; setTimeout(function () { status.textContent = ''; }, 4000); }
+    function legacyCopy(text) {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      var done = false;
+      try { done = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      return done;
+    }
+    copyBtn.addEventListener('click', function () {
+      var text = buildCopy();
+      function fall() {
+        if (legacyCopy(text)) say('Copied! Paste it into the chat.');
+        else { fb.style.display = 'block'; fbt.value = text; fbt.focus(); fbt.select(); }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { fb.style.display = 'none'; say('Copied! Paste it into the chat.'); }, fall);
+      } else { fall(); }
+    });
+    printBtn.addEventListener('click', function () { window.print(); });
+  }
+
+  function field(name) { var e = document.querySelector('[name="' + name + '"]'); return e ? e.value.trim() : ''; }
+  function radio(name) { var e = document.querySelector('input[name="' + name + '"]:checked'); return e ? e.value : ''; }
+  function blank(s) { return s ? '[' + s + ']' : '[ - ]'; }
+
+  function buildCopy() {
+    var out = [];
+    out.push((T.topic || 'Grammar') + ' test - ' + new Date().toLocaleDateString('en-GB'));
+    T.parts.forEach(function (part, pi) {
+      out.push('');
+      out.push('Part ' + (pi + 1));
+      if (part.type === 'choice') {
+        part.items.forEach(function (it) { out.push(it.n + '. ' + it.q.replace('___', blank(radio('q' + it.n)))); });
+      } else if (part.type === 'gap') {
+        part.items.forEach(function (it) {
+          out.push(it.n + '. ' + [it.pre, blank(field('q' + it.n)), it.post].filter(Boolean).join(' '));
+        });
+      } else if (part.type === 'fix') {
+        part.items.forEach(function (it) {
+          var v = field('q' + it.n);
+          out.push(it.n + '. ' + it.sentence);
+          out.push('   -> ' + (v === '' || v === it.sentence ? '(no change)' : v));
+        });
+      } else if (part.type === 'write') {
+        part.items.forEach(function (it, j) {
+          var v = field('q' + part.n + LET[j]);
+          out.push(part.n + LET[j] + '. ' + (v || '[ - ]'));
+        });
+      }
+    });
+    return out.join('\n');
+  }
+
+  // Teacher's key: hidden on screen, always the last page when printing.
+  function renderKey() {
+    var key = el('section', 'key');
+    key.appendChild(el('h1', null, (T.topic || 'Grammar') + ' test: Teacher\'s key'));
+    var total = 0;
+    T.parts.forEach(function (p) { total += Number(p.max) || 0; });
+    key.appendChild(el('p', null, 'Print page 1 only for the student. Maximum score: ' + total + '.'));
+
+    T.parts.forEach(function (part, pi) {
+      var head = 'Part ' + (pi + 1);
+      key.appendChild(el('h2', null, head));
+      var ul = el('ul');
+      function li(label, text) {
+        var l = el('li');
+        l.appendChild(el('b', null, label));
+        l.appendChild(document.createTextNode(text ? (/[.!?]$/.test(label) ? ' ' : ': ') + text : ''));
+        ul.appendChild(l);
+      }
+      if (part.type === 'choice') {
+        part.items.forEach(function (it) {
+          li(it.n + '. ' + LET[it.answer] + ') ' + it.options[it.answer], it.why);
+        });
+      } else if (part.type === 'gap') {
+        part.items.forEach(function (it) { li(it.n + '. ' + it.answer, it.why); });
+      } else if (part.type === 'fix') {
+        part.items.forEach(function (it) { li(it.n + '. ' + it.corrected, it.why); });
+      } else if (part.type === 'write') {
+        part.items.forEach(function (it, j) {
+          var l = el('li');
+          l.appendChild(el('b', null, part.n + LET[j] + '. '));
+          l.appendChild(document.createTextNode((it.criteria || 'Accept any correct sentence that fits the prompt.') + ' Example: '));
+          l.appendChild(el('i', null, it.example || ''));
+          ul.appendChild(l);
+        });
+      }
+      key.appendChild(ul);
+    });
+
+    var hi = Math.round(total * 0.875), mid = Math.round(total * 0.7);
+    key.appendChild(el('h2', null, 'Scoring'));
+    key.appendChild(el('p', null, hi + '-' + total + ': confident. ' + mid + '-' + (hi - 1) + ': needs a little polishing. Below ' + mid + ': revisit the grammar in this test.'));
+    return key;
+  }
+})();
+</script>
+</body>
+</html>
