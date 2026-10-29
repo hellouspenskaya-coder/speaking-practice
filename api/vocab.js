@@ -16,6 +16,7 @@
 //   action: "textBuild"  -> Haiku makes highlighted words + reading-skill taps for an excerpt
 //   action: "textAdapt"  -> Sonnet rewrites an excerpt for a lower level (teacher reviews it)
 //   action: "storyBuild" -> Haiku writes a short gap-fill story from the words of any set
+//   action: "imageData" -> downloads one Pixabay picture so the builder can shrink it in the browser before saving
 //   action: "testBuild"  -> Sonnet drafts a grammar test (4 parts + teacher's key) from pasted text or a topic
 //                           (a grammar test is saved with action "save", kind "grammarTest", and opens in grammar-test.html)
 
@@ -54,6 +55,7 @@ module.exports = async function handler(req, res) {
     if (action === 'textMoreWords') return await textMoreWords(req, res);
     if (action === 'storyBuild') return await storyBuild(req, res);
     if (action === 'testBuild') return await testBuild(req, res);
+    if (action === 'imageData') return await imageData(req, res);
     res.status(400).json({ error: `Unknown action: ${action}` });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -1725,4 +1727,33 @@ RULES:
     return;
   }
   res.status(200).json({ test });
+}
+
+// ---------- one picture, for the builder to shrink before saving ----------
+// Only Pixabay picture links are accepted (the builder only ever offers those),
+// so this cannot be used to fetch anything else.
+async function imageData(req, res) {
+  const raw = String((req.body && req.body.url) || '');
+  let u;
+  try { u = new URL(raw); } catch (e) { u = null; }
+  if (!u || u.protocol !== 'https:' || !(u.hostname === 'pixabay.com' || u.hostname.endsWith('.pixabay.com'))) {
+    res.status(400).json({ error: 'Only Pixabay picture links are allowed.' });
+    return;
+  }
+  const response = await fetch(u.toString());
+  if (!response.ok) {
+    res.status(502).json({ error: 'Could not download the picture (' + response.status + ').' });
+    return;
+  }
+  const type = (response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+  if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(type)) {
+    res.status(502).json({ error: 'The link is not a picture.' });
+    return;
+  }
+  const buffer = Buffer.from(await response.arrayBuffer());
+  if (buffer.length > 3000000) {
+    res.status(502).json({ error: 'The picture is too large.' });
+    return;
+  }
+  res.status(200).json({ dataUrl: `data:${type};base64,${buffer.toString('base64')}` });
 }
