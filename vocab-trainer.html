@@ -295,7 +295,7 @@ function renderGallery() {
       <div style="display:flex;gap:8px;">
         ${setData.passage && setData.passage.text ? `<button id="backToText" style="padding:10px 14px;font-size:14px;">&lsaquo; Text</button>` : ''}
         ${verbItems.length ? `<button id="printBtn" style="padding:10px 14px;font-size:14px;">Print list</button>` : ''}
-        ${setData.passage && setData.passage.text ? `<button id="printTextBtn" style="padding:10px 14px;font-size:14px;">&#128424; Print</button>` : ''}
+        ${setData.passage && setData.passage.text ? `<button id="printTextBtn" style="padding:10px 14px;font-size:14px;">&#128424; Print</button>` : (verbItems.length ? '' : `<button id="printWordsBtn" style="padding:10px 14px;font-size:14px;">&#128424; Print</button>`)}
         <button class="primary" id="startBtn" style="padding:10px 18px;font-size:14px;">Start practice</button>
       </div>
     </div>
@@ -312,6 +312,8 @@ function renderGallery() {
   });
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', () => printVerbList(verbItems));
+  const printWordsBtn = document.getElementById('printWordsBtn');
+  if (printWordsBtn) printWordsBtn.addEventListener('click', () => printWordSet());
   const printTextBtn = document.getElementById('printTextBtn');
   if (printTextBtn) printTextBtn.addEventListener('click', () => printTextSet());
   const backToText = document.getElementById('backToText');
@@ -840,6 +842,102 @@ ${storyHtml}
   });
 })();
 <\/script>
+</body></html>`;
+  const w = window.open('', '_blank');
+  if (!w) { alert('The print window was blocked. Allow pop-ups for this page and try again.'); return; }
+  w.document.write(html);
+  w.document.close();
+  w.onload = () => w.print();
+}
+
+// Printable sheet for an ordinary word set (A4): page 1 = picture cards (a picture, the word and its
+// definition; a word without a picture gets its definition in the picture box), page 2 = paper exercises.
+function printWordSet() {
+  const esc = escapeHtml;
+  const items = (setData.items || []).filter(i => i && i.text);
+  const seeded = (arr, seed) => {
+    const a = arr.slice();
+    let r = seed * 7919 + 13;
+    for (let i = a.length - 1; i > 0; i--) {
+      r = (r * 9301 + 49297) % 233280;
+      const j = Math.floor(r / 233280 * (i + 1));
+      const t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  };
+  const letters = 'abcdef';
+  const defOf = (it) => String(it.definition || '').trim();
+  const hasPic = (it) => it.image && typeof it.image === 'string';
+  const cards = items.map(it => {
+    const d = defOf(it);
+    const pic = hasPic(it)
+      ? `<div class="pic"><img src="${escapeAttr(it.image)}" alt="" /></div>`
+      : (d ? `<div class="pic nopic">${esc(d)}</div>` : '');
+    const cap = `<div class="w">${esc(it.text)}</div>` + (hasPic(it) && d ? `<div class="d">${esc(d)}</div>` : '');
+    return `<div class="card">${pic}${cap}</div>`;
+  }).join('');
+
+  // A: write the word under the picture (only words that have a picture)
+  const picItems = items.filter(hasPic).slice(0, 8);
+  const bank = seeded(picItems, 3).map(it => esc(it.text)).join(' &middot; ');
+  const picGrid = picItems.map(it => `<div><div class="p"><img src="${escapeAttr(it.image)}" alt="" /></div><div class="line"></div></div>`).join('');
+
+  // B: match words and definitions
+  const matchItems = seeded(items.filter(it => defOf(it)), 11).slice(0, 6);
+  const defs = seeded(matchItems, 5);
+  const matchWords = matchItems.map((it, i) => `<div>${i + 1}. ${esc(it.text)}</div>`).join('');
+  const matchDefs = defs.map((it, i) => `<div>${letters[i]}) ${esc(defOf(it))}</div>`).join('');
+
+  // C: missing letters (single words; the vowels are taken out)
+  const lettersItems = seeded(items.filter(it => /^[A-Za-z]{4,}$/.test(it.text)), 17).slice(0, 6);
+  const lettersHtml = lettersItems.map(it =>
+    `<li>${esc(it.text.split('').map((c, i) => (i > 0 && /[aeiou]/i.test(c)) ? '_' : c).join(' '))}</li>`).join('');
+
+  const title = esc(setData.topic || 'Word set');
+  const level = esc(setData.level || '');
+  let ex = 'A';
+  const nextEx = () => { const c = ex; ex = String.fromCharCode(ex.charCodeAt(0) + 1); return c; };
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><title>${title}</title>
+<style>
+@page { size: A4; margin: 13mm 16mm; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, sans-serif; color: #111; font-size: 11pt; line-height: 1.5; }
+.tag { font-size: 9pt; letter-spacing: .08em; text-transform: uppercase; color: #555; }
+h1 { font: 700 18pt Georgia, serif; margin: 1mm 0 2mm; }
+.meta { display: flex; justify-content: space-between; font-size: 10pt; border-bottom: 1.5px solid #111; padding-bottom: 2.5mm; margin-bottom: 4mm; }
+.meta u { display: inline-block; width: 45mm; border-bottom: 1px solid #111; text-decoration: none; }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5mm; }
+.card { border: 1.5px solid #111; border-radius: 3mm; padding: 3mm; text-align: center; break-inside: avoid; }
+.pic { height: 30mm; display: flex; align-items: center; justify-content: center; background: #f4f4f4; border-radius: 2mm; overflow: hidden; }
+.pic img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.nopic { font-size: 10pt; padding: 2mm; font-style: italic; line-height: 1.3; }
+.w { font-weight: 700; font-size: 13pt; margin-top: 2mm; }
+.d { font-size: 9pt; color: #333; line-height: 1.3; margin-top: 1mm; }
+h2.ex { font-size: 11pt; margin: 5mm 0 2mm; background: #111; color: #fff; padding: 1mm 3mm; border-radius: 1.5mm; break-after: avoid; }
+.bank { border: 1px dashed #111; padding: 1.5mm 3mm; margin: 1mm 0 2mm; text-align: center; font-weight: 700; }
+.line { border-bottom: 1px solid #555; height: 7mm; }
+.pb { break-before: page; }
+.sq { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm; }
+.sq .p { height: 22mm; background: #f4f4f4; border-radius: 2mm; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.sq .p img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.cols { display: grid; grid-template-columns: 1fr 1.6fr; gap: 6mm; line-height: 1.7; }
+ol { margin: 0; padding-left: 5mm; line-height: 1.8; }
+.foot { margin-top: 5mm; font-size: 8.5pt; color: #777; }
+</style></head><body>
+<div class="tag">The English Hub${level ? ' &middot; ' + level : ''}</div>
+<h1>${title}</h1>
+<div class="meta"><span>Name: <u></u></span><span>Date: <u></u></span></div>
+<p style="margin:0 0 4mm">${picItems.length ? 'Look at the pictures. Learn the words.' : 'Read the words and the definitions. Learn the words.'}</p>
+<div class="grid">${cards}</div>
+<div class="pb"></div>
+<div class="tag">${title} &middot; exercises</div>
+${picItems.length >= 3 ? `<h2 class="ex">${nextEx()}. Write the word under the picture</h2><div class="bank">${bank}</div><div class="sq">${picGrid}</div>` : ''}
+${matchItems.length >= 3 ? `<h2 class="ex">${nextEx()}. Match the words and the definitions</h2><div class="cols"><div>${matchWords}</div><div>${matchDefs}</div></div><p>Answers: ${matchItems.map((it, i) => (i + 1) + '___').join('&nbsp;&nbsp;')}</p>` : ''}
+${lettersHtml ? `<h2 class="ex">${nextEx()}. Missing letters</h2><ol style="columns:3;">${lettersHtml}</ol>` : ''}
+<h2 class="ex">${nextEx()}. Write</h2>
+<p style="margin:0 0 2mm">Write 3 sentences. Use two new words.</p>
+<div class="line"></div><div class="line"></div><div class="line"></div>
+<div class="foot">The English Hub</div>
 </body></html>`;
   const w = window.open('', '_blank');
   if (!w) { alert('The print window was blocked. Allow pop-ups for this page and try again.'); return; }
