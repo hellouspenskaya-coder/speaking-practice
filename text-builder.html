@@ -172,7 +172,8 @@
       </div>
       <p class="status" id="loadStatus"></p>
       <label for="pasteText" style="margin-top:8px;">Text (paragraphs separated by a blank line)</label>
-      <textarea id="pasteText" style="min-height:140px;" placeholder="Paste one or more paragraphs here. If it is longer than about 130 words, a good excerpt is chosen from it."></textarea>
+      <textarea id="pasteText" style="min-height:140px;" placeholder="Paste one or more paragraphs here. If it is longer than about 130 words, a good excerpt is chosen from it, unless you tick the box below."></textarea>
+      <label class="checkline" style="margin-top:6px;"><input type="checkbox" id="useAsIs" /> Use my text exactly as pasted (30 to 260 words): no excerpt is chosen and nothing is cut or removed.</label>
       <div class="row">
         <div>
           <label for="pasteTitle">Source title</label>
@@ -457,7 +458,13 @@ async function processPasted(pasted, count) {
   if (!title) throw new Error('Add the source title (so the set can credit it).');
   const info = { title, url: $('pasteUrl').value.trim(), authors: $('pasteAuthors').value.trim(), journal: '', license: 'not stated', licenseOk: false };
   let list;
-  if (wordCount(pasted) <= 130) {
+  if ($('useAsIs').checked) {
+    const wc = wordCount(pasted);
+    if (wc < 30) throw new Error('The text is too short (at least 30 words).');
+    if (wc > 260) throw new Error('The text has ' + wc + ' words. "Use my text exactly" works up to 260 words: shorten it, or untick the box to let the builder choose excerpts.');
+    list = [{ text: pasted.replace(/\s+/g, ' ').trim(), label: '' }];
+    count = 1;
+  } else if (wordCount(pasted) <= 130) {
     if (wordCount(pasted) < 30) throw new Error('The text is too short (at least 30 words).');
     list = [{ text: pasted.replace(/\s+/g, ' ').trim(), label: '' }];
   } else {
