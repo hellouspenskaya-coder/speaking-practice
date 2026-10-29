@@ -732,8 +732,10 @@ function printTextSet() {
 
   // questions about the text (the same questions as on screen, as multiple choice)
   const taps = (passage.taps || []).filter(t => t && t.correct && Array.isArray(t.wrong) && t.wrong.length >= 1);
+  const qAns = [];
   const qHtml = taps.map((t, k) => {
     const opts = seeded([t.correct].concat(t.wrong.slice(0, 2)), k + 1);
+    qAns.push(letters[opts.indexOf(t.correct)] + ') ' + t.correct);
     let ctx = '';
     if (t.context) {
       let c = esc(t.context);
@@ -771,22 +773,37 @@ function printTextSet() {
     `<li>${esc(it.text.split('').map((c, i) => (i > 0 && /[aeiou]/i.test(c)) ? '_' : c).join(' '))}</li>`).join('');
 
   // optional "Complete the story" block (only sets that have one): first story of the first pair
+  let ex = 'A';
+  const nextEx = () => { const c = ex; ex = String.fromCharCode(ex.charCodeAt(0) + 1); return c; };
+  // "Complete the text": the passage itself with the key words taken out, and a word bank
+  const clozeForms = [];
+  let clozeBody = esc(passage.text || '');
+  const ctoks = [];
+  items.slice().sort((a, b) => b.passageForm.length - a.passageForm.length).forEach(it => {
+    clozeBody = clozeBody.replace(reOf(esc(it.passageForm)), m => { ctoks.push(m); return '\u0000' + (ctoks.length - 1) + '\u0000'; });
+  });
+  clozeBody = clozeBody.replace(/\u0000(\d+)\u0000/g, (m, i) => { clozeForms.push(ctoks[i]); return `<span class="blank">(${clozeForms.length}) ____________</span>`; });
+  const clozeBank = seeded(clozeForms.map((f, i) => ({ f, i })), 9).map(x => esc(x.f)).join(' &middot; ');
+  const clozeHtml = clozeForms.length >= 3
+    ? `<h2 class="ex">§EX§. Complete the text</h2><div class="bank">${clozeBank}</div><p class="cloze">${clozeBody}</p>` : '';
   let storyHtml = '';
+  let storyAns = '';
   const pair = Array.isArray(setData.stories) && setData.stories[0];
   const story = pair && Array.isArray(pair.stories) && pair.stories[0];
   if (story && story.text && Array.isArray(story.gaps) && story.gaps.length) {
     const bank = seeded(story.gaps.map(g => g.b), 7).map(esc).join(' &middot; ');
     const body = esc(story.text).replace(/\{(\d+)\}/g, (m, n) => `<span class="blank">(${n}) ____________</span>`);
-    storyHtml = `<h2 class="ex">F. Complete the story</h2><div class="bank">${bank}</div><p class="story">${body}</p>`;
+    storyHtml = `<h2 class="ex">§EX§. Complete the story</h2><div class="bank">${bank}</div><p class="story">${body}</p>`;
+    storyAns = story.gaps.map((g, i) => (i + 1) + ') ' + esc(g.a)).join(' &nbsp; ');
   }
 
   const title = esc(setData.topic || 'Reading set');
   const level = esc(setData.level || '');
-  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><title>${title}</title>
+  let html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><title>${title}</title>
 <style>
 @page { size: A4; margin: 13mm 16mm; }
 * { box-sizing: border-box; }
-body { margin: 0; font-family: Georgia, serif; color: #111; font-size: 12pt; line-height: 1.5; }
+body { margin: 0 auto; max-width: 178mm; font-family: Georgia, serif; color: #111; font-size: 12pt; line-height: 1.5; }
 .tag { font-family: Arial, sans-serif; font-size: 9pt; letter-spacing: .08em; text-transform: uppercase; color: #555; }
 h1 { font-size: 18pt; margin: 1mm 0 2mm; }
 .meta { display: flex; justify-content: space-between; font-family: Arial, sans-serif; font-size: 10pt; border-bottom: 1.5px solid #111; padding-bottom: 2.5mm; margin-bottom: 4mm; }
@@ -809,7 +826,8 @@ li { break-inside: avoid; margin-bottom: 1.2mm; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; }
 .cols { display: grid; grid-template-columns: 1fr 1.6fr; gap: 6mm; }
 .line { border-bottom: 1px solid #555; height: 7mm; }
-.story { font-family: Arial, sans-serif; font-size: 10.5pt; line-height: 1.9; }
+.story, .cloze { font-family: Arial, sans-serif; font-size: 10.5pt; line-height: 1.9; margin: 1mm 0; }
+.tight .story, .tight .cloze { line-height: 1.7; } .tighter .story, .tighter .cloze { line-height: 1.55; font-size: 10pt; }
 .pagebreak { break-before: page; }
 .foot { margin-top: 5mm; font-family: Arial, sans-serif; font-size: 8.5pt; color: #777; }
 </style></head><body>
@@ -822,27 +840,44 @@ li { break-inside: avoid; margin-bottom: 1.2mm; }
 ${qHtml ? `<div class="ex-body"><h2 class="ex">Questions about the text</h2><ol>${qHtml}</ol></div>` : ''}
 </div>
 <div class="pagebreak"></div>
+<div id="p2">
 <div class="ex-body">
 <div class="tag">${title}</div>
-${gapHtml ? `<h2 class="ex">A. Fill in the gaps</h2><div class="bank">${bankHtml}</div><ol>${gapHtml}</ol>` : ''}
-${matchItems.length >= 3 ? `<h2 class="ex">B. Match the words and the definitions</h2><div class="cols"><div>${matchWords}</div><div>${matchDefs}</div></div><p>Answers: ${matchItems.map((it, i) => (i + 1) + '___').join('&nbsp;&nbsp;')}</p>` : ''}
-${lettersHtml ? `<h2 class="ex">C. Missing letters</h2><ol style="columns:2;">${lettersHtml}</ol>` : ''}
-<h2 class="ex">D. Write</h2>
+${gapHtml ? `<h2 class="ex">§EX§. Fill in the gaps</h2><div class="bank">${bankHtml}</div><ol>${gapHtml}</ol>` : ''}
+${matchItems.length >= 3 ? `<h2 class="ex">§EX§. Match the words and the definitions</h2><div class="cols"><div>${matchWords}</div><div>${matchDefs}</div></div><p>Answers: ${matchItems.map((it, i) => (i + 1) + '___').join('&nbsp;&nbsp;')}</p>` : ''}
+${lettersHtml ? `<h2 class="ex">§EX§. Missing letters</h2><ol style="columns:2;">${lettersHtml}</ol>` : ''}
+${clozeHtml}
+${storyHtml}
+<h2 class="ex">§EX§. Write</h2>
 <p>Write 3 sentences about this topic. Use two new words.</p>
 <div class="line"></div><div class="line"></div><div class="line"></div>
-${storyHtml}
+</div>
+</div>
+<div class="pagebreak"></div>
+<div class="ex-body" id="ans">
+<div class="tag">${title}</div>
+<h1>Answers</h1>
+<div class="meta"><span>The English Hub</span><span></span></div>
+${qHtml ? `<p><b>Questions about the text:</b><br>${qAns.map((a, i) => (i + 1) + '. ' + esc(a)).join('<br>')}</p>` : ''}
+${gapHtml ? `<p><b>Fill in the gaps:</b> ${gapItems.map((it, i) => (i + 1) + ') ' + esc(it.passageForm)).join(' &nbsp; ')}</p>` : ''}
+${matchItems.length >= 3 ? `<p><b>Match:</b> ${matchItems.map((it, i) => (i + 1) + '-' + letters[defs.indexOf(it)]).join(' &nbsp; ')}</p>` : ''}
+${lettersHtml ? `<p><b>Missing letters:</b> ${lettersItems.map((it, i) => (i + 1) + ') ' + esc(it.text)).join(' &nbsp; ')}</p>` : ''}
+${clozeHtml ? `<p><b>Complete the text:</b> ${clozeForms.map((f, i) => (i + 1) + ') ' + f).join(' &nbsp; ')}</p>` : ''}
+${storyAns ? `<p><b>Complete the story:</b> ${storyAns}</p>` : ''}
+<p><b>Write:</b> free answer.</p>
 </div>
 <div class="foot">The English Hub</div>
 <script>
 // keep page 1 on one sheet: if it is too tall, use smaller type (two steps)
 (function () {
-  var limit = (297 - 26) * 96 / 25.4;
+  var limit = (297 - 26) * 96 / 25.4 * 0.96;
   ['tight', 'tighter'].forEach(function (c) {
-    if (document.getElementById('p1').offsetHeight > limit) document.body.classList.add(c);
+    if (Math.max(document.getElementById('p1').offsetHeight, document.getElementById('p2').offsetHeight) > limit) document.body.classList.add(c);
   });
 })();
 <\/script>
 </body></html>`;
+  { let ci = 0; html = html.replace(/§EX§/g, () => String.fromCharCode(65 + ci++)); }
   const w = window.open('', '_blank');
   if (!w) { alert('The print window was blocked. Allow pop-ups for this page and try again.'); return; }
   w.document.write(html);
@@ -893,10 +928,21 @@ function printWordSet() {
   const lettersHtml = lettersItems.map(it =>
     `<li>${esc(it.text.split('').map((c, i) => (i > 0 && /[aeiou]/i.test(c)) ? '_' : c).join(' '))}</li>`).join('');
 
-  const title = esc(setData.topic || 'Word set');
-  const level = esc(setData.level || '');
+  // optional "Complete the story" (only sets that have one): first story of the first pair
+  let storyHtml = '';
+  let storyAns = '';
+  const pair = Array.isArray(setData.stories) && setData.stories[0];
+  const story = pair && Array.isArray(pair.stories) && pair.stories[0];
   let ex = 'A';
   const nextEx = () => { const c = ex; ex = String.fromCharCode(ex.charCodeAt(0) + 1); return c; };
+  if (story && story.text && Array.isArray(story.gaps) && story.gaps.length) {
+    const sbank = seeded(story.gaps.map(g => g.b), 7).map(esc).join(' &middot; ');
+    const sbody = esc(story.text).replace(/\{(\d+)\}/g, (m, n) => `<span style="white-space:nowrap">(${n}) ____________</span>`);
+    storyHtml = `<h2 class="ex">${nextEx()}. Complete the story</h2><div class="bank">${sbank}</div><p style="line-height:1.9;margin:1mm 0">${sbody}</p>`;
+    storyAns = story.gaps.map((g, i) => (i + 1) + ') ' + esc(g.a)).join(' &nbsp; ');
+  }
+  const title = esc(setData.topic || 'Word set');
+  const level = esc(setData.level || '');
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><title>${title}</title>
 <style>
 @page { size: A4; margin: 13mm 16mm; }
@@ -934,9 +980,19 @@ ol { margin: 0; padding-left: 5mm; line-height: 1.8; }
 ${picItems.length >= 3 ? `<h2 class="ex">${nextEx()}. Write the word under the picture</h2><div class="bank">${bank}</div><div class="sq">${picGrid}</div>` : ''}
 ${matchItems.length >= 3 ? `<h2 class="ex">${nextEx()}. Match the words and the definitions</h2><div class="cols"><div>${matchWords}</div><div>${matchDefs}</div></div><p>Answers: ${matchItems.map((it, i) => (i + 1) + '___').join('&nbsp;&nbsp;')}</p>` : ''}
 ${lettersHtml ? `<h2 class="ex">${nextEx()}. Missing letters</h2><ol style="columns:3;">${lettersHtml}</ol>` : ''}
+${storyHtml}
 <h2 class="ex">${nextEx()}. Write</h2>
 <p style="margin:0 0 2mm">Write 3 sentences. Use two new words.</p>
 <div class="line"></div><div class="line"></div><div class="line"></div>
+<div class="pb"></div>
+<div class="tag">${title}</div>
+<h1>Answers</h1>
+<div class="meta"><span>The English Hub</span><span></span></div>
+${picItems.length >= 3 ? `<p><b>Write the word under the picture:</b> ${picItems.map((it, i) => (i + 1) + ') ' + esc(it.text)).join(' &nbsp; ')}</p>` : ''}
+${matchItems.length >= 3 ? `<p><b>Match:</b> ${matchItems.map((it, i) => (i + 1) + '-' + letters[defs.indexOf(it)]).join(' &nbsp; ')}</p>` : ''}
+${lettersHtml ? `<p><b>Missing letters:</b> ${lettersItems.map((it, i) => (i + 1) + ') ' + esc(it.text)).join(' &nbsp; ')}</p>` : ''}
+${storyAns ? `<p><b>Complete the story:</b> ${storyAns}</p>` : ''}
+<p><b>Write:</b> free answer.</p>
 <div class="foot">The English Hub</div>
 </body></html>`;
   const w = window.open('', '_blank');
