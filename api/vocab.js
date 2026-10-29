@@ -1515,28 +1515,50 @@ ${given}
 
 Rules:
 - 60 to 110 words, simple and clear, a little story with a beginning and an end (a person, a problem, what happens). Natural and neutral, suitable for adults.
-- Use between 5 and 8 words from the list. Put each used word in double asterisks, exactly as it is written in the list: NO plural, NO past tense, NO other changes. Example: "She wanted to **cook** dinner."
+- Use between 5 and 8 words from the list. Put each used word in double asterisks, written the way it appears in YOUR sentence, then a vertical bar, then the word exactly as it is written in the list. The word may change its form to fit the sentence (plural, past tense, -ing, -s), but it must be the same word. Examples: "She wanted to **cook|cook** dinner." "He **lingered|linger** at the door." "There were many **deviations|deviation** from the plan."
 - Use each marked word only once. Do not use the other list words unmarked.
 - The context must make each missing word easy to guess, and different marked words must not fit the same gap.
 - Plain text only. No other markdown, no title inside the text.
 
-Reply with STRICT JSON only: {"text":"the story with **marked** words"}`;
+Reply with STRICT JSON only: {"text":"the story with **form|listword** marked words"}`;
 
-  let out;
-  try {
-    out = extractJsonObject(await callHaiku(prompt, 900));
-  } catch (err) {
-    res.status(502).json({ error: 'Could not write the story: ' + err.message });
-    return;
-  }
-  const text = String(out.text || '').replace(/[ \t]+/g, ' ').trim();
-  const marked = [];
-  text.replace(/\*\*(.+?)\*\*/g, (m, w) => { marked.push(w.trim().toLowerCase()); return m; });
   const allowed = new Set(list.map((w) => w.text.toLowerCase()));
-  const unique = new Set(marked);
-  const wc = wordCount(text);
-  if (marked.length < 4 || unique.size !== marked.length || marked.some((w) => !allowed.has(w)) || wc < 40 || wc > 150) {
-    res.status(502).json({ error: 'The story did not come out right (gaps or length). Try again.' });
+  // the model may write the singular of a plural list word (deviation for deviations): accept a close match
+  const inList = (w) => allowed.has(w) || [...allowed].some((a) => a.length >= 4 && w.length >= 4 && (a.startsWith(w) || w.startsWith(a)));
+  let text = '';
+  let marked = [];
+  let lastError = 'The story did not come out right (gaps or length). Try again.';
+  // Up to 3 tries: the model sometimes misses a rule (too short, a word marked twice, a word not from the list).
+  for (let attempt = 0; attempt < 3; attempt++) {
+    let out;
+    try {
+      out = extractJsonObject(await callHaiku(prompt + (attempt ? '\nIMPORTANT: the previous try broke a rule. Mark 5 to 8 DIFFERENT list words, each exactly once, as **form|listword**, and write 60 to 110 words.' : ''), 1200));
+    } catch (err) {
+      lastError = 'Could not write the story: ' + err.message;
+      continue;
+    }
+    const raw = String(out.text || '').replace(/[ \t]+/g, ' ').trim();
+    const bases = [];
+    // **form|listword** -> **form**; the list word is only used to check the choice of word.
+    const cleaned = raw.replace(/\*\*(.+?)\*\*/g, (m, inner) => {
+      const parts = inner.split('|');
+      const form = parts[0].trim();
+      const base = (parts[1] || parts[0]).trim().toLowerCase();
+      bases.push(base);
+      return '**' + form + '**';
+    });
+    const wc = wordCount(cleaned);
+    const unique = new Set(bases);
+    if (bases.length < 4 || unique.size !== bases.length || bases.some((w) => !inList(w)) || wc < 40 || wc > 150) {
+      lastError = 'The story did not come out right (gaps or length). Try again.';
+      continue;
+    }
+    text = cleaned;
+    marked = bases;
+    break;
+  }
+  if (!text) {
+    res.status(502).json({ error: lastError });
     return;
   }
   res.status(200).json({ text, gaps: marked.length });

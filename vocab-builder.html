@@ -1341,6 +1341,24 @@ function storyGapWords(text) {
   String(text).replace(/\*\*(.+?)\*\*/g, (m, w) => { words.push(w.trim()); return m; });
   return words;
 }
+// A gap word in the story may be an inflected form of a set word (lingered -> linger, deviations -> deviation).
+// Returns the set item it belongs to: exact match first, otherwise the longest set word whose stem the form starts with.
+function itemForStoryWord(word) {
+  const w = String(word || '').trim().toLowerCase();
+  const exact = items.find(i => i.text.toLowerCase() === w);
+  if (exact) return exact;
+  let best = null, bestLen = 0;
+  items.forEach(i => {
+    const t = i.text.toLowerCase();
+    if (t.indexOf(' ') !== -1) return;
+    const stem = t.length > 5 ? t.slice(0, t.length - 1) : t;   // internalize -> internaliz, deviation -> deviatio
+    const stem2 = t.length > 6 && /(e|y)$/.test(t) ? t.slice(0, t.length - 1) : t;
+    [t, stem2, stem].forEach(st => {
+      if (st.length >= 4 && w.indexOf(st) === 0 && w.length - st.length <= 4 && st.length > bestLen) { best = i; bestLen = st.length; }
+    });
+  });
+  return best;
+}
 function storyFromMarked(text) {
   const gaps = [];
   let n = 0;
@@ -1348,7 +1366,7 @@ function storyFromMarked(text) {
   const body = clean.replace(/\*\*(.+?)\*\*/g, (m, w) => {
     n += 1;
     const word = w.trim();
-    const it = items.find(i => i.text.toLowerCase() === word.toLowerCase());
+    const it = itemForStoryWord(word);
     gaps.push({ a: word, b: it ? it.text : word });
     return '{' + n + '}';
   });
@@ -1369,7 +1387,7 @@ function storyProblem() {
 }
 function updateStoryInfo() {
   const gaps = storyGapWords(storyDraft || '');
-  const outside = gaps.filter(g => !items.some(i => i.text.toLowerCase() === g.toLowerCase()));
+  const outside = gaps.filter(g => !itemForStoryWord(g));
   document.getElementById('storyInfo').textContent =
     gaps.length + ' gaps: ' + (gaps.join(', ') || 'none yet') + (outside.length ? ' · not in the set: ' + outside.join(', ') : '');
 }
