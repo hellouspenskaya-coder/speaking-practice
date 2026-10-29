@@ -1431,15 +1431,20 @@ async function textAdapt(req, res) {
     res.status(400).json({ error: 'The passage should be between 30 and 260 words.' });
     return;
   }
-  const lvl = ['B1', 'B2', 'C1'].includes(level) ? level : null;
+  const lvl = ['A2', 'B1', 'B2', 'C1'].includes(level) ? level : null;
   if (!lvl) {
-    res.status(400).json({ error: 'Choose a level: B1, B2 or C1.' });
+    res.status(400).json({ error: 'Choose a level: A2, B1, B2 or C1.' });
     return;
   }
   const how = lvl === 'C1'
     ? `- A lighter C1 version: still a demanding academic text, but easier to read than the original. Keep the academic register and the key terms.
 - Sentences: about 20 words on average, NEVER more than 30 words. Split sentences that are longer, and untangle stacked subordinate clauses and long participle phrases.
 - Replace only the most unusual or overloaded words and noun chains with clearer academic wording. Do not make the vocabulary simpler than B2 where a precise academic word is natural.`
+    : lvl === 'A2'
+    ? `- This is a real A2 text for an elementary learner, MUCH easier than the original. Use only very common everyday words (about the 1500 most frequent English words) and simple grammar: present simple, past simple, "can", "will", "going to". Avoid passive voice, relative clauses with whose/whom, conditionals and long noun chains.
+- Sentences: about 8 words on average, NEVER more than 14 words. One idea per sentence. Split every long sentence.
+- Replace difficult, abstract or specialist words with simple ones or a very short plain explanation (for example "money that the government gives to farmers" instead of "subsidies"). Keep only 3 or 4 key subject terms that the learner really needs (for example farm, crop, harvest, price), and make their meaning clear from the sentence around them.
+- Numbers and names of places may stay. Keep the text concrete: who does what.`
     : lvl === 'B1'
     ? `- This is a real B1 text, clearly easier than the original. Use mostly everyday CEFR A2-B1 words and simple grammar (active voice where possible, no long noun chains, no stacked clauses).
 - Sentences: about 12 words on average, NEVER more than 18 words. One idea per sentence. Split every long sentence.
@@ -1454,7 +1459,7 @@ ORIGINAL:
 ${text}
 """
 
-Rewrite it as ONE paragraph of ${lvl === 'B1' ? '55 to 120' : Math.max(60, Math.round(wc * 0.85)) + ' to ' + Math.min(140, Math.round(wc * 1.2))} words.${lvl === 'B1' ? '' : ' Do NOT shorten it: keep all the content and the length of the original (the result must have at least 85% of its words); make it easier by splitting and untangling sentences, not by cutting.'}
+Rewrite it as ONE paragraph of ${lvl === 'A2' ? '45 to 110' : lvl === 'B1' ? '55 to 120' : Math.max(60, Math.round(wc * 0.85)) + ' to ' + Math.min(140, Math.round(wc * 1.2))} words.${lvl === 'B1' || lvl === 'A2' ? '' : ' Do NOT shorten it: keep all the content and the length of the original (the result must have at least 85% of its words); make it easier by splitting and untangling sentences, not by cutting.'}
 Rules:
 ${how}
 - Keep the meaning and the main claims. Do not add facts, examples or opinions. You may shorten secondary detail (long lists of examples) to keep the text easy.
@@ -1471,7 +1476,7 @@ Reply with STRICT JSON only: {"text":"the adapted paragraph"}`;
   };
   const tooHard = (t) => {
     const st = sentStats(t);
-    return lvl === 'B1' ? (st.avg > 16 || st.max > 22) : lvl === 'C1' ? (st.avg > 24 || st.max > 32) : (st.max > 36);
+    return lvl === 'A2' ? (st.avg > 11 || st.max > 16) : lvl === 'B1' ? (st.avg > 16 || st.max > 22) : lvl === 'C1' ? (st.avg > 24 || st.max > 32) : (st.max > 36);
   };
 
   let adapted = '';
@@ -1479,7 +1484,7 @@ Reply with STRICT JSON only: {"text":"the adapted paragraph"}`;
     let out = extractJsonObject(await callSonnet(prompt(''), 900));
     adapted = String(out.text || '').replace(/\s+/g, ' ').trim();
     if (tooHard(adapted)) {
-      out = extractJsonObject(await callSonnet(prompt('Your previous version was still too hard: its sentences were too long. Make it simpler: split sentences so none is longer than ' + (lvl === 'C1' ? '30' : '18') + ' words, and replace difficult words with clearer ones.'), 900));
+      out = extractJsonObject(await callSonnet(prompt('Your previous version was still too hard: its sentences were too long. Make it simpler: split sentences so none is longer than ' + (lvl === 'C1' ? '30' : lvl === 'A2' ? '14' : '18') + ' words, and replace difficult words with clearer ones.'), 900));
       const second = String(out.text || '').replace(/\s+/g, ' ').trim();
       if (second) adapted = second;
     }
@@ -1488,7 +1493,7 @@ Reply with STRICT JSON only: {"text":"the adapted paragraph"}`;
     return;
   }
   const awc = wordCount(adapted);
-  if (awc < (lvl === 'B1' ? 40 : Math.max(55, Math.round(wc * 0.7))) || awc > 150 || /[\[\]{}*#]/.test(adapted) || !/[.!?]["\u201d)]?$/.test(adapted)) {
+  if (awc < (lvl === 'A2' ? 35 : lvl === 'B1' ? 40 : Math.max(55, Math.round(wc * 0.7))) || awc > 150 || /[\[\]{}*#]/.test(adapted) || !/[.!?]["\u201d)]?$/.test(adapted)) {
     res.status(502).json({ error: 'The adapted text did not come out right. Try again.' });
     return;
   }

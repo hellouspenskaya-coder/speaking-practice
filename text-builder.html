@@ -116,6 +116,7 @@
       <div>
         <label for="level">Level</label>
         <select id="level">
+          <option>A2</option>
           <option>B1</option>
           <option selected>B2</option>
           <option>C1</option>
@@ -187,7 +188,7 @@
       <label for="pasteUrl">Link (optional)</label>
       <input type="text" id="pasteUrl" placeholder="https://..." autocomplete="off" />
     </details>
-    <label class="checkline" style="margin-top:8px;"><input type="checkbox" id="adapt" /> Adapt the wording to the level (B1, B2, and a lighter C1). Keeps cautious wording, reference words and key terms.</label>
+    <label class="checkline" style="margin-top:8px;"><input type="checkbox" id="adapt" /> Adapt the wording to the level (A2, B1, B2, and a lighter C1). Keeps cautious wording, reference words and key terms.</label>
     <button class="primary" id="findBtn">Get excerpts</button>
     <p class="status" id="findStatus"></p>
     <div id="failList" class="meta hidden" style="margin-top:8px;"></div>
@@ -796,7 +797,7 @@ async function openExisting(slug) {
     tried = [];
     $('area').value = data.area || '';
     $('areaPub').value = data.area || '';
-    if (['B1', 'B2', 'C1'].includes(data.level)) $('level').value = data.level;
+    if (['A2', 'B1', 'B2', 'C1'].includes(data.level)) $('level').value = data.level;
     $('title').value = data.topic || '';
     $('cloze').checked = data.passage.cloze !== false;
     $('reviewed').checked = false;
@@ -1169,9 +1170,9 @@ $('adaptBtn').addEventListener('click', () => {
   }
 });
 
-// B1 learners: switch adaptation on by default (it can still be unticked).
+// A2 and B1 learners: switch adaptation on by default (it can still be unticked).
 $('level').addEventListener('change', () => {
-  $('adapt').checked = $('level').value === 'B1';
+  $('adapt').checked = ['A2', 'B1'].includes($('level').value);
   if (!$('textCard').classList.contains('hidden')) updateAdaptUi();
 });
 
