@@ -222,20 +222,20 @@
       "prepositionSentence": "",
       "wordFamily": [
         {
-          "form": "authorize",
-          "pos": "verb"
+          "form": "authorized",
+          "pos": ""
         },
         {
           "form": "authority",
-          "pos": "noun"
+          "pos": ""
         },
         {
           "form": "authoritative",
-          "pos": "adjective"
+          "pos": ""
         }
       ],
       "wordFormationSentence": "The manager has ___ employees to make purchasing decisions up to a certain budget limit.",
-      "wordFormationAnswer": "authorize",
+      "wordFormationAnswer": "authorized",
       "isCollocation": false,
       "collocationSentence": "",
       "collocationAnswer": "",
