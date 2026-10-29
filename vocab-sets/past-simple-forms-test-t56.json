@@ -1,0 +1,158 @@
+{
+  "kind": "grammarTest",
+  "topic": "Past Simple forms",
+  "level": "A1",
+  "intro": "Covers affirmative, negative, and question forms of Past Simple (regular and irregular verbs).",
+  "parts": [
+    {
+      "type": "choice",
+      "title": "Choose the correct option.",
+      "max": 5,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "q": "She ___ to the market yesterday.",
+          "options": [
+            "go",
+            "goes",
+            "went"
+          ],
+          "answer": 2,
+          "why": "Irregular Past Simple of 'go' is 'went'."
+        },
+        {
+          "q": "They ___ not watch TV last night.",
+          "options": [
+            "does",
+            "did",
+            "do"
+          ],
+          "answer": 1,
+          "why": "Past Simple negative uses 'did not'; auxiliary is 'did'."
+        },
+        {
+          "q": "___ you eat breakfast this morning?",
+          "options": [
+            "Did",
+            "Was",
+            "Do"
+          ],
+          "answer": 0,
+          "why": "Past Simple yes/no question starts with auxiliary 'did'."
+        },
+        {
+          "q": "He ___ his bag at school yesterday.",
+          "options": [
+            "left",
+            "leaved",
+            "leave"
+          ],
+          "answer": 0,
+          "why": "Irregular Past Simple of 'leave' is 'left'."
+        },
+        {
+          "q": "We ___ a film at the cinema last week.",
+          "options": [
+            "watch",
+            "watching",
+            "watched"
+          ],
+          "answer": 2,
+          "why": "Regular Past Simple adds '-ed' to the base verb."
+        }
+      ]
+    },
+    {
+      "type": "gap",
+      "title": "Complete the sentences with the correct form.",
+      "max": 6,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "pre": "I",
+          "hint": "(call)",
+          "post": "my friend last night.",
+          "answer": "called",
+          "why": "Regular verb: add '-ed' for Past Simple affirmative."
+        },
+        {
+          "pre": "She",
+          "hint": "(not / go)",
+          "post": "to school on Monday.",
+          "answer": "did not go",
+          "why": "Past Simple negative: 'did not' + base form."
+        },
+        {
+          "pre": "",
+          "hint": "(be)",
+          "post": "the weather nice last weekend?",
+          "answer": "Was",
+          "why": "Past Simple question with 'be': invert subject and 'was/were'."
+        },
+        {
+          "pre": "They",
+          "hint": "(buy)",
+          "post": "some bread at the shop.",
+          "answer": "bought",
+          "why": "Irregular Past Simple of 'buy' is 'bought'."
+        },
+        {
+          "pre": "He",
+          "hint": "(not / like)",
+          "post": "the soup at dinner.",
+          "answer": "did not like",
+          "why": "Past Simple negative: 'did not' + base form, no '-ed' on main verb."
+        },
+        {
+          "pre": "Where",
+          "hint": "(you / go)",
+          "post": "on your holiday?",
+          "answer": "did you go",
+          "why": "Past Simple Wh-question: Wh-word + 'did' + subject + base form."
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "title": "Find and correct the mistake in each sentence.",
+      "max": 3,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "sentence": "She didn't went to the gym yesterday.",
+          "corrected": "She didn't go to the gym yesterday.",
+          "why": "After 'did not', use base form, not Past Simple form."
+        },
+        {
+          "sentence": "Did he worked in a café last summer?",
+          "corrected": "Did he work in a café last summer?",
+          "why": "After auxiliary 'did' in questions, use base form only."
+        },
+        {
+          "sentence": "We was at home all day on Sunday.",
+          "corrected": "We were at home all day on Sunday.",
+          "why": "Past Simple of 'be' with plural subject 'we' is 'were'."
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "title": "Write your own sentences.",
+      "max": 2,
+      "pointsLabel": "2 points: 1 for correct form, 1 for meaning and use",
+      "prompt": "Write two sentences:",
+      "items": [
+        {
+          "prompt": "Write one sentence about something you did last weekend.",
+          "criteria": "Accept any grammatically correct Past Simple affirmative sentence with a correct regular or irregular verb form and a past time expression.",
+          "example": "I visited my grandparents last weekend."
+        },
+        {
+          "prompt": "Write one sentence about something you did not do yesterday.",
+          "criteria": "Accept any grammatically correct Past Simple negative sentence using 'did not / didn't' followed by a base form verb.",
+          "example": "I didn't watch television yesterday."
+        }
+      ]
+    }
+  ]
+}
