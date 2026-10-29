@@ -3034,7 +3034,9 @@ function renderStory(container, step, onFinish) {
     ${stripHtml ? `<div class="story-strip">${stripHtml}</div>` : ''}
     <p class="mode-label">${escapeHtml(story.label || 'Put each verb in the right form')}</p>
     <div class="story-bank" id="storyBank">${bankHtml}</div>
-    <p style="font-size:12px;color:var(--muted);margin:2px 0 8px;text-align:center;">Type in the gaps, or tap a word to put it in the gap. Some words need another form.</p>
+    <div style="background:#fff7e6;border:1.5px solid #f0b429;border-radius:10px;padding:10px 12px;margin:6px 0 12px;font-size:15px;line-height:1.45;color:#7a4b00;">
+      <strong>Watch the form!</strong> Some words must be changed to fit the sentence (for example <em>walk</em> &rarr; <em>walked</em>, <em>idea</em> &rarr; <em>ideas</em>). Tap a word to put it in the gap, then fix the ending if needed.
+    </div>
     <p class="story-text">${textHtml}</p>
     <div id="storyMsg" class="feedback" style="display:none;"></div>
     <button class="primary wide" id="storyCheck" style="margin-top:6px;">Check</button>
