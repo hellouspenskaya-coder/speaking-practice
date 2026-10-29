@@ -295,6 +295,7 @@ function renderGallery() {
       <div style="display:flex;gap:8px;">
         ${setData.passage && setData.passage.text ? `<button id="backToText" style="padding:10px 14px;font-size:14px;">&lsaquo; Text</button>` : ''}
         ${verbItems.length ? `<button id="printBtn" style="padding:10px 14px;font-size:14px;">Print list</button>` : ''}
+        ${setData.passage && setData.passage.text ? `<button id="printTextBtn" style="padding:10px 14px;font-size:14px;">&#128424; Print</button>` : ''}
         <button class="primary" id="startBtn" style="padding:10px 18px;font-size:14px;">Start practice</button>
       </div>
     </div>
@@ -311,6 +312,8 @@ function renderGallery() {
   });
   const printBtn = document.getElementById('printBtn');
   if (printBtn) printBtn.addEventListener('click', () => printVerbList(verbItems));
+  const printTextBtn = document.getElementById('printTextBtn');
+  if (printTextBtn) printTextBtn.addEventListener('click', () => printTextSet());
   const backToText = document.getElementById('backToText');
   if (backToText) backToText.addEventListener('click', () => renderReading());
   const gallery = document.getElementById('gallery');
@@ -691,6 +694,158 @@ function printWorksheet(worksheetItems) {
   printWindow.document.write(html);
   printWindow.document.close();
   printWindow.onload = () => printWindow.print();
+}
+
+// Printable sheet for a text set (A4, two pages): page 1 = the text, the key words and the questions about
+// the text; page 2 = paper exercises (no audio, no typing) and, if the set has one, "Complete the story".
+// Opens a clean print window; the browser's own dialog can also "Save as PDF".
+function printTextSet() {
+  const passage = setData.passage || {};
+  const esc = escapeHtml;
+  const items = (setData.items || []).filter(i => i.passageForm && i.definition);
+  // fixed pseudo-random order, so the sheet looks the same every time it is printed
+  const seeded = (arr, seed) => {
+    const a = arr.slice();
+    let r = seed * 7919 + 13;
+    for (let i = a.length - 1; i > 0; i--) {
+      r = (r * 9301 + 49297) % 233280;
+      const j = Math.floor(r / 233280 * (i + 1));
+      const t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  };
+  const reOf = (form) => new RegExp('(?<![A-Za-z])' + escapeRegex(form) + '(?![A-Za-z])', 'i');
+  const letters = 'abcdef';
+
+  // the text with the key words in bold
+  let textHtml = esc(passage.text || '');
+  const tokens = [];
+  items.slice().sort((a, b) => b.passageForm.length - a.passageForm.length).forEach(it => {
+    textHtml = textHtml.replace(reOf(esc(it.passageForm)), m => { tokens.push(m); return '\u0000' + (tokens.length - 1) + '\u0000'; });
+  });
+  textHtml = textHtml.replace(/\u0000(\d+)\u0000/g, (m, i) => '<b>' + tokens[i] + '</b>');
+
+  // key words box
+  const wordsHtml = items.map(it => `<dt>${esc(it.text)}</dt><dd>${esc(it.definition)}</dd>`).join('');
+
+  // questions about the text (the same questions as on screen, as multiple choice)
+  const taps = (passage.taps || []).filter(t => t && t.correct && Array.isArray(t.wrong) && t.wrong.length >= 1);
+  const qHtml = taps.map((t, k) => {
+    const opts = seeded([t.correct].concat(t.wrong.slice(0, 2)), k + 1);
+    let ctx = '';
+    if (t.context) {
+      let c = esc(t.context);
+      if (t.mark) c = c.replace(reOf(esc(t.mark)), m => '<b>' + m + '</b>');
+      ctx = `<div class="qctx">${c}</div>`;
+    }
+    return `<li><div class="qp">${esc(t.prompt || '')}</div>${ctx}<div class="opts">${opts.map((o, i) => `<span>${letters[i]}) ${esc(o)}</span>`).join('')}</div></li>`;
+  }).join('');
+
+  // exercise A: fill the gaps, with the first letter as a hint (two words can seem to fit)
+  const seenEx = new Set();
+  const gapItems = items.filter(it => {
+    if (!(it.example && reOf(it.passageForm).test(it.example) && it.example.split(/\s+/).length <= 24)) return false;
+    if (seenEx.has(it.example)) return false; // one gap per sentence
+    seenEx.add(it.example);
+    return true;
+  }).slice(0, 6);
+  const gapOrder = seeded(gapItems, 3);
+  const gapHtml = gapItems.map(it => {
+    const first = it.passageForm.charAt(0);
+    const blank = '<span class="blank">' + esc(first) + ' ______________</span>';
+    return `<li>${esc(it.example).replace(reOf(esc(it.passageForm)), blank)}</li>`;
+  }).join('');
+  const bankHtml = gapOrder.map(it => esc(it.passageForm)).join(' &middot; ');
+
+  // exercise B: match words and definitions
+  const matchItems = items.slice(0, 6);
+  const defs = seeded(matchItems, 5);
+  const matchWords = matchItems.map((it, i) => `<div>${i + 1}. ${esc(it.text)}</div>`).join('');
+  const matchDefs = defs.map((it, i) => `<div>${letters[i]}) ${esc(it.definition)}</div>`).join('');
+
+  // exercise C: missing letters (single words only; the vowels are taken out)
+  const lettersItems = items.filter(it => /^[A-Za-z]{5,}$/.test(it.text)).slice(0, 6);
+  const lettersHtml = lettersItems.map(it =>
+    `<li>${esc(it.text.split('').map((c, i) => (i > 0 && /[aeiou]/i.test(c)) ? '_' : c).join(' '))}</li>`).join('');
+
+  // optional "Complete the story" block (only sets that have one): first story of the first pair
+  let storyHtml = '';
+  const pair = Array.isArray(setData.stories) && setData.stories[0];
+  const story = pair && Array.isArray(pair.stories) && pair.stories[0];
+  if (story && story.text && Array.isArray(story.gaps) && story.gaps.length) {
+    const bank = seeded(story.gaps.map(g => g.b), 7).map(esc).join(' &middot; ');
+    const body = esc(story.text).replace(/\{(\d+)\}/g, (m, n) => `<span class="blank">(${n}) ____________</span>`);
+    storyHtml = `<h2 class="ex">F. Complete the story</h2><div class="bank">${bank}</div><p class="story">${body}</p>`;
+  }
+
+  const title = esc(setData.topic || 'Reading set');
+  const level = esc(setData.level || '');
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><title>${title}</title>
+<style>
+@page { size: A4; margin: 13mm 16mm; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Georgia, serif; color: #111; font-size: 12pt; line-height: 1.5; }
+.tag { font-family: Arial, sans-serif; font-size: 9pt; letter-spacing: .08em; text-transform: uppercase; color: #555; }
+h1 { font-size: 18pt; margin: 1mm 0 2mm; }
+.meta { display: flex; justify-content: space-between; font-family: Arial, sans-serif; font-size: 10pt; border-bottom: 1.5px solid #111; padding-bottom: 2.5mm; margin-bottom: 4mm; }
+.meta u { display: inline-block; width: 45mm; border-bottom: 1px solid #111; text-decoration: none; }
+.passage { font-size: 12.5pt; line-height: 1.55; margin: 0 0 3.5mm; }
+.passage b { background: #eee; padding: 0 1px; }
+.words { border: 1.5px solid #111; border-radius: 3mm; padding: 3mm 5mm; font-family: Arial, sans-serif; font-size: 9.5pt; line-height: 1.35; margin-bottom: 4mm; break-inside: avoid; }
+.words h2 { margin: 0 0 1.5mm; font-size: 10.5pt; }
+.words dl { margin: 0; display: grid; grid-template-columns: 32mm 1fr; gap: 1mm 4mm; }
+.words dt { font-weight: 700; } .words dd { margin: 0; }
+h2.ex { font-family: Arial, sans-serif; font-size: 11pt; margin: 4mm 0 2mm; background: #111; color: #fff; padding: 1mm 3mm; border-radius: 1.5mm; break-after: avoid; }
+.ex-body { font-family: Arial, sans-serif; font-size: 10.5pt; line-height: 1.6; }
+ol { margin: 0; padding-left: 5mm; }
+li { break-inside: avoid; margin-bottom: 1.2mm; }
+.tight .passage { font-size: 12pt; line-height: 1.45; } .tight .words { font-size: 9pt; line-height: 1.25; padding: 2mm 4mm; margin-bottom: 3mm; } .tight .ex-body { font-size: 10pt; line-height: 1.45; } .tight .opts span { margin-left: 2mm; } .tight h1 { font-size: 16pt; }
+.tighter .passage { font-size: 11.5pt; line-height: 1.4; } .tighter .words { font-size: 8.5pt; line-height: 1.2; } .tighter .ex-body { font-size: 9.5pt; line-height: 1.35; } .tighter li { margin-bottom: .6mm; }
+.qp { font-weight: 700; } .qctx { font-style: italic; margin: .5mm 0; } .opts span { display: block; margin-left: 3mm; }
+.bank { border: 1px dashed #111; padding: 1.5mm 3mm; margin: 1mm 0 2mm; text-align: center; font-weight: 700; font-family: Arial, sans-serif; font-size: 10.5pt; }
+.blank { white-space: nowrap; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; }
+.cols { display: grid; grid-template-columns: 1fr 1.6fr; gap: 6mm; }
+.line { border-bottom: 1px solid #555; height: 7mm; }
+.story { font-family: Arial, sans-serif; font-size: 10.5pt; line-height: 1.9; }
+.pagebreak { break-before: page; }
+.foot { margin-top: 5mm; font-family: Arial, sans-serif; font-size: 8.5pt; color: #777; }
+</style></head><body>
+<div id="p1">
+<div class="tag">The English Hub${level ? ' &middot; ' + level : ''}</div>
+<h1>${title}</h1>
+<div class="meta"><span>Name: <u></u></span><span>Date: <u></u></span></div>
+<p class="passage">${textHtml}</p>
+<div class="words"><h2>Key words</h2><dl>${wordsHtml}</dl></div>
+${qHtml ? `<div class="ex-body"><h2 class="ex">Questions about the text</h2><ol>${qHtml}</ol></div>` : ''}
+</div>
+<div class="pagebreak"></div>
+<div class="ex-body">
+<div class="tag">${title}</div>
+${gapHtml ? `<h2 class="ex">A. Fill in the gaps</h2><div class="bank">${bankHtml}</div><ol>${gapHtml}</ol>` : ''}
+${matchItems.length >= 3 ? `<h2 class="ex">B. Match the words and the definitions</h2><div class="cols"><div>${matchWords}</div><div>${matchDefs}</div></div><p>Answers: ${matchItems.map((it, i) => (i + 1) + '___').join('&nbsp;&nbsp;')}</p>` : ''}
+${lettersHtml ? `<h2 class="ex">C. Missing letters</h2><ol style="columns:2;">${lettersHtml}</ol>` : ''}
+<h2 class="ex">D. Write</h2>
+<p>Write 3 sentences about this topic. Use two new words.</p>
+<div class="line"></div><div class="line"></div><div class="line"></div>
+${storyHtml}
+</div>
+<div class="foot">The English Hub</div>
+<script>
+// keep page 1 on one sheet: if it is too tall, use smaller type (two steps)
+(function () {
+  var limit = (297 - 26) * 96 / 25.4;
+  ['tight', 'tighter'].forEach(function (c) {
+    if (document.getElementById('p1').offsetHeight > limit) document.body.classList.add(c);
+  });
+})();
+<\/script>
+</body></html>`;
+  const w = window.open('', '_blank');
+  if (!w) { alert('The print window was blocked. Allow pop-ups for this page and try again.'); return; }
+  w.document.write(html);
+  w.document.close();
+  w.onload = () => w.print();
 }
 
 function openOverlay(item, hideExample) {
@@ -2601,6 +2756,7 @@ function renderReading() {
       <button id="readListen">&#128266; Listen</button>
       <button id="readPrevS" title="Previous sentence">&lsaquo; Sentence</button>
       <button id="readNextS" title="Next sentence">Sentence &rsaquo;</button>
+      <button id="readPrint" title="Print this set">&#128424; Print</button>
       <button class="primary" id="readNext" style="flex:1;">Continue</button>
     </div>
     ${srcLine ? `<p style="font-size:12px;color:var(--muted);margin:16px 0 0;line-height:1.5;">${srcLine}</p>` : ''}
@@ -2617,6 +2773,7 @@ function renderReading() {
     });
   });
   setupReadingPlayer(passage.text);
+  document.getElementById('readPrint').addEventListener('click', () => printTextSet());
   document.getElementById('readNext').addEventListener('click', () => {
     stopAllSpeech();
     renderGallery();
