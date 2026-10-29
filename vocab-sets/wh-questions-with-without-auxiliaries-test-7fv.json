@@ -1,0 +1,158 @@
+{
+  "kind": "grammarTest",
+  "topic": "Wh- Questions with/without Auxiliaries",
+  "level": "A2",
+  "intro": "Tests forming wh- questions using do, does, did, or no auxiliary with be/have",
+  "parts": [
+    {
+      "type": "choice",
+      "title": "Choose the correct option.",
+      "max": 5,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "q": "___ does she go to the gym?",
+          "options": [
+            "What",
+            "When",
+            "Who"
+          ],
+          "answer": 1,
+          "why": "'When' asks about time; do/does needed with main verb."
+        },
+        {
+          "q": "___ did they eat for lunch?",
+          "options": [
+            "Where",
+            "What",
+            "Which"
+          ],
+          "answer": 1,
+          "why": "'What' asks about food; did used for past tense question."
+        },
+        {
+          "q": "Who ___ the windows yesterday?",
+          "options": [
+            "cleaned",
+            "did clean",
+            "does clean"
+          ],
+          "answer": 0,
+          "why": "'Who' as subject; no auxiliary needed, verb follows directly."
+        },
+        {
+          "q": "Where ___ your parents live now?",
+          "options": [
+            "did",
+            "does",
+            "do"
+          ],
+          "answer": 2,
+          "why": "'Where' asks place; plural subject 'parents' needs 'do'."
+        },
+        {
+          "q": "___ does your brother work?",
+          "options": [
+            "When",
+            "Where",
+            "Who"
+          ],
+          "answer": 1,
+          "why": "Asking about a place of work; 'where' is correct wh- word."
+        }
+      ]
+    },
+    {
+      "type": "gap",
+      "title": "Complete the sentences with the correct form.",
+      "max": 6,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "pre": "What time",
+          "hint": "do/does/did",
+          "post": "the train leave yesterday?",
+          "answer": "did",
+          "why": "Past tense question; 'did' required with main verb."
+        },
+        {
+          "pre": "Who",
+          "hint": "",
+          "post": "your best friend at school?",
+          "answer": "is",
+          "why": "'Who' as subject with be; no auxiliary, just 'is'."
+        },
+        {
+          "pre": "How often",
+          "hint": "do/does/did",
+          "post": "you visit your grandparents?",
+          "answer": "do",
+          "why": "Present question; plural/I subject takes 'do'."
+        },
+        {
+          "pre": "Where",
+          "hint": "do/does/did",
+          "post": "she buy her coffee every morning?",
+          "answer": "does",
+          "why": "Present question; third-person singular takes 'does'."
+        },
+        {
+          "pre": "What",
+          "hint": "do/does/did",
+          "post": "you do last weekend?",
+          "answer": "did",
+          "why": "Past tense question; 'did' needed regardless of subject."
+        },
+        {
+          "pre": "How many rooms",
+          "hint": "do/does/did",
+          "post": "the house have?",
+          "answer": "does",
+          "why": "Present question; third-person singular subject takes 'does'."
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "title": "Find and correct the mistake in each sentence.",
+      "max": 3,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "sentence": "Where did she went on holiday?",
+          "corrected": "Where did she go on holiday?",
+          "why": "After 'did', the main verb must be in base form."
+        },
+        {
+          "sentence": "Who does painted this picture?",
+          "corrected": "Who painted this picture?",
+          "why": "'Who' as subject; no auxiliary needed before the verb."
+        },
+        {
+          "sentence": "What time do he start work?",
+          "corrected": "What time does he start work?",
+          "why": "Third-person singular subject needs 'does', not 'do'."
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "title": "Write your own sentences.",
+      "max": 2,
+      "pointsLabel": "2 points: 1 for correct form, 1 for meaning and use",
+      "prompt": "Write two sentences:",
+      "items": [
+        {
+          "prompt": "Write a question asking a friend what time they usually wake up in the morning.",
+          "criteria": "Correct wh- word 'what time', correct use of 'do/does', base form verb.",
+          "example": "What time do you usually wake up in the morning?"
+        },
+        {
+          "prompt": "Write a question asking what your friend did last Saturday evening.",
+          "criteria": "Correct wh- word 'what', correct use of 'did', base form verb, past context.",
+          "example": "What did you do last Saturday evening?"
+        }
+      ]
+    }
+  ]
+}
