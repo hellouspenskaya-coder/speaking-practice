@@ -3034,6 +3034,7 @@ function renderStory(container, step, onFinish) {
     ${stripHtml ? `<div class="story-strip">${stripHtml}</div>` : ''}
     <p class="mode-label">${escapeHtml(story.label || 'Put each verb in the right form')}</p>
     <div class="story-bank" id="storyBank">${bankHtml}</div>
+    <p style="font-size:12px;color:var(--muted);margin:2px 0 8px;text-align:center;">Type in the gaps, or tap a word to put it in the gap. Some words need another form.</p>
     <p class="story-text">${textHtml}</p>
     <div id="storyMsg" class="feedback" style="display:none;"></div>
     <button class="primary wide" id="storyCheck" style="margin-top:6px;">Check</button>
@@ -3125,6 +3126,25 @@ function renderStory(container, step, onFinish) {
     if (!anyFilled) { say('Fill in at least one gap first.', 'wrong'); return; }
     inputs.forEach((inp, i) => checkGap(i));
     maybeFinish();
+  });
+  // Tapping a word in the bank puts it into the gap you are in (or the first empty one). Some gaps need the word
+  // in another form (linger -> lingered), so it lands in the box as text and can be edited before pressing Check.
+  let lastFocus = 0;
+  inputs.forEach((inp, i) => inp.addEventListener('focus', () => { lastFocus = i; }));
+  container.querySelectorAll('.bank-chip').forEach(chip => {
+    chip.style.cursor = 'pointer';
+    chip.addEventListener('click', () => {
+      if (chip.classList.contains('used')) return;
+      let target = state[lastFocus] && !state[lastFocus].locked && !inputs[lastFocus].value.trim() ? lastFocus : -1;
+      if (target < 0) target = inputs.findIndex((inp, i) => !state[i].locked && !inp.value.trim());
+      if (target < 0) target = inputs.findIndex((inp, i) => !state[i].locked);
+      if (target < 0) return;
+      inputs[target].value = chip.dataset.base;
+      inputs[target].classList.remove('bad');
+      inputs[target].focus();
+      const len = inputs[target].value.length;
+      try { inputs[target].setSelectionRange(len, len); } catch (e) {}
+    });
   });
   if (inputs[0]) inputs[0].focus();
 }
