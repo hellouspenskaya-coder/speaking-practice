@@ -428,5 +428,55 @@
       "gapForm": "linger",
       "gapRivals": []
     }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "src": "builder",
+          "label": "Fill each gap with the right word",
+          "strip": [],
+          "text": "Marcus worked twelve hours daily, driven by {1} pressure to succeed. He had {2} the belief that any {3} from constant productivity meant failure. His {4} figure, his boss, praised his dedication endlessly. To what {5} could he continue? One morning, Marcus couldn't move. His body refused to obey. During weeks of {6} at home, he realized his {7} had cost him his health. He {8} in bed, finally understanding: real {9} meant balance, not burnout.",
+          "gaps": [
+            {
+              "a": "relentless",
+              "b": "relentless"
+            },
+            {
+              "a": "internalized",
+              "b": "internalize"
+            },
+            {
+              "a": "deviations",
+              "b": "deviations"
+            },
+            {
+              "a": "authority",
+              "b": "authority"
+            },
+            {
+              "a": "extent",
+              "b": "extent"
+            },
+            {
+              "a": "contemplation",
+              "b": "contemplation"
+            },
+            {
+              "a": "self-exploitation",
+              "b": "self-exploitation"
+            },
+            {
+              "a": "lingered",
+              "b": "linger"
+            },
+            {
+              "a": "achievement",
+              "b": "achievement"
+            }
+          ]
+        }
+      ]
+    }
   ]
 }
