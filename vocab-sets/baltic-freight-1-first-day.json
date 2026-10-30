@@ -1,0 +1,136 @@
+{
+  "kind": "storyGame",
+  "slug": "baltic-freight-1-first-day",
+  "topic": "Baltic Freight 1: Your first day",
+  "title": "Baltic Freight 1: Your first day",
+  "level": "A2",
+  "lead": "Today is your first day as a logistics assistant at Baltic Freight in Kaunas. You meet your manager Marta, plan a delivery to Riga and visit the warehouse.",
+  "minutes": 12,
+  "total": 10,
+  "scenes": [
+    {
+      "n": "1",
+      "title": "Welcome"
+    },
+    {
+      "n": "2",
+      "title": "The delivery plan"
+    },
+    {
+      "n": "3",
+      "title": "The warehouse"
+    }
+  ],
+  "practiceSet": "baltic-freight-1-first-day-words",
+  "shortTitle": "Baltic Freight 1",
+  "how": [
+    "You work at Baltic Freight, a logistics company. Choose what you say.",
+    "Green ✓ is right. Red ✕ is not this one. You can try again and you will see what to say. Right the first time? You get a star ★.",
+    "Tap an underlined word to see what it means."
+  ],
+  "words": [
+    {
+      "text": "manager",
+      "phonetic": "",
+      "definition": "a person who is in charge of people and work",
+      "example": "Marta is a logistics manager in a big company."
+    },
+    {
+      "text": "goods",
+      "phonetic": "",
+      "definition": "things that people make and sell",
+      "example": "Logistics is the work of moving goods from one place to another."
+    },
+    {
+      "text": "customer",
+      "phonetic": "",
+      "definition": "a person who buys things",
+      "example": "Good logistics means the customer gets the right product at the right time."
+    },
+    {
+      "text": "logistics",
+      "phonetic": "",
+      "definition": "the work of moving and storing goods",
+      "example": "Logistics is the work of moving goods from one place to another."
+    },
+    {
+      "text": "supply chain",
+      "phonetic": "",
+      "definition": "all the steps from the factory to the customer",
+      "example": "Every step is part of the supply chain."
+    },
+    {
+      "text": "order",
+      "phonetic": "",
+      "definition": "to ask a company to send you goods",
+      "example": "A customer in Riga orders ten boxes of office chairs."
+    },
+    {
+      "text": "responsible for",
+      "phonetic": "",
+      "definition": "having the job of taking care of something",
+      "example": "She is responsible for the budget, and she must not spend too much money."
+    },
+    {
+      "text": "deadline",
+      "phonetic": "",
+      "definition": "the last day or time to finish something",
+      "example": "The deadline is Friday, so the truck must leave on Wednesday."
+    },
+    {
+      "text": "route",
+      "phonetic": "",
+      "definition": "the road or way from one place to another",
+      "example": "First, they choose the best route."
+    },
+    {
+      "text": "load",
+      "phonetic": "",
+      "definition": "to put goods into a truck or a ship",
+      "example": "Workers load the boxes and a driver checks the shipment."
+    },
+    {
+      "text": "driver",
+      "phonetic": "",
+      "definition": "a person who drives a truck or a car",
+      "example": "Workers load the boxes and a driver checks the shipment."
+    },
+    {
+      "text": "shipment",
+      "phonetic": "",
+      "definition": "a group of goods that are sent together",
+      "example": "Workers load the boxes and a driver checks the shipment."
+    },
+    {
+      "text": "delay",
+      "phonetic": "",
+      "definition": "a situation when something is late",
+      "example": "If there is a delay on the road, the driver calls the office."
+    },
+    {
+      "text": "forklift",
+      "phonetic": "",
+      "definition": "a small vehicle that lifts heavy things",
+      "example": "A forklift lifts the heavy pallets and moves them to the trucks."
+    },
+    {
+      "text": "barcode",
+      "phonetic": "",
+      "definition": "black lines on a product that a machine can read",
+      "example": "Every product has a label with a barcode."
+    },
+    {
+      "text": "scan",
+      "phonetic": "",
+      "definition": "to read a barcode with a machine",
+      "example": "He scans each barcode with a small machine."
+    },
+    {
+      "text": "pallet",
+      "phonetic": "",
+      "definition": "a flat wooden base for carrying many boxes",
+      "example": "Then he puts the products on a pallet and packs them."
+    }
+  ],
+  "story": "{\"inkVersion\":21,\"root\":[[{\"->\":\"s1\"},[\"done\",{\"#n\":\"g-0\"}],null],\"done\",{\"good\":[\"ev\",{\"VAR?\":\"tries\"},0,\"==\",\"/ev\",[{\"->\":\".^.b\",\"c\":true},{\"b\":[\"\\n\",\"ev\",{\"VAR?\":\"smooth\"},1,\"+\",\"/ev\",{\"VAR=\":\"smooth\",\"re\":true},{\"->\":\"good.6\"},null]}],\"nop\",\"\\n\",\"ev\",0,\"/ev\",{\"VAR=\":\"tries\",\"re\":true},null],\"s1\":[[\"^You walk into the office of Baltic Freight in Kaunas. It is your first day as a logistics assistant. \",\"#\",\"^scene: 1 \",\"/#\",\"#\",\"^title: Welcome\",\"/#\",\"\\n\",\"^A woman comes to meet you. She smiles.\",\"\\n\",\"^Marta: Good morning! I am Marta, the ‹manager›. Welcome to Baltic Freight.\",\"\\n\",[\"ev\",\"str\",\"^I have a big family.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^§Nice to meet you, Marta. I'm happy to be here.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^It is Monday today.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Ha! That is nice. But I said welcome.\",\"\\n\",\"^Marta says hello and tells you her name. Greet her. Say: Nice to meet you, Marta. I'm happy to be here. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Marta: Thank you. Come in, please.\",\"\\n\",{\"->\":\"s1.0.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Yes, it is. Your first day!\",\"\\n\",\"^Marta wants to meet you. Say hello to her. Say: Nice to meet you, Marta. I'm happy to be here. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-0\"},{\"#f\":5}],\"#n\":\"d1\"}],{\"g-0\":[\"^Marta: At Baltic Freight we move ‹goods› for many ‹customers=customer›. Do you know what ‹logistics› is?\",\"\\n\",[\"ev\",\"str\",\"^I am from Kaunas.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^Yes, I have a new car.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^§A little. It is moving goods from one place to another.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Nice, me too! But what about logistics?\",\"\\n\",\"^Marta asks about logistics, not about you. Say: A little. It is moving goods from one place to another. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-1\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: A car? Hmm. I asked about logistics.\",\"\\n\",\"^Marta asks what logistics is. Say: A little. It is moving goods from one place to another. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Marta: Exactly. Every step, from the factory to the shop, is part of the ‹supply chain›. Our job is to plan each step.\",\"\\n\",{\"->\":\"s1.0.g-1\"},{\"#f\":5}],\"#n\":\"d2\"}],null],\"g-1\":[\"^Marta: Today you will see the office, a delivery plan and the warehouse. Are you ready?\",\"\\n\",[\"ev\",\"str\",\"^§Yes, I'm ready. Let's start.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^No, thank you.\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},\"ev\",\"str\",\"^Yes, I am a driver.\",\"/str\",\"/ev\",{\"*\":\".^.c-8\",\"flg\":20},{\"c-6\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Marta: Great! Let's start with an ‹order›.\",\"\\n\",{\"->\":\"s1.0.g-2\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: No, thank you? Do you want to go home?\",\"\\n\",\"^\\\"No, thank you\\\" is for offers. Marta asks if you are ready. Say: Yes, I'm ready. Let's start. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-2\"},{\"#f\":5}],\"c-8\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: A driver? You are my new assistant!\",\"\\n\",\"^Marta asks if you are ready for the day. Say: Yes, I'm ready. Let's start. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-2\"},{\"#f\":5}],\"#n\":\"d3\"}],null],\"g-2\":[{\"->\":\"s2\"},null]}],null],\"s2\":[[\"^Marta shows you her screen. A customer in Riga wants ten boxes of office chairs. \",\"#\",\"^scene: 2 \",\"/#\",\"#\",\"^title: The delivery plan\",\"/#\",\"\\n\",\"^Marta: I am ‹responsible for› every delivery. This one has a ‹deadline›: Friday. The truck must arrive in Riga before that.\",\"\\n\",\"^Marta: When must the truck leave Kaunas?\",\"\\n\",[\"ev\",\"str\",\"^On a big truck.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^It is very expensive.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^§On Wednesday, I think. Then it is in Riga on Thursday.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: A big truck, yes. But when?\",\"\\n\",\"^Marta asks WHEN. Answer with a day. Say: On Wednesday, I think. Then it is in Riga on Thursday. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Maybe! But when must the truck leave?\",\"\\n\",\"^Marta asks about time. Say: On Wednesday, I think. Then it is in Riga on Thursday. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Marta: Good thinking. We need one extra day for problems.\",\"\\n\",{\"->\":\"s2.0.g-0\"},{\"#f\":5}],\"#n\":\"d4\"}],{\"g-0\":[\"^Marta: Now the ‹route›. Kaunas to Riga is about three hundred kilometres. How long is the drive?\",\"\\n\",[\"ev\",\"str\",\"^§About four hours, I think.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^About three hundred euros.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^It is a nice road.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Marta: Right. Now the workers ‹load› the boxes and the ‹driver› checks the ‹shipment›.\",\"\\n\",{\"->\":\"s2.0.g-1\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Euros? I asked about time.\",\"\\n\",\"^Marta asks about the time of the drive, not about money. Say: About four hours, I think. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Ha! Maybe. But how many hours?\",\"\\n\",\"^Marta asks for hours. Say: About four hours, I think. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-1\"},{\"#f\":5}],\"#n\":\"d5\"}],null],\"g-1\":[\"^The driver, Jonas, calls Marta.\",\"\\n\",\"^Jonas: Hello, Marta. I have a ‹delay›. The road is closed.\",\"\\n\",\"^Marta: Jonas is late. What do we tell the customer?\",\"\\n\",[\"ev\",\"str\",\"^The chairs are very nice.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^§Let's call the customer and say we are late.\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},\"ev\",\"str\",\"^Let's buy new chairs.\",\"/str\",\"/ev\",{\"*\":\".^.c-8\",\"flg\":20},{\"c-6\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Yes, but the customer is waiting!\",\"\\n\",\"^The customer must know about the delay. Say: Let's call the customer and say we are late. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-2\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^You call the customer. He says: no problem, Friday is fine.\",\"\\n\",{\"->\":\"s2.0.g-2\"},{\"#f\":5}],\"c-8\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: New chairs? The chairs are fine. The truck is late.\",\"\\n\",\"^The problem is the truck, not the chairs. Say: Let's call the customer and say we are late. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-2\"},{\"#f\":5}],\"#n\":\"d6\"}],null],\"g-2\":[{\"->\":\"s3\"},null]}],null],\"s3\":[[\"^Marta takes you to the warehouse. It is big and busy. A man in a yellow jacket waves at you. \",\"#\",\"^scene: 3 \",\"/#\",\"#\",\"^title: The warehouse\",\"/#\",\"\\n\",\"^Tomas: Hello! I am Tomas, the team leader. Careful, a ‹forklift› is coming. Please stand behind the yellow line.\",\"\\n\",[\"ev\",\"str\",\"^Yes, I like yellow.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^Where is the toilet?\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^§Sorry! I'm behind the line now.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Tomas: Ha! Me too. But please, behind the line!\",\"\\n\",\"^Tomas asks you to move. Do it and say sorry. Say: Sorry! I'm behind the line now. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Tomas: The toilet is over there. But first, behind the line, please.\",\"\\n\",\"^First do what Tomas asks. Say: Sorry! I'm behind the line now. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Tomas: Thank you. Safety is very important here.\",\"\\n\",{\"->\":\"s3.0.g-0\"},{\"#f\":5}],\"#n\":\"d7\"}],{\"g-0\":[\"^Tomas: Every product has a label with a ‹barcode›. A worker uses a machine to ‹scan› it. Would you like to try?\",\"\\n\",[\"ev\",\"str\",\"^§Yes, please. Like this?\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^Yes, it is a big box.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^Thank you, goodbye.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^You scan the box. Beep!\",\"\\n\",\"^Tomas: Perfect!\",\"\\n\",{\"->\":\"s3.0.g-1\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Tomas: Yes, it is! So, do you want to try?\",\"\\n\",\"^Tomas asks if you want to try. Say: Yes, please. Like this? \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Tomas: Goodbye? We have just started!\",\"\\n\",\"^\\\"Goodbye\\\" is for the end. Tomas asks you a question. Say: Yes, please. Like this? \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-1\"},{\"#f\":5}],\"#n\":\"d8\"}],null],\"g-1\":[\"^Tomas: Now the workers put the boxes on a ‹pallet›. This pallet is for Riga. How many boxes are on it?\",\"\\n\",[\"ev\",\"str\",\"^It is ten o'clock.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^§Ten boxes. They are the chairs for Riga!\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},\"ev\",\"str\",\"^It is very heavy.\",\"/str\",\"/ev\",{\"*\":\".^.c-8\",\"flg\":20},{\"c-6\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Tomas: Ha, not the time! The number of boxes.\",\"\\n\",\"^Tomas asks HOW MANY. Say: Ten boxes. They are the chairs for Riga! \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-2\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Tomas: Correct! The forklift takes them to the truck.\",\"\\n\",{\"->\":\"s3.0.g-2\"},{\"#f\":5}],\"c-8\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Tomas: Yes, it is heavy. But how many boxes?\",\"\\n\",\"^Tomas asks for a number. Say: Ten boxes. They are the chairs for Riga! \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-2\"},{\"#f\":5}],\"#n\":\"d9\"}],null],\"g-2\":[\"^At five o'clock Marta finds you. Your first day is almost over.\",\"\\n\",\"^Marta: So, how was your first day? What did you like most?\",\"\\n\",[\"ev\",\"str\",\"^§The warehouse. I liked scanning the boxes.\",\"/str\",\"/ev\",{\"*\":\".^.c-9\",\"flg\":20},\"ev\",\"str\",\"^See you tomorrow.\",\"/str\",\"/ev\",{\"*\":\".^.c-10\",\"flg\":20},\"ev\",\"str\",\"^I am fine, thank you.\",\"/str\",\"/ev\",{\"*\":\".^.c-11\",\"flg\":20},{\"c-9\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Marta: Great. See you tomorrow at eight. Well done today.\",\"\\n\",{\"->\":\"s3.0.g-3\"},{\"#f\":5}],\"c-10\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Yes, see you tomorrow! But what did you like?\",\"\\n\",\"^Marta asks what you liked. Say: The warehouse. I liked scanning the boxes. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-3\"},{\"#f\":5}],\"c-11\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Good! But what did you like?\",\"\\n\",\"^Marta asks about your day, not about how you are. Say: The warehouse. I liked scanning the boxes. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-3\"},{\"#f\":5}],\"#n\":\"d10\"}],null],\"g-3\":[\"^You walk out of Baltic Freight. Your first day is over. \",\"#\",\"^end\",\"/#\",\"\\n\",[\"done\",{\"#n\":\"g-4\"}],null]}],null],\"global decl\":[\"ev\",0,{\"VAR=\":\"tries\"},0,{\"VAR=\":\"smooth\"},\"/ev\",\"end\",null]}],\"listDefs\":{}}"
+}

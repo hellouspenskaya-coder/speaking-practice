@@ -1,0 +1,130 @@
+{
+  "kind": "storyGame",
+  "slug": "baltic-freight-2-transport-stock-suppliers",
+  "topic": "Baltic Freight 2: Transport, stock and suppliers",
+  "title": "Baltic Freight 2: Transport, stock and suppliers",
+  "level": "A2",
+  "lead": "A week later you already know the team. Today you choose transport for a big cargo, help a shop with its stock and talk to a supplier on the phone.",
+  "minutes": 13,
+  "total": 10,
+  "scenes": [
+    {
+      "n": "1",
+      "title": "Choosing transport"
+    },
+    {
+      "n": "2",
+      "title": "The stock"
+    },
+    {
+      "n": "3",
+      "title": "The supplier"
+    }
+  ],
+  "practiceSet": "baltic-freight-2-transport-stock-suppliers-words",
+  "shortTitle": "Baltic Freight 2",
+  "how": [
+    "You work at Baltic Freight, a logistics company. Choose what you say.",
+    "Green ✓ is right. Red ✕ is not this one. You can try again and you will see what to say. Right the first time? You get a star ★.",
+    "Tap an underlined word to see what it means."
+  ],
+  "words": [
+    {
+      "text": "cargo",
+      "phonetic": "",
+      "definition": "goods that a ship, plane or truck carries",
+      "example": "A company must send a big cargo from China to Lithuania."
+    },
+    {
+      "text": "container",
+      "phonetic": "",
+      "definition": "a very big metal box for carrying goods",
+      "example": "The cargo goes in a container, and the container travels to a port."
+    },
+    {
+      "text": "compare",
+      "phonetic": "",
+      "definition": "to look at two things to see how they are different",
+      "example": "The logistics manager compares the cost and the speed."
+    },
+    {
+      "text": "cost",
+      "phonetic": "",
+      "definition": "the amount of money you must pay",
+      "example": "The logistics manager compares the cost and the speed."
+    },
+    {
+      "text": "port",
+      "phonetic": "",
+      "definition": "a place by the sea where ships load and unload",
+      "example": "A truck takes them from the port to a warehouse."
+    },
+    {
+      "text": "out of stock",
+      "phonetic": "",
+      "definition": "with none left to sell",
+      "example": "If there is too little stock, the product is out of stock and customers go to another shop."
+    },
+    {
+      "text": "overstock",
+      "phonetic": "",
+      "definition": "too many goods in the warehouse",
+      "example": "We call this overstock."
+    },
+    {
+      "text": "inventory",
+      "phonetic": "",
+      "definition": "a list of all the goods that a company has",
+      "example": "Every day the manager checks the inventory on the computer."
+    },
+    {
+      "text": "demand",
+      "phonetic": "",
+      "definition": "the amount of something that people want to buy",
+      "example": "She looks at the demand, so she knows which products people buy fast."
+    },
+    {
+      "text": "supplier",
+      "phonetic": "",
+      "definition": "a company that sells goods to other companies",
+      "example": "She also talks to customers and suppliers every day."
+    },
+    {
+      "text": "reliable",
+      "phonetic": "",
+      "definition": "doing what you say and not causing problems",
+      "example": "The company needs reliable suppliers because late goods stop the work."
+    },
+    {
+      "text": "quote",
+      "phonetic": "",
+      "definition": "a written price for goods or work",
+      "example": "First, the buyer asks three suppliers for a quote."
+    },
+    {
+      "text": "negotiate",
+      "phonetic": "",
+      "definition": "to talk to reach an agreement",
+      "example": "Then the buyer compares the quotes and negotiates with the best supplier."
+    },
+    {
+      "text": "quality",
+      "phonetic": "",
+      "definition": "how good or bad something is",
+      "example": "They talk about the price, the quality and the delivery time."
+    },
+    {
+      "text": "agree",
+      "phonetic": "",
+      "definition": "to say yes to the same idea",
+      "example": "When they agree, they sign a contract."
+    },
+    {
+      "text": "contract",
+      "phonetic": "",
+      "definition": "a written agreement between two companies",
+      "example": "When they agree, they sign a contract."
+    }
+  ],
+  "story": "{\"inkVersion\":21,\"root\":[[{\"->\":\"s1\"},[\"done\",{\"#n\":\"g-0\"}],null],\"done\",{\"good\":[\"ev\",{\"VAR?\":\"tries\"},0,\"==\",\"/ev\",[{\"->\":\".^.b\",\"c\":true},{\"b\":[\"\\n\",\"ev\",{\"VAR?\":\"smooth\"},1,\"+\",\"/ev\",{\"VAR=\":\"smooth\",\"re\":true},{\"->\":\"good.6\"},null]}],\"nop\",\"\\n\",\"ev\",0,\"/ev\",{\"VAR=\":\"tries\",\"re\":true},null],\"s1\":[[\"^A week later. Marta has a new problem on her desk. \",\"#\",\"^scene: 1 \",\"/#\",\"#\",\"^title: Choosing transport\",\"/#\",\"\\n\",\"^Marta: A customer must send a big ‹cargo› from China to Lithuania. It goes in a ‹container›. We must choose the transport. Can you help me?\",\"\\n\",[\"ev\",\"str\",\"^I like trains.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^§Of course. Let's compare the plane, the ship and the train.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^Yes, it is very big.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Me too! But can you help me?\",\"\\n\",\"^Marta asks for your help. Say yes. Say: Of course. Let's compare the plane, the ship and the train. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Marta: Good. Let's ‹compare› them.\",\"\\n\",{\"->\":\"s1.0.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Yes, the cargo is big. But can you help me?\",\"\\n\",\"^Marta asks if you can help. Say: Of course. Let's compare the plane, the ship and the train. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-0\"},{\"#f\":5}],\"#n\":\"d1\"}],{\"g-0\":[\"^Marta: The customer is not in a hurry. They want a low ‹cost›. Which transport do we choose?\",\"\\n\",[\"ev\",\"str\",\"^The plane. It is the cheapest.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^I like the sea.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^§The ship. It is slower, but much cheaper.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: The cheapest? No, the plane is the most expensive!\",\"\\n\",\"^A plane is the fastest, but it is not cheap. Say: The ship. It is slower, but much cheaper. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-1\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Ha! Me too. But which transport?\",\"\\n\",\"^Marta asks you to choose. Say: The ship. It is slower, but much cheaper. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Marta: Yes! A plane is the fastest, but it is also the most expensive.\",\"\\n\",{\"->\":\"s1.0.g-1\"},{\"#f\":5}],\"#n\":\"d2\"}],null],\"g-1\":[\"^Marta: The ship goes to the ‹port› of Klaipeda. Then a truck takes the container to Kaunas. A ship needs thirty days. A train needs fifteen. Is the train a good choice?\",\"\\n\",[\"ev\",\"str\",\"^§It is faster than the ship, but more expensive.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^It is fifteen days.\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},\"ev\",\"str\",\"^Yes, I like trains.\",\"/str\",\"/ev\",{\"*\":\".^.c-8\",\"flg\":20},{\"c-6\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Marta: Right. For this customer the ship is better. Thank you!\",\"\\n\",{\"->\":\"s1.0.g-2\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Yes, fifteen days. But is it a good choice?\",\"\\n\",\"^Marta asks for your opinion. Say: It is faster than the ship, but more expensive. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-2\"},{\"#f\":5}],\"c-8\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Ha! But why?\",\"\\n\",\"^Give a reason with faster or cheaper. Say: It is faster than the ship, but more expensive. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-2\"},{\"#f\":5}],\"#n\":\"d3\"}],null],\"g-2\":[{\"->\":\"s2\"},null]}],null],\"s2\":[[\"^On Thursday Marta takes you to a customer, a clothes shop. The shop manager is Ruta. \",\"#\",\"^scene: 2 \",\"/#\",\"#\",\"^title: The stock\",\"/#\",\"\\n\",\"^Ruta: Hello! We have a problem. We are ‹out of stock› of winter jackets. Customers ask for them every day. What can you do?\",\"\\n\",[\"ev\",\"str\",\"^Winter is cold.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^I have a jacket.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^§We can make a new order today. I'll call the supplier.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Ruta: Yes, it is. But what can you do about the jackets?\",\"\\n\",\"^Ruta asks what you can do. Say: We can make a new order today. I'll call the supplier. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Ruta: Good for you! But the shop has no jackets.\",\"\\n\",\"^Ruta needs a solution for the shop. Say: We can make a new order today. I'll call the supplier. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Ruta: Please do it fast.\",\"\\n\",{\"->\":\"s2.0.g-0\"},{\"#f\":5}],\"#n\":\"d4\"}],{\"g-0\":[\"^Ruta: In the other room we have the opposite problem. We have too many summer hats. This is ‹overstock›. They wait and we pay for the space.\",\"\\n\",[\"ev\",\"str\",\"^§Let's sell them cheaper. Then we save space.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^Let's buy more hats.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^I like hats.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Ruta: Good idea. We can start tomorrow.\",\"\\n\",{\"->\":\"s2.0.g-1\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Ruta: More? We have too many already!\",\"\\n\",\"^You have too many hats. You need to sell them. Say: Let's sell them cheaper. Then we save space. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Ruta: Ha! Me too. But what do you suggest?\",\"\\n\",\"^Ruta asks for a suggestion. Say: Let's sell them cheaper. Then we save space. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-1\"},{\"#f\":5}],\"#n\":\"d5\"}],null],\"g-1\":[\"^Ruta: How do you know how many jackets to order?\",\"\\n\",\"^Marta: We check the ‹inventory› and the ‹demand›. Do you remember what demand is?\",\"\\n\",[\"ev\",\"str\",\"^It is the number of boxes in the warehouse.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^§Demand is how many people want to buy a product.\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},\"ev\",\"str\",\"^It is when a product is late.\",\"/str\",\"/ev\",{\"*\":\".^.c-8\",\"flg\":20},{\"c-6\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: That is inventory. Demand is different.\",\"\\n\",\"^Inventory is what you have. Demand is what people want. Say: Demand is how many people want to buy a product. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-2\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Marta: Exactly. And inventory is what we have in the warehouse.\",\"\\n\",{\"->\":\"s2.0.g-2\"},{\"#f\":5}],\"c-8\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: No, that is a delay.\",\"\\n\",\"^Demand is about how many people want a product. Say: Demand is how many people want to buy a product. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-2\"},{\"#f\":5}],\"#n\":\"d6\"}],null],\"g-2\":[{\"->\":\"s3\"},null]}],null],\"s3\":[[\"^Back in the office Marta needs a new ‹supplier› for the jackets. \",\"#\",\"^scene: 3 \",\"/#\",\"#\",\"^title: The supplier\",\"/#\",\"\\n\",\"^Marta: We need a ‹reliable› supplier. Late goods stop our work. I asked three suppliers for a ‹quote›. A quote shows the price. This one is the best. Please call him.\",\"\\n\",\"^You dial the number. A man answers.\",\"\\n\",\"^Mr Berg: Hello, Berg Textile. How can I help you?\",\"\\n\",[\"ev\",\"str\",\"^I am fine, thank you.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^Goodbye, see you.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^§Hello, this is Baltic Freight. I'd like to talk about your quote.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Mr Berg: Good! But how can I help you?\",\"\\n\",\"^Say who you are and why you call. Say: Hello, this is Baltic Freight. I'd like to talk about your quote. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Mr Berg: Goodbye? You called me!\",\"\\n\",\"^\\\"Goodbye\\\" is for the end of a call. Say: Hello, this is Baltic Freight. I'd like to talk about your quote. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Mr Berg: Of course. The price is nine euros for one jacket.\",\"\\n\",{\"->\":\"s3.0.g-0\"},{\"#f\":5}],\"#n\":\"d7\"}],{\"g-0\":[\"^Marta shows you a note. It says: ‹Negotiate=negotiate›! Ask for a lower price.\",\"\\n\",[\"ev\",\"str\",\"^§That's a bit high. Can you do eight euros?\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^It is a nice jacket.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^Where is your office?\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Mr Berg: Hmm. Eight euros fifty, if you order five hundred jackets. And the ‹quality› is very good.\",\"\\n\",{\"->\":\"s3.0.g-1\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Mr Berg: Thank you! But what about the price?\",\"\\n\",\"^You want a lower price. Ask for it. Say: That's a bit high. Can you do eight euros? \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Mr Berg: In Vilnius. But about the price?\",\"\\n\",\"^First talk about the price. Say: That's a bit high. Can you do eight euros? \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-1\"},{\"#f\":5}],\"#n\":\"d8\"}],null],\"g-1\":[\"^Mr Berg: Eight euros fifty for five hundred jackets. Do you ‹agree›?\",\"\\n\",[\"ev\",\"str\",\"^Five hundred kilometres.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^§Yes, I agree. Eight fifty is fine.\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},\"ev\",\"str\",\"^Thank you, I'm fine.\",\"/str\",\"/ev\",{\"*\":\".^.c-8\",\"flg\":20},{\"c-6\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Mr Berg: Kilometres? I asked about the price.\",\"\\n\",\"^Mr Berg asks if you agree. Say: Yes, I agree. Eight fifty is fine. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-2\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Mr Berg: Great. I will send the ‹contract› today.\",\"\\n\",{\"->\":\"s3.0.g-2\"},{\"#f\":5}],\"c-8\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Mr Berg: Good! But do you agree?\",\"\\n\",\"^Mr Berg wants a yes or a no. Say: Yes, I agree. Eight fifty is fine. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-2\"},{\"#f\":5}],\"#n\":\"d9\"}],null],\"g-2\":[\"^Marta: Please check the contract before we sign it. What do we look at?\",\"\\n\",[\"ev\",\"str\",\"^§The price, the quality and the delivery time.\",\"/str\",\"/ev\",{\"*\":\".^.c-9\",\"flg\":20},\"ev\",\"str\",\"^The weather in Riga.\",\"/str\",\"/ev\",{\"*\":\".^.c-10\",\"flg\":20},\"ev\",\"str\",\"^The colour of the paper.\",\"/str\",\"/ev\",{\"*\":\".^.c-11\",\"flg\":20},{\"c-9\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Marta: Perfect. A reliable supplier is half of good logistics. \",\"#\",\"^end\",\"/#\",\"\\n\",{\"->\":\"s3.0.g-3\"},{\"#f\":5}],\"c-10\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: The weather? No.\",\"\\n\",\"^A contract is about price, quality and time. Say: The price, the quality and the delivery time. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-3\"},{\"#f\":5}],\"c-11\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Ha! No, not the paper.\",\"\\n\",\"^Look at what the supplier must do. Say: The price, the quality and the delivery time. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-3\"},{\"#f\":5}],\"#n\":\"d10\"}],null],\"g-3\":[\"done\",null]}],null],\"global decl\":[\"ev\",0,{\"VAR=\":\"tries\"},0,{\"VAR=\":\"smooth\"},\"/ev\",\"end\",null]}],\"listDefs\":{}}"
+}

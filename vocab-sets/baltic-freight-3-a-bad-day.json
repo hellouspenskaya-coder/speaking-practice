@@ -1,0 +1,130 @@
+{
+  "kind": "storyGame",
+  "slug": "baltic-freight-3-a-bad-day",
+  "topic": "Baltic Freight 3: A bad day",
+  "title": "Baltic Freight 3: A bad day",
+  "level": "A2",
+  "lead": "Not every day is easy. A customer calls with a complaint, you help a truck at the border and you plan a shift with the warehouse team.",
+  "minutes": 13,
+  "total": 10,
+  "scenes": [
+    {
+      "n": "1",
+      "title": "Bad news"
+    },
+    {
+      "n": "2",
+      "title": "At the border"
+    },
+    {
+      "n": "3",
+      "title": "The team"
+    }
+  ],
+  "practiceSet": "baltic-freight-3-a-bad-day-words",
+  "shortTitle": "Baltic Freight 3",
+  "how": [
+    "You work at Baltic Freight, a logistics company. Choose what you say.",
+    "Green ✓ is right. Red ✕ is not this one. You can try again and you will see what to say. Right the first time? You get a star ★.",
+    "Tap an underlined word to see what it means."
+  ],
+  "words": [
+    {
+      "text": "damaged",
+      "phonetic": "",
+      "definition": "broken or hurt, not in good condition",
+      "example": "Last month a truck arrived at a shop with damaged boxes."
+    },
+    {
+      "text": "complaint",
+      "phonetic": "",
+      "definition": "a statement that you are not happy about something",
+      "example": "The customer was angry and sent a complaint."
+    },
+    {
+      "text": "apologize",
+      "phonetic": "",
+      "definition": "to say that you are sorry",
+      "example": "The manager apologized and asked the driver what happened."
+    },
+    {
+      "text": "reason",
+      "phonetic": "",
+      "definition": "the cause of something that happens",
+      "example": "They look for the reason and find a solution."
+    },
+    {
+      "text": "solution",
+      "phonetic": "",
+      "definition": "a way to solve a problem",
+      "example": "They look for the reason and find a solution."
+    },
+    {
+      "text": "rule",
+      "phonetic": "",
+      "definition": "an official instruction about what you must or must not do",
+      "example": "The manager also made a new rule: drivers must tie the boxes more carefully."
+    },
+    {
+      "text": "border",
+      "phonetic": "",
+      "definition": "the line between two countries",
+      "example": "When goods cross a border, they need documents."
+    },
+    {
+      "text": "specialist",
+      "phonetic": "",
+      "definition": "a person with a lot of knowledge in one area",
+      "example": "So a logistics specialist always checks every document twice before the truck leaves."
+    },
+    {
+      "text": "document",
+      "phonetic": "",
+      "definition": "papers with official information",
+      "example": "When goods cross a border, they need documents."
+    },
+    {
+      "text": "invoice",
+      "phonetic": "",
+      "definition": "a paper that shows what you must pay for goods",
+      "example": "The most important ones are the invoice and the customs declaration."
+    },
+    {
+      "text": "declaration",
+      "phonetic": "",
+      "definition": "an official statement about the goods that you bring",
+      "example": "The most important ones are the invoice and the customs declaration."
+    },
+    {
+      "text": "customs",
+      "phonetic": "",
+      "definition": "the office that checks goods that enter a country",
+      "example": "The most important ones are the invoice and the customs declaration."
+    },
+    {
+      "text": "duty",
+      "phonetic": "",
+      "definition": "a tax that you pay on goods from another country",
+      "example": "We call this tax duty."
+    },
+    {
+      "text": "training",
+      "phonetic": "",
+      "definition": "lessons that teach you how to do a job",
+      "example": "New workers get training before they start."
+    },
+    {
+      "text": "shift",
+      "phonetic": "",
+      "definition": "a period of work, for example morning or night",
+      "example": "A team leader organizes the shifts, so there are always enough workers."
+    },
+    {
+      "text": "meeting",
+      "phonetic": "",
+      "definition": "an event where people come together to talk",
+      "example": "Every week the leader holds a short meeting."
+    }
+  ],
+  "story": "{\"inkVersion\":21,\"root\":[[{\"->\":\"s1\"},[\"done\",{\"#n\":\"g-0\"}],null],\"done\",{\"good\":[\"ev\",{\"VAR?\":\"tries\"},0,\"==\",\"/ev\",[{\"->\":\".^.b\",\"c\":true},{\"b\":[\"\\n\",\"ev\",{\"VAR?\":\"smooth\"},1,\"+\",\"/ev\",{\"VAR=\":\"smooth\",\"re\":true},{\"->\":\"good.6\"},null]}],\"nop\",\"\\n\",\"ev\",0,\"/ev\",{\"VAR=\":\"tries\",\"re\":true},null],\"s1\":[[\"^It is Monday morning. The phone is ringing and Marta is not in the office. \",\"#\",\"^scene: 1 \",\"/#\",\"#\",\"^title: Bad news\",\"/#\",\"\\n\",\"^You pick up the phone. A man is very angry.\",\"\\n\",\"^Mr Lukas: Hello! My boxes arrived ‹damaged›! I want to make a ‹complaint›.\",\"\\n\",[\"ev\",\"str\",\"^Thank you very much.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^§I'm very sorry. Can you tell me what happened?\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^Please call tomorrow. Goodbye.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Mr Lukas: Thank you? My boxes are broken!\",\"\\n\",\"^Mr Lukas is angry. Say sorry first. Say: I'm very sorry. Can you tell me what happened? \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^You ‹apologize› and listen.\",\"\\n\",\"^Mr Lukas: Three boxes are broken. The chairs inside too.\",\"\\n\",{\"->\":\"s1.0.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Mr Lukas: Tomorrow?! I am waiting now!\",\"\\n\",\"^Do not send an angry customer away. Say sorry and ask. Say: I'm very sorry. Can you tell me what happened? \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-0\"},{\"#f\":5}],\"#n\":\"d1\"}],{\"g-0\":[\"^Mr Lukas: Whose fault is it? Is it the driver?\",\"\\n\",[\"ev\",\"str\",\"^Yes, I am the driver.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^The chairs are red.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^§I don't know yet. We are looking for the reason.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Mr Lukas: You are the driver?\",\"\\n\",\"^You do not know yet. Say that you are looking for the reason. Say: I don't know yet. We are looking for the reason. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-1\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Mr Lukas: Red? What does that mean?\",\"\\n\",\"^Mr Lukas asks about the reason. Say: I don't know yet. We are looking for the reason. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Mr Lukas: OK. Please find the ‹reason› fast.\",\"\\n\",{\"->\":\"s1.0.g-1\"},{\"#f\":5}],\"#n\":\"d2\"}],null],\"g-1\":[\"^Mr Lukas: And what will you do? I need a ‹solution›.\",\"\\n\",[\"ev\",\"str\",\"^§We'll send you new boxes tomorrow, and we will pay for the damage.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^The road was wet.\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},\"ev\",\"str\",\"^Goodbye, have a nice day.\",\"/str\",\"/ev\",{\"*\":\".^.c-8\",\"flg\":20},{\"c-6\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Mr Lukas: OK. Thank you. That is better.\",\"\\n\",{\"->\":\"s1.0.g-2\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Mr Lukas: That is the reason. But I need a solution.\",\"\\n\",\"^A reason says why. A solution says what you will do. Say: We'll send you new boxes tomorrow, and we will pay for the damage. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-2\"},{\"#f\":5}],\"c-8\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Mr Lukas: Wait! What will you do?\",\"\\n\",\"^Tell him what you will do. Say: We'll send you new boxes tomorrow, and we will pay for the damage. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-2\"},{\"#f\":5}],\"#n\":\"d3\"}],null],\"g-2\":[\"^Marta comes back. She heard everything.\",\"\\n\",\"^Marta: Good job. We also need a new ‹rule›: drivers must tie the boxes carefully. Can you write it?\",\"\\n\",[\"ev\",\"str\",\"^No, I am not a driver.\",\"/str\",\"/ev\",{\"*\":\".^.c-9\",\"flg\":20},\"ev\",\"str\",\"^Yes. \\\"Boxes must be blue.\\\"\",\"/str\",\"/ev\",{\"*\":\".^.c-10\",\"flg\":20},\"ev\",\"str\",\"^§Yes. \\\"Drivers must tie the boxes with two belts.\\\"\",\"/str\",\"/ev\",{\"*\":\".^.c-11\",\"flg\":20},{\"c-9\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: I know! But can you write the rule?\",\"\\n\",\"^Marta asks you to write a rule for drivers. Say: Yes. \\\"Drivers must tie the boxes with two belts.\\\" \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-3\"},{\"#f\":5}],\"c-10\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Marta: Blue? Hmm. The rule is about tying the boxes.\",\"\\n\",\"^The rule is about tying the boxes. Say: Yes. \\\"Drivers must tie the boxes with two belts.\\\" \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s1.0.g-3\"},{\"#f\":5}],\"c-11\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Marta: Perfect. Short and clear.\",\"\\n\",{\"->\":\"s1.0.g-3\"},{\"#f\":5}],\"#n\":\"d4\"}],null],\"g-3\":[{\"->\":\"s2\"},null]}],null],\"s2\":[[\"^The next day a truck from Turkey waits at the ‹border› of the European Union. Marta calls you. \",\"#\",\"^scene: 2 \",\"/#\",\"#\",\"^title: At the border\",\"/#\",\"\\n\",\"^Marta: Our customs ‹specialist=specialist› is ill. Please help the driver. Here are the ‹documents=document›: the ‹invoice› and the ‹declaration›.\",\"\\n\",\"^A ‹customs› officer comes to the truck.\",\"\\n\",\"^Customs officer: Good morning. Documents, please.\",\"\\n\",[\"ev\",\"str\",\"^§Good morning. Here you are.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^Good night.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^I have a bag.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Customs officer: Thank you.\",\"\\n\",{\"->\":\"s2.0.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: Night? It is morning!\",\"\\n\",\"^Say good morning and give the documents. Say: Good morning. Here you are. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: OK. But I need the documents.\",\"\\n\",\"^The officer wants the papers. Say: Good morning. Here you are. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-0\"},{\"#f\":5}],\"#n\":\"d5\"}],{\"g-0\":[\"^Customs officer: What is in the truck?\",\"\\n\",[\"ev\",\"str\",\"^A big truck.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^§Cotton shirts, five hundred pieces. The invoice is here.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^It is Tuesday.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: I can see that. What is inside it?\",\"\\n\",\"^The officer asks about the goods inside. Say: Cotton shirts, five hundred pieces. The invoice is here. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-1\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Customs officer: OK. Please wait. I will check the declaration.\",\"\\n\",{\"->\":\"s2.0.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: Ha, yes. But what is in the truck?\",\"\\n\",\"^The officer asks about the goods. Say: Cotton shirts, five hundred pieces. The invoice is here. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-1\"},{\"#f\":5}],\"#n\":\"d6\"}],null],\"g-1\":[\"^The officer reads the papers for a long time.\",\"\\n\",\"^Customs officer: There is a mistake. The date is wrong. The truck must wait.\",\"\\n\",[\"ev\",\"str\",\"^Thank you, goodbye.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^It is a nice date.\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},\"ev\",\"str\",\"^§I'm sorry. Can we correct it now?\",\"/str\",\"/ev\",{\"*\":\".^.c-8\",\"flg\":20},{\"c-6\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: Wait! The truck must wait.\",\"\\n\",\"^There is a problem. Say sorry and ask what to do. Say: I'm sorry. Can we correct it now? \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-2\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: No, it is the wrong date!\",\"\\n\",\"^The officer says the date is wrong. Say: I'm sorry. Can we correct it now? \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-2\"},{\"#f\":5}],\"c-8\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Customs officer: Yes. Write the right date here.\",\"\\n\",{\"->\":\"s2.0.g-2\"},{\"#f\":5}],\"#n\":\"d7\"}],null],\"g-2\":[\"^Customs officer: Good. Now you must pay ‹duty›. It is two hundred euros.\",\"\\n\",[\"ev\",\"str\",\"^§Okay. Can I pay by card?\",\"/str\",\"/ev\",{\"*\":\".^.c-9\",\"flg\":20},\"ev\",\"str\",\"^I like your uniform.\",\"/str\",\"/ev\",{\"*\":\".^.c-10\",\"flg\":20},\"ev\",\"str\",\"^Where is the truck?\",\"/str\",\"/ev\",{\"*\":\".^.c-11\",\"flg\":20},{\"c-9\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Customs officer: Yes. The machine is here. Welcome to the European Union!\",\"\\n\",{\"->\":\"s2.0.g-3\"},{\"#f\":5}],\"c-10\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: Thank you. But you must pay duty.\",\"\\n\",\"^The officer asks you to pay. Say: Okay. Can I pay by card? \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-3\"},{\"#f\":5}],\"c-11\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: It is behind you. Duty, please.\",\"\\n\",\"^Answer about the duty. Say: Okay. Can I pay by card? \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s2.0.g-3\"},{\"#f\":5}],\"#n\":\"d8\"}],null],\"g-3\":[{\"->\":\"s3\"},null]}],null],\"s3\":[[\"^Back at Baltic Freight, Marta sends you to the team leader, Tomas. \",\"#\",\"^scene: 3 \",\"/#\",\"#\",\"^title: The team\",\"/#\",\"\\n\",\"^Tomas: New workers start next week. They need ‹training›. First we must plan the ‹shift›. Some people want the morning shift and some want the night shift. Which shift do you take?\",\"\\n\",[\"ev\",\"str\",\"^I like shifts.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^§I'll take the morning shift. I like to start early.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^A taxi, please.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Tomas: Ha! But which shift?\",\"\\n\",\"^Tomas asks you to choose morning or night. Say: I'll take the morning shift. I like to start early. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Tomas: Good. I will write it down.\",\"\\n\",{\"->\":\"s3.0.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Tomas: A taxi? I asked about the shift.\",\"\\n\",\"^Tomas asks about the shift. Say: I'll take the morning shift. I like to start early. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-0\"},{\"#f\":5}],\"#n\":\"d9\"}],{\"g-0\":[\"^Tomas: On Monday we have a ‹meeting› at eight. What do we tell the new workers first?\",\"\\n\",[\"ev\",\"str\",\"^§First the safety rules. Then the machines.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^First the weather.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^First lunch, then sleep.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Tomas: Yes. Safety first. Today was a bad day, but you did well. \",\"#\",\"^end\",\"/#\",\"\\n\",{\"->\":\"s3.0.g-1\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Tomas: The weather? No, not first.\",\"\\n\",\"^Safety is the first thing in a warehouse. Say: First the safety rules. Then the machines. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Tomas: Ha! No. Safety first.\",\"\\n\",\"^Think about the warehouse. Safety is first. Say: First the safety rules. Then the machines. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\"s3.0.g-1\"},{\"#f\":5}],\"#n\":\"d10\"}],null],\"g-1\":[\"done\",null]}],null],\"global decl\":[\"ev\",0,{\"VAR=\":\"tries\"},0,{\"VAR=\":\"smooth\"},\"/ev\",\"end\",null]}],\"listDefs\":{}}"
+}
