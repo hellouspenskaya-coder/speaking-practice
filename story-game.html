@@ -34,8 +34,9 @@ body {
   margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
   padding: 10px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
 .bar-in { max-width: 40rem; margin: 0 auto; display: flex; align-items: center; gap: 16px; }
-.brand { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
-.road { list-style: none; margin: 0; padding: 0; display: flex; flex: 1; min-width: 0; }
+.brand { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 0 1 auto; }
+.stars { flex: none; }
+.road { list-style: none; margin: 0; padding: 0; display: flex; flex: 1 0 120px; min-width: 120px; }
 .road li { flex: 1; position: relative; height: 26px; display: flex; flex-direction: column; align-items: center; }
 .road li::before { content: ""; position: absolute; top: 5px; left: -50%; width: 100%; height: 2px; background: var(--line); }
 .road li:first-child::before { display: none; }
@@ -143,7 +144,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
     <h1 id="g-title"></h1>
     <p class="lead" id="g-lead"></p>
     <p class="meta" id="g-meta"></p>
-    <ul class="how">
+    <ul class="how" id="g-how">
       <li data-i="1">You are the traveller. Choose what you say.</li>
       <li data-i="2">Green ✓ is right. Red ✕ is not this one. You can try again and you will see what to say. Right the first time? You get a star ★.</li>
       <li data-i="3">Tap an underlined word to see what it means.</li>
@@ -218,7 +219,7 @@ window.__GAME__ = /*GAME_DATA*/null;
     var re = /‹([^›]+)›/g, last = 0, m;
     while ((m = re.exec(text))) {
       if (m.index > last) node.appendChild(document.createTextNode(text.slice(last, m.index)));
-      var shown = m[1], key = shown.toLowerCase(), def = words[key];
+      var pr = m[1].split('='), shown = pr[0], key = (pr[1] || pr[0]).toLowerCase(), def = words[key];
       if (def) {
         var b = el('button', 'w', shown); b.type = 'button'; b.setAttribute('aria-expanded', 'false');
         (function (b, def, key) { b.addEventListener('click', function () { toggleGloss(b, def, key, host); }); })(b, def, key);
@@ -276,11 +277,11 @@ window.__GAME__ = /*GAME_DATA*/null;
       yw.appendChild(el('span', null, 'You'));
       n.appendChild(yw); n.appendChild(el('p', null, e.text)); host.appendChild(n);
     } else if (e.t === 'note') {
-      n = el('div', 'line note'); n.appendChild(el('div', 'nt', 'Not this one'));
+      n = el('div', 'line note'); n.appendChild(el('div', 'nt', G.noteTitle || 'Not this one'));
       var parts = e.text.split(/\s*Say:\s*/), body = parts[0], say = parts[1];
       n.appendChild(el('div', null, body));
       if (say) {
-        var box = el('div', 'say-it'); box.appendChild(el('small', null, 'Say'));
+        var box = el('div', 'say-it'); box.appendChild(el('small', null, G.sayLabel || 'Say'));
         box.appendChild(document.createTextNode(say));
         if (canSpeak) { var sb = spkBtn(say, '🔊'); sb.style.marginLeft = '10px'; box.appendChild(sb); }
         n.appendChild(box);
@@ -408,9 +409,10 @@ window.__GAME__ = /*GAME_DATA*/null;
     (G.words || []).forEach(function (w) { words[w.text.toLowerCase()] = w; });
     scenes = G.scenes || [];
     document.title = G.title + ' · story game';
-    $('brand').textContent = G.title;
+    $('brand').textContent = G.shortTitle || G.title;
     $('g-title').textContent = G.title; $('g-lead').textContent = G.lead;
     $('g-meta').textContent = scenes.length + ' scenes · about ' + (G.minutes || 12) + ' minutes · level ' + G.level + ' · no tests';
+    if (G.how && G.how.length) { var hw = $('g-how'); hw.textContent = ''; G.how.forEach(function (t, i) { var li = el('li', null, t); li.setAttribute('data-i', i + 1); hw.appendChild(li); }); }
     $('start').hidden = false; scene = '1'; drawRoad();
     $('btn-new').addEventListener('click', function () { clearSave(); begin(null); });
     $('btn-cont').addEventListener('click', function () { begin(readSave()); });

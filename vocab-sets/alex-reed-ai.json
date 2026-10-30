@@ -1,0 +1,122 @@
+{
+  "kind": "storyGame",
+  "slug": "alex-reed-ai",
+  "topic": "Strategy in the age of AI: a talk with Alex Reed",
+  "title": "Strategy in the age of AI: a talk with Alex Reed",
+  "level": "B2",
+  "lead": "The keynote is over. You walk up to Alex Reed, the founder of a company rebuilt around AI, and talk business strategy over coffee. In each turn, two of the four replies are correct, and they say different things. Choose the one that sounds like you.",
+  "minutes": 15,
+  "total": 8,
+  "scenes": [
+    {
+      "n": "1",
+      "title": "After the keynote"
+    },
+    {
+      "n": "2",
+      "title": "AI at work"
+    },
+    {
+      "n": "3",
+      "title": "Where to start"
+    },
+    {
+      "n": "4",
+      "title": "People and work"
+    },
+    {
+      "n": "5",
+      "title": "Goodbye"
+    }
+  ],
+  "practiceSet": "alex-reed-ai-words",
+  "shortTitle": "Talk with Alex Reed",
+  "sayLabel": "Better",
+  "noteTitle": "Not quite",
+  "how": [
+    "You are a guest at a conference. Choose what you say.",
+    "In each turn two replies are correct and two have a slip in grammar, word choice or tone. Pick the one that is yours.",
+    "A red ✕ shows a slip and the corrected sentence. Tap an underlined word to see what it means. Right the first time? You get a star ★."
+  ],
+  "words": [
+    {
+      "text": "keynote",
+      "phonetic": "ˈkiːnəʊt",
+      "definition": "the main speech at the start of a conference",
+      "example": "The keynote is over and the hall is slowly emptying."
+    },
+    {
+      "text": "streamline",
+      "phonetic": "ˈstriːmlaɪn",
+      "definition": "to make a process simpler and faster",
+      "example": "Many firms only use AI to streamline what they already do."
+    },
+    {
+      "text": "pilot",
+      "phonetic": "ˈpaɪlət",
+      "definition": "a small test of a new idea before a company uses it everywhere",
+      "example": "We're running a few small pilots, nothing more."
+    },
+    {
+      "text": "roll out",
+      "phonetic": "ˈrəʊl aʊt",
+      "definition": "to start using something new in the whole company",
+      "example": "We've already rolled out AI in customer support."
+    },
+    {
+      "text": "automate",
+      "phonetic": "ˈɔːtəmeɪt",
+      "definition": "to make a job happen by machine, without people doing it",
+      "example": "The biggest risk is automating the wrong thing."
+    },
+    {
+      "text": "competitive edge",
+      "phonetic": "kəmˈpetətɪv edʒ",
+      "definition": "something that puts your company ahead of the others",
+      "example": "AI is only a competitive edge if it changes how people work."
+    },
+    {
+      "text": "bottleneck",
+      "phonetic": "ˈbɒtlnek",
+      "definition": "a step in a process where work slows down because too much arrives",
+      "example": "I'd begin with the bottlenecks, the steps where work always piles up."
+    },
+    {
+      "text": "buy-in",
+      "phonetic": "ˈbaɪ ɪn",
+      "definition": "the support and agreement of the people who have to accept a change",
+      "example": "Buy-in from the team matters more than the tool."
+    },
+    {
+      "text": "adopt",
+      "phonetic": "əˈdɒpt",
+      "definition": "to start using a new idea or tool",
+      "example": "How do you get people to adopt it?"
+    },
+    {
+      "text": "workforce",
+      "phonetic": "ˈwɜːkfɔːs",
+      "definition": "all the people who work for a company or in an industry",
+      "example": "Will AI make the workforce shrink?"
+    },
+    {
+      "text": "shrink",
+      "phonetic": "ʃrɪŋk",
+      "definition": "to become smaller",
+      "example": "The market may shrink next year."
+    },
+    {
+      "text": "upskill",
+      "phonetic": "ʌpˈskɪl",
+      "definition": "to teach people new skills for their job",
+      "example": "The bigger task is to upskill people rather than replace them."
+    },
+    {
+      "text": "follow up",
+      "phonetic": "ˈfɒləʊ ʌp",
+      "definition": "to contact someone again after a first meeting",
+      "example": "Would it be all right if I followed up by email?"
+    }
+  ],
+  "story": "{\"inkVersion\":21,\"root\":[[{\"->\":\"keynote\"},[\"done\",{\"#n\":\"g-0\"}],null],\"done\",{\"good\":[\"ev\",{\"VAR?\":\"tries\"},0,\"==\",\"/ev\",[{\"->\":\".^.b\",\"c\":true},{\"b\":[\"\\n\",\"ev\",{\"VAR?\":\"smooth\"},1,\"+\",\"/ev\",{\"VAR=\":\"smooth\",\"re\":true},{\"->\":\"good.6\"},null]}],\"nop\",\"\\n\",\"ev\",0,\"/ev\",{\"VAR=\":\"tries\",\"re\":true},null],\"keynote\":[[\"^The ‹keynote› is over and the hall is slowly emptying. \",\"#\",\"^scene: 1 \",\"/#\",\"#\",\"^title: After the keynote\",\"/#\",\"\\n\",\"^It was called \\\"Strategy in the Age of AI\\\". The speaker, Alex Reed, is the founder of Reedworks, a logistics company that rebuilt itself around AI.\",\"\\n\",\"^Now he is walking towards the coffee table, alone. This is your chance.\",\"\\n\",[\"ev\",\"str\",\"^§Excuse me, Mr Reed. Your keynote really made me rethink our approach.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^Mr Reed, I am wanting to ask you about your talk.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^§Hi, I hope I'm not interrupting. I had a question about something you said on stage.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},\"ev\",\"str\",\"^Hey you! Stop, I have to talk with you.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Alex: Thank you. That is exactly what I hope for. People who leave with questions, not answers.\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex raises an eyebrow, then smiles.\",\"\\n\",\"^\\\"Want\\\" is not normally used in the continuous form, and the opening sounds heavy. Say: Mr Reed, I'd like to ask you about your talk. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Alex: Not at all. I am only hiding from the queue. Go ahead.\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-3\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex stops, a little surprised. Other people turn around.\",\"\\n\",\"^This sounds like an order, not like a polite first contact. Say: Excuse me, do you have a minute? \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"#n\":\"d1\"}],{\"g-0\":[\"^Alex: But first, tell me about yourself. What do you do?\",\"\\n\",[\"ev\",\"str\",\"^I am working in the operations since five years.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^§I'm in charge of operations at a mid-sized manufacturing company.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},\"ev\",\"str\",\"^I am boss from a middle company.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^§I run a small consultancy that helps firms improve their processes.\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},{\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: Operations? For five years? Let me hear that again.\",\"\\n\",\"^With \\\"since\\\" and a point in time we use the present perfect, and the job needs \\\"in\\\". Say: I've been working in operations for five years. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"ev\",\"str\",\"^ops\",\"/str\",\"/ev\",{\"VAR=\":\"who\",\"re\":true},\"^Alex: Operations. Good. That is where AI is hardest, and where it matters most.\",\"\\n\",{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-6\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: A boss? Of a company in the middle? I am not sure I follow.\",\"\\n\",\"^Some words are borrowed from your own language. Say: I'm the director of a mid-sized company. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"ev\",\"str\",\"^consultant\",\"/str\",\"/ev\",{\"VAR=\":\"who\",\"re\":true},\"^Alex: A consultant. So you see many companies from the inside. That is useful.\",\"\\n\",{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"#n\":\"d2\"}],null],\"g-1\":[{\"->\":\"ai_in_company\"},null]}],null],\"ai_in_company\":[[\"^Alex hands you a coffee and leans on the table. \",\"#\",\"^scene: 2 \",\"/#\",\"#\",\"^title: AI at work\",\"/#\",\"\\n\",\"^Alex: Many firms only use AI to ‹streamline› what they already do. That is a start, but it is not a strategy.\",\"\\n\",\"^Alex: \",\"ev\",{\"VAR?\":\"who\"},\"str\",\"^ops\",\"/str\",\"==\",\"/ev\",[{\"->\":\".^.b\",\"c\":true},{\"b\":[\"^Is your company using AI yet?\",{\"->\":\".^.^.^.20\"},null]}],[{\"->\":\".^.b\"},{\"b\":[\"^Are your clients using AI yet?\",{\"->\":\".^.^.^.20\"},null]}],\"nop\",\"\\n\",[\"ev\",\"str\",\"^We use AI from last year, but it doesn't work good.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^§We're still at an early stage. We're running a few small pilots, nothing more.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^§Yes, we've already rolled out AI in customer support, and we're moving on to logistics.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},\"ev\",\"str\",\"^Not really. Our management is very afraid about it.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: Since last year, and it does not work well? That is a story I would like to hear.\",\"\\n\",\"^For a period that started in the past we say \\\"since\\\" or the present perfect, and \\\"work\\\" needs an adverb. Say: We've been using it since last year, but it doesn't work well. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Alex: ‹Pilots=pilot› are fine. The danger is staying in pilot mode for three years.\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"ev\",{\"VAR?\":\"bold\"},1,\"+\",\"/ev\",{\"VAR=\":\"bold\",\"re\":true},\"^Alex: So you have already ‹rolled out=roll out› something. That is fast. I hope someone asked the support team what they actually needed.\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-3\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: Afraid? Of what, exactly?\",\"\\n\",\"^After \\\"afraid\\\" we use \\\"of\\\". Say: Not really. Our management is very afraid of it. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"#n\":\"d3\"}],{\"g-0\":[\"^Alex: Let me tell you what I really think. The biggest risk is not being late. It is ‹automating=automate› the wrong thing.\",\"\\n\",[\"ev\",\"str\",\"^I am agree with you, it is very true.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^§That makes sense. Many companies automate what is easy rather than what matters.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},\"ev\",\"str\",\"^No, that's wrong. Being late is the real problem.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^§I see your point, but isn't there a risk in waiting too long? Competitors may build a data advantage.\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},{\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: I will take that as a yes.\",\"\\n\",\"^\\\"Agree\\\" is a verb, so we do not use \\\"am\\\" before it. Say: I agree with you, that's very true. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Alex: Exactly. Easy and valuable are rarely the same thing.\",\"\\n\",{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-6\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: Wrong? Strong word. Tell me why.\",\"\\n\",\"^The idea is fine, but \\\"that's wrong\\\" is too blunt for a first conversation. Say: I'm not sure I agree. Being late can be a real problem too. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"ev\",{\"VAR?\":\"bold\"},1,\"+\",\"/ev\",{\"VAR=\":\"bold\",\"re\":true},\"^Alex: Fair challenge. Data matters, but only if you know which question to ask.\",\"\\n\",{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"#n\":\"d4\"}],null],\"g-1\":[{\"->\":\"where_to_start\"},null]}],null],\"where_to_start\":[[\"^Alex: Let us be practical. AI is only a ‹competitive edge› if it changes how people work. \",\"#\",\"^scene: 3 \",\"/#\",\"#\",\"^title: Where to start\",\"/#\",\"\\n\",\"^Alex: So how would you decide where to begin?\",\"\\n\",[\"ev\",\"str\",\"^I would start by to look at the numbers.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^§I'd begin with the bottlenecks, the steps where work always piles up.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^I'd start with the process which has the most big problems.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},\"ev\",\"str\",\"^§I'd ask the people who do the work. They know best what slows them down.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: Looking at the numbers is a good instinct. Say it again, slowly.\",\"\\n\",\"^After \\\"start\\\" we use \\\"to + verb\\\" or \\\"-ing\\\", not \\\"by to\\\". Say: I would start by looking at the numbers. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Alex: Good. A ‹bottleneck› is a clear target, and you can measure the result.\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: The most big problems? I think you mean the biggest.\",\"\\n\",\"^Short adjectives like \\\"big\\\" make the superlative with \\\"-est\\\", and \\\"that\\\" is more natural than \\\"which\\\" here. Say: I'd start with the process that has the biggest problems. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-3\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"ev\",{\"VAR?\":\"people\"},1,\"+\",\"/ev\",{\"VAR=\":\"people\",\"re\":true},\"^Alex: Yes. ‹Buy-in› from the team matters more than the tool. If they do not trust it, they will work around it.\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"#n\":\"d5\"}],{\"g-0\":[\"^Alex: And once you have chosen a task, how do you get people to ‹adopt› it?\",\"\\n\",[\"ev\",\"str\",\"^I'd say them that it is good for their work.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^§I'd show them a small success first. Results speak louder than slides.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},\"ev\",\"str\",\"^I'd explain them how the system works.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^§I'd involve them from day one, so the change is not something that happens to them.\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},{\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: Say them? Ah, tell them.\",\"\\n\",\"^\\\"Say\\\" cannot take a person directly. We say something to someone, or tell someone. Say: I'd tell them that it is good for their work. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Alex: A small win beats a big promise. I agree.\",\"\\n\",{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-6\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: Explain them? You explain it to them.\",\"\\n\",\"^\\\"Explain\\\" needs \\\"to\\\" before the person. Say: I'd explain to them how the system works. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"ev\",{\"VAR?\":\"people\"},1,\"+\",\"/ev\",{\"VAR=\":\"people\",\"re\":true},\"^Alex: That is the difference between a project and a rebellion.\",\"\\n\",{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"#n\":\"d6\"}],null],\"g-1\":[{\"->\":\"people_and_work\"},null]}],null],\"people_and_work\":[[\"^Alex looks around the empty hall, then lowers his voice. \",\"#\",\"^scene: 4 \",\"/#\",\"#\",\"^title: People and work\",\"/#\",\"\\n\",\"^Alex: Here is my favourite question. In ten years, will AI make the ‹workforce› ‹shrink›?\",\"\\n\",[\"ev\",\"str\",\"^I think that the workforce will be less, but it depends.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^§Some jobs will change a lot, but I think the bigger task is to upskill people rather than replace them.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^It is a difficult topic and I do not have any opinion, sorry.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},\"ev\",\"str\",\"^§Honestly, I think some roles will disappear. The question is whether we prepare people early enough.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: Less? Smaller, you mean. And depends on what?\",\"\\n\",\"^A workforce gets \\\"smaller\\\" (or \\\"shrinks\\\"), not \\\"less\\\", and \\\"it depends\\\" needs a reason. Say: I think the workforce will get smaller, but it depends on the industry. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"ev\",{\"VAR?\":\"people\"},1,\"+\",\"/ev\",{\"VAR=\":\"people\",\"re\":true},\"^Alex: A comfortable answer, and probably a true one. The hard part is who pays to ‹upskill› everybody.\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: No opinion? Come on, you have been listening for an hour.\",\"\\n\",\"^This sounds like a closed door. Soften it and keep the conversation open. Say: It's a difficult topic, and I don't really have a strong view yet. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-3\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"ev\",{\"VAR?\":\"bold\"},1,\"+\",\"/ev\",{\"VAR=\":\"bold\",\"re\":true},\"^Alex: Nobody likes saying it out loud. Thank you. And then who will ‹upskill› the people who stay?\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"#n\":\"d7\"}],{\"g-0\":[\"^Alex checks his watch.\",\"\\n\",\"^Alex: I have a plane to catch. It was a real pleasure talking with you.\",\"\\n\",[\"ev\",\"str\",\"^Give me your email, I will write to you.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^§Thank you for your time. Would it be all right if I followed up by email?\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},\"ev\",\"str\",\"^Thanks for the time. I hope we will meet again in the future one day.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^§This was really valuable. Could we stay in touch? I would love to share how our project goes.\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},{\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: I appreciate the enthusiasm, but let us try that again.\",\"\\n\",\"^This sounds like an instruction. Ask for permission instead. Say: Could I have your email? I'd like to write to you. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Alex: Of course. Please ‹follow up› next week, not tomorrow. Here is my card.\",\"\\n\",{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-6\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Alex: One day. Perhaps.\",\"\\n\",\"^After \\\"hope\\\" we use the present simple for the future, and \\\"in the future one day\\\" is too much. Say: Thanks for your time. I hope we meet again one day. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Alex: I would like that. Please ‹follow up› next week. Here is my card.\",\"\\n\",{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"#n\":\"d8\"}],null],\"g-1\":[{\"->\":\"goodbye\"},null]}],null],\"goodbye\":[\"^You take the card. \",\"#\",\"^scene: 5 \",\"/#\",\"#\",\"^title: Goodbye\",\"/#\",\"\\n\",\"ev\",{\"VAR?\":\"bold\"},2,\">=\",\"/ev\",[{\"->\":\".^.b\",\"c\":true},{\"b\":[\"\\n\",\"^Alex: One last thing. You move fast and you are not afraid to disagree. Just make sure you test the right thing before you roll it out.\",\"\\n\",{\"->\":\".^.^.^.15\"},null]}],[{\"->\":\".^.b\"},{\"b\":[\"\\n\",\"^Alex: One last thing. You test before you bet big. Keep that habit, but do not let it become a reason to wait.\",\"\\n\",{\"->\":\".^.^.^.15\"},null]}],\"nop\",\"\\n\",\"ev\",{\"VAR?\":\"people\"},1,\">=\",\"/ev\",[{\"->\":\".^.b\",\"c\":true},{\"b\":[\"\\n\",\"^Alex: And you asked about people, not only about tools. That is rarer than you think.\",\"\\n\",{\"->\":\".^.^.^.23\"},null]}],\"nop\",\"\\n\",\"^He shakes your hand and disappears through the door. You stay for a moment with your coffee and your notes. \",\"#\",\"^end\",\"/#\",\"\\n\",\"done\",null],\"global decl\":[\"ev\",0,{\"VAR=\":\"tries\"},0,{\"VAR=\":\"smooth\"},\"str\",\"^\",\"/str\",{\"VAR=\":\"who\"},0,{\"VAR=\":\"bold\"},0,{\"VAR=\":\"people\"},\"/ev\",\"end\",null]}],\"listDefs\":{}}"
+}
