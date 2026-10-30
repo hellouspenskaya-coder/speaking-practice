@@ -19,6 +19,8 @@
 //   action: "imageData" -> downloads one Pixabay picture so the builder can shrink it in the browser before saving
 //   action: "testBuild"  -> Sonnet drafts a grammar test (4 parts + teacher's key) from pasted text or a topic
 //                           (a grammar test is saved with action "save", kind "grammarTest", and opens in grammar-test.html)
+//   (a story game is saved with action "save", kind "storyGame", and opens in story-game.html?set=<slug>;
+//    its practice words are a normal vocab set that carries fromGame: "<game slug>")
 
 const OWNER = 'hellouspenskaya-coder';
 const REPO = 'speaking-practice';
@@ -545,6 +547,13 @@ async function saveSet(req, res) {
       return;
     }
   }
+  if (data.kind === 'storyGame') {
+    const bad = validateStoryGame(data);
+    if (bad) {
+      res.status(400).json({ error: bad });
+      return;
+    }
+  }
 
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
@@ -599,7 +608,9 @@ async function saveSet(req, res) {
 
   const trainerLink = data.kind === 'grammarTest'
     ? `/grammar-test.html?set=${cleanSlug}`
-    : `/vocab-trainer.html?set=${cleanSlug}`;
+    : data.kind === 'storyGame'
+      ? `/story-game.html?set=${cleanSlug}`
+      : `/vocab-trainer.html?set=${cleanSlug}`;
   const fullLink = `${SITE_ORIGIN}${trainerLink}`;
 
   // Also file this as a row in the Assignments database — but only the
@@ -654,6 +665,9 @@ async function addToAssignmentsDatabase(data, fullLink, delivery = {}) {
   }
   const isTextSet = data.kind === 'textSet';
   const isGrammarTest = data.kind === 'grammarTest';
+  const isStoryGame = data.kind === 'storyGame';
+  // Practice words made from a story game are a normal vocab set, but marked so they can be told apart in Notion.
+  const isGameWords = !!data.fromGame && !isStoryGame;
 
   const response = await fetch('https://api.notion.com/v1/pages', {
     method: 'POST',
@@ -668,8 +682,10 @@ async function addToAssignmentsDatabase(data, fullLink, delivery = {}) {
         'Assignment Title': { title: [{ text: { content: data.topic || 'Untitled set' } }] },
         'Format': { select: { name: 'Individual' } },
         'Platform': { select: { name: 'practice' } },
-        'Skill': { multi_select: isGrammarTest ? [{ name: 'grammar' }] : isTextSet ? [{ name: 'reading' }, { name: 'vocabulary' }] : [{ name: 'vocabulary' }] },
-        'Type': { multi_select: [{ name: isGrammarTest ? 'test' : isTextSet ? 'text set' : 'vocpractice' }] },
+        'Skill': { multi_select: isGrammarTest ? [{ name: 'grammar' }] : (isTextSet || isStoryGame) ? [{ name: 'reading' }, { name: 'vocabulary' }] : [{ name: 'vocabulary' }] },
+        'Type': { multi_select: isStoryGame
+          ? [{ name: 'story game' }]
+          : [{ name: isGrammarTest ? 'test' : isTextSet ? 'text set' : 'vocpractice' }, ...(isGameWords ? [{ name: 'game words' }] : [])] },
         'Level': { multi_select: [{ name: data.level || 'A1' }] },
         'Time required': { multi_select: [{ name: timeRequired }] },
         'URL': { url: fullLink },
@@ -1588,6 +1604,19 @@ Reply with STRICT JSON only: {"text":"the story with **form|listword** marked wo
 }
 
 // =====================================================================
+// STORY GAMES (saved with action "save", kind "storyGame"; played in story-game.html)
+// The file holds the compiled Ink story (a JSON string), the scenes, and the words shown as hints.
+function validateStoryGame(d) {
+  if (!d || d.kind !== 'storyGame') return 'Not a story game.';
+  if (typeof d.story !== 'string' || !d.story.trim()) return 'The game has no story.';
+  try { JSON.parse(d.story); } catch (e) { return 'The story is not valid Ink JSON.'; }
+  if (!Array.isArray(d.scenes) || !d.scenes.length) return 'The game has no scenes.';
+  if (!Array.isArray(d.words) || d.words.some(w => !w || !w.text || !w.definition)) return 'Every word needs text and a definition.';
+  if (!d.title) return 'The game needs a title.';
+  return null;
+}
+
+// ============================================================================
 // GRAMMAR TESTS (action "testBuild"; saved with action "save", kind "grammarTest")
 // A test has four parts: choose / complete / find-and-correct / write,
 // plus a teacher's key that grammar-test.html prints as the last page.

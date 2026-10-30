@@ -1,0 +1,124 @@
+{
+  "kind": "storyGame",
+  "slug": "airport-london",
+  "topic": "Airport: a trip to London",
+  "title": "Airport: a trip to London",
+  "level": "A1",
+  "lead": "You fly to London for a conference. At the airport you talk to six people: at check-in, security, on the plane, at passport control, at baggage reclaim and at customs.",
+  "minutes": 12,
+  "total": 11,
+  "scenes": [
+    {
+      "n": "1",
+      "title": "Check-in"
+    },
+    {
+      "n": "2",
+      "title": "Security"
+    },
+    {
+      "n": "3",
+      "title": "The flight"
+    },
+    {
+      "n": "4",
+      "title": "Passport control"
+    },
+    {
+      "n": "5",
+      "title": "Baggage reclaim"
+    },
+    {
+      "n": "6",
+      "title": "Customs"
+    }
+  ],
+  "practiceSet": "airport-london-words",
+  "words": [
+    {
+      "text": "check-in desk",
+      "phonetic": "ˈtʃek ɪn desk",
+      "definition": "the place where you give your big bag and get your boarding pass",
+      "example": "First you go to the check-in desk."
+    },
+    {
+      "text": "suitcase",
+      "phonetic": "ˈsuːtkeɪs",
+      "definition": "a big bag for your clothes when you travel",
+      "example": "You have a big blue suitcase and a small bag."
+    },
+    {
+      "text": "hand luggage",
+      "phonetic": "ˈhænd ˌlʌɡɪdʒ",
+      "definition": "the small bag that you take with you on the plane",
+      "example": "Your small bag is your hand luggage."
+    },
+    {
+      "text": "boarding pass",
+      "phonetic": "ˈbɔːdɪŋ pɑːs",
+      "definition": "a paper or a phone ticket that you need to get on the plane",
+      "example": "Here is your boarding pass."
+    },
+    {
+      "text": "gate",
+      "phonetic": "ɡeɪt",
+      "definition": "the door at the airport where you get on the plane",
+      "example": "Go to gate 12."
+    },
+    {
+      "text": "security",
+      "phonetic": "sɪˈkjʊərəti",
+      "definition": "the place at the airport where officers look at you and your bag before the flight",
+      "example": "Now you go to security."
+    },
+    {
+      "text": "tray",
+      "phonetic": "treɪ",
+      "definition": "a flat plastic box for your things at security",
+      "example": "Put your bag in a tray, please."
+    },
+    {
+      "text": "liquids",
+      "phonetic": "ˈlɪkwɪdz",
+      "definition": "things like water, juice or perfume that you can pour",
+      "example": "Do you have any liquids in your bag?"
+    },
+    {
+      "text": "passport control",
+      "phonetic": "ˈpɑːspɔːt kənˌtrəʊl",
+      "definition": "the place where an officer looks at your passport and asks you questions",
+      "example": "You follow the signs to passport control."
+    },
+    {
+      "text": "reason",
+      "phonetic": "ˈriːzn",
+      "definition": "the answer to the question why",
+      "example": "What is the reason for your visit?"
+    },
+    {
+      "text": "baggage reclaim",
+      "phonetic": "ˈbæɡɪdʒ rɪˌkleɪm",
+      "definition": "the place where you take your suitcase after the flight",
+      "example": "Next, you go to baggage reclaim."
+    },
+    {
+      "text": "customs",
+      "phonetic": "ˈkʌstəmz",
+      "definition": "the place where officers check the things you bring into a country",
+      "example": "Now you walk to customs."
+    },
+    {
+      "text": "declare",
+      "phonetic": "dɪˈkleə",
+      "definition": "to tell customs about the things you bring into a country",
+      "example": "Nothing to declare."
+    },
+    {
+      "text": "gift",
+      "phonetic": "ɡɪft",
+      "definition": "something that you give to a friend",
+      "example": "You have a gift for a friend."
+    }
+  ],
+  "story": "{\"inkVersion\":21,\"root\":[[{\"->\":\"checkin\"},[\"done\",{\"#n\":\"g-0\"}],null],\"done\",{\"good\":[\"ev\",{\"VAR?\":\"tries\"},0,\"==\",\"/ev\",[{\"->\":\".^.b\",\"c\":true},{\"b\":[\"\\n\",\"ev\",{\"VAR?\":\"smooth\"},1,\"+\",\"/ev\",{\"VAR=\":\"smooth\",\"re\":true},{\"->\":\"good.6\"},null]}],\"nop\",\"\\n\",\"ev\",0,\"/ev\",{\"VAR=\":\"tries\",\"re\":true},null],\"checkin\":[[\"^You are at the airport. Today you fly to London. \",\"#\",\"^scene: 1 \",\"/#\",\"#\",\"^title: Check-in\",\"/#\",\"\\n\",\"^First you go to the ‹check-in desk›. A woman works there. She smiles at you.\",\"\\n\",\"^Check-in agent: Good morning! Passport, please.\",\"\\n\",[\"ev\",\"str\",\"^I like London.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^§Here you are.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^Thank you, goodbye.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Check-in agent: Me too! But I need your passport, please.\",\"\\n\",\"^The agent waits for your passport. This is a nice sentence, but it is not the answer. Say: Here you are. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^You give her your passport.\",\"\\n\",\"^Check-in agent: Thank you.\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Check-in agent: Not yet! Your passport, please.\",\"\\n\",\"^\\\"Goodbye\\\" is for the end. Now you give your passport. Say: Here you are. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"#n\":\"d1\"}],{\"g-0\":[\"^You have a big blue ‹suitcase› and a small bag.\",\"\\n\",\"^Check-in agent: Do you have any bags to check in?\",\"\\n\",[\"ev\",\"str\",\"^I am fine, thank you.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^It is ten o'clock.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^§Yes, I have one suitcase.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Check-in agent: Good, good! And do you have any bags to check in?\",\"\\n\",\"^The agent asks about your bags. Say: Yes, I have one suitcase. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Check-in agent: Yes, it is! But what about bags?\",\"\\n\",\"^The agent asks about your bags. Say: Yes, I have one suitcase. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Check-in agent: Please put it on the belt.\",\"\\n\",{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"#n\":\"d2\"}],null],\"g-1\":[\"^You put the suitcase on the belt. Your small bag is your ‹hand luggage›. You keep it with you.\",\"\\n\",\"^Check-in agent: Here is your ‹boarding pass›. Go to ‹gate› 12. Have a nice flight!\",\"\\n\",\"^You say thank you and walk away.\",\"\\n\",{\"->\":\"security\"},null]}],null],\"security\":[[\"^Now you go to ‹security›. There is a long line. You wait. \",\"#\",\"^scene: 2 \",\"/#\",\"#\",\"^title: Security\",\"/#\",\"\\n\",\"^At last it is your turn.\",\"\\n\",\"^Security officer: Put your bag and your jacket in a ‹tray›, please. Do you have any ‹liquids› in your bag?\",\"\\n\",[\"ev\",\"str\",\"^§Yes, I do. A bottle of water.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^My bag is heavy.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^I am very tired.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Security officer: Thank you. Put the bottle in the tray, too.\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Security officer: I see. But do you have any liquids in it?\",\"\\n\",\"^The officer asks about liquids, for example water. Say: Yes, I do. A bottle of water. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Security officer: Me too! But do you have any liquids in your bag?\",\"\\n\",\"^The officer asks about liquids, for example water. Say: Yes, I do. A bottle of water. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"#n\":\"d3\"}],{\"g-0\":[\"^You put your bag, your jacket and the bottle in the trays. Then you walk through the arch.\",\"\\n\",\"^Beep! Beep! Beep!\",\"\\n\",\"^Security officer: Stop, please. Do you have anything in your pockets? Keys? Coins?\",\"\\n\",[\"ev\",\"str\",\"^Goodbye!\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^§Sorry. I have my keys.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^It is my first flight.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Security officer: Not yet! Your pockets, please.\",\"\\n\",\"^\\\"Goodbye\\\" is for the end. The officer asks about your pockets. Say: Sorry. I have my keys. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Security officer: Thank you. Put them in the tray, please.\",\"\\n\",{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Security officer: Nice! But what is in your pockets?\",\"\\n\",\"^The officer asks what is in your pockets. Say: Sorry. I have my keys. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"#n\":\"d4\"}],null],\"g-1\":[\"^You put your keys in the tray and walk through again. No beep this time.\",\"\\n\",\"^Security officer: Thank you. Have a nice flight.\",\"\\n\",{\"->\":\"flight\"},null]}],null],\"flight\":[[\"^At ‹gate› 12 you show your boarding pass. Then you get on the plane. \",\"#\",\"^scene: 3 \",\"/#\",\"#\",\"^title: The flight\",\"/#\",\"\\n\",\"^The plane takes off. After one hour a flight attendant comes with a trolley.\",\"\\n\",\"^Flight attendant: Chicken or pasta?\",\"\\n\",[\"ev\",\"str\",\"^I am hungry.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^A window seat, please.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^§Pasta, please.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Flight attendant: Ha! Me too. Chicken or pasta?\",\"\\n\",\"^You must choose: chicken or pasta. Say: Pasta, please. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Flight attendant: Sorry, this is food, not seats! Chicken or pasta?\",\"\\n\",\"^You must choose: chicken or pasta. Say: Pasta, please. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Flight attendant: Here you are. Enjoy!\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"#n\":\"d5\"}],{\"g-0\":[\"^The pasta is nice. You sleep a little.\",\"\\n\",\"^Then a voice says: \\\"Welcome to London Heathrow.\\\"\",\"\\n\",{\"->\":\"passport\"},null]}],null],\"passport\":[[\"^The plane lands. You follow the signs to ‹passport control›. \",\"#\",\"^scene: 4 \",\"/#\",\"#\",\"^title: Passport control\",\"/#\",\"\\n\",\"^The line is long, but it moves fast. Now it is your turn. You give your passport to the officer.\",\"\\n\",\"^Passport officer: Good afternoon. What is the ‹reason› for your visit?\",\"\\n\",[\"ev\",\"str\",\"^I have one suitcase.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^§I am here for a conference.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^Pasta, please.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Passport officer: Yes, I see. But why are you here in London?\",\"\\n\",\"^The officer asks WHY you are here. Say: I am here for a conference. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Passport officer: A conference. Good.\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Passport officer: Pasta? This is not a restaurant! Why are you here?\",\"\\n\",\"^The officer asks WHY you are here. Say: I am here for a conference. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"#n\":\"d6\"}],{\"g-0\":[\"^Passport officer: How long are you staying?\",\"\\n\",[\"ev\",\"str\",\"^§For three days.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^Here you are.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^It is ten o'clock.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Passport officer: Thank you.\",\"\\n\",{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Passport officer: Yes, I have your passport. How long are you staying?\",\"\\n\",\"^The officer asks about time. Say: For three days. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Passport officer: Yes, it is. But how long are you staying?\",\"\\n\",\"^The officer asks about time. Say: For three days. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"#n\":\"d7\"}],null],\"g-1\":[\"^The officer gives your passport back.\",\"\\n\",\"^Passport officer: Enjoy your stay in the UK.\",\"\\n\",{\"->\":\"baggage\"},null]}],null],\"baggage\":[[\"^Next, you go to ‹baggage reclaim›. \",\"#\",\"^scene: 5 \",\"/#\",\"#\",\"^title: Baggage reclaim\",\"/#\",\"\\n\",\"^Suitcases come out on a long belt. You see your blue suitcase and take it.\",\"\\n\",\"^A woman points at a red suitcase on the floor.\",\"\\n\",\"^Woman: Excuse me! Is this your suitcase?\",\"\\n\",[\"ev\",\"str\",\"^For three days.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^I am very tired.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^§No, mine is blue.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Woman: Sorry? I asked about the suitcase.\",\"\\n\",\"^Look at the suitcase. Yours is blue. Say: No, mine is blue. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Woman: Oh, me too! But is this your suitcase?\",\"\\n\",\"^Look at the suitcase. Yours is blue. Say: No, mine is blue. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Woman: Oh, sorry! Have a nice day.\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"#n\":\"d8\"}],{\"g-0\":[\"^You smile and take your suitcase to the last door.\",\"\\n\",{\"->\":\"customs\"},null]}],null],\"customs\":[[\"^Now you walk to ‹customs›. \",\"#\",\"^scene: 6 \",\"/#\",\"#\",\"^title: Customs\",\"/#\",\"\\n\",\"^There are two doors. The green door is for people with \\\"Nothing to ‹declare›\\\". The red door is for people with things to declare.\",\"\\n\",\"^In your suitcase you have clothes and a ‹gift› for a friend. The gift is a box of chocolates.\",\"\\n\",\"^You go to the green door. A customs officer stops you.\",\"\\n\",\"^Customs officer: Hello. Anything to declare?\",\"\\n\",[\"ev\",\"str\",\"^§Nothing to declare.\",\"/str\",\"/ev\",{\"*\":\".^.c-0\",\"flg\":20},\"ev\",\"str\",\"^No, mine is blue.\",\"/str\",\"/ev\",{\"*\":\".^.c-1\",\"flg\":20},\"ev\",\"str\",\"^I am here for a conference.\",\"/str\",\"/ev\",{\"*\":\".^.c-2\",\"flg\":20},{\"c-0\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Customs officer: OK. What is in your suitcase?\",\"\\n\",{\"->\":\".^.^.^.d10\"},{\"#f\":5}],\"c-1\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: Sorry? I asked about things to declare.\",\"\\n\",\"^The officer asks if you have anything to declare. Say: Nothing to declare. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.d10\"},{\"#f\":5}],\"c-2\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: Yes, I know. But anything to declare?\",\"\\n\",\"^The officer asks if you have anything to declare. Say: Nothing to declare. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.d10\"},{\"#f\":5}],\"#n\":\"d9\"}],{\"d10\":[\"ev\",\"str\",\"^Here you are.\",\"/str\",\"/ev\",{\"*\":\".^.c-3\",\"flg\":20},\"ev\",\"str\",\"^§Clothes and a gift for my friend.\",\"/str\",\"/ev\",{\"*\":\".^.c-4\",\"flg\":20},\"ev\",\"str\",\"^For three days.\",\"/str\",\"/ev\",{\"*\":\".^.c-5\",\"flg\":20},{\"c-3\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: Thank you, but what is inside?\",\"\\n\",\"^The officer asks what is inside your suitcase. Say: Clothes and a gift for my friend. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-4\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^Customs officer: A gift? Nice.\",\"\\n\",{\"->\":\".^.^.^.g-0\"},{\"#f\":5}],\"c-5\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: Three days? OK. But what is in your suitcase?\",\"\\n\",\"^The officer asks what is inside your suitcase. Say: Clothes and a gift for my friend. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.g-0\"},{\"#f\":5}]}],\"g-0\":[\"^Customs officer: Please open your suitcase.\",\"\\n\",[\"ev\",\"str\",\"^Nothing to declare.\",\"/str\",\"/ev\",{\"*\":\".^.c-6\",\"flg\":20},\"ev\",\"str\",\"^I am fine, thank you.\",\"/str\",\"/ev\",{\"*\":\".^.c-7\",\"flg\":20},\"ev\",\"str\",\"^§Of course. Here you go.\",\"/str\",\"/ev\",{\"*\":\".^.c-8\",\"flg\":20},{\"c-6\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: Yes, you said that. But I must see inside. Please open it.\",\"\\n\",\"^The officer asks you to open the suitcase. Say: Of course. Here you go. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-7\":[\"\\n\",\"ev\",{\"VAR?\":\"tries\"},1,\"+\",\"/ev\",{\"VAR=\":\"tries\",\"re\":true},\"^Customs officer: Good! Now, please open your suitcase.\",\"\\n\",\"^The officer asks you to open the suitcase. Say: Of course. Here you go. \",\"#\",\"^note\",\"/#\",\"\\n\",{\"->\":\".^.^\"},{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"c-8\":[\"\\n\",\"ev\",{\"f()\":\"good\"},\"pop\",\"/ev\",\"\\n\",\"^You open the suitcase. The officer looks inside.\",\"\\n\",{\"->\":\".^.^.^.^.g-1\"},{\"#f\":5}],\"#n\":\"d11\"}],null],\"g-1\":[\"^Customs officer: Clothes... and chocolates. Thank you! Welcome to London.\",\"\\n\",\"^You close the suitcase and walk through the door. You are in London! \",\"#\",\"^end\",\"/#\",\"\\n\",\"done\",null]}],null],\"global decl\":[\"ev\",0,{\"VAR=\":\"tries\"},0,{\"VAR=\":\"smooth\"},\"/ev\",\"end\",null]}],\"listDefs\":{}}"
+}
