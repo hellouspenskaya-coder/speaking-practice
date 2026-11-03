@@ -1,0 +1,115 @@
+{
+  "shortTitle": "Baltic Freight 3",
+  "slug": "baltic-freight-3-a-bad-day",
+  "title": "Baltic Freight 3: A bad day",
+  "level": "A2",
+  "minutes": 13,
+  "lead": "Not every day is easy. A customer calls with a complaint, you help a truck at the border and you plan a shift with the warehouse team.",
+  "how": [
+    "You work at Baltic Freight, a logistics company. Choose what you say.",
+    "Green ✓ is right. Red ✕ is not this one. You can try again and you will see what to say. Right the first time? You get a star ★.",
+    "Tap an underlined word to see what it means."
+  ],
+  "decisions": [
+    {
+      "q": "My boxes arrived damaged! I want to make a complaint.",
+      "good": [
+        "I'm very sorry. Can you tell me what happened?"
+      ],
+      "wrong": [
+        "Thank you very much.",
+        "Please call tomorrow. Goodbye."
+      ]
+    },
+    {
+      "q": "Whose fault is it? Is it the driver?",
+      "good": [
+        "I don't know yet. We are looking for the reason."
+      ],
+      "wrong": [
+        "Yes, I am the driver.",
+        "The chairs are red."
+      ]
+    },
+    {
+      "q": "What will you do?",
+      "good": [
+        "We'll send you new boxes tomorrow, and we will pay for the damage."
+      ],
+      "wrong": [
+        "The road was wet.",
+        "Goodbye, have a nice day."
+      ]
+    },
+    {
+      "q": "Can you write the rule for the drivers?",
+      "good": [
+        "Yes. \"Drivers must tie the boxes with two belts.\""
+      ],
+      "wrong": [
+        "No, I am not a driver.",
+        "Yes. \"Boxes must be blue.\""
+      ]
+    },
+    {
+      "q": "Good morning. Documents, please.",
+      "good": [
+        "Good morning. Here you are."
+      ],
+      "wrong": [
+        "Good night.",
+        "I have a bag."
+      ]
+    },
+    {
+      "q": "What is in the truck?",
+      "good": [
+        "Cotton shirts, five hundred pieces. The invoice is here."
+      ],
+      "wrong": [
+        "A big truck.",
+        "It is Tuesday."
+      ]
+    },
+    {
+      "q": "There is a mistake. The date is wrong.",
+      "good": [
+        "I'm sorry. Can we correct it now?"
+      ],
+      "wrong": [
+        "Thank you, goodbye.",
+        "It is a nice date."
+      ]
+    },
+    {
+      "q": "You must pay duty. It is two hundred euros.",
+      "good": [
+        "Okay. Can I pay by card?"
+      ],
+      "wrong": [
+        "I like your uniform.",
+        "Where is the truck?"
+      ]
+    },
+    {
+      "q": "Which shift do you take?",
+      "good": [
+        "I'll take the morning shift. I like to start early."
+      ],
+      "wrong": [
+        "I like shifts.",
+        "A taxi, please."
+      ]
+    },
+    {
+      "q": "What do we tell the new workers first?",
+      "good": [
+        "First the safety rules. Then the machines."
+      ],
+      "wrong": [
+        "First the weather.",
+        "First lunch, then sleep."
+      ]
+    }
+  ]
+}

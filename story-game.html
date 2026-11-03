@@ -121,6 +121,34 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .wl li { padding: 8px 0; border-bottom: 1px solid var(--line); }
 .wl b { font-family: var(--serif); font-size: 17px; }
 .wl span { display: block; color: var(--muted); }
+/* pictures: drawn with theme classes, so light and dark mode both work */
+.art svg { display: block; width: 100%; height: auto; }
+.art .s { fill: color-mix(in srgb, var(--tint) 16%, var(--surface)); }
+.art .f { fill: color-mix(in srgb, var(--ink) 11%, var(--bg)); }
+.art .m { fill: var(--tint); }
+.art .md { fill: color-mix(in srgb, var(--tint) 68%, #000); }
+.art .l { fill: color-mix(in srgb, var(--tint) 30%, var(--surface)); }
+.art .w { fill: var(--surface); }
+.art .k { fill: color-mix(in srgb, var(--ink) 88%, var(--bg)); }
+.art .g { fill: var(--good); }
+.art .r { fill: var(--bad); }
+.art .o { fill: #E0A25A; }
+.art .n { fill: none; stroke: color-mix(in srgb, var(--ink) 80%, var(--bg)); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.art text { font-family: var(--sans); font-weight: 700; letter-spacing: .04em; }
+.art .wt { fill: #fff; }
+.art .it { fill: var(--ink); }
+.art .cl { fill: color-mix(in srgb, #fff 55%, var(--surface)); }
+.art .pl { fill: #EEF3F7; }
+.scene-art { margin: .9rem 0 .2rem; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); animation: rise .5s ease both; }
+.say.has-av { display: flex; gap: 12px; align-items: flex-start; }
+.say.has-av .av { flex: none; width: 44px; height: 44px; margin-top: 2px; }
+.say.has-av .say-body { flex: 1; min-width: 0; }
+.pass { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 0 0 1.4rem; padding: 14px 10px 10px; border: 1px solid var(--line); border-radius: 10px; background: repeating-linear-gradient(0deg, transparent 0 22px, color-mix(in srgb, var(--ink) 5%, transparent) 22px 23px), var(--surface); }
+.pass .stp { text-align: center; opacity: 0; animation: stamp .55s cubic-bezier(.2,.9,.3,1.3) forwards; }
+.pass .stp svg { width: 100%; max-width: 96px; height: auto; }
+.pass .stp span { display: block; font-family: var(--sans); font-size: 11px; color: var(--muted); margin-top: -2px; }
+@keyframes stamp { 0% { opacity: 0; transform: scale(1.8) rotate(-12deg); } 60% { opacity: 1; transform: scale(.94); } 100% { opacity: .92; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pass .stp { opacity: .92; } }
 .err { margin: 4rem 0; font-family: var(--sans); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; scroll-behavior: auto !important; } }
@@ -163,6 +191,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
     <section id="finish" hidden>
       <h2 id="f-title">The end</h2>
       <p class="score" id="f-score"></p>
+      <div id="f-pass-wrap" hidden><h3>Your passport</h3><div class="pass" id="f-pass"></div></div>
       <h3>Words from the story</h3>
       <ul class="wl" id="f-words"></ul>
       <h3>Next</h3>
@@ -262,14 +291,19 @@ window.__GAME__ = /*GAME_DATA*/null;
     if (e.t === 'scene') {
       scene = e.n;
       n = el('div', 'scn'); n.appendChild(el('div', 'lab', 'Scene ' + e.n)); n.appendChild(el('h2', null, e.title));
+      var sa = G.art && G.art.scenes && G.art.scenes[e.n];
+      if (sa) { var ad = el('div', 'art scene-art'); ad.innerHTML = sa.svg; ad.setAttribute('role', 'img'); ad.setAttribute('aria-label', sa.alt || e.title); n.appendChild(ad); }
       host.appendChild(n); drawRoad();
     } else if (e.t === 'p') {
       n = el('div', 'line'); var p = el('p'); fill(p, e.text, n); n.appendChild(p); host.appendChild(n);
     } else if (e.t === 'say') {
-      n = el('div', 'line say');
+      var av = G.art && G.art.avatars && G.art.avatars[e.who];
+      n = el('div', 'line say' + (av ? ' has-av' : ''));
+      var body = av ? el('div', 'say-body') : n;
+      if (av) { var ab = el('div', 'art av'); ab.innerHTML = av; n.appendChild(ab); n.appendChild(body); }
       var who = el('div', 'who'); who.appendChild(el('span', null, e.who));
       who.appendChild(spkBtn(e.text.replace(/‹([^›]+)›/g, '$1'))); if (!canSpeak) who.lastChild.hidden = true;
-      n.appendChild(who); var q = el('p'); fill(q, e.text, n); n.appendChild(q); host.appendChild(n);
+      body.appendChild(who); var q = el('p'); fill(q, e.text, body); body.appendChild(q); host.appendChild(n);
     } else if (e.t === 'you') {
       n = el('div', 'line say you' + (e.ok === true ? ' ok' : e.ok === false ? ' bad' : ''));
       var yw = el('div', 'who');
@@ -297,6 +331,12 @@ window.__GAME__ = /*GAME_DATA*/null;
     var b = el('b', null, '★ ' + smooth + ' of ' + G.total);
     $('f-score').appendChild(document.createTextNode('Right the first time: ')); $('f-score').appendChild(b);
     $('f-score').appendChild(document.createTextNode('. The words below are worth another look.'));
+    var pw = $('f-pass-wrap'), pass = $('f-pass'); pass.textContent = '';
+    var stamps = G.art && G.art.stamps; pw.hidden = !stamps;
+    if (stamps) Object.keys(stamps).sort(function (a, b) { return a - b; }).forEach(function (k, i) {
+      var d = el('div', 'stp art'); d.innerHTML = stamps[k].svg; d.appendChild(el('span', null, stamps[k].label));
+      d.style.animationDelay = (reduce ? 0 : 250 + i * 330) + 'ms'; pass.appendChild(d);
+    });
     var ul = $('f-words'); ul.textContent = '';
     G.words.forEach(function (w) {
       var li = el('li'); li.appendChild(el('b', null, w.text)); li.appendChild(el('span', null, w.definition)); ul.appendChild(li);

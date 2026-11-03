@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Story game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap">
+<style>
+/* One reading column; a road of dots on top shows the scenes. Wrong answers are never marked red:
+   they get a calm "How this sounds" card. */
+:root {
+  --bg: #EEF1F3; --surface: #FAFBFC; --ink: #16222C; --muted: #566772; --line: #CCD5DA;
+  --tint: #1F5F9E; --soft: #E3EDF6; --good: #2F6B4F; --good-bg: #E1F1E8; --bad: #B4472F; --bad-bg: #FBE9E3; --star: #B7791F; --focus: #1F5FBF;
+  --serif: 'Literata', Georgia, 'Times New Roman', serif;
+  --sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11181D; --surface: #18222A; --ink: #E6ECEF; --muted: #9DAAB1; --line: #2B3841;
+    --tint: #8DBBE8; --soft: #1E2F3D; --good: #7CC4A0; --good-bg: #17302A; --bad: #E99A82; --bad-bg: #3A211B; --star: #E6B450; --focus: #8DB8FF; color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--serif); font-size: 19px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+  height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden;
+}
+.bar { flex: none; background: var(--bg); border-bottom: 1px solid var(--line);
+  margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); }
+.bar-in { max-width: 40rem; margin: 0 auto; display: flex; align-items: center; gap: 16px; }
+.brand { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 0 1 auto; }
+.stars { flex: none; }
+.road { list-style: none; margin: 0; padding: 0; display: flex; flex: 1 0 120px; min-width: 120px; }
+.road li { flex: 1; position: relative; height: 26px; display: flex; flex-direction: column; align-items: center; }
+.road li::before { content: ""; position: absolute; top: 5px; left: -50%; width: 100%; height: 2px; background: var(--line); }
+.road li:first-child::before { display: none; }
+.road .dot { position: relative; width: 12px; height: 12px; border-radius: 50%; background: var(--bg); border: 2px solid var(--line); z-index: 1; }
+.road .nm { display: none; }
+.road li.done::before, .road li.cur::before { background: var(--tint); }
+.road li.done .dot { background: var(--tint); border-color: var(--tint); }
+.road li.cur .dot { border-color: var(--tint); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tint) 25%, transparent); }
+@media (max-width: 380px) { .brand { display: none; } }
+.scroll { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: 56px; }
+.wrap { max-width: 40rem; margin: 0 auto; }
+h1 { font-weight: 500; font-style: italic; font-size: clamp(2.2rem, 8vw, 3.2rem); line-height: 1.1; margin: 3rem 0 1rem; text-wrap: balance; }
+.lead { font-size: 1.1rem; margin: 0 0 1.2rem; }
+.meta { font-family: var(--sans); font-size: 14px; color: var(--muted); margin: 0 0 1.4rem; }
+.how { font-family: var(--sans); font-size: 15px; margin: 0 0 1.6rem; padding: 0; list-style: none; display: grid; gap: 8px; }
+.how li { padding-left: 1.6rem; position: relative; }
+.how li::before { content: attr(data-i); position: absolute; left: 0; top: 0; font-weight: 600; color: var(--tint); }
+.foot { font-family: var(--sans); font-size: 13px; color: var(--muted); margin: 1.6rem 0 0; max-width: 34rem; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.btn { font-family: var(--sans); font-size: 16px; font-weight: 500; padding: 12px 22px; border-radius: 6px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--bg); text-decoration: none; display: inline-block; }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.accent { background: var(--tint); border-color: var(--tint); color: #fff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.accent { color: #0b1620; } }
+.btn:hover { border-color: var(--tint); }
+.btn[aria-disabled="true"] { opacity: .55; cursor: default; }
+#log { display: flex; flex-direction: column; gap: 1rem; padding-top: 1.4rem; }
+.line { animation: rise .4s ease both; }
+.line p { margin: 0; text-wrap: pretty; }
+@keyframes rise { from { opacity: .05; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.scn { margin-top: 2.4rem; animation: rise .4s ease both; }
+.scn:first-child { margin-top: .4rem; }
+.scn .lab { font-family: var(--sans); font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--tint); display: flex; align-items: center; gap: 12px; }
+.scn .lab::after { content: ""; flex: 1; height: 1px; background: color-mix(in srgb, var(--tint) 45%, transparent); }
+.scn h2 { font-weight: 500; font-size: 1.7rem; margin: .3rem 0 0; line-height: 1.2; }
+.say { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--tint); border-radius: 6px; padding: 10px 14px 12px; }
+.say .who { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 2px; }
+.say.you { border-left-color: transparent; border-right: 4px solid var(--tint); background: var(--soft); align-self: flex-end; max-width: 90%; text-align: right; }
+.say.you .who { justify-content: flex-end; }
+.spk { font-family: var(--sans); font-size: 12px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--muted); padding: 2px 10px; }
+.spk:hover { border-color: var(--tint); color: var(--ink); }
+.w { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer;
+  border-bottom: 2px dotted var(--tint); font-weight: 500; }
+.w:hover, .w[aria-expanded="true"] { background: color-mix(in srgb, var(--tint) 14%, transparent); }
+.gloss { margin-top: 8px; padding: 8px 12px; border-left: 3px solid var(--tint); background: color-mix(in srgb, var(--tint) 8%, var(--surface)); font-family: var(--sans); font-size: 15px; line-height: 1.5; border-radius: 0 6px 6px 0; }
+.gloss b { font-weight: 600; }
+.gloss .ex { color: var(--muted); display: block; margin-top: 2px; }
+.gloss .gl-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.note { border: 1px dashed color-mix(in srgb, var(--tint) 60%, var(--line)); border-radius: 8px; padding: 10px 14px 12px; background: color-mix(in srgb, var(--tint) 6%, var(--surface)); font-family: var(--sans); font-size: 16px; }
+.note .nt { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--tint); margin-bottom: 4px; }
+.note .say-it { margin-top: 8px; padding: 8px 12px; border-radius: 6px; background: var(--surface); border: 1px solid var(--good); color: var(--ink); font-family: var(--serif); font-size: 19px; font-weight: 500; }
+.note .say-it small { display: block; font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--good); margin-bottom: 2px; }
+#choices { display: flex; flex-direction: column; gap: 10px; margin-top: 1.4rem; scroll-margin-top: 16px; }
+.choice { text-align: left; font-size: 19px; line-height: 1.4; padding: 14px 16px; border-radius: 6px; border: 1.5px solid var(--line); background: var(--surface); animation: rise .35s ease both; }
+.choice { display: flex; align-items: center; gap: 12px; transition: background .15s, border-color .15s, opacity .2s; }
+.choice .ic { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); display: inline-flex; align-items: center; justify-content: center; font-family: var(--sans); font-size: 15px; font-weight: 700; line-height: 1; }
+.choice:hover:not(:disabled) { border-color: var(--tint); background: color-mix(in srgb, var(--tint) 8%, var(--surface)); }
+.choice:disabled { cursor: default; }
+.choice.ok { border-color: var(--good); background: var(--good-bg); }
+.choice.ok .ic { background: var(--good); border-color: var(--good); color: #fff; }
+.choice.bad { border-color: var(--bad); background: var(--bad-bg); animation: nudge .3s ease; }
+.choice.bad .ic { background: var(--bad); border-color: var(--bad); color: #fff; }
+.choice.dim { opacity: .45; }
+@keyframes nudge { 0%,100% { transform: none; } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+.stars { margin-left: auto; font-family: var(--sans); font-size: 15px; font-weight: 600; color: var(--star); white-space: nowrap; }
+.stars.pop { animation: pop .5s ease; }
+@keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.45); } 100% { transform: scale(1); } }
+.say.you.ok { border-right-color: var(--good); background: var(--good-bg); }
+.say.you.bad { border-right-color: var(--bad); background: var(--bad-bg); }
+.say.you .who .mk { font-weight: 700; }
+.say.you.ok .who .mk { color: var(--good); }
+.say.you.bad .who .mk { color: var(--bad); }
+.prompt { font-family: var(--sans); font-size: 13px; color: var(--muted); margin: 1.4rem 0 -.6rem; letter-spacing: .04em; }
+.back { margin-top: 14px; }
+#finish { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1.6rem; }
+#finish h2 { font-weight: 500; font-style: italic; font-size: 1.8rem; margin: 0 0 .6rem; }
+.score { font-family: var(--sans); font-size: 17px; margin: 0 0 1.4rem; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+.score b { color: var(--good); font-size: 1.3em; }
+#finish h3 { font-family: var(--sans); font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 1.6rem 0 .5rem; }
+.wl { margin: 0; padding: 0; list-style: none; font-family: var(--sans); font-size: 15px; display: grid; gap: 10px; }
+.wl li { padding: 8px 0; border-bottom: 1px solid var(--line); }
+.wl b { font-family: var(--serif); font-size: 17px; }
+.wl span { display: block; color: var(--muted); }
+/* pictures: drawn with theme classes, so light and dark mode both work */
+.art svg { display: block; width: 100%; height: auto; }
+.art .s { fill: color-mix(in srgb, var(--tint) 16%, var(--surface)); }
+.art .f { fill: color-mix(in srgb, var(--ink) 11%, var(--bg)); }
+.art .m { fill: var(--tint); }
+.art .md { fill: color-mix(in srgb, var(--tint) 68%, #000); }
+.art .l { fill: color-mix(in srgb, var(--tint) 30%, var(--surface)); }
+.art .w { fill: var(--surface); }
+.art .k { fill: color-mix(in srgb, var(--ink) 88%, var(--bg)); }
+.art .g { fill: var(--good); }
+.art .r { fill: var(--bad); }
+.art .o { fill: #E0A25A; }
+.art .n { fill: none; stroke: color-mix(in srgb, var(--ink) 80%, var(--bg)); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.art text { font-family: var(--sans); font-weight: 700; letter-spacing: .04em; }
+.art .wt { fill: #fff; }
+.art .it { fill: var(--ink); }
+.art .cl { fill: color-mix(in srgb, #fff 55%, var(--surface)); }
+.art .pl { fill: #EEF3F7; }
+.scene-art { margin: .9rem 0 .2rem; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); animation: rise .5s ease both; }
+.say.has-av { display: flex; gap: 12px; align-items: flex-start; }
+.say.has-av .av { flex: none; width: 44px; height: 44px; margin-top: 2px; }
+.say.has-av .say-body { flex: 1; min-width: 0; }
+.pass { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 0 0 1.4rem; padding: 14px 10px 10px; border: 1px solid var(--line); border-radius: 10px; background: repeating-linear-gradient(0deg, transparent 0 22px, color-mix(in srgb, var(--ink) 5%, transparent) 22px 23px), var(--surface); }
+.pass .stp { text-align: center; opacity: 0; animation: stamp .55s cubic-bezier(.2,.9,.3,1.3) forwards; }
+.pass .stp svg { width: 100%; max-width: 96px; height: auto; }
+.pass .stp span { display: block; font-family: var(--sans); font-size: 11px; color: var(--muted); margin-top: -2px; }
+@keyframes stamp { 0% { opacity: 0; transform: scale(1.8) rotate(-12deg); } 60% { opacity: 1; transform: scale(.94); } 100% { opacity: .92; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pass .stp { opacity: .92; } }
+.err { margin: 4rem 0; font-family: var(--sans); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; scroll-behavior: auto !important; } }
+@media (max-width: 480px) { body { font-size: 18px; } .choice { font-size: 18px; } }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <div class="brand" id="brand">Story game</div>
+    <ol class="road" id="road" aria-label="Scenes"></ol>
+    <div class="stars" id="stars" hidden aria-live="polite" title="Stars for answers that were right the first time">★ <span id="stars-n">0</span></div>
+  </div>
+</header>
+
+<div class="scroll" id="scroll">
+<main class="wrap">
+  <section id="err" class="err" hidden></section>
+
+  <section id="start" hidden>
+    <h1 id="g-title"></h1>
+    <p class="lead" id="g-lead"></p>
+    <p class="meta" id="g-meta"></p>
+    <ul class="how" id="g-how">
+      <li data-i="1">You are the traveller. Choose what you say.</li>
+      <li data-i="2">Green ✓ is right. Red ✕ is not this one. You can try again and you will see what to say. Right the first time? You get a star ★.</li>
+      <li data-i="3">Tap an underlined word to see what it means.</li>
+    </ul>
+    <div class="row">
+      <button class="btn accent" id="btn-new" type="button">Start</button>
+      <button class="btn ghost" id="btn-cont" type="button" hidden>Continue where I stopped</button>
+    </div>
+    <p class="foot">The game saves itself. Your progress stays only in this browser.</p>
+  </section>
+
+  <section id="game" hidden>
+    <div id="log" aria-live="polite"></div>
+    <div id="choices"></div>
+    <div class="row back"><button class="btn ghost" id="btn-back" type="button" hidden>← Back one step</button></div>
+    <section id="finish" hidden>
+      <h2 id="f-title">The end</h2>
+      <p class="score" id="f-score"></p>
+      <div id="f-pass-wrap" hidden><h3>Your passport</h3><div class="pass" id="f-pass"></div></div>
+      <h3>Words from the story</h3>
+      <ul class="wl" id="f-words"></ul>
+      <h3>Next</h3>
+      <div class="row">
+        <a class="btn accent" id="btn-practice" href="#">Practise the words</a>
+        <button class="btn ghost" id="btn-restart" type="button">Play again</button>
+      </div>
+      <p class="foot" id="f-foot"></p>
+    </section>
+  </section>
+</main>
+</div>
+
+<script>/*INK_JS*/</script>
+<script>
+window.__GAME__ = /*GAME_DATA*/null;
+</script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var G, slug, KEY, story, log, scene, hist, saveTimer, words = {}, scenes = [];
+
+  function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+  function readSave() { try { var s = localStorage.getItem(KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ state: story.state.toJson(), log: log, scene: scene, hist: hist })); } catch (e) {} }
+  function clearSave() { try { localStorage.removeItem(KEY); } catch (e) {} }
+  function showError(msg) {
+    $('err').hidden = false; $('start').hidden = true; $('game').hidden = true;
+    $('err').textContent = msg;
+  }
+
+  /* read aloud (the browser voice; the button is hidden if the browser has none) */
+  var canSpeak = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+  function speak(text) {
+    if (!canSpeak) return;
+    try {
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text.replace(/[‹›]/g, ''));
+      u.lang = 'en-GB'; u.rate = 0.85; speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  function spkBtn(text, label) {
+    var b = el('button', 'spk', label || '🔊 Listen'); b.type = 'button';
+    b.setAttribute('aria-label', 'Listen: ' + text.replace(/[‹›]/g, ''));
+    b.addEventListener('click', function () { speak(text); });
+    return b;
+  }
+
+  /* text with ‹words›: each becomes a button that opens a small definition under the line */
+  function fill(node, text, host) {
+    var re = /‹([^›]+)›/g, last = 0, m;
+    while ((m = re.exec(text))) {
+      if (m.index > last) node.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var pr = m[1].split('='), shown = pr[0], key = (pr[1] || pr[0]).toLowerCase(), def = words[key];
+      if (def) {
+        var b = el('button', 'w', shown); b.type = 'button'; b.setAttribute('aria-expanded', 'false');
+        (function (b, def, key) { b.addEventListener('click', function () { toggleGloss(b, def, key, host); }); })(b, def, key);
+        node.appendChild(b);
+      } else node.appendChild(document.createTextNode(shown));
+      last = m.index + m[0].length;
+    }
+    if (last < text.length) node.appendChild(document.createTextNode(text.slice(last)));
+  }
+  function toggleGloss(btn, def, key, host) {
+    var old = host.querySelector('.gloss');
+    var same = old && old.getAttribute('data-k') === key;
+    if (old) { old.remove(); host.querySelectorAll('.w[aria-expanded="true"]').forEach(function (x) { x.setAttribute('aria-expanded', 'false'); }); }
+    if (same) return;
+    var g = el('div', 'gloss'); g.setAttribute('data-k', key);
+    var row = el('div', 'gl-row');
+    row.appendChild(el('b', null, def.text));
+    if (def.phonetic) row.appendChild(el('span', null, '/' + def.phonetic + '/'));
+    if (canSpeak) row.appendChild(spkBtn(def.text, '🔊'));
+    g.appendChild(row);
+    g.appendChild(document.createTextNode(def.definition));
+    if (def.example) g.appendChild(el('span', 'ex', '“' + def.example + '”'));
+    host.appendChild(g); btn.setAttribute('aria-expanded', 'true');
+  }
+
+  function drawRoad() {
+    var ol = $('road'); ol.textContent = '';
+    var cur = scene === 'end' ? scenes.length + 1 : (parseInt(scene, 10) || 0);
+    scenes.forEach(function (s, idx) {
+      var i = idx + 1, li = el('li', i < cur ? 'done' : (i === cur ? 'cur' : ''));
+      li.appendChild(el('span', 'dot'));
+      li.appendChild(el('span', 'nm', s.title));
+      li.appendChild(el('span', 'sr', 'Scene ' + i + ': ' + s.title + (i < cur ? ', done' : (i === cur ? ', you are here' : ''))));
+      ol.appendChild(li);
+    });
+  }
+
+  function paint(e) {
+    var host = $('log'), n;
+    if (e.t === 'scene') {
+      scene = e.n;
+      n = el('div', 'scn'); n.appendChild(el('div', 'lab', 'Scene ' + e.n)); n.appendChild(el('h2', null, e.title));
+      var sa = G.art && G.art.scenes && G.art.scenes[e.n];
+      if (sa) { var ad = el('div', 'art scene-art'); ad.innerHTML = sa.svg; ad.setAttribute('role', 'img'); ad.setAttribute('aria-label', sa.alt || e.title); n.appendChild(ad); }
+      host.appendChild(n); drawRoad();
+    } else if (e.t === 'p') {
+      n = el('div', 'line'); var p = el('p'); fill(p, e.text, n); n.appendChild(p); host.appendChild(n);
+    } else if (e.t === 'say') {
+      var av = G.art && G.art.avatars && G.art.avatars[e.who];
+      n = el('div', 'line say' + (av ? ' has-av' : ''));
+      var body = av ? el('div', 'say-body') : n;
+      if (av) { var ab = el('div', 'art av'); ab.innerHTML = av; n.appendChild(ab); n.appendChild(body); }
+      var who = el('div', 'who'); who.appendChild(el('span', null, e.who));
+      who.appendChild(spkBtn(e.text.replace(/‹([^›]+)›/g, '$1'))); if (!canSpeak) who.lastChild.hidden = true;
+      body.appendChild(who); var q = el('p'); fill(q, e.text, body); body.appendChild(q); host.appendChild(n);
+    } else if (e.t === 'you') {
+      n = el('div', 'line say you' + (e.ok === true ? ' ok' : e.ok === false ? ' bad' : ''));
+      var yw = el('div', 'who');
+      if (e.ok !== undefined) { yw.appendChild(el('span', 'mk', e.ok ? '✓' : '✕')); yw.appendChild(el('span', 'sr', e.ok ? ' right' : ' not this one')); }
+      yw.appendChild(el('span', null, 'You'));
+      n.appendChild(yw); n.appendChild(el('p', null, e.text)); host.appendChild(n);
+    } else if (e.t === 'note') {
+      n = el('div', 'line note'); n.appendChild(el('div', 'nt', G.noteTitle || 'Not this one'));
+      var parts = e.text.split(/\s*Say:\s*/), body = parts[0], say = parts[1];
+      n.appendChild(el('div', null, body));
+      if (say) {
+        var box = el('div', 'say-it'); box.appendChild(el('small', null, G.sayLabel || 'Say'));
+        box.appendChild(document.createTextNode(say));
+        if (canSpeak) { var sb = spkBtn(say, '🔊'); sb.style.marginLeft = '10px'; box.appendChild(sb); }
+        n.appendChild(box);
+      }
+      host.appendChild(n);
+    }
+    return n;
+  }
+
+  function finishView() {
+    var smooth = 0; try { smooth = story.variablesState['smooth'] || 0; } catch (e) {}
+    $('f-score').textContent = '';
+    var b = el('b', null, '★ ' + smooth + ' of ' + G.total);
+    $('f-score').appendChild(document.createTextNode('Right the first time: ')); $('f-score').appendChild(b);
+    $('f-score').appendChild(document.createTextNode('. The words below are worth another look.'));
+    var pw = $('f-pass-wrap'), pass = $('f-pass'); pass.textContent = '';
+    var stamps = G.art && G.art.stamps; pw.hidden = !stamps;
+    if (stamps) Object.keys(stamps).sort(function (a, b) { return a - b; }).forEach(function (k, i) {
+      var d = el('div', 'stp art'); d.innerHTML = stamps[k].svg; d.appendChild(el('span', null, stamps[k].label));
+      d.style.animationDelay = (reduce ? 0 : 250 + i * 330) + 'ms'; pass.appendChild(d);
+    });
+    var ul = $('f-words'); ul.textContent = '';
+    G.words.forEach(function (w) {
+      var li = el('li'); li.appendChild(el('b', null, w.text)); li.appendChild(el('span', null, w.definition)); ul.appendChild(li);
+    });
+    var a = $('btn-practice');
+    if (G.practiceSet && !G.preview) {
+      a.href = '/vocab-trainer.html?set=' + encodeURIComponent(G.practiceSet); a.removeAttribute('aria-disabled'); a.textContent = 'Practise the words';
+      $('f-foot').textContent = 'The practice uses the same words and phrases as the story.';
+    } else {
+      a.href = '#'; a.setAttribute('aria-disabled', 'true'); a.textContent = 'Practise the words';
+      $('f-foot').textContent = G.preview ? 'Preview: this button opens the Voc Practice set after the game is published.' : '';
+    }
+  }
+
+  function showChoices() {
+    var box = $('choices'); box.textContent = '';
+    $('btn-back').hidden = hist.length === 0;
+    var fin = $('finish');
+    if (!story.currentChoices.length) { scene = 'end'; drawRoad(); fin.hidden = false; finishView(); return; }
+    fin.hidden = true;
+    if (G.prompt) { /* optional line above the choices */ }
+    box.appendChild(el('div', 'prompt', 'What do you say?'));
+    story.currentChoices.forEach(function (c, i) {
+      var ok = c.text.charAt(0) === '§', label = ok ? c.text.slice(1) : c.text;
+      var b = el('button', 'choice'); b.type = 'button';
+      b.appendChild(el('span', 'ic')); b.appendChild(el('span', null, label));
+      b.addEventListener('click', function () { pick(b, i, label, ok); });
+      b.style.animationDelay = (i * 60) + 'ms';
+      box.appendChild(b);
+    });
+  }
+
+  function advance(scrollTo) {
+    var first = null;
+    while (story.canContinue) {
+      var text = story.Continue().trim(), tags = story.currentTags || [];
+      var sc = null, ttl = null, isNote = false;
+      tags.forEach(function (t) {
+        var m = /^scene:\s*(.+)$/.exec(t); if (m) sc = m[1].trim();
+        var mt = /^title:\s*(.+)$/.exec(t); if (mt) ttl = mt[1].trim();
+        if (t === 'note') isNote = true;
+      });
+      var added = [];
+      if (sc) added.push({ t: 'scene', n: sc, title: ttl || '' });
+      if (text) {
+        if (isNote) added.push({ t: 'note', text: text });
+        else {
+          var m2 = /^([A-Z][A-Za-z' -]{1,24}):\s+(.+)$/.exec(text);
+          if (m2) added.push({ t: 'say', who: m2[1], text: m2[2] });
+          else added.push({ t: 'p', text: text });
+        }
+      }
+      added.forEach(function (e) { log.push(e); var node = paint(e); if (!first) first = node; });
+    }
+    showChoices(); updateStars(); save();
+    if (scrollTo !== false && first) first.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }
+
+  var busy = false, lastStars = 0;
+  function updateStars() {
+    var n = 0; try { n = story.variablesState['smooth'] || 0; } catch (e) {}
+    $('stars').hidden = false; $('stars-n').textContent = n;
+    if (n > lastStars) { var st = $('stars'); st.classList.remove('pop'); void st.offsetWidth; st.classList.add('pop'); }
+    lastStars = n;
+  }
+  /* instant feedback: the button turns green (tick) or warm red (cross), then the story goes on */
+  function pick(btn, i, label, ok) {
+    if (busy) return; busy = true; $('btn-back').disabled = true;
+    $('choices').querySelectorAll('.choice').forEach(function (x) { x.disabled = true; if (x !== btn) x.classList.add('dim'); });
+    btn.classList.add(ok ? 'ok' : 'bad'); btn.querySelector('.ic').textContent = ok ? '✓' : '✕';
+    setTimeout(function () { busy = false; $('btn-back').disabled = false; choose(i, label, ok); }, reduce ? 300 : 800);
+  }
+  function choose(i, text, ok) {
+    hist.push({ s: story.state.toJson(), n: log.length });
+    var e = { t: 'you', text: text, ok: ok }; log.push(e);
+    $('choices').textContent = '';
+    var node = paint(e);
+    story.ChooseChoiceIndex(i);
+    advance(false);
+    node.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }
+
+  function redraw() {
+    $('log').textContent = ''; scene = '1';
+    log.forEach(function (e) { paint(e); });
+    drawRoad(); showChoices(); lastStars = 1e9; updateStars(); lastStars = (story.variablesState['smooth'] || 0);
+  }
+  function back() {
+    if (!hist.length || busy) return;
+    var h = hist.pop();
+    try { story.state.LoadJson(h.s); } catch (e) { return; }
+    log = log.slice(0, h.n); redraw(); save();
+    $('scroll').scrollTop = $('scroll').scrollHeight;
+  }
+
+  function begin(fromSave) {
+    story = new inkjs.Story(G.story);
+    log = []; scene = '1'; hist = []; lastStars = 0;
+    $('log').textContent = ''; $('choices').textContent = '';
+    $('start').hidden = true; $('game').hidden = false; $('finish').hidden = true;
+    if (fromSave) {
+      try { story.state.LoadJson(fromSave.state); } catch (e) { return begin(null); }
+      log = fromSave.log || []; scene = fromSave.scene || '1'; hist = fromSave.hist || [];
+      redraw(); $('scroll').scrollTop = $('scroll').scrollHeight;
+    } else { drawRoad(); advance(false); $('scroll').scrollTop = 0; }
+  }
+
+  function init(game, id) {
+    G = game; slug = id; KEY = 'story-game-' + slug + '-v2';
+    (G.words || []).forEach(function (w) { words[w.text.toLowerCase()] = w; });
+    scenes = G.scenes || [];
+    document.title = G.title + ' · story game';
+    $('brand').textContent = G.shortTitle || G.title;
+    $('g-title').textContent = G.title; $('g-lead').textContent = G.lead;
+    $('g-meta').textContent = scenes.length + ' scenes · about ' + (G.minutes || 12) + ' minutes · level ' + G.level + ' · no tests';
+    if (G.how && G.how.length) { var hw = $('g-how'); hw.textContent = ''; G.how.forEach(function (t, i) { var li = el('li', null, t); li.setAttribute('data-i', i + 1); hw.appendChild(li); }); }
+    $('start').hidden = false; scene = '1'; drawRoad();
+    $('btn-new').addEventListener('click', function () { clearSave(); begin(null); });
+    $('btn-cont').addEventListener('click', function () { begin(readSave()); });
+    $('btn-back').addEventListener('click', back);
+    var armed = false, rb = $('btn-restart');
+    rb.addEventListener('click', function () {
+      if (!armed) { armed = true; rb.textContent = 'Sure? Tap again'; return; }
+      armed = false; rb.textContent = 'Play again'; clearSave(); begin(null);
+    });
+    $('btn-practice').addEventListener('click', function (ev) { if (this.getAttribute('aria-disabled') === 'true') ev.preventDefault(); });
+    var s = readSave(); if (s && s.state) $('btn-cont').hidden = false;
+  }
+
+  var inline = window.__GAME__;
+  if (inline) init(inline, inline.slug || 'preview');
+  else {
+    var set = (new URLSearchParams(location.search).get('set') || '').trim();
+    if (!set) showError('This link has no game in it. Ask your teacher for a new link.');
+    else fetch('/vocab-sets/' + encodeURIComponent(set) + '.json', { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('missing'); return r.json(); })
+      .then(function (d) { if (d.kind !== 'storyGame') throw new Error('kind'); init(d, set); })
+      .catch(function () { showError('This game was not found. Ask your teacher for a new link.'); });
+  }
+})();
+</script>
+</body>
+</html>

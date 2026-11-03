@@ -1,0 +1,107 @@
+{
+  "slug": "alex-reed-ai",
+  "title": "Strategy in the age of AI: a talk with Alex Reed",
+  "level": "B2",
+  "minutes": 15,
+  "lead": "The keynote is over. You walk up to Alex Reed, the founder of a company rebuilt around AI, and talk business strategy over coffee. In each turn, two of the four replies are correct, and they say different things. Choose the one that sounds like you.",
+  "sayLabel": "Better",
+  "noteTitle": "Not quite",
+  "how": [
+    "You are a guest at a conference. Choose what you say.",
+    "In each turn two replies are correct and two have a slip in grammar, word choice or tone. Pick the one that is yours.",
+    "A red ✕ shows a slip and the corrected sentence. Tap an underlined word to see what it means. Right the first time? You get a star ★."
+  ],
+  "decisions": [
+    {
+      "q": "Excuse me, Mr Reed.",
+      "practice": false,
+      "good": [
+        "Excuse me, Mr Reed. Your keynote really made me rethink our approach.",
+        "Hi, I hope I'm not interrupting. I had a question about something you said on stage."
+      ],
+      "wrong": [
+        "Mr Reed, I am wanting to ask you about your talk.",
+        "Hey you! Stop, I have to talk with you."
+      ]
+    },
+    {
+      "q": "Tell me about yourself. What do you do?",
+      "good": [
+        "I'm in charge of operations at a mid-sized manufacturing company.",
+        "I run a small consultancy that helps firms improve their processes."
+      ],
+      "wrong": [
+        "I am working in the operations since five years.",
+        "I am boss from a middle company."
+      ]
+    },
+    {
+      "q": "Is your company using AI yet?",
+      "good": [
+        "We're still at an early stage. We're running a few small pilots, nothing more.",
+        "Yes, we've already rolled out AI in customer support, and we're moving on to logistics."
+      ],
+      "wrong": [
+        "We use AI from last year, but it doesn't work good.",
+        "Not really. Our management is very afraid about it."
+      ]
+    },
+    {
+      "q": "The biggest risk is not being late. It is automating the wrong thing.",
+      "good": [
+        "That makes sense. Many companies automate what is easy rather than what matters.",
+        "I see your point, but isn't there a risk in waiting too long? Competitors may build a data advantage."
+      ],
+      "wrong": [
+        "I am agree with you, it is very true.",
+        "No, that's wrong. Being late is the real problem."
+      ]
+    },
+    {
+      "q": "How would you decide where to begin?",
+      "good": [
+        "I'd begin with the bottlenecks, the steps where work always piles up.",
+        "I'd ask the people who do the work. They know best what slows them down."
+      ],
+      "wrong": [
+        "I would start by to look at the numbers.",
+        "I'd start with the process which has the most big problems."
+      ]
+    },
+    {
+      "q": "How do you get people to adopt it?",
+      "good": [
+        "I'd show them a small success first. Results speak louder than slides.",
+        "I'd involve them from day one, so the change is not something that happens to them."
+      ],
+      "wrong": [
+        "I'd say them that it is good for their work.",
+        "I'd explain them how the system works."
+      ]
+    },
+    {
+      "q": "In ten years, will AI make the workforce shrink?",
+      "good": [
+        "Some jobs will change a lot, but I think the bigger task is to upskill people rather than replace them.",
+        "Honestly, I think some roles will disappear. The question is whether we prepare people early enough."
+      ],
+      "wrong": [
+        "I think that the workforce will be less, but it depends.",
+        "It is a difficult topic and I do not have any opinion, sorry."
+      ]
+    },
+    {
+      "q": "It was a real pleasure talking with you.",
+      "practice": false,
+      "good": [
+        "Thank you for your time. Would it be all right if I followed up by email?",
+        "This was really valuable. Could we stay in touch? I would love to share how our project goes."
+      ],
+      "wrong": [
+        "Give me your email, I will write to you.",
+        "Thanks for the time. I hope we will meet again in the future one day."
+      ]
+    }
+  ],
+  "shortTitle": "Talk with Alex Reed"
+}

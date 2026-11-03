@@ -1,0 +1,115 @@
+{
+  "shortTitle": "Baltic Freight 2",
+  "slug": "baltic-freight-2-transport-stock-suppliers",
+  "title": "Baltic Freight 2: Transport, stock and suppliers",
+  "level": "A2",
+  "minutes": 13,
+  "lead": "A week later you already know the team. Today you choose transport for a big cargo, help a shop with its stock and talk to a supplier on the phone.",
+  "how": [
+    "You work at Baltic Freight, a logistics company. Choose what you say.",
+    "Green ✓ is right. Red ✕ is not this one. You can try again and you will see what to say. Right the first time? You get a star ★.",
+    "Tap an underlined word to see what it means."
+  ],
+  "decisions": [
+    {
+      "q": "Can you help me choose the transport?",
+      "good": [
+        "Of course. Let's compare the plane, the ship and the train."
+      ],
+      "wrong": [
+        "I like trains.",
+        "Yes, it is very big."
+      ]
+    },
+    {
+      "q": "Which transport do we choose?",
+      "good": [
+        "The ship. It is slower, but much cheaper."
+      ],
+      "wrong": [
+        "The plane. It is the cheapest.",
+        "I like the sea."
+      ]
+    },
+    {
+      "q": "Is the train a good choice?",
+      "good": [
+        "It is faster than the ship, but more expensive."
+      ],
+      "wrong": [
+        "It is fifteen days.",
+        "Yes, I like trains."
+      ]
+    },
+    {
+      "q": "What can you do about the jackets?",
+      "good": [
+        "We can make a new order today. I'll call the supplier."
+      ],
+      "wrong": [
+        "Winter is cold.",
+        "I have a jacket."
+      ]
+    },
+    {
+      "q": "What do you suggest for the hats?",
+      "good": [
+        "Let's sell them cheaper. Then we save space."
+      ],
+      "wrong": [
+        "Let's buy more hats.",
+        "I like hats."
+      ]
+    },
+    {
+      "q": "Do you remember what demand is?",
+      "good": [
+        "Demand is how many people want to buy a product."
+      ],
+      "wrong": [
+        "It is the number of boxes in the warehouse.",
+        "It is when a product is late."
+      ]
+    },
+    {
+      "q": "How can I help you?",
+      "good": [
+        "Hello, this is Baltic Freight. I'd like to talk about your quote."
+      ],
+      "wrong": [
+        "I am fine, thank you.",
+        "Goodbye, see you."
+      ]
+    },
+    {
+      "q": "The price is nine euros for one jacket.",
+      "good": [
+        "That's a bit high. Can you do eight euros?"
+      ],
+      "wrong": [
+        "It is a nice jacket.",
+        "Where is your office?"
+      ]
+    },
+    {
+      "q": "Do you agree?",
+      "good": [
+        "Yes, I agree. Eight fifty is fine."
+      ],
+      "wrong": [
+        "Five hundred kilometres.",
+        "Thank you, I'm fine."
+      ]
+    },
+    {
+      "q": "What do we look at in the contract?",
+      "good": [
+        "The price, the quality and the delivery time."
+      ],
+      "wrong": [
+        "The weather in Riga.",
+        "The colour of the paper."
+      ]
+    }
+  ]
+}

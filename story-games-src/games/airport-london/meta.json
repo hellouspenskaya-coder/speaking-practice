@@ -1,0 +1,119 @@
+{
+  "slug": "airport-london",
+  "title": "Airport: a trip to London",
+  "level": "A1",
+  "minutes": 12,
+  "lead": "You fly to London for a conference. At the airport you talk to six people: at check-in, security, on the plane, at passport control, at baggage reclaim and at customs.",
+  "decisions": [
+    {
+      "q": "Passport, please.",
+      "good": [
+        "Here you are."
+      ],
+      "wrong": [
+        "I like London.",
+        "Thank you, goodbye."
+      ]
+    },
+    {
+      "q": "Do you have any bags to check in?",
+      "good": [
+        "Yes, I have one suitcase."
+      ],
+      "wrong": [
+        "I am fine, thank you.",
+        "It is ten o'clock."
+      ]
+    },
+    {
+      "q": "Do you have any liquids in your bag?",
+      "good": [
+        "Yes, I do. A bottle of water."
+      ],
+      "wrong": [
+        "My bag is heavy.",
+        "I am very tired."
+      ]
+    },
+    {
+      "q": "Do you have anything in your pockets?",
+      "good": [
+        "Sorry. I have my keys."
+      ],
+      "wrong": [
+        "Goodbye!",
+        "It is my first flight."
+      ]
+    },
+    {
+      "q": "Chicken or pasta?",
+      "good": [
+        "Pasta, please."
+      ],
+      "wrong": [
+        "I am hungry.",
+        "A window seat, please."
+      ]
+    },
+    {
+      "q": "What is the reason for your visit?",
+      "good": [
+        "I am here for a conference."
+      ],
+      "wrong": [
+        "I have one suitcase.",
+        "Pasta, please."
+      ]
+    },
+    {
+      "q": "How long are you staying?",
+      "good": [
+        "For three days."
+      ],
+      "wrong": [
+        "Here you are.",
+        "It is ten o'clock."
+      ]
+    },
+    {
+      "q": "Is this your suitcase?",
+      "good": [
+        "No, mine is blue."
+      ],
+      "wrong": [
+        "For three days.",
+        "I am very tired."
+      ]
+    },
+    {
+      "q": "Anything to declare?",
+      "good": [
+        "Nothing to declare."
+      ],
+      "wrong": [
+        "No, mine is blue.",
+        "I am here for a conference."
+      ]
+    },
+    {
+      "q": "What is in your suitcase?",
+      "good": [
+        "Clothes and a gift for my friend."
+      ],
+      "wrong": [
+        "Here you are.",
+        "For three days."
+      ]
+    },
+    {
+      "q": "Please open your suitcase.",
+      "good": [
+        "Of course. Here you go."
+      ],
+      "wrong": [
+        "Nothing to declare.",
+        "I am fine, thank you."
+      ]
+    }
+  ]
+}

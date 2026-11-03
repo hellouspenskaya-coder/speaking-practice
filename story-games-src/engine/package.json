@@ -1,0 +1,1 @@
+{ "name": "story-games-engine", "private": true, "dependencies": { "inkjs": "2.3.0" } }
