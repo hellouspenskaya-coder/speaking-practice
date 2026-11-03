@@ -1,22 +1,541 @@
 [
- {"day":1,"text":"obedience","phonetic":"əˈbiːdiəns","definition":"doing what a person in authority tells you to do","example":"Our first subject is obedience."},
- {"day":1,"text":"volunteer","phonetic":"ˌvɒlənˈtɪə","definition":"a person who offers to take part in something without being forced","example":"You are a volunteer for a study of memory."},
- {"day":1,"text":"legitimate","phonetic":"lɪˈdʒɪtɪmət","definition":"accepted as having the right to give orders or make decisions","example":"Yale is a famous and legitimate institution."},
- {"day":1,"text":"confederate","phonetic":"kənˈfedərət","definition":"a person who secretly works with the researcher while pretending to be an ordinary participant","example":"In fact he is a confederate: an actor who works for the experimenter."},
- {"day":1,"text":"hesitate","phonetic":"ˈhezɪteɪt","definition":"to pause before you do something because you are not sure","example":"If you hesitate, the experimenter answers with a prod."},
- {"day":1,"text":"prod","phonetic":"prɒd","definition":"a short push; here, a standard sentence that tells someone to go on","example":"The experimenter answers with a prod."},
- {"day":1,"text":"distress","phonetic":"dɪˈstres","definition":"strong feelings of worry, pain or unhappiness","example":"Many volunteers showed clear distress."},
- {"day":1,"text":"deception","phonetic":"dɪˈsepʃn","definition":"making someone believe something that is not true","example":"The whole study relied on deception."},
- {"day":2,"text":"sceptical","phonetic":"ˈskeptɪkl","definition":"doubting whether something is true or good","example":"Be sceptical of the headline and of its critics."},
- {"day":2,"text":"welfare","phonetic":"ˈwelfeə","definition":"the health, safety and happiness of a person or group","example":"Her main objection was about the volunteers' welfare."},
- {"day":2,"text":"informed consent","phonetic":"ɪnˈfɔːmd kənˈsent","definition":"a person's agreement to take part after being told honestly what will happen","example":"They had not given real informed consent."},
- {"day":2,"text":"debrief","phonetic":"ˌdiːˈbriːf","definition":"to explain the true purpose of a study to participants after it has finished","example":"Every volunteer was told the truth in a debrief."},
- {"day":2,"text":"appeal","phonetic":"əˈpiːl","definition":"a request that speaks to a person's values or feelings","example":"Appeals to the value of science worked better than orders."},
- {"day":2,"text":"archive","phonetic":"ˈɑːkaɪv","definition":"a collection of old documents and records","example":"A third kind of criticism came from the archive."},
- {"day":3,"text":"variation","phonetic":"ˌveəriˈeɪʃn","definition":"a version of a procedure in which one thing is changed","example":"Milgram ran about twenty variations of the study."},
- {"day":3,"text":"safeguard","phonetic":"ˈseɪfɡɑːd","definition":"a rule or measure that protects people from harm","example":"Stopping at 150 volts was a reasonable safeguard."},
- {"day":3,"text":"significant","phonetic":"sɪɡˈnɪfɪkənt","definition":"statistically significant: unlikely to be caused by chance alone","example":"The difference was not statistically significant."},
- {"day":3,"text":"replication","phonetic":"ˌreplɪˈkeɪʃn","definition":"a new study that repeats an earlier study to check its result","example":"This is a partial replication."},
- {"day":3,"text":"caveat","phonetic":"ˈkæviæt","definition":"a warning that a statement is only true under certain conditions","example":"Every claim needs a caveat."},
- {"day":3,"text":"claim","phonetic":"kleɪm","definition":"a statement that something is true, especially one that is not yet proved","example":"Let us test some claims."}
+ {
+  "day": 1,
+  "text": "obedience",
+  "phonetic": "əˈbiːdiəns",
+  "definition": "doing what a person in authority tells you to do",
+  "example": "Our first subject is obedience."
+ },
+ {
+  "day": 1,
+  "text": "volunteer",
+  "phonetic": "ˌvɒlənˈtɪə",
+  "definition": "a person who offers to take part in something without being forced",
+  "example": "You are a volunteer for a study of memory."
+ },
+ {
+  "day": 1,
+  "text": "legitimate",
+  "phonetic": "lɪˈdʒɪtɪmət",
+  "definition": "accepted as having the right to give orders or make decisions",
+  "example": "Yale is a famous and legitimate institution."
+ },
+ {
+  "day": 1,
+  "text": "confederate",
+  "phonetic": "kənˈfedərət",
+  "definition": "a person who secretly works with the researcher while pretending to be an ordinary participant",
+  "example": "In fact he is a confederate: an actor who works for the experimenter."
+ },
+ {
+  "day": 1,
+  "text": "hesitate",
+  "phonetic": "ˈhezɪteɪt",
+  "definition": "to pause before you do something because you are not sure",
+  "example": "If you hesitate, the experimenter answers with a prod."
+ },
+ {
+  "day": 1,
+  "text": "prod",
+  "phonetic": "prɒd",
+  "definition": "a short push; here, a standard sentence that tells someone to go on",
+  "example": "The experimenter answers with a prod."
+ },
+ {
+  "day": 1,
+  "text": "distress",
+  "phonetic": "dɪˈstres",
+  "definition": "strong feelings of worry, pain or unhappiness",
+  "example": "Many volunteers showed clear distress."
+ },
+ {
+  "day": 1,
+  "text": "deception",
+  "phonetic": "dɪˈsepʃn",
+  "definition": "making someone believe something that is not true",
+  "example": "The whole study relied on deception."
+ },
+ {
+  "day": 1,
+  "text": "procedure",
+  "phonetic": "prəˈsiːdʒə",
+  "definition": "a fixed series of actions that are done in a particular order",
+  "example": "Forty men took part in a procedure at Yale."
+ },
+ {
+  "day": 1,
+  "text": "outcome",
+  "phonetic": "ˈaʊtkʌm",
+  "definition": "the result of something",
+  "example": "The outcome was far higher than the experts had predicted."
+ },
+ {
+  "day": 1,
+  "text": "comply",
+  "phonetic": "kəmˈplaɪ",
+  "definition": "to do what you are told or asked to do",
+  "example": "Ordinary people may comply with an authority."
+ },
+ {
+  "day": 1,
+  "text": "troubled",
+  "phonetic": "ˈtrʌbld",
+  "definition": "worried and upset",
+  "example": "Many volunteers were visibly troubled."
+ },
+ {
+  "day": 1,
+  "text": "acceptable",
+  "phonetic": "əkˈseptəbl",
+  "definition": "good enough to be allowed",
+  "example": "Was the research itself acceptable?"
+ },
+ {
+  "day": 1,
+  "text": "range",
+  "phonetic": "reɪndʒ",
+  "definition": "to vary between a lowest and a highest value",
+  "example": "The share ranged from 28 to 91 per cent."
+ },
+ {
+  "day": 1,
+  "text": "typical",
+  "phonetic": "ˈtɪpɪkl",
+  "definition": "normal or usual for a kind of thing",
+  "example": "Harm that is more typical of modern life."
+ },
+ {
+  "day": 2,
+  "text": "sceptical",
+  "phonetic": "ˈskeptɪkl",
+  "definition": "doubting whether something is true or good",
+  "example": "Be sceptical of the headline and of its critics."
+ },
+ {
+  "day": 2,
+  "text": "welfare",
+  "phonetic": "ˈwelfeə",
+  "definition": "the health, safety and happiness of a person or group",
+  "example": "Her main objection was about the volunteers' welfare."
+ },
+ {
+  "day": 2,
+  "text": "informed consent",
+  "phonetic": "ɪnˈfɔːmd kənˈsent",
+  "definition": "a person's agreement to take part after being told honestly what will happen",
+  "example": "They had not given real informed consent."
+ },
+ {
+  "day": 2,
+  "text": "debrief",
+  "phonetic": "ˌdiːˈbriːf",
+  "definition": "to explain the true purpose of a study to participants after it has finished",
+  "example": "Every volunteer was told the truth in a debrief."
+ },
+ {
+  "day": 2,
+  "text": "appeal",
+  "phonetic": "əˈpiːl",
+  "definition": "a request that speaks to a person's values or feelings",
+  "example": "Appeals to the value of science worked better than orders."
+ },
+ {
+  "day": 2,
+  "text": "archive",
+  "phonetic": "ˈɑːkaɪv",
+  "definition": "a collection of old documents and records",
+  "example": "A third kind of criticism came from the archive."
+ },
+ {
+  "day": 2,
+  "text": "controversy",
+  "phonetic": "ˈkɒntrəvɜːsi",
+  "definition": "a public argument about something that people strongly disagree about",
+  "example": "Here is a summary of the ethical controversy."
+ },
+ {
+  "day": 2,
+  "text": "interpretation",
+  "phonetic": "ɪnˌtɜːprɪˈteɪʃn",
+  "definition": "an explanation of what something means",
+  "example": "The second objection is about interpretation."
+ },
+ {
+  "day": 2,
+  "text": "committee",
+  "phonetic": "kəˈmɪti",
+  "definition": "a group of people chosen to make decisions or give advice",
+  "example": "Research ethics committees became routine."
+ },
+ {
+  "day": 2,
+  "text": "cancel",
+  "phonetic": "ˈkænsl",
+  "definition": "to make something no longer valid or true",
+  "example": "Neither objection cancels the study."
+ },
+ {
+  "day": 2,
+  "text": "identify with",
+  "phonetic": "aɪˈdentɪfaɪ wɪð",
+  "definition": "to feel that you share the aims or feelings of a person or group",
+  "example": "The volunteers identified with the scientific cause."
+ },
+ {
+  "day": 2,
+  "text": "restage",
+  "phonetic": "ˌriːˈsteɪdʒ",
+  "definition": "to perform or organise something again",
+  "example": "They restaged the procedure for a film."
+ },
+ {
+  "day": 2,
+  "text": "messy",
+  "phonetic": "ˈmesi",
+  "definition": "complicated and not clear or tidy",
+  "example": "The archive tells a messier story."
+ },
+ {
+  "day": 3,
+  "text": "variation",
+  "phonetic": "ˌveəriˈeɪʃn",
+  "definition": "a version of a procedure in which one thing is changed",
+  "example": "Milgram ran about twenty variations of the study."
+ },
+ {
+  "day": 3,
+  "text": "safeguard",
+  "phonetic": "ˈseɪfɡɑːd",
+  "definition": "a rule or measure that protects people from harm",
+  "example": "Stopping at 150 volts was a reasonable safeguard."
+ },
+ {
+  "day": 3,
+  "text": "significant",
+  "phonetic": "sɪɡˈnɪfɪkənt",
+  "definition": "statistically significant: unlikely to be caused by chance alone",
+  "example": "The difference was not statistically significant."
+ },
+ {
+  "day": 3,
+  "text": "replication",
+  "phonetic": "ˌreplɪˈkeɪʃn",
+  "definition": "a new study that repeats an earlier study to check its result",
+  "example": "This is a partial replication."
+ },
+ {
+  "day": 3,
+  "text": "caveat",
+  "phonetic": "ˈkæviæt",
+  "definition": "a warning that a statement is only true under certain conditions",
+  "example": "Every claim needs a caveat."
+ },
+ {
+  "day": 3,
+  "text": "claim",
+  "phonetic": "kleɪm",
+  "definition": "a statement that something is true, especially one that is not yet proved",
+  "example": "Let us test some claims."
+ },
+ {
+  "day": 3,
+  "text": "robust",
+  "phonetic": "rəʊˈbʌst",
+  "definition": "strong and not easily broken or disproved",
+  "example": "The finding appears robust in a limited sense."
+ },
+ {
+  "day": 3,
+  "text": "generalise",
+  "phonetic": "ˈdʒenrəlaɪz",
+  "definition": "to say that something is true for a whole group or for all situations",
+  "example": "The finding cannot be generalised without caution."
+ },
+ {
+  "day": 3,
+  "text": "contemporary",
+  "phonetic": "kənˈtemprəri",
+  "definition": "belonging to the present time",
+  "example": "The result is contemporary as well as historical."
+ },
+ {
+  "day": 3,
+  "text": "remain",
+  "phonetic": "rɪˈmeɪn",
+  "definition": "to stay in the same state or place",
+  "example": "Three things seem to remain."
+ },
+ {
+  "day": 3,
+  "text": "reproduce",
+  "phonetic": "ˌriːprəˈdjuːs",
+  "definition": "to get the same result again by repeating a study",
+  "example": "Can the result be reproduced?"
+ },
+ {
+  "day": 3,
+  "text": "ethical",
+  "phonetic": "ˈeθɪkl",
+  "definition": "connected with what is morally right",
+  "example": "Researchers now use ethical designs."
+ },
+ {
+  "day": 4,
+  "text": "judgement",
+  "phonetic": "ˈdʒʌdʒmənt",
+  "definition": "an opinion or decision about something, especially after thinking carefully",
+  "example": "You answered a study of visual judgement."
+ },
+ {
+  "day": 4,
+  "text": "trial",
+  "phonetic": "ˈtraɪəl",
+  "definition": "one attempt or round of a test",
+  "example": "Each card is a new trial."
+ },
+ {
+  "day": 4,
+  "text": "majority",
+  "phonetic": "məˈdʒɒrəti",
+  "definition": "most of the people in a group",
+  "example": "The actors formed a majority."
+ },
+ {
+  "day": 4,
+  "text": "unanimous",
+  "phonetic": "juˈnænɪməs",
+  "definition": "agreed by everybody, with no exception",
+  "example": "On twelve cards the actors were unanimous."
+ },
+ {
+  "day": 4,
+  "text": "yield",
+  "phonetic": "jiːld",
+  "definition": "to give way to pressure and do what others want",
+  "example": "Three quarters of the volunteers yielded to the group at least once."
+ },
+ {
+  "day": 4,
+  "text": "conformity",
+  "phonetic": "kənˈfɔːməti",
+  "definition": "changing what you say or do to match a group",
+  "example": "The subject of this case is conformity."
+ },
+ {
+  "day": 4,
+  "text": "tension",
+  "phonetic": "ˈtenʃn",
+  "definition": "a nervous, uncomfortable feeling when something is uncertain or stressful",
+  "example": "Many volunteers showed tension."
+ },
+ {
+  "day": 4,
+  "text": "distort",
+  "phonetic": "dɪˈstɔːt",
+  "definition": "to change something so that it is no longer true or accurate",
+  "example": "Group pressure can distort judgement."
+ },
+ {
+  "day": 4,
+  "text": "ambiguous",
+  "phonetic": "æmˈbɪɡjuəs",
+  "definition": "not clear, because it can be understood in more than one way",
+  "example": "Sherif used an ambiguous task."
+ },
+ {
+  "day": 4,
+  "text": "estimate",
+  "phonetic": "ˈestɪmət",
+  "definition": "a guess about a size, amount or value",
+  "example": "Their estimates moved towards the group's."
+ },
+ {
+  "day": 4,
+  "text": "obvious",
+  "phonetic": "ˈɒbviəs",
+  "definition": "easy to see or understand",
+  "example": "The answer is obvious."
+ },
+ {
+  "day": 5,
+  "text": "independence",
+  "phonetic": "ˌɪndɪˈpendəns",
+  "definition": "the ability to think and act without being controlled by others",
+  "example": "The word independence comes first in the title."
+ },
+ {
+  "day": 5,
+  "text": "misinterpret",
+  "phonetic": "ˌmɪsɪnˈtɜːprɪt",
+  "definition": "to understand something in the wrong way",
+  "example": "Asch's work was misinterpreted over the years."
+ },
+ {
+  "day": 5,
+  "text": "textbook",
+  "phonetic": "ˈtekstbʊk",
+  "definition": "a book that teaches a subject at school or university",
+  "example": "Griggs checked twenty recent textbooks."
+ },
+ {
+  "day": 5,
+  "text": "anonymous",
+  "phonetic": "əˈnɒnɪməs",
+  "definition": "without your name or identity being known",
+  "example": "They answered anonymously in separate booths."
+ },
+ {
+  "day": 5,
+  "text": "balanced",
+  "phonetic": "ˈbælənst",
+  "definition": "fair, giving the right weight to all sides",
+  "example": "Which version reports the result in the most balanced way?"
+ },
+ {
+  "day": 5,
+  "text": "booth",
+  "phonetic": "buːð",
+  "definition": "a small closed space for one person, for example for voting or for a test",
+  "example": "They answered in separate booths."
+ },
+ {
+  "day": 5,
+  "text": "selective",
+  "phonetic": "sɪˈlektɪv",
+  "definition": "choosing only some things and leaving others out",
+  "example": "Selective reporting gives more space to one half of the result."
+ },
+ {
+  "day": 5,
+  "text": "weight",
+  "phonetic": "weɪt",
+  "definition": "importance or influence given to something",
+  "example": "The two numbers were not given the same weight."
+ },
+ {
+  "day": 5,
+  "text": "undergraduate",
+  "phonetic": "ˌʌndəˈɡrædʒuət",
+  "definition": "a university student who is studying for a first degree",
+  "example": "They tested Japanese undergraduates."
+ },
+ {
+  "day": 6,
+  "text": "ally",
+  "phonetic": "ˈælaɪ",
+  "definition": "a person who supports you, especially against opposition",
+  "example": "The volunteer had an ally."
+ },
+ {
+  "day": 6,
+  "text": "level off",
+  "phonetic": "ˌlevl ˈɒf",
+  "definition": "to stop rising or falling and stay at about the same level",
+  "example": "The pull rose to 31.8 per cent and then levelled off."
+ },
+ {
+  "day": 6,
+  "text": "sample",
+  "phonetic": "ˈsɑːmpl",
+  "definition": "a small group chosen to represent a larger group",
+  "example": "The sample of studies was uneven."
+ },
+ {
+  "day": 6,
+  "text": "meta-analysis",
+  "phonetic": "ˌmetə əˈnæləsɪs",
+  "definition": "a study that combines the results of many earlier studies",
+  "example": "Bond and Smith published a meta-analysis of 133 studies."
+ },
+ {
+  "day": 6,
+  "text": "collectivist",
+  "phonetic": "kəˈlektɪvɪst",
+  "definition": "valuing the group and its harmony more than the individual",
+  "example": "In more collectivist countries conformity was higher."
+ },
+ {
+  "day": 6,
+  "text": "decline",
+  "phonetic": "dɪˈklaɪn",
+  "definition": "to become smaller, weaker or less",
+  "example": "In the United States, conformity had declined since the 1950s."
+ },
+ {
+  "day": 6,
+  "text": "headline",
+  "phonetic": "ˈhedlaɪn",
+  "definition": "the main point of a story, put in a short form",
+  "example": "The textbook headline is simpler than the evidence."
+ },
+ {
+  "day": 6,
+  "text": "stereotype",
+  "phonetic": "ˈsteriətaɪp",
+  "definition": "a fixed, simple idea about a group of people",
+  "example": "Later work has not confirmed the stereotype."
+ },
+ {
+  "day": 6,
+  "text": "exert",
+  "phonetic": "ɪɡˈzɜːt",
+  "definition": "to use power or influence to affect something",
+  "example": "Do online groups exert the same pressure?"
+ },
+ {
+  "day": 7,
+  "text": "submission",
+  "phonetic": "səbˈmɪʃn",
+  "definition": "the act of accepting the power or control of another person",
+  "example": "Obedience may be less about blind submission than about identification with a cause."
+ },
+ {
+  "day": 7,
+  "text": "limitation",
+  "phonetic": "ˌlɪmɪˈteɪʃn",
+  "definition": "a weakness or a point beyond which something cannot be trusted or used",
+  "example": "Both studies have clear limitations."
+ },
+ {
+  "day": 7,
+  "text": "hypothesis",
+  "phonetic": "haɪˈpɒθəsɪs",
+  "definition": "an idea about the reason for something that has not yet been proved",
+  "example": "A hypothesis about the reasons is still being tested."
+ },
+ {
+  "day": 7,
+  "text": "whereas",
+  "phonetic": "weərˈæz",
+  "definition": "used to compare two facts and show that they are different",
+  "example": "Case 1 studied an authority, whereas Case 2 studied a group."
+ },
+ {
+  "day": 7,
+  "text": "similarly",
+  "phonetic": "ˈsɪmələli",
+  "definition": "in the same way",
+  "example": "Similarly, both studies used deception."
+ },
+ {
+  "day": 7,
+  "text": "in contrast",
+  "phonetic": "ɪn ˈkɒntrɑːst",
+  "definition": "used to show a clear difference between two things",
+  "example": "In contrast to Case 1, Case 2 produced more independent answers."
+ },
+ {
+  "day": 7,
+  "text": "tendency",
+  "phonetic": "ˈtendənsi",
+  "definition": "a habit or a likely way of behaving",
+  "example": "Why might a tendency to follow the group exist at all?"
+ },
+ {
+  "day": 7,
+  "text": "adaptation",
+  "phonetic": "ˌædæpˈteɪʃn",
+  "definition": "a feature that helps a living thing to survive in its environment",
+  "example": "Researchers treat it as a possible adaptation."
+ }
 ]

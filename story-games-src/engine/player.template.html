@@ -183,6 +183,19 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .pv button{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;border-radius:8px;padding:7px 10px;font:inherit;cursor:pointer}
 .pv button.on{background:#fff;color:#1d2b3a}
 .pv button.go{background:#2f7bd9;border-color:#2f7bd9}
+.nw{white-space:nowrap}
+.cards svg{width:100%;max-width:360px;display:block;margin:4px auto 2px}
+.cards .cd{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.cards .ln{stroke:var(--ink,#1c2b36);stroke-width:5;stroke-linecap:round}
+.cards .lb{fill:var(--muted,#5a6b78);font:600 13px system-ui,sans-serif}
+.src-link{color:var(--tint);word-break:break-all}
+.tbl { overflow-x: auto; animation: rise .45s ease both; }
+.tbl table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 14.5px; line-height: 1.4; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+.tbl caption { text-align: left; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--tint); padding: 0 2px 6px; }
+.tbl th, .tbl td { text-align: left; vertical-align: top; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+.tbl th { font-weight: 600; background: color-mix(in srgb, var(--tint) 10%, var(--surface)); }
+.tbl td:first-child, .tbl tr:not(:first-child) th { font-weight: 600; white-space: normal; width: 26%; }
+.tbl tr:last-child td { border-bottom: 0; }
 </style>
 </head>
 <body>
@@ -232,9 +245,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
       </div>
       <p class="foot" id="pe-msg" role="status"></p>
       <div class="row" style="margin-top:1.2rem">
-        <a class="btn" id="pe-practice" href="#">Practise today's words</a>
+        <a class="btn" id="pe-practice" href="#">Practise the words of this part</a>
         <a class="btn" id="pe-review" href="#" hidden>Review</a>
-        <button class="btn accent" id="pe-next" type="button" hidden>Continue to the next day</button>
+        <button class="btn accent" id="pe-next" type="button" hidden>Continue to the next part</button>
       </div>
       <p class="foot" id="pe-foot"></p>
       <textarea id="pe-area" class="sr" readonly aria-label="My notes"></textarea>
@@ -265,11 +278,15 @@ window.__GAME__ = /*GAME_DATA*/null;
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var G, slug, KEY, story, log, scene, hist, saveTimer, words = {}, scenes = [], notes = {}, partEnd = null, startPart = 0, foldHost = null, foldLabel = null, cardHost = null;
+  var G, slug, KEY, story, log, scene, hist, saveTimer, words = {}, scenes = [], notes = {}, partEnd = null, startPart = 0, foldHost = null, foldLabel = null, cardHost = null, tableHost = null;
 
   function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
-  function readSave() { try { var s = localStorage.getItem(KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify({ state: story.state.toJson(), log: log, scene: scene, hist: hist, notes: notes, pe: partEnd })); } catch (e) {} }
+  /* a saved game belongs to one version of the story: after the story is edited, old saves would point to places that no longer exist */
+  function storyHash() { var h = 5381, t = (G && G.story) || ''; for (var i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return String(h); }
+  function readSave() { try { var s = localStorage.getItem(KEY); var o = s ? JSON.parse(s) : null; return o && o.h === storyHash() ? o : null; } catch (e) { return null; } }
+  function putPartState(n) { try { localStorage.setItem(KEY + '-st-' + n, JSON.stringify({ h: storyHash(), s: story.state.toJson() })); } catch (e) {} }
+  function getPartState(n) { try { var o = JSON.parse(localStorage.getItem(KEY + '-st-' + n)); return o && o.h === storyHash() ? o.s : null; } catch (e) { return null; } }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ h: storyHash(), state: story.state.toJson(), log: log, scene: scene, hist: hist, notes: notes, pe: partEnd })); } catch (e) {} }
   function clearSave() { try { localStorage.removeItem(KEY); } catch (e) {} }
   function showError(msg) {
     $('err').hidden = false; $('start').hidden = true; $('game').hidden = true;
@@ -302,11 +319,23 @@ window.__GAME__ = /*GAME_DATA*/null;
       if (def) {
         var b = el('button', 'w', shown); b.type = 'button'; b.setAttribute('aria-expanded', 'false');
         (function (b, def, key) { b.addEventListener('click', function () { toggleGloss(b, def, key, host); }); })(b, def, key);
+        var after = text.slice(m.index + m[0].length), pu = /^[.,;:!?)\u201d"\u2019]+/.exec(after);
+        if (pu) { var nw = el('span', 'nw'); nw.appendChild(b); nw.appendChild(document.createTextNode(pu[0])); node.appendChild(nw); last = m.index + m[0].length + pu[0].length; continue; }
         node.appendChild(b);
       } else node.appendChild(document.createTextNode(shown));
       last = m.index + m[0].length;
     }
     if (last < text.length) node.appendChild(document.createTextNode(text.slice(last)));
+  }
+  /* a source line may end with a link: make it clickable */
+  function linkP(text) {
+    var p = el('p'), re = /(https?:\/\/[^\s]+)/g, last = 0, m;
+    while ((m = re.exec(text))) {
+      if (m.index > last) p.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var a = el('a', 'src-link', m[1].replace(/^https?:\/\//, '')); a.href = m[1]; a.target = '_blank'; a.rel = 'noopener'; p.appendChild(a); last = m.index + m[0].length;
+    }
+    if (last < text.length) p.appendChild(document.createTextNode(text.slice(last)));
+    return p;
   }
   function toggleGloss(btn, def, key, host) {
     var old = host.querySelector('.gloss');
@@ -328,8 +357,7 @@ window.__GAME__ = /*GAME_DATA*/null;
     var ol = $('road'); ol.textContent = '';
     if (G.totalParts) {
       var cp = parseInt(scene, 10) || 1, li0 = el('li'); ol.className = 'road prog';
-      li0.appendChild(el('div', 'prog-t', 'Day ' + cp + ' of ' + G.totalParts));
-      var bar = el('div', 'prog-bar'), fill0 = el('i'); fill0.style.width = (cp / G.totalParts * 100) + '%'; bar.appendChild(fill0); li0.appendChild(bar);
+      li0.appendChild(el('div', 'prog-t', 'Part ' + cp));
       ol.appendChild(li0); return;
     }
     var cur = scene === 'end' ? scenes.length + 1 : (parseInt(scene, 10) || 0);
@@ -346,15 +374,41 @@ window.__GAME__ = /*GAME_DATA*/null;
     var host = $('log'), n;
     if (e.t !== 'fold') foldHost = null;
     if (e.t !== 'card') cardHost = null;
+    if (e.t !== 'row') tableHost = null;
+    if (e.t === 'row') {
+      if (!tableHost || tableHost.label !== e.label) {
+        n = el('div', 'line tbl'); var tt = el('table'); n.appendChild(tt); host.appendChild(n); tableHost = { label: e.label, table: tt, node: n, first: true };
+        var cap = document.createElement('caption'); cap.textContent = e.label; tt.appendChild(cap);
+      } else n = null;
+      var tr = el('tr'), th = tableHost.first;
+      e.cells.forEach(function (c, ci) { var cell = el(th || ci === 0 ? 'th' : 'td'); if (th) cell.setAttribute('scope', 'col'); else if (ci === 0) cell.setAttribute('scope', 'row'); fill(cell, c, tableHost.node); tr.appendChild(cell); });
+      tableHost.table.appendChild(tr); tableHost.first = false; return n;
+    }
+    if (e.t === 'lines') {
+      var v = e.v, NS = 'http://www.w3.org/2000/svg', U = 11, B = 150;
+      n = el('div', 'line cards');
+      var sv = document.createElementNS(NS, 'svg'); sv.setAttribute('viewBox', '0 0 330 176'); sv.setAttribute('role', 'img');
+      sv.setAttribute('aria-label', 'Card 1 shows one line, length ' + v[0] + '. Card 2 shows three lines: A ' + v[1] + ', B ' + v[2] + ', C ' + v[3] + '.');
+      function sh(tag, at, txt) { var x = document.createElementNS(NS, tag); Object.keys(at).forEach(function (k) { x.setAttribute(k, at[k]); }); if (txt) x.textContent = txt; sv.appendChild(x); return x; }
+      sh('rect', { x: 6, y: 4, width: 104, height: 168, rx: 8, class: 'cd' });
+      sh('rect', { x: 126, y: 4, width: 198, height: 168, rx: 8, class: 'cd' });
+      sh('line', { x1: 58, x2: 58, y1: B, y2: B - v[0] * U, class: 'ln' });
+      sh('text', { x: 58, y: 168, 'text-anchor': 'middle', class: 'lb' }, 'Standard');
+      [['A', 168], ['B', 225], ['C', 282]].forEach(function (p, i) {
+        sh('line', { x1: p[1], x2: p[1], y1: B, y2: B - v[i + 1] * U, class: 'ln' });
+        sh('text', { x: p[1], y: 168, 'text-anchor': 'middle', class: 'lb' }, p[0]);
+      });
+      n.appendChild(sv); host.appendChild(n); return n;
+    }
     if (e.t === 'card') {
-      if (cardHost && cardHost.label === e.label) { cardHost.body.appendChild(el('p', null, e.text)); return null; }
-      n = el('div', 'line card'); n.appendChild(el('div', 'ct', e.label)); var cb = el('div'); cb.appendChild(el('p', null, e.text)); n.appendChild(cb);
-      host.appendChild(n); cardHost = { label: e.label, body: cb }; return n;
+      if (cardHost && cardHost.label === e.label) { var cp2 = el('p'); fill(cp2, e.text, cardHost.node); cardHost.body.appendChild(cp2); return null; }
+      n = el('div', 'line card'); n.appendChild(el('div', 'ct', e.label)); var cb = el('div'), cp1 = el('p'); fill(cp1, e.text, n); cb.appendChild(cp1); n.appendChild(cb);
+      host.appendChild(n); cardHost = { label: e.label, body: cb, node: n }; return n;
     }
     if (e.t === 'fold') {
-      if (foldHost && foldHost.label === e.label) { foldHost.body.appendChild(el('p', null, e.text)); return null; }
+      if (foldHost && foldHost.label === e.label) { foldHost.body.appendChild(linkP(e.text)); return null; }
       n = el('div', 'fold'); var fb = el('button', 'fold-btn', e.label); fb.type = 'button'; fb.setAttribute('aria-expanded', 'false');
-      var body = el('div', 'fold-body'); body.hidden = true; body.appendChild(el('p', null, e.text));
+      var body = el('div', 'fold-body'); body.hidden = true; body.appendChild(linkP(e.text));
       fb.addEventListener('click', function () { var o = body.hidden; body.hidden = !o; fb.setAttribute('aria-expanded', o ? 'true' : 'false'); });
       n.appendChild(fb); n.appendChild(body); host.appendChild(n); foldHost = { label: e.label, body: body };
       return n;
@@ -369,7 +423,7 @@ window.__GAME__ = /*GAME_DATA*/null;
     }
     if (e.t === 'scene') {
       scene = e.n;
-      n = el('div', 'scn'); n.appendChild(el('div', 'lab', (G.totalParts ? 'Day ' : 'Scene ') + e.n)); n.appendChild(el('h2', null, e.title));
+      n = el('div', 'scn'); n.appendChild(el('div', 'lab', (G.totalParts ? 'Part ' : 'Scene ') + e.n)); n.appendChild(el('h2', null, e.title));
       var sa = G.art && G.art.scenes && G.art.scenes[e.n];
       if (sa) { var ad = el('div', 'art scene-art'); ad.innerHTML = sa.svg; ad.setAttribute('role', 'img'); ad.setAttribute('aria-label', sa.alt || e.title); n.appendChild(ad); }
       host.appendChild(n); drawRoad();
@@ -408,11 +462,12 @@ window.__GAME__ = /*GAME_DATA*/null;
   function notesText(n) {
     var out = [];
     log.forEach(function (e) { if (e.t === 'write' && String(e.part) === String(n) && (notes[e.k] || '').trim()) out.push(e.text.replace(/^Your take \(optional\):\s*/, '') + '\n' + notes[e.k].trim()); });
-    return out.length ? 'Day ' + n + ' · ' + partTitle(n) + '\n\n' + out.join('\n\n') : '';
+    return out.length ? 'Part ' + n + ' · ' + partTitle(n) + '\n\n' + out.join('\n\n') : '';
   }
   function showPartEnd() {
     var n = partEnd, pe = $('partend'); pe.hidden = false;
-    $('pe-title').textContent = 'Day ' + n + ' done';
+    putPartState(n + 1);
+    $('pe-title').textContent = 'Part ' + n + ' done';
     var hasNotes = log.some(function (x) { return x.t === 'write' && String(x.part) === String(n); });
     $('pe-lead').textContent = hasNotes ? 'Your notes are optional. Copy them and bring them to the lesson, or keep them to yourself.' : (G.endOfDayText || '');
     $('pe-copy').hidden = !hasNotes;
@@ -420,8 +475,8 @@ window.__GAME__ = /*GAME_DATA*/null;
     $('pe-next').hidden = !next || !!G.noContinue;
     $('pe-foot').textContent = next ? '' : (G.noNextText || '');
     var pa = $('pe-practice'), ps = G.practiceSets && G.practiceSets[String(n)];
-    if (ps && !G.preview) { pa.href = '/vocab-trainer.html?set=' + encodeURIComponent(ps); pa.removeAttribute('aria-disabled'); pa.textContent = 'Practise the words of day ' + n; }
-    else { pa.href = '#'; pa.setAttribute('aria-disabled', 'true'); pa.textContent = G.preview ? "Practise the words (opens after publishing)" : "Practise today's words"; if (!ps && !G.preview) pa.hidden = true; }
+    if (ps && !G.preview) { pa.href = '/vocab-trainer.html?set=' + encodeURIComponent(ps); pa.removeAttribute('aria-disabled'); pa.textContent = 'Practise the words of part ' + n; }
+    else { pa.href = '#'; pa.setAttribute('aria-disabled', 'true'); pa.textContent = G.preview ? "Practise the words (opens after publishing)" : "Practise the words of this part"; if (!ps && !G.preview) pa.hidden = true; }
     var pr = $('pe-review'), rv = G.reviewSets && G.reviewSets[String(n)];
     pr.hidden = !rv;
     if (rv) { pr.textContent = 'Review: ' + rv.label; if (G.preview) { pr.href = '#'; pr.setAttribute('aria-disabled', 'true'); } else { pr.href = '/vocab-trainer.html?set=' + encodeURIComponent(rv.slug); pr.removeAttribute('aria-disabled'); } }
@@ -479,7 +534,7 @@ window.__GAME__ = /*GAME_DATA*/null;
     var first = null;
     while (story.canContinue) {
       var text = story.Continue().trim(), tags = story.currentTags || [];
-      var sc = null, ttl = null, isNote = false, fl = null, isWrite = false, ep = null, cd = null;
+      var sc = null, ttl = null, isNote = false, fl = null, isWrite = false, ep = null, cd = null, lns = null, tb = null;
       tags.forEach(function (t) {
         var m = /^scene:\s*(.+)$/.exec(t); if (m) sc = m[1].trim();
         var mt = /^title:\s*(.+)$/.exec(t); if (mt) ttl = mt[1].trim();
@@ -488,12 +543,15 @@ window.__GAME__ = /*GAME_DATA*/null;
         var mc = /^card:\s*(.+)$/.exec(t); if (mc) cd = mc[1].trim();
         if (t === 'write') isWrite = true;
         var me = /^endpart:\s*(\d+)/.exec(t); if (me) ep = parseInt(me[1], 10);
+        var mtb = /^table:\s*(.+)$/.exec(t); if (mtb) tb = mtb[1].trim();
+        var ml = /^lines:\s*([\d., ]+)$/.exec(t); if (ml) lns = ml[1].split(',').map(function (x) { return parseFloat(x); });
       });
       if (ep != null) partEnd = ep;
       var added = [];
       if (sc) added.push({ t: 'scene', n: sc, title: ttl || '' });
       if (text) {
         if (isNote) added.push({ t: 'note', text: text });
+        else if (tb) added.push({ t: 'row', label: tb, cells: text.split('::').map(function (c) { return c.trim(); }) });
         else if (cd) added.push({ t: 'card', label: cd, text: text });
         else if (fl) added.push({ t: 'fold', label: fl, text: text });
         else if (isWrite) { var wn = log.filter(function (x) { return x.t === 'write' && x.part === scene; }).length; added.push({ t: 'write', k: scene + '_' + wn, part: scene, text: text }); }
@@ -503,6 +561,7 @@ window.__GAME__ = /*GAME_DATA*/null;
           else added.push({ t: 'p', text: text });
         }
       }
+      if (lns && lns.length === 4) added.push({ t: 'lines', v: lns });
       added.forEach(function (e) { log.push(e); var node = paint(e); if (!first) first = node; });
     }
     showChoices(); updateStars(); save();
@@ -549,6 +608,7 @@ window.__GAME__ = /*GAME_DATA*/null;
 
   function begin(fromSave) {
     story = new inkjs.Story(G.story);
+    story.onError = function (msg, type) { if (type === 2) throw new Error(msg); try { console.warn(msg); } catch (e) {} };
     log = []; scene = '1'; hist = []; lastStars = 0;
     $('log').textContent = ''; $('choices').textContent = '';
     $('start').hidden = true; $('game').hidden = false; $('finish').hidden = true; $('partend').hidden = true;
@@ -561,7 +621,7 @@ window.__GAME__ = /*GAME_DATA*/null;
       if (G.totalParts) {
         var sv0 = readSave(); notes = (sv0 && sv0.notes) || {};
         if (startPart > 1) {
-          try { var st0 = localStorage.getItem(KEY + '-st-' + startPart); if (st0) story.state.LoadJson(st0); } catch (e) {}
+          try { var st0 = getPartState(startPart); if (st0) story.state.LoadJson(st0); } catch (e) {}
           try { story.ChoosePathString('ep' + startPart); } catch (e) {}
         }
       } else notes = {};
@@ -598,21 +658,21 @@ window.__GAME__ = /*GAME_DATA*/null;
     });
     $('pe-next').addEventListener('click', function () {
       var nxt = partEnd + 1;
-      try { localStorage.setItem(KEY + '-st-' + nxt, story.state.toJson()); } catch (e) {}
+      putPartState(nxt);
       try { story.ChoosePathString('ep' + nxt); } catch (e) { return; }
       partEnd = null; hist = []; $('partend').hidden = true; advance(true);
     });
     var pq = parseInt(new URLSearchParams(location.search).get('part'), 10);
     startPart = G.totalParts && pq > 0 ? pq : 0;
-    if (startPart) $('btn-new').textContent = 'Start day ' + startPart;
-    if (G.totalParts && !startPart) $('btn-new').textContent = 'Start day 1';
+    if (startPart) $('btn-new').textContent = 'Start part ' + startPart;
+    if (G.totalParts && !startPart) $('btn-new').textContent = 'Start';
     var s = readSave(); if (s && s.state) $('btn-cont').hidden = false;
     if (G.noStars) $('stars').hidden = true;
-    // practise the words without playing: this day's set and the review sets of the finished cases
+    // practise the words without playing: this part's set and the review sets of the finished cases
     (function () {
       var host = $('sp-row'), n = startPart || (G.totalParts ? 1 : 0), items = [];
       var ps = G.practiceSets && G.practiceSets[String(n)];
-      if (ps) items.push({ href: ps, label: 'Practise the words of day ' + n });
+      if (ps) items.push({ href: ps, label: 'Practise the words of part ' + n });
       var rs = G.reviewSets || {};
       Object.keys(rs).sort(function (x, y) { return x - y; }).forEach(function (k) { if (+k < n) items.push({ href: rs[k].slug, label: 'Review: ' + rs[k].label }); });
       if (!items.length) return;
@@ -622,20 +682,24 @@ window.__GAME__ = /*GAME_DATA*/null;
         else a.href = '/vocab-trainer.html?set=' + encodeURIComponent(it.href);
         host.appendChild(a);
       });
-      $('sp-foot').textContent = G.preview ? 'Preview: these buttons open Voc Practice sets after the game is published.' : 'No need to play the day again.';
+      $('sp-foot').textContent = G.preview ? 'Preview: these buttons open Voc Practice sets after the game is published.' : 'No need to play the part again.';
       $('start-practice').hidden = false;
     })();
 
-    // preview tools: walk freely between days and questions (preview file only, never in the real game)
+    // preview tools: walk freely between parts and questions (preview file only, never in the real game)
     if (G.freeNav) (function () {
-      var bar = $('pv'); bar.hidden = false; bar.appendChild(el('b', null, 'Preview:'));
+      var bar = $('pv'); bar.hidden = false; $('scroll').style.paddingBottom = '140px'; bar.appendChild(el('b', null, 'Preview:'));
       scenes.forEach(function (sc) {
-        var b = el('button', null, 'Day ' + sc.n); b.type = 'button';
-        b.addEventListener('click', function () { startPart = parseInt(sc.n, 10); busy = false; begin(null); $('scroll').scrollTop = 0; mark(); });
+        var b = el('button', null, 'Part ' + sc.n); b.type = 'button';
+        b.addEventListener('click', function () {
+          startPart = parseInt(sc.n, 10); busy = false; begin(null); $('scroll').scrollTop = 0; mark();
+          var known = false; try { known = startPart <= 1 || !!getPartState(startPart); } catch (e) {}
+          if (!known) { var nt = el('p', 'foot', 'Preview: you jumped to this part, so your choices from the earlier parts are not known here. Play the parts in order to see the callbacks.'); $('log').insertBefore(nt, $('log').firstChild); }
+        });
         b.dataset.d = sc.n; bar.appendChild(b);
       });
       var one = el('button', 'go', 'Answer for me'); one.type = 'button'; bar.appendChild(one);
-      var all = el('button', 'go', 'Skip to end of day'); all.type = 'button'; bar.appendChild(all);
+      var all = el('button', 'go', 'Skip to end of part'); all.type = 'button'; bar.appendChild(all);
       function mark() { bar.querySelectorAll('button[data-d]').forEach(function (b) { b.classList.toggle('on', String(startPart || 1) === b.dataset.d); }); }
       function answer() {
         if (busy || !story || !story.currentChoices || !story.currentChoices.length) return false;

@@ -4,11 +4,11 @@
   "shortTitle": "Psychology on Trial",
   "level": "B2",
   "minutes": 10,
-  "lead": "Ten classic psychology experiments, ten minutes a day. Every morning your professor Dr Hale opens one case. You take part in it, read the objections, and decide what is left of the result.",
+  "lead": "Ten classic psychology experiments, in short parts of about ten minutes. In each part your professor Dr Hale opens one case. You take part in it, read the objections, and decide what is left of the result.",
   "how": [
-    "Every day you open one case with Dr Hale, your professor. A day takes about ten minutes.",
+    "Each part takes about ten minutes. You open one case with Dr Hale, your professor.",
     "Some choices are your own opinion, with no right or wrong. Some check your reading, and some check how carefully you write. A red ✕ shows a slip and a better sentence.",
-    "Tap an underlined word to see what it means. Open \"Sources\" at the end of each day to see where the facts come from."
+    "Tap an underlined word to see what it means. Open \"Sources\" at the end of each part to see where the facts come from."
   ],
   "sayLabel": "Better",
   "noteTitle": "Not quite",
@@ -17,7 +17,7 @@
     "noStars": true,
     "choicePrompt": "Your move",
     "totalParts": 31,
-    "endOfDayText": "Well done. Your next day arrives in your email."
+    "endOfDayText": "Well done. The next part will arrive in your email."
   },
   "decisions": [],
   "reviews": [
@@ -29,14 +29,68 @@
         3
       ],
       "label": "Case 1 · Milgram"
+    },
+    {
+      "afterDay": 6,
+      "days": [
+        4,
+        5,
+        6
+      ],
+      "label": "Case 2 · Asch"
+    },
+    {
+      "afterDay": 7,
+      "days": [
+        7
+      ],
+      "only": [
+        "obedience",
+        "volunteer",
+        "confederate",
+        "deception",
+        "sceptical",
+        "welfare",
+        "informed consent",
+        "debrief",
+        "archive",
+        "variation",
+        "safeguard",
+        "significant",
+        "replication",
+        "caveat",
+        "claim",
+        "procedure",
+        "outcome",
+        "comply",
+        "controversy",
+        "interpretation",
+        "robust",
+        "generalise",
+        "majority",
+        "unanimous",
+        "yield",
+        "conformity",
+        "independence",
+        "selective",
+        "anonymous",
+        "ally",
+        "sample",
+        "meta-analysis",
+        "collectivist",
+        "stereotype",
+        "distort",
+        "ambiguous"
+      ],
+      "label": "Case 1 and Case 2"
     }
   ],
   "preview": {
     "noContinue": false,
-    "noNextText": "This is the end of the preview. In the full game, Day 4 opens Case 2."
+    "noNextText": "This is the end of the preview."
   },
   "real": {
     "noContinue": true,
-    "noNextText": "Your next day arrives in your email."
+    "noNextText": "The next part will arrive in your email."
   }
 }

@@ -4,11 +4,11 @@
   "shortTitle": "Psychology on Trial",
   "level": "B2",
   "minutes": 10,
-  "lead": "Ten classic psychology experiments, ten minutes a day. Every morning your professor Dr Hale opens one case. You take part in it, read the objections, and decide what is left of the result.",
+  "lead": "Ten classic psychology experiments, in short parts of about ten minutes. In each part your professor Dr Hale opens one case. You take part in it, read the objections, and decide what is left of the result.",
   "how": [
-    "Every day you open one case with Dr Hale, your professor. A day takes about ten minutes.",
+    "Each part takes about ten minutes. You open one case with Dr Hale, your professor.",
     "Some choices are your own opinion, with no right or wrong. Some check your reading, and some check how carefully you write. A red ✕ shows a slip and a better sentence.",
-    "Tap an underlined word to see what it means. Open \"Sources\" at the end of each day to see where the facts come from."
+    "Tap an underlined word to see what it means. Open \"Sources\" at the end of each part to see where the facts come from."
   ],
   "sayLabel": "Better",
   "noteTitle": "Not quite",
@@ -17,7 +17,7 @@
     "noStars": true,
     "choicePrompt": "Your move",
     "totalParts": 31,
-    "endOfDayText": "Well done. Your next day arrives in your email."
+    "endOfDayText": "Well done. The next part will arrive in your email."
   },
   "decisions": [
     {
@@ -95,6 +95,18 @@
       "day": 1
     },
     {
+      "q": "Results paragraph: which sentence reports it correctly?",
+      "good": [
+        "Every volunteer reached 300 volts, and 26 of the 40 (65 per cent) continued to the maximum.",
+        "The outcome was much higher than the experts had predicted."
+      ],
+      "wrong": [
+        "All forty volunteers went on to the maximum, 450 volts.",
+        "The outcome were higher than the experts predicted."
+      ],
+      "day": 1
+    },
+    {
       "q": "Which version is the most careful and accurate?",
       "good": [
         "The results suggest that many ordinary people may keep following instructions even when this causes serious distress to someone else.",
@@ -122,6 +134,18 @@
         "No. Being glad afterwards is not the same as agreeing in advance, with full information.",
         "Yes. If almost everybody was glad, the harm cannot have been serious.",
         "Partly. But the people who replied may not be typical."
+      ],
+      "day": 2
+    },
+    {
+      "q": "Which sentence reports Milgram's reply to Baumrind correctly?",
+      "good": [
+        "Milgram replied that the stress had been unexpected and brief, and argued that the follow-up showed no lasting harm.",
+        "Milgram pointed to the debriefing and the questionnaire as evidence that the volunteers had not been harmed."
+      ],
+      "wrong": [
+        "Milgram admitted that the volunteers had suffered lasting harm.",
+        "Milgram replying that the debriefing was protecting the volunteers."
       ],
       "day": 2
     },
@@ -201,6 +225,18 @@
       "day": 3
     },
     {
+      "q": "Which sentence uses the evidence from the Discussion most carefully?",
+      "good": [
+        "The replications suggest that the finding is robust, but it cannot be generalised to every situation.",
+        "Partial replications found similar rates, so the finding appears robust in this kind of set-up."
+      ],
+      "wrong": [
+        "The replications prove that people everywhere always obey.",
+        "The finding can be generalise to all situations."
+      ],
+      "day": 3
+    },
+    {
       "q": "Claim: \"Ordinary people always obey authority.\" What is its status?",
       "good": [
         "Too strong."
@@ -231,6 +267,389 @@
         "It shows why research ethics are so important."
       ],
       "day": 3
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Say: \"B.\"",
+        "Say: \"C.\"",
+        "Lean forward and look at the card again."
+      ],
+      "day": 4
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Say: \"C.\"",
+        "Say: \"A.\"",
+        "Lean forward and look at the card again."
+      ],
+      "day": 4
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Say: \"A.\"",
+        "Say: \"B.\"",
+        "Lean forward and look at the card again."
+      ],
+      "day": 4
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Say: \"B.\"",
+        "Say: \"A.\"",
+        "Lean forward and look at the card again."
+      ],
+      "day": 4
+    },
+    {
+      "neutral": true,
+      "options": [
+        "About 20 per cent.",
+        "About 5 per cent.",
+        "Less than 1 per cent."
+      ],
+      "day": 4
+    },
+    {
+      "neutral": true,
+      "options": [
+        "About 5.",
+        "About 15.",
+        "About 35.",
+        "About 60."
+      ],
+      "day": 4
+    },
+    {
+      "neutral": true,
+      "options": [
+        "I trusted my own eyes.",
+        "I thought the others must see something I did not.",
+        "I did not want to be the only one who disagreed.",
+        "I felt tense and I wanted it to end."
+      ],
+      "day": 4
+    },
+    {
+      "q": "Results paragraph: which sentence reports it correctly?",
+      "good": [
+        "In the control group, fewer than one per cent of the answers were wrong.",
+        "On the critical trials, about a third of the answers followed the wrong majority."
+      ],
+      "wrong": [
+        "In the control group, one answer in ten was wrong.",
+        "About three quarters of the participants was following the majority once."
+      ],
+      "day": 4
+    },
+    {
+      "q": "Asch's line study: which sentence is the most careful and accurate?",
+      "good": [
+        "In this set-up, about a third of the answers followed a unanimous wrong majority, and about two thirds did not.",
+        "The results suggest that a unanimous majority can pull many people towards a wrong answer, even when the task is easy."
+      ],
+      "wrong": [
+        "The study proves that most people cannot think for themselves.",
+        "The results suggest that a unanimous majority are able to make people yields."
+      ],
+      "day": 4
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Most of them.",
+        "About half of them.",
+        "A few of them.",
+        "Only one."
+      ],
+      "day": 5
+    },
+    {
+      "q": "Asch's main experiment: which sentence reports the result in the most balanced way?",
+      "good": [
+        "In Asch's main experiment, about a third of the answers followed the group's wrong answer, and about two thirds did not.",
+        "Asch's volunteers resisted the group on most answers, but about three quarters of them yielded at least once."
+      ],
+      "wrong": [
+        "Asch showed that most people always follow the group.",
+        "Asch's volunteers were independent, so the group had no effect."
+      ],
+      "day": 5
+    },
+    {
+      "q": "Deutsch and Gerard: in which order did the three groups make mistakes, from the most to the fewest?",
+      "good": [
+        "Face to face, anonymous, alone."
+      ],
+      "wrong": [
+        "Alone, anonymous, face to face.",
+        "Anonymous, face to face, alone.",
+        "All three made about the same number of mistakes."
+      ],
+      "day": 5
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Normative: I did not want to stand out.",
+        "Informational: I thought the others knew better.",
+        "Both, in different moments.",
+        "Neither: I kept my own opinion."
+      ],
+      "day": 5
+    },
+    {
+      "neutral": true,
+      "options": [
+        "\"Studies of independence and conformity\"",
+        "\"The Asch conformity experiment\"",
+        "\"A minority of one against a unanimous majority\"",
+        "\"How strangers pressure strangers\""
+      ],
+      "day": 5
+    },
+    {
+      "q": "Which sentence reports the review of the objections correctly?",
+      "good": [
+        "Many textbooks gave more space to the answers that followed the group than to the independent answers.",
+        "Deutsch and Gerard distinguished two kinds of pressure, and their anonymous condition suggests that both operate."
+      ],
+      "wrong": [
+        "Textbooks lied about Asch's results.",
+        "Deutsch and Gerard has distinguish two kinds of pressure."
+      ],
+      "day": 5
+    },
+    {
+      "neutral": true,
+      "options": [
+        "One.",
+        "Two.",
+        "Three.",
+        "Fifteen."
+      ],
+      "day": 6
+    },
+    {
+      "q": "The pull of the group stopped growing after three opponents and fell with one ally. What do these numbers suggest?",
+      "good": [
+        "That the size of the majority matters only up to a point, and that one ally makes it much easier to refuse.",
+        "That unanimity matters: when one person breaks it, the pressure falls sharply."
+      ],
+      "wrong": [
+        "That the pressure grows with every extra person.",
+        "That a true partner made no difference."
+      ],
+      "day": 6
+    },
+    {
+      "neutral": true,
+      "options": [
+        "About 130 times.",
+        "About 40 times.",
+        "About 10 times.",
+        "Once."
+      ],
+      "day": 6
+    },
+    {
+      "q": "Which sentence uses the evidence from the Discussion most carefully?",
+      "good": [
+        "The evidence suggests that group pressure varies with the situation, the time and the culture.",
+        "The pressure fell sharply when one person broke the unanimity, so unanimity seems to matter."
+      ],
+      "wrong": [
+        "Asch proved that group pressure is the same in every culture.",
+        "The pressure fall when one person disagree."
+      ],
+      "day": 6
+    },
+    {
+      "q": "Claim: \"People always follow a unanimous majority.\" What is its status?",
+      "good": [
+        "Too strong."
+      ],
+      "wrong": [
+        "Still supported.",
+        "Completely disproved."
+      ],
+      "day": 6
+    },
+    {
+      "q": "Claim: \"A unanimous majority can pull many people towards a wrong answer, but how much depends on the situation, the culture and the time.\" What is its status?",
+      "good": [
+        "Still supported, with limits."
+      ],
+      "wrong": [
+        "Too strong.",
+        "Completely disproved."
+      ],
+      "day": 6
+    },
+    {
+      "neutral": true,
+      "options": [
+        "It shows how a unanimous majority can pull people away from what they see.",
+        "It shows how much independence people also show under pressure.",
+        "It shows that group pressure changes with the time, the place and the people.",
+        "It shows how one ally can change the situation."
+      ],
+      "day": 6
+    },
+    {
+      "q": "___ Milgram's volunteers faced an authority, Asch's volunteers faced a group of equals.",
+      "good": [
+        "Whereas"
+      ],
+      "wrong": [
+        "Unless",
+        "Therefore",
+        "Similarly"
+      ],
+      "day": 7
+    },
+    {
+      "q": "Which sentence compares the two cases most carefully?",
+      "good": [
+        "In both studies, a situation led many people to act against their own judgement, but a large minority did not.",
+        "In Case 1 the pressure came from an authority, whereas in Case 2 it came from a group of equals."
+      ],
+      "wrong": [
+        "Both studies prove that people always follow authorities and groups.",
+        "In Case 1 the pressure come from an authority, whereas in Case 2 it come from a group."
+      ],
+      "day": 7
+    },
+    {
+      "neutral": true,
+      "options": [
+        "An authority figure.",
+        "A group of equals.",
+        "It depends on the person.",
+        "It depends on the situation."
+      ],
+      "day": 7
+    },
+    {
+      "neutral": true,
+      "options": [
+        "That people need a model for saying no.",
+        "That the pressure comes from unanimity, not from size.",
+        "That it is easier to refuse when you feel less alone."
+      ],
+      "day": 7
+    },
+    {
+      "q": "Which sentence uses the synthesis most carefully?",
+      "good": [
+        "Haslam and Reicher argue that obedience may be less blind than it seems.",
+        "Both studies have limitations, but they still show how much a situation can matter."
+      ],
+      "wrong": [
+        "Haslam and Reicher proved that nobody obeys blindly.",
+        "Both studies has limitations, so we can learn nothing from them."
+      ],
+      "day": 7
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Copying the majority is a quick way to learn what works.",
+        "Following the group keeps the group together and helps cooperation.",
+        "It is mainly a habit of culture, not an adaptation."
+      ],
+      "day": 7
+    },
+    {
+      "neutral": true,
+      "options": [
+        "The ethics of the experiments.",
+        "How the results were retold.",
+        "The explanation: obedience or identification.",
+        "Time, place and culture."
+      ],
+      "day": 7
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Group pressure is real, but it is not a law.",
+        "What exactly is pushing you: wanting to belong, or doubting yourself?",
+        "Is there anybody who sees it differently, and could stand beside you?"
+      ],
+      "day": 7
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Case 1, the obedience study.",
+        "Case 2, the line study.",
+        "Neither: I knew both already."
+      ],
+      "day": 7
+    },
+    {
+      "q": "The criticism did not ___ the study, but it changed how it is read.",
+      "good": [
+        "cancel"
+      ],
+      "wrong": [
+        "reproduce",
+        "yield",
+        "estimate"
+      ],
+      "day": 7
+    },
+    {
+      "q": "When everybody in the group gives the same answer, the majority is ___.",
+      "good": [
+        "unanimous"
+      ],
+      "wrong": [
+        "anonymous",
+        "selective",
+        "ambiguous"
+      ],
+      "day": 7
+    },
+    {
+      "q": "Volunteers who ___ with an authority do what they are told, even when they doubt it.",
+      "good": [
+        "comply"
+      ],
+      "wrong": [
+        "remain",
+        "restage",
+        "exert"
+      ],
+      "day": 7
+    },
+    {
+      "q": "The finding appears ___ because partial replications gave similar rates.",
+      "good": [
+        "robust"
+      ],
+      "wrong": [
+        "messy",
+        "typical",
+        "obvious"
+      ],
+      "day": 7
+    },
+    {
+      "q": "Every claim needs a ___: a warning about its limits.",
+      "good": [
+        "caveat"
+      ],
+      "wrong": [
+        "headline",
+        "stereotype",
+        "sample"
+      ],
+      "day": 7
     }
   ],
   "reviews": [
@@ -242,14 +661,68 @@
         3
       ],
       "label": "Case 1 · Milgram"
+    },
+    {
+      "afterDay": 6,
+      "days": [
+        4,
+        5,
+        6
+      ],
+      "label": "Case 2 · Asch"
+    },
+    {
+      "afterDay": 7,
+      "days": [
+        7
+      ],
+      "only": [
+        "obedience",
+        "volunteer",
+        "confederate",
+        "deception",
+        "sceptical",
+        "welfare",
+        "informed consent",
+        "debrief",
+        "archive",
+        "variation",
+        "safeguard",
+        "significant",
+        "replication",
+        "caveat",
+        "claim",
+        "procedure",
+        "outcome",
+        "comply",
+        "controversy",
+        "interpretation",
+        "robust",
+        "generalise",
+        "majority",
+        "unanimous",
+        "yield",
+        "conformity",
+        "independence",
+        "selective",
+        "anonymous",
+        "ally",
+        "sample",
+        "meta-analysis",
+        "collectivist",
+        "stereotype",
+        "distort",
+        "ambiguous"
+      ],
+      "label": "Case 1 and Case 2"
     }
   ],
   "preview": {
     "noContinue": false,
-    "noNextText": "This is the end of the preview. In the full game, Day 4 opens Case 2."
+    "noNextText": "This is the end of the preview."
   },
   "real": {
     "noContinue": true,
-    "noNextText": "Your next day arrives in your email."
+    "noNextText": "The next part will arrive in your email."
   }
 }

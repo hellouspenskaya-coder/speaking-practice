@@ -10,6 +10,8 @@ const story=new Compiler(src,{errorHandler:(m,t)=>{(t===2?errs:warns).push(m)}})
 console.log(meta.slug,'compile errors',errs,'warnings',warns); if(errs.length) process.exit(1);
 const json=story.ToJson().replace(/^﻿/,''); fs.writeFileSync(path.join(dir,'story.json'),json);
 let problems=0; const bad=(m)=>{problems++;console.log('PROBLEM:',m)};
+// lint: text right after a choice block without a "- " gather becomes part of the last choice only (a reader who picks another choice never sees it)
+{ let inCh=false; src.split('\n').forEach((ln,i)=>{ if(/^\s*[*+] \[/.test(ln)){inCh=true;return;} if(!inCh)return; if(/^\s+\S/.test(ln)||ln.trim()==='')return; if(/^(- |===|\/\/)/.test(ln)||ln.trim()==='-'){inCh=false;return;} bad(`line ${i+1} follows a choice block without a "- " gather: ${ln.slice(0,60)}`); inCh=false; }); }
 // 1) every decision in meta exists in the story, with the right good/flawed replies
 const blocks=src.split(/^- \(d\d+\)\s*$/m).slice(1);
 if(blocks.length!==meta.decisions.length) bad(`story has ${blocks.length} decisions, meta lists ${meta.decisions.length}`);

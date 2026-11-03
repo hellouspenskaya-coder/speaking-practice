@@ -51,6 +51,8 @@ h1{font-size:34px;line-height:1.15}
       app.appendChild(head);
       var list=data.deliveries||[];
       if(!list.length){app.appendChild(el('p','sub','Your first set will arrive by email soon.'));return;}
+      /* a story game or a course part has a words set: story-game.html?set=<slug>[&part=N] -> vocab-trainer.html?set=<slug>-words[-N] */
+      function wordsHref(u){try{var x=new URL(u,location.href);if(!/\/story-game\.html$/.test(x.pathname))return '';var sl=x.searchParams.get('set'),pt=x.searchParams.get('part');if(!sl)return '';return x.origin+'/vocab-trainer.html?set='+encodeURIComponent(sl+(pt?'-words-'+pt:'-words'));}catch(e){return '';}}
       var newest=list[0].sent;
       var fresh=list.filter(function(d){return d.sent===newest;});
       var older=list.filter(function(d){return d.sent!==newest;});
@@ -63,6 +65,7 @@ h1{font-size:34px;line-height:1.15}
         c.appendChild(r);
         c.appendChild(el('h2',null,d.title));
         var a=el('a','btn','Open set');a.href=d.url;c.appendChild(a);
+        var wh=wordsHref(d.url);if(wh){var wl=el('a',null,'Only the words');wl.href=wh;wl.style.cssText='margin-left:14px;font-size:15px';c.appendChild(wl);}
         app.appendChild(c);
       });
       if(older.length){
@@ -71,7 +74,9 @@ h1{font-size:34px;line-height:1.15}
           var it=el('div','item');
           var l=el('div');l.appendChild(el('div','t',d.title));l.appendChild(el('div','meta',d.label+' · sent '+fmt(d.sent)));
           var a=el('a',null,'Open again');a.href=d.url;
-          it.appendChild(l);it.appendChild(a);sec.appendChild(it);
+          it.appendChild(l);it.appendChild(a);
+          var wh2=wordsHref(d.url);if(wh2){var wl2=el('a',null,'Words');wl2.href=wh2;wl2.style.cssText='margin-left:12px';it.appendChild(wl2);}
+          sec.appendChild(it);
         });
         app.appendChild(sec);
       }

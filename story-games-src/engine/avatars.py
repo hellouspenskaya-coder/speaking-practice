@@ -9,11 +9,13 @@ def avatar(skin,hair,hcol,shirt,extra=(),cap='k'):
     p.append(f'<path class="{shirt}" d="M5 48Q7 34 24 34Q41 34 43 48Z"/>')
     p.append(f'<rect x="21" y="27" width="6" height="9" rx="2" fill="{s}"/><circle cx="24" cy="22" r="10" fill="{s}"/>')
     if hair=='short': p.append(f'<path d="M13.5 22Q13 10 24 10.5Q35 10 34.5 22Q32 15.5 24 15.5Q16 15.5 13.5 22Z" fill="{hcol}"/>')
+    if hair=='curly': p.append(''.join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="{hcol}"/>' for x,y,r in [(14,22,3.6),(15,16.5,4.6),(19.5,12,5),(24.5,10.2,5.2),(29.5,12,5),(33,16.5,4.6),(34,22,3.6)]))
     if hair=='bun': p.append(f'<path d="M13.5 22Q13 10 24 10.5Q35 10 34.5 22Q32 15.5 24 15.5Q16 15.5 13.5 22Z" fill="{hcol}"/><circle cx="24" cy="8" r="4.2" fill="{hcol}"/>')
     if hair=='long': p.append(f'<path d="M13.5 22Q13 10 24 10.5Q35 10 34.5 22Q31 14.5 24 14.5Q17 14.5 13.5 22Z" fill="{hcol}"/>')
     if hair=='bald': p.append(f'<path d="M14 21Q13.5 18 15 16.5Q14.5 20 16 22Z M34 21Q34.5 18 33 16.5Q33.5 20 32 22Z" fill="{hcol}"/>')
     if hair=='cap': p.append(f'<path d="M13 19Q13.5 7.5 24 7.5Q34.5 7.5 35 19Z" class="{cap}"/><rect x="21" y="17" width="19" height="3.2" rx="1.6" class="{cap}"/><rect x="21.5" y="11" width="5" height="3.4" rx="1" class="o"/>')
     p.append('<circle cx="20.3" cy="22.5" r="1.25" fill="#2B2B2B"/><circle cx="27.7" cy="22.5" r="1.25" fill="#2B2B2B"/><path d="M20.5 27Q24 29.8 27.5 27" fill="none" stroke="#2B2B2B" stroke-width="1.3" stroke-linecap="round"/>')
+    if 'beard' in extra: p.append(f'<path d="M13.6 23Q13 38.5 24 38.8Q35 38.5 34.4 23Q33.4 31.5 29 31.6Q24 33.6 19 31.6Q14.6 31.5 13.6 23Z" fill="{hcol}"/>')
     if 'bigstache' in extra: p.append('<path d="M16.5 26.8Q19 23.4 24 25.4Q29 23.4 31.5 26.8Q28 29.2 24 27.2Q20 29.2 16.5 26.8Z" fill="#5C6168"/>')
     if 'mustache' in extra: p.append(f'<path d="M19 26Q24 24.2 29 26Q24 27.8 19 26Z" fill="{hcol}"/>')
     if 'glasses' in extra: p.append('<circle cx="20.3" cy="22.5" r="3.2" fill="none" stroke="#2B2B2B" stroke-width="1"/><circle cx="27.7" cy="22.5" r="3.2" fill="none" stroke="#2B2B2B" stroke-width="1"/><path d="M23.5 22.5h1" stroke="#2B2B2B" stroke-width="1"/>')
@@ -39,7 +41,7 @@ KNOWN={
  # Alex Reed
  "Alex":    dict(skin='a',hair='short',hcol='#4A4038',shirt='k'),
  # Case Files
- "Dr Hale": dict(skin='a',hair='short',hcol='#9AA0A6',shirt='md',extra=('glasses','bigstache','tie')),
+ "Dr Hale": dict(skin='a',hair='curly',hcol='#9AA0A6',shirt='md',extra=('glasses','beard','tie')),
  "Experimenter": dict(skin='a',hair='short',hcol='#3A3028',shirt='k',extra=('glasses','tie')),
  "Learner": dict(skin='b',hair='short',hcol='#7A6A5A',shirt='o',extra=('mustache',)),
 }
