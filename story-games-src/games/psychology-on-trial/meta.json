@@ -1,0 +1,255 @@
+{
+  "slug": "psychology-on-trial",
+  "title": "Psychology on Trial",
+  "shortTitle": "Psychology on Trial",
+  "level": "B2",
+  "minutes": 10,
+  "lead": "Ten classic psychology experiments, ten minutes a day. Every morning your professor Dr Hale opens one case. You take part in it, read the objections, and decide what is left of the result.",
+  "how": [
+    "Every day you open one case with Dr Hale, your professor. A day takes about ten minutes.",
+    "Some choices are your own opinion, with no right or wrong. Some check your reading, and some check how carefully you write. A red ✕ shows a slip and a better sentence.",
+    "Tap an underlined word to see what it means. Open \"Sources\" at the end of each day to see where the facts come from."
+  ],
+  "sayLabel": "Better",
+  "noteTitle": "Not quite",
+  "noStars": true,
+  "player": {
+    "noStars": true,
+    "choicePrompt": "Your move",
+    "totalParts": 31,
+    "endOfDayText": "Well done. Your next day arrives in your email."
+  },
+  "decisions": [
+    {
+      "neutral": true,
+      "options": [
+        "Very few. Two or three at most.",
+        "About a quarter.",
+        "Around half.",
+        "Most of them."
+      ],
+      "day": 1
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Press the next switch.",
+        "Say: \"He wants to leave. Is he all right?\"",
+        "Say that you want to stop."
+      ],
+      "day": 1
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Press the next switch.",
+        "Say: \"Sir, I am worried. Should we stop?\"",
+        "Say that you want to stop."
+      ],
+      "day": 1
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Press the next switch.",
+        "Say: \"I cannot hear him any more. Please check on him.\"",
+        "Say that you want to stop."
+      ],
+      "day": 1
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Press the last switch.",
+        "Say: \"I think something is wrong in there.\"",
+        "Say that you want to stop."
+      ],
+      "day": 1
+    },
+    {
+      "neutral": true,
+      "options": [
+        "All right. Press the next switch.",
+        "Say that you will not go on."
+      ],
+      "day": 1
+    },
+    {
+      "q": "What do you say to the experimenter?",
+      "good": [
+        "I'm not comfortable going on. I would like to stop now.",
+        "I'm sorry, but I won't continue unless someone checks on him."
+      ],
+      "wrong": [
+        "I no want continue more.",
+        "Stop this at once! You are a monster!"
+      ],
+      "day": 1
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Hold your position: \"My answer is still no.\"",
+        "Give in: \"All right. I will go on.\""
+      ],
+      "day": 1
+    },
+    {
+      "q": "Which version is the most careful and accurate?",
+      "good": [
+        "The results suggest that many ordinary people may keep following instructions even when this causes serious distress to someone else.",
+        "In this set-up, most volunteers were willing to continue to the end, which suggests that a situation can be more powerful than people expect."
+      ],
+      "wrong": [
+        "The study proves that everybody is a potential torturer.",
+        "The results suggest that many people tends to obey authority."
+      ],
+      "day": 1
+    },
+    {
+      "neutral": true,
+      "options": [
+        "About one in three.",
+        "About half.",
+        "About two thirds.",
+        "More than four in five."
+      ],
+      "day": 2
+    },
+    {
+      "neutral": true,
+      "options": [
+        "No. Being glad afterwards is not the same as agreeing in advance, with full information.",
+        "Yes. If almost everybody was glad, the harm cannot have been serious.",
+        "Partly. But the people who replied may not be typical."
+      ],
+      "day": 2
+    },
+    {
+      "neutral": true,
+      "options": [
+        "\"Please continue.\"",
+        "\"The experiment requires that you continue.\"",
+        "\"It is absolutely essential that you continue.\"",
+        "\"You have no other choice. You must go on.\""
+      ],
+      "day": 2
+    },
+    {
+      "q": "What did Haslam, Reicher and Birney find in their analogue study?",
+      "good": [
+        "Appeals to the value of science were more effective than orders."
+      ],
+      "wrong": [
+        "Orders worked better than any other prod.",
+        "The prods had no effect at all.",
+        "Everyone refused after the third prod."
+      ],
+      "day": 2
+    },
+    {
+      "q": "Which version reports the criticism most carefully?",
+      "good": [
+        "Some researchers argue that the volunteers were responding to appeals to science rather than to orders.",
+        "Archival evidence suggests that doubt about the set-up may have influenced how far some volunteers went."
+      ],
+      "wrong": [
+        "The critics have proved that Milgram made up his results.",
+        "According to Perry, many volunteers doubts the shocks were real."
+      ],
+      "day": 2
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Because they trusted the science and the university.",
+        "Because they doubted that the learner was really in danger.",
+        "Because after the first shocks it felt too late to stop."
+      ],
+      "day": 2
+    },
+    {
+      "neutral": true,
+      "options": [
+        "The experimenter gave his orders by telephone.",
+        "The learner sat in the same room.",
+        "Two other \"volunteers\" refused before the real volunteer.",
+        "The study took place in a plain office, not at Yale."
+      ],
+      "day": 3
+    },
+    {
+      "q": "What do the variations in Milgram's study suggest?",
+      "good": [
+        "That the situation strongly affects how far people go, and that support from others makes refusal much easier."
+      ],
+      "wrong": [
+        "That obedience does not depend on the situation.",
+        "That the lab coat was the only thing that mattered.",
+        "That Milgram's first result was a mistake."
+      ],
+      "day": 3
+    },
+    {
+      "neutral": true,
+      "options": [
+        "Much less. Times have changed.",
+        "A little less.",
+        "About the same.",
+        "More than in 1961."
+      ],
+      "day": 3
+    },
+    {
+      "q": "Claim: \"Ordinary people always obey authority.\" What is its status?",
+      "good": [
+        "Too strong."
+      ],
+      "wrong": [
+        "Still supported.",
+        "Completely disproved."
+      ],
+      "day": 3
+    },
+    {
+      "q": "Claim: \"Situations can push many people further than they expect.\" What is its status?",
+      "good": [
+        "Still supported, but \"obedience\" may be the wrong explanation."
+      ],
+      "wrong": [
+        "Too strong.",
+        "Completely disproved."
+      ],
+      "day": 3
+    },
+    {
+      "neutral": true,
+      "options": [
+        "It shows that situations can push ordinary people very far.",
+        "It shows that people follow causes they believe in, not only orders.",
+        "It shows that one dramatic number can hide a more complicated story.",
+        "It shows why research ethics are so important."
+      ],
+      "day": 3
+    }
+  ],
+  "reviews": [
+    {
+      "afterDay": 3,
+      "days": [
+        1,
+        2,
+        3
+      ],
+      "label": "Case 1 · Milgram"
+    }
+  ],
+  "preview": {
+    "noContinue": false,
+    "noNextText": "This is the end of the preview. In the full game, Day 4 opens Case 2."
+  },
+  "real": {
+    "noContinue": true,
+    "noNextText": "Your next day arrives in your email."
+  }
+}

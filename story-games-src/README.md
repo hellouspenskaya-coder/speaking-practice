@@ -14,3 +14,6 @@ cd story-games-src/engine && npm install
 node build.js ../games/<slug>
 node assemble.js ../games/<slug> ../../out/<slug>   # then copy the two .json files into vocab-sets/ (and story-game.html if it changed)
 ```
+
+## Courses (many days in one game)
+`psychology-on-trial` is one game with one scene per day (`=== epN ===`), `# endpart: N` closes a day. The player opens a day with `story-game.html?set=<slug>&part=N`. `game.words.json` has a `day` for each word, which gives one Voc Practice set per day (`<slug>-words-N`); `meta.base.json` -> `reviews` adds a review set after a case (`<slug>-review-N`). `derive_meta.py <game folder>` makes `meta.json` from `story.ink` + `meta.base.json`. In `meta.base.json`, `preview` and `real` hold settings that differ between the preview file (free navigation between days and questions) and the real game (no "next day" button: the next day arrives by email).

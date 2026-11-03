@@ -14,6 +14,7 @@ def avatar(skin,hair,hcol,shirt,extra=(),cap='k'):
     if hair=='bald': p.append(f'<path d="M14 21Q13.5 18 15 16.5Q14.5 20 16 22Z M34 21Q34.5 18 33 16.5Q33.5 20 32 22Z" fill="{hcol}"/>')
     if hair=='cap': p.append(f'<path d="M13 19Q13.5 7.5 24 7.5Q34.5 7.5 35 19Z" class="{cap}"/><rect x="21" y="17" width="19" height="3.2" rx="1.6" class="{cap}"/><rect x="21.5" y="11" width="5" height="3.4" rx="1" class="o"/>')
     p.append('<circle cx="20.3" cy="22.5" r="1.25" fill="#2B2B2B"/><circle cx="27.7" cy="22.5" r="1.25" fill="#2B2B2B"/><path d="M20.5 27Q24 29.8 27.5 27" fill="none" stroke="#2B2B2B" stroke-width="1.3" stroke-linecap="round"/>')
+    if 'bigstache' in extra: p.append('<path d="M16.5 26.8Q19 23.4 24 25.4Q29 23.4 31.5 26.8Q28 29.2 24 27.2Q20 29.2 16.5 26.8Z" fill="#5C6168"/>')
     if 'mustache' in extra: p.append(f'<path d="M19 26Q24 24.2 29 26Q24 27.8 19 26Z" fill="{hcol}"/>')
     if 'glasses' in extra: p.append('<circle cx="20.3" cy="22.5" r="3.2" fill="none" stroke="#2B2B2B" stroke-width="1"/><circle cx="27.7" cy="22.5" r="3.2" fill="none" stroke="#2B2B2B" stroke-width="1"/><path d="M23.5 22.5h1" stroke="#2B2B2B" stroke-width="1"/>')
     if 'scarf' in extra: p.append('<path class="r" d="M16 35Q24 41 32 35L33 40Q24 46 15 40Z"/>')
@@ -37,6 +38,10 @@ KNOWN={
  "Mr Lukas":dict(skin='b',hair='short',hcol='#2B211B',shirt='md',extra=('tie',)),
  # Alex Reed
  "Alex":    dict(skin='a',hair='short',hcol='#4A4038',shirt='k'),
+ # Case Files
+ "Dr Hale": dict(skin='a',hair='short',hcol='#9AA0A6',shirt='md',extra=('glasses','bigstache','tie')),
+ "Experimenter": dict(skin='a',hair='short',hcol='#3A3028',shirt='k',extra=('glasses','tie')),
+ "Learner": dict(skin='b',hair='short',hcol='#7A6A5A',shirt='o',extra=('mustache',)),
 }
 NO_AVATAR={'Announcement'}   # voices without a face
 def auto(name):
@@ -48,7 +53,7 @@ def speakers(src):
     seen=[]
     for line in src.split('\n'):
         t=line.strip()
-        if t.startswith('//') or t.startswith('* [') or t.startswith('VAR') or t.startswith('===') or t.endswith('# note'): continue
+        if t.startswith('//') or t.startswith('* [') or t.startswith('VAR') or t.startswith('===') or t.endswith('# note') or '# card:' in t or '# fold:' in t: continue
         t=re.sub(r'^(-\s*(\(\w+\)\s*)?)+','',t)
         m=re.match(r"^([A-Z][A-Za-z' -]{1,24}):\s+\S",t)
         if m and m.group(1) not in seen and m.group(1) not in NO_AVATAR: seen.append(m.group(1))

@@ -149,10 +149,40 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .pass .stp span { display: block; font-family: var(--sans); font-size: 11px; color: var(--muted); margin-top: -2px; }
 @keyframes stamp { 0% { opacity: 0; transform: scale(1.8) rotate(-12deg); } 60% { opacity: 1; transform: scale(.94); } 100% { opacity: .92; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .pass .stp { opacity: .92; } }
+/* multi-day games: progress label, neutral choices, folds, notes, end-of-day panel */
+.road.prog { display: block; flex: 1 0 120px; }
+.road.prog li { display: block; height: auto; }
+.road.prog li::before { display: none; }
+.prog-t { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: .06em; color: var(--muted); white-space: nowrap; }
+.prog-bar { height: 4px; background: var(--line); border-radius: 2px; margin-top: 5px; overflow: hidden; }
+.prog-bar i { display: block; height: 100%; background: var(--tint); }
+.choice.sel { border-color: var(--tint); background: color-mix(in srgb, var(--tint) 12%, var(--surface)); }
+.choice.sel .ic { background: var(--tint); border-color: var(--tint); color: #fff; }
+.say.you.neutral { border-right-color: var(--tint); }
+.card { border: 1px solid var(--line); border-left: 3px solid var(--tint); border-radius: 6px; background: var(--surface); padding: 12px 16px 14px; font-family: var(--sans); font-size: 16px; animation: rise .45s ease both; }
+.card .ct { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--tint); margin-bottom: 6px; }
+.card p { margin: 0 0 .5rem; font-family: var(--serif); font-size: 17px; }
+.fold { align-self: flex-start; max-width: 100%; animation: rise .45s ease both; }
+.fold-btn { font-family: var(--sans); font-size: 14px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); }
+.fold-btn:hover, .fold-btn[aria-expanded="true"] { border-color: var(--tint); color: var(--ink); }
+.fold-body { margin: 8px 0 0; padding: 8px 0 8px 14px; border-left: 3px solid var(--line); font-family: var(--sans); font-size: 14.5px; color: var(--muted); }
+.fold-body p { margin: 0 0 .5rem; }
+.write { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--tint); border-radius: 6px; padding: 14px 16px 16px; animation: rise .45s ease both; }
+.write label { display: block; font-weight: 500; margin-bottom: 10px; }
+.write textarea { width: 100%; min-height: 7rem; resize: vertical; font: inherit; font-size: 17px; line-height: 1.55; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px; }
+.write .hint { font-family: var(--sans); font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+#partend { margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1.6rem; }
+#partend h2 { font-weight: 500; font-style: italic; font-size: 1.7rem; margin: 0 0 .6rem; }
 .err { margin: 4rem 0; font-family: var(--sans); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; scroll-behavior: auto !important; } }
 @media (max-width: 480px) { body { font-size: 18px; } .choice { font-size: 18px; } }
+
+.pv{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#1d2b3a;color:#fff;padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font:600 13px/1.2 system-ui,sans-serif;box-shadow:0 -2px 10px rgba(0,0,0,.25)}
+.pv b{opacity:.75;font-weight:600;margin-right:2px}
+.pv button{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;border-radius:8px;padding:7px 10px;font:inherit;cursor:pointer}
+.pv button.on{background:#fff;color:#1d2b3a}
+.pv button.go{background:#2f7bd9;border-color:#2f7bd9}
 </style>
 </head>
 <body>
@@ -182,12 +212,33 @@ button { font: inherit; color: inherit; cursor: pointer; }
       <button class="btn ghost" id="btn-cont" type="button" hidden>Continue where I stopped</button>
     </div>
     <p class="foot">The game saves itself. Your progress stays only in this browser.</p>
+    <div id="start-practice" hidden>
+      <h3>Only the words</h3>
+      <div class="row" id="sp-row"></div>
+      <p class="foot" id="sp-foot"></p>
+    </div>
   </section>
 
   <section id="game" hidden>
     <div id="log" aria-live="polite"></div>
     <div id="choices"></div>
     <div class="row back"><button class="btn ghost" id="btn-back" type="button" hidden>← Back one step</button></div>
+    <section id="partend" hidden>
+      <h2 id="pe-title"></h2>
+      <p class="foot" id="pe-lead"></p>
+      <div class="row" style="margin-top:1rem">
+        <button class="btn accent" id="pe-copy" type="button">Copy my notes</button>
+        <button class="btn ghost" id="pe-send" type="button" aria-disabled="true" hidden>Send to my teacher</button>
+      </div>
+      <p class="foot" id="pe-msg" role="status"></p>
+      <div class="row" style="margin-top:1.2rem">
+        <a class="btn" id="pe-practice" href="#">Practise today's words</a>
+        <a class="btn" id="pe-review" href="#" hidden>Review</a>
+        <button class="btn accent" id="pe-next" type="button" hidden>Continue to the next day</button>
+      </div>
+      <p class="foot" id="pe-foot"></p>
+      <textarea id="pe-area" class="sr" readonly aria-label="My notes"></textarea>
+    </section>
     <section id="finish" hidden>
       <h2 id="f-title">The end</h2>
       <p class="score" id="f-score"></p>
@@ -205,6 +256,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 </main>
 </div>
 
+<div class="pv" id="pv" hidden></div>
 <script>/*INK_JS*/</script>
 <script>
 window.__GAME__ = /*GAME_DATA*/null;
@@ -213,11 +265,11 @@ window.__GAME__ = /*GAME_DATA*/null;
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var G, slug, KEY, story, log, scene, hist, saveTimer, words = {}, scenes = [];
+  var G, slug, KEY, story, log, scene, hist, saveTimer, words = {}, scenes = [], notes = {}, partEnd = null, startPart = 0, foldHost = null, foldLabel = null, cardHost = null;
 
   function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
   function readSave() { try { var s = localStorage.getItem(KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify({ state: story.state.toJson(), log: log, scene: scene, hist: hist })); } catch (e) {} }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ state: story.state.toJson(), log: log, scene: scene, hist: hist, notes: notes, pe: partEnd })); } catch (e) {} }
   function clearSave() { try { localStorage.removeItem(KEY); } catch (e) {} }
   function showError(msg) {
     $('err').hidden = false; $('start').hidden = true; $('game').hidden = true;
@@ -274,6 +326,12 @@ window.__GAME__ = /*GAME_DATA*/null;
 
   function drawRoad() {
     var ol = $('road'); ol.textContent = '';
+    if (G.totalParts) {
+      var cp = parseInt(scene, 10) || 1, li0 = el('li'); ol.className = 'road prog';
+      li0.appendChild(el('div', 'prog-t', 'Day ' + cp + ' of ' + G.totalParts));
+      var bar = el('div', 'prog-bar'), fill0 = el('i'); fill0.style.width = (cp / G.totalParts * 100) + '%'; bar.appendChild(fill0); li0.appendChild(bar);
+      ol.appendChild(li0); return;
+    }
     var cur = scene === 'end' ? scenes.length + 1 : (parseInt(scene, 10) || 0);
     scenes.forEach(function (s, idx) {
       var i = idx + 1, li = el('li', i < cur ? 'done' : (i === cur ? 'cur' : ''));
@@ -286,9 +344,32 @@ window.__GAME__ = /*GAME_DATA*/null;
 
   function paint(e) {
     var host = $('log'), n;
+    if (e.t !== 'fold') foldHost = null;
+    if (e.t !== 'card') cardHost = null;
+    if (e.t === 'card') {
+      if (cardHost && cardHost.label === e.label) { cardHost.body.appendChild(el('p', null, e.text)); return null; }
+      n = el('div', 'line card'); n.appendChild(el('div', 'ct', e.label)); var cb = el('div'); cb.appendChild(el('p', null, e.text)); n.appendChild(cb);
+      host.appendChild(n); cardHost = { label: e.label, body: cb }; return n;
+    }
+    if (e.t === 'fold') {
+      if (foldHost && foldHost.label === e.label) { foldHost.body.appendChild(el('p', null, e.text)); return null; }
+      n = el('div', 'fold'); var fb = el('button', 'fold-btn', e.label); fb.type = 'button'; fb.setAttribute('aria-expanded', 'false');
+      var body = el('div', 'fold-body'); body.hidden = true; body.appendChild(el('p', null, e.text));
+      fb.addEventListener('click', function () { var o = body.hidden; body.hidden = !o; fb.setAttribute('aria-expanded', o ? 'true' : 'false'); });
+      n.appendChild(fb); n.appendChild(body); host.appendChild(n); foldHost = { label: e.label, body: body };
+      return n;
+    }
+    if (e.t === 'write') {
+      n = el('div', 'write'); var wid = 'w' + e.k, wl = el('label', null, e.text); wl.setAttribute('for', wid);
+      var ta = el('textarea'); ta.id = wid; ta.rows = 5; ta.value = notes[e.k] || '';
+      ta.placeholder = 'Optional. A few sentences are enough, in English or in your own words.';
+      ta.addEventListener('input', function () { notes[e.k] = ta.value; clearTimeout(saveTimer); saveTimer = setTimeout(save, 400); });
+      n.appendChild(wl); n.appendChild(ta); n.appendChild(el('p', 'hint', 'Your note stays in this browser. You decide what to share.')); host.appendChild(n);
+      return n;
+    }
     if (e.t === 'scene') {
       scene = e.n;
-      n = el('div', 'scn'); n.appendChild(el('div', 'lab', 'Scene ' + e.n)); n.appendChild(el('h2', null, e.title));
+      n = el('div', 'scn'); n.appendChild(el('div', 'lab', (G.totalParts ? 'Day ' : 'Scene ') + e.n)); n.appendChild(el('h2', null, e.title));
       var sa = G.art && G.art.scenes && G.art.scenes[e.n];
       if (sa) { var ad = el('div', 'art scene-art'); ad.innerHTML = sa.svg; ad.setAttribute('role', 'img'); ad.setAttribute('aria-label', sa.alt || e.title); n.appendChild(ad); }
       host.appendChild(n); drawRoad();
@@ -303,7 +384,7 @@ window.__GAME__ = /*GAME_DATA*/null;
       who.appendChild(spkBtn(e.text.replace(/‹([^›]+)›/g, '$1'))); if (!canSpeak) who.lastChild.hidden = true;
       body.appendChild(who); var q = el('p'); fill(q, e.text, body); body.appendChild(q); host.appendChild(n);
     } else if (e.t === 'you') {
-      n = el('div', 'line say you' + (e.ok === true ? ' ok' : e.ok === false ? ' bad' : ''));
+      n = el('div', 'line say you' + (e.ok === true ? ' ok' : e.ok === false ? ' bad' : e.neutral ? ' neutral' : ''));
       var yw = el('div', 'who');
       if (e.ok !== undefined) { yw.appendChild(el('span', 'mk', e.ok ? '✓' : '✕')); yw.appendChild(el('span', 'sr', e.ok ? ' right' : ' not this one')); }
       yw.appendChild(el('span', null, 'You'));
@@ -323,6 +404,31 @@ window.__GAME__ = /*GAME_DATA*/null;
     return n;
   }
 
+  function partTitle(n) { var t = ''; scenes.forEach(function (x) { if (String(x.n) === String(n)) t = x.title; }); return t; }
+  function notesText(n) {
+    var out = [];
+    log.forEach(function (e) { if (e.t === 'write' && String(e.part) === String(n) && (notes[e.k] || '').trim()) out.push(e.text.replace(/^Your take \(optional\):\s*/, '') + '\n' + notes[e.k].trim()); });
+    return out.length ? 'Day ' + n + ' · ' + partTitle(n) + '\n\n' + out.join('\n\n') : '';
+  }
+  function showPartEnd() {
+    var n = partEnd, pe = $('partend'); pe.hidden = false;
+    $('pe-title').textContent = 'Day ' + n + ' done';
+    var hasNotes = log.some(function (x) { return x.t === 'write' && String(x.part) === String(n); });
+    $('pe-lead').textContent = hasNotes ? 'Your notes are optional. Copy them and bring them to the lesson, or keep them to yourself.' : (G.endOfDayText || '');
+    $('pe-copy').hidden = !hasNotes;
+    var next = null; (G.totalParts && scenes.some(function (x) { return String(x.n) === String(n + 1); })) && (next = n + 1);
+    $('pe-next').hidden = !next || !!G.noContinue;
+    $('pe-foot').textContent = next ? '' : (G.noNextText || '');
+    var pa = $('pe-practice'), ps = G.practiceSets && G.practiceSets[String(n)];
+    if (ps && !G.preview) { pa.href = '/vocab-trainer.html?set=' + encodeURIComponent(ps); pa.removeAttribute('aria-disabled'); pa.textContent = 'Practise the words of day ' + n; }
+    else { pa.href = '#'; pa.setAttribute('aria-disabled', 'true'); pa.textContent = G.preview ? "Practise the words (opens after publishing)" : "Practise today's words"; if (!ps && !G.preview) pa.hidden = true; }
+    var pr = $('pe-review'), rv = G.reviewSets && G.reviewSets[String(n)];
+    pr.hidden = !rv;
+    if (rv) { pr.textContent = 'Review: ' + rv.label; if (G.preview) { pr.href = '#'; pr.setAttribute('aria-disabled', 'true'); } else { pr.href = '/vocab-trainer.html?set=' + encodeURIComponent(rv.slug); pr.removeAttribute('aria-disabled'); } }
+    var sb = $('pe-send'); sb.hidden = !hasNotes || (!G.preview && !G.sendNotes);
+    if (G.preview && !G.sendNotes) { sb.setAttribute('aria-disabled', 'true'); sb.title = 'Preview: sending is not connected yet'; }
+    scene = String(n); drawRoad();
+  }
   function finishView() {
     var smooth = 0; try { smooth = story.variablesState['smooth'] || 0; } catch (e) {}
     $('f-score').textContent = '';
@@ -352,16 +458,18 @@ window.__GAME__ = /*GAME_DATA*/null;
   function showChoices() {
     var box = $('choices'); box.textContent = '';
     $('btn-back').hidden = hist.length === 0;
-    var fin = $('finish');
-    if (!story.currentChoices.length) { scene = 'end'; drawRoad(); fin.hidden = false; finishView(); return; }
+    var fin = $('finish'); $('partend').hidden = true;
+    if (!story.currentChoices.length) {
+      if (partEnd != null) { fin.hidden = true; showPartEnd(); return; }
+      scene = 'end'; drawRoad(); fin.hidden = false; finishView(); return;
+    }
     fin.hidden = true;
-    if (G.prompt) { /* optional line above the choices */ }
-    box.appendChild(el('div', 'prompt', 'What do you say?'));
+    box.appendChild(el('div', 'prompt', G.choicePrompt || 'What do you say?'));
     story.currentChoices.forEach(function (c, i) {
-      var ok = c.text.charAt(0) === '§', label = ok ? c.text.slice(1) : c.text;
+      var mk = c.text.charAt(0), ok = mk === '§', neutral = mk === '^', label = (ok || neutral) ? c.text.slice(1) : c.text;
       var b = el('button', 'choice'); b.type = 'button';
       b.appendChild(el('span', 'ic')); b.appendChild(el('span', null, label));
-      b.addEventListener('click', function () { pick(b, i, label, ok); });
+      b.addEventListener('click', function () { pick(b, i, label, neutral ? null : ok); });
       b.style.animationDelay = (i * 60) + 'ms';
       box.appendChild(b);
     });
@@ -371,16 +479,24 @@ window.__GAME__ = /*GAME_DATA*/null;
     var first = null;
     while (story.canContinue) {
       var text = story.Continue().trim(), tags = story.currentTags || [];
-      var sc = null, ttl = null, isNote = false;
+      var sc = null, ttl = null, isNote = false, fl = null, isWrite = false, ep = null, cd = null;
       tags.forEach(function (t) {
         var m = /^scene:\s*(.+)$/.exec(t); if (m) sc = m[1].trim();
         var mt = /^title:\s*(.+)$/.exec(t); if (mt) ttl = mt[1].trim();
         if (t === 'note') isNote = true;
+        var mf = /^fold:\s*(.+)$/.exec(t); if (mf) fl = mf[1].trim();
+        var mc = /^card:\s*(.+)$/.exec(t); if (mc) cd = mc[1].trim();
+        if (t === 'write') isWrite = true;
+        var me = /^endpart:\s*(\d+)/.exec(t); if (me) ep = parseInt(me[1], 10);
       });
+      if (ep != null) partEnd = ep;
       var added = [];
       if (sc) added.push({ t: 'scene', n: sc, title: ttl || '' });
       if (text) {
         if (isNote) added.push({ t: 'note', text: text });
+        else if (cd) added.push({ t: 'card', label: cd, text: text });
+        else if (fl) added.push({ t: 'fold', label: fl, text: text });
+        else if (isWrite) { var wn = log.filter(function (x) { return x.t === 'write' && x.part === scene; }).length; added.push({ t: 'write', k: scene + '_' + wn, part: scene, text: text }); }
         else {
           var m2 = /^([A-Z][A-Za-z' -]{1,24}):\s+(.+)$/.exec(text);
           if (m2) added.push({ t: 'say', who: m2[1], text: m2[2] });
@@ -396,6 +512,7 @@ window.__GAME__ = /*GAME_DATA*/null;
   var busy = false, lastStars = 0;
   function updateStars() {
     var n = 0; try { n = story.variablesState['smooth'] || 0; } catch (e) {}
+    if (G.noStars) { $('stars').hidden = true; return; }
     $('stars').hidden = false; $('stars-n').textContent = n;
     if (n > lastStars) { var st = $('stars'); st.classList.remove('pop'); void st.offsetWidth; st.classList.add('pop'); }
     lastStars = n;
@@ -404,12 +521,12 @@ window.__GAME__ = /*GAME_DATA*/null;
   function pick(btn, i, label, ok) {
     if (busy) return; busy = true; $('btn-back').disabled = true;
     $('choices').querySelectorAll('.choice').forEach(function (x) { x.disabled = true; if (x !== btn) x.classList.add('dim'); });
-    btn.classList.add(ok ? 'ok' : 'bad'); btn.querySelector('.ic').textContent = ok ? '✓' : '✕';
+    btn.classList.add(ok === null ? 'sel' : (ok ? 'ok' : 'bad')); btn.querySelector('.ic').textContent = ok === null ? '●' : (ok ? '✓' : '✕');
     setTimeout(function () { busy = false; $('btn-back').disabled = false; choose(i, label, ok); }, reduce ? 300 : 800);
   }
   function choose(i, text, ok) {
     hist.push({ s: story.state.toJson(), n: log.length });
-    var e = { t: 'you', text: text, ok: ok }; log.push(e);
+    var e = { t: 'you', text: text }; if (ok !== null) e.ok = ok; else e.neutral = true; log.push(e);
     $('choices').textContent = '';
     var node = paint(e);
     story.ChooseChoiceIndex(i);
@@ -434,12 +551,22 @@ window.__GAME__ = /*GAME_DATA*/null;
     story = new inkjs.Story(G.story);
     log = []; scene = '1'; hist = []; lastStars = 0;
     $('log').textContent = ''; $('choices').textContent = '';
-    $('start').hidden = true; $('game').hidden = false; $('finish').hidden = true;
+    $('start').hidden = true; $('game').hidden = false; $('finish').hidden = true; $('partend').hidden = true;
+    partEnd = null; foldHost = null; cardHost = null;
     if (fromSave) {
       try { story.state.LoadJson(fromSave.state); } catch (e) { return begin(null); }
-      log = fromSave.log || []; scene = fromSave.scene || '1'; hist = fromSave.hist || [];
+      log = fromSave.log || []; scene = fromSave.scene || '1'; hist = fromSave.hist || []; notes = fromSave.notes || {}; partEnd = fromSave.pe == null ? null : fromSave.pe;
       redraw(); $('scroll').scrollTop = $('scroll').scrollHeight;
-    } else { drawRoad(); advance(false); $('scroll').scrollTop = 0; }
+    } else {
+      if (G.totalParts) {
+        var sv0 = readSave(); notes = (sv0 && sv0.notes) || {};
+        if (startPart > 1) {
+          try { var st0 = localStorage.getItem(KEY + '-st-' + startPart); if (st0) story.state.LoadJson(st0); } catch (e) {}
+          try { story.ChoosePathString('ep' + startPart); } catch (e) {}
+        }
+      } else notes = {};
+      drawRoad(); advance(false); $('scroll').scrollTop = 0;
+    }
   }
 
   function init(game, id) {
@@ -452,7 +579,7 @@ window.__GAME__ = /*GAME_DATA*/null;
     $('g-meta').textContent = scenes.length + ' scenes · about ' + (G.minutes || 12) + ' minutes · level ' + G.level + ' · no tests';
     if (G.how && G.how.length) { var hw = $('g-how'); hw.textContent = ''; G.how.forEach(function (t, i) { var li = el('li', null, t); li.setAttribute('data-i', i + 1); hw.appendChild(li); }); }
     $('start').hidden = false; scene = '1'; drawRoad();
-    $('btn-new').addEventListener('click', function () { clearSave(); begin(null); });
+    $('btn-new').addEventListener('click', function () { if (!G.totalParts) clearSave(); begin(null); });
     $('btn-cont').addEventListener('click', function () { begin(readSave()); });
     $('btn-back').addEventListener('click', back);
     var armed = false, rb = $('btn-restart');
@@ -461,7 +588,75 @@ window.__GAME__ = /*GAME_DATA*/null;
       armed = false; rb.textContent = 'Play again'; clearSave(); begin(null);
     });
     $('btn-practice').addEventListener('click', function (ev) { if (this.getAttribute('aria-disabled') === 'true') ev.preventDefault(); });
+    $('pe-practice').addEventListener('click', function (ev) { if (this.getAttribute('aria-disabled') === 'true') ev.preventDefault(); });
+    $('pe-send').addEventListener('click', function () { $('pe-msg').textContent = this.getAttribute('aria-disabled') === 'true' ? 'Preview: sending is not connected yet. Copy your notes instead.' : ''; });
+    $('pe-copy').addEventListener('click', function () {
+      var txt = notesText(partEnd), msg = $('pe-msg'), area = $('pe-area');
+      if (!txt) { msg.textContent = 'There are no notes to copy yet.'; return; }
+      function fallback() { area.classList.remove('sr'); area.style.cssText = 'width:100%;min-height:8rem;margin-top:8px;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);padding:10px'; area.value = txt; area.focus(); area.select(); msg.textContent = 'Select the text below and copy it.'; }
+      try { navigator.clipboard.writeText(txt).then(function () { msg.textContent = 'Copied. Bring it to the lesson.'; }, fallback); } catch (err) { fallback(); }
+    });
+    $('pe-next').addEventListener('click', function () {
+      var nxt = partEnd + 1;
+      try { localStorage.setItem(KEY + '-st-' + nxt, story.state.toJson()); } catch (e) {}
+      try { story.ChoosePathString('ep' + nxt); } catch (e) { return; }
+      partEnd = null; hist = []; $('partend').hidden = true; advance(true);
+    });
+    var pq = parseInt(new URLSearchParams(location.search).get('part'), 10);
+    startPart = G.totalParts && pq > 0 ? pq : 0;
+    if (startPart) $('btn-new').textContent = 'Start day ' + startPart;
+    if (G.totalParts && !startPart) $('btn-new').textContent = 'Start day 1';
     var s = readSave(); if (s && s.state) $('btn-cont').hidden = false;
+    if (G.noStars) $('stars').hidden = true;
+    // practise the words without playing: this day's set and the review sets of the finished cases
+    (function () {
+      var host = $('sp-row'), n = startPart || (G.totalParts ? 1 : 0), items = [];
+      var ps = G.practiceSets && G.practiceSets[String(n)];
+      if (ps) items.push({ href: ps, label: 'Practise the words of day ' + n });
+      var rs = G.reviewSets || {};
+      Object.keys(rs).sort(function (x, y) { return x - y; }).forEach(function (k) { if (+k < n) items.push({ href: rs[k].slug, label: 'Review: ' + rs[k].label }); });
+      if (!items.length) return;
+      items.forEach(function (it) {
+        var a = el('a', 'btn ghost', it.label);
+        if (G.preview) { a.href = '#'; a.setAttribute('aria-disabled', 'true'); a.title = 'Opens after publishing'; }
+        else a.href = '/vocab-trainer.html?set=' + encodeURIComponent(it.href);
+        host.appendChild(a);
+      });
+      $('sp-foot').textContent = G.preview ? 'Preview: these buttons open Voc Practice sets after the game is published.' : 'No need to play the day again.';
+      $('start-practice').hidden = false;
+    })();
+
+    // preview tools: walk freely between days and questions (preview file only, never in the real game)
+    if (G.freeNav) (function () {
+      var bar = $('pv'); bar.hidden = false; bar.appendChild(el('b', null, 'Preview:'));
+      scenes.forEach(function (sc) {
+        var b = el('button', null, 'Day ' + sc.n); b.type = 'button';
+        b.addEventListener('click', function () { startPart = parseInt(sc.n, 10); busy = false; begin(null); $('scroll').scrollTop = 0; mark(); });
+        b.dataset.d = sc.n; bar.appendChild(b);
+      });
+      var one = el('button', 'go', 'Answer for me'); one.type = 'button'; bar.appendChild(one);
+      var all = el('button', 'go', 'Skip to end of day'); all.type = 'button'; bar.appendChild(all);
+      function mark() { bar.querySelectorAll('button[data-d]').forEach(function (b) { b.classList.toggle('on', String(startPart || 1) === b.dataset.d); }); }
+      function answer() {
+        if (busy || !story || !story.currentChoices || !story.currentChoices.length) return false;
+        var idx = -1, cs = story.currentChoices, k;
+        for (k = 0; k < cs.length && idx < 0; k++) if (cs[k].text.charAt(0) === '§') idx = k;
+        for (k = 0; k < cs.length && idx < 0; k++) if (cs[k].text.charAt(0) === '^') idx = k;
+        if (idx < 0) idx = 0;
+        var btns = $('choices').querySelectorAll('.choice'); if (!btns[idx]) return false;
+        btns[idx].click(); return true;
+      }
+      one.addEventListener('click', answer);
+      var running = false;
+      all.addEventListener('click', function () {
+        if (running) return; running = true;
+        (function step(n) {
+          if (n > 60 || !$('partend').hidden || !$('finish').hidden || $('game').hidden) { running = false; return; }
+          answer(); setTimeout(function () { step(n + 1); }, reduce ? 450 : 1000);
+        })(0);
+      });
+      mark();
+    })();
   }
 
   var inline = window.__GAME__;

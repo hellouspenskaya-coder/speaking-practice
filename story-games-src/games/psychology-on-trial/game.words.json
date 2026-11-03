@@ -1,0 +1,22 @@
+[
+ {"day":1,"text":"obedience","phonetic":"əˈbiːdiəns","definition":"doing what a person in authority tells you to do","example":"Our first subject is obedience."},
+ {"day":1,"text":"volunteer","phonetic":"ˌvɒlənˈtɪə","definition":"a person who offers to take part in something without being forced","example":"You are a volunteer for a study of memory."},
+ {"day":1,"text":"legitimate","phonetic":"lɪˈdʒɪtɪmət","definition":"accepted as having the right to give orders or make decisions","example":"Yale is a famous and legitimate institution."},
+ {"day":1,"text":"confederate","phonetic":"kənˈfedərət","definition":"a person who secretly works with the researcher while pretending to be an ordinary participant","example":"In fact he is a confederate: an actor who works for the experimenter."},
+ {"day":1,"text":"hesitate","phonetic":"ˈhezɪteɪt","definition":"to pause before you do something because you are not sure","example":"If you hesitate, the experimenter answers with a prod."},
+ {"day":1,"text":"prod","phonetic":"prɒd","definition":"a short push; here, a standard sentence that tells someone to go on","example":"The experimenter answers with a prod."},
+ {"day":1,"text":"distress","phonetic":"dɪˈstres","definition":"strong feelings of worry, pain or unhappiness","example":"Many volunteers showed clear distress."},
+ {"day":1,"text":"deception","phonetic":"dɪˈsepʃn","definition":"making someone believe something that is not true","example":"The whole study relied on deception."},
+ {"day":2,"text":"sceptical","phonetic":"ˈskeptɪkl","definition":"doubting whether something is true or good","example":"Be sceptical of the headline and of its critics."},
+ {"day":2,"text":"welfare","phonetic":"ˈwelfeə","definition":"the health, safety and happiness of a person or group","example":"Her main objection was about the volunteers' welfare."},
+ {"day":2,"text":"informed consent","phonetic":"ɪnˈfɔːmd kənˈsent","definition":"a person's agreement to take part after being told honestly what will happen","example":"They had not given real informed consent."},
+ {"day":2,"text":"debrief","phonetic":"ˌdiːˈbriːf","definition":"to explain the true purpose of a study to participants after it has finished","example":"Every volunteer was told the truth in a debrief."},
+ {"day":2,"text":"appeal","phonetic":"əˈpiːl","definition":"a request that speaks to a person's values or feelings","example":"Appeals to the value of science worked better than orders."},
+ {"day":2,"text":"archive","phonetic":"ˈɑːkaɪv","definition":"a collection of old documents and records","example":"A third kind of criticism came from the archive."},
+ {"day":3,"text":"variation","phonetic":"ˌveəriˈeɪʃn","definition":"a version of a procedure in which one thing is changed","example":"Milgram ran about twenty variations of the study."},
+ {"day":3,"text":"safeguard","phonetic":"ˈseɪfɡɑːd","definition":"a rule or measure that protects people from harm","example":"Stopping at 150 volts was a reasonable safeguard."},
+ {"day":3,"text":"significant","phonetic":"sɪɡˈnɪfɪkənt","definition":"statistically significant: unlikely to be caused by chance alone","example":"The difference was not statistically significant."},
+ {"day":3,"text":"replication","phonetic":"ˌreplɪˈkeɪʃn","definition":"a new study that repeats an earlier study to check its result","example":"This is a partial replication."},
+ {"day":3,"text":"caveat","phonetic":"ˈkæviæt","definition":"a warning that a statement is only true under certain conditions","example":"Every claim needs a caveat."},
+ {"day":3,"text":"claim","phonetic":"kleɪm","definition":"a statement that something is true, especially one that is not yet proved","example":"Let us test some claims."}
+]

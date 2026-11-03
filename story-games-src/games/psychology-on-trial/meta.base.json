@@ -1,0 +1,42 @@
+{
+  "slug": "psychology-on-trial",
+  "title": "Psychology on Trial",
+  "shortTitle": "Psychology on Trial",
+  "level": "B2",
+  "minutes": 10,
+  "lead": "Ten classic psychology experiments, ten minutes a day. Every morning your professor Dr Hale opens one case. You take part in it, read the objections, and decide what is left of the result.",
+  "how": [
+    "Every day you open one case with Dr Hale, your professor. A day takes about ten minutes.",
+    "Some choices are your own opinion, with no right or wrong. Some check your reading, and some check how carefully you write. A red ✕ shows a slip and a better sentence.",
+    "Tap an underlined word to see what it means. Open \"Sources\" at the end of each day to see where the facts come from."
+  ],
+  "sayLabel": "Better",
+  "noteTitle": "Not quite",
+  "noStars": true,
+  "player": {
+    "noStars": true,
+    "choicePrompt": "Your move",
+    "totalParts": 31,
+    "endOfDayText": "Well done. Your next day arrives in your email."
+  },
+  "decisions": [],
+  "reviews": [
+    {
+      "afterDay": 3,
+      "days": [
+        1,
+        2,
+        3
+      ],
+      "label": "Case 1 · Milgram"
+    }
+  ],
+  "preview": {
+    "noContinue": false,
+    "noNextText": "This is the end of the preview. In the full game, Day 4 opens Case 2."
+  },
+  "real": {
+    "noContinue": true,
+    "noNextText": "Your next day arrives in your email."
+  }
+}
