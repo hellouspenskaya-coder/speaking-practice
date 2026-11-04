@@ -15,10 +15,9 @@ const game={kind:'storyGame',slug:SLUG,topic:meta.title,title:meta.title,level:m
 if(hasDays){ delete game.practiceSet; game.practiceSets={}; [...new Set(words.map(w=>w.day))].forEach(d=>{ game.practiceSets[d]=SLUG+'-words-'+d; }); }
 fs.writeFileSync(path.join(out,SLUG+'.json'),JSON.stringify(game,null,2));
 const base={id:'',type:'word',text:'',definition:'',example:'',phonetic:'',chunks:[],phraseSplitIndex:1,image:null,audio:null,imageHint:'',imageQuery:'',illustrable:false,wantsImage:false,requiresPreposition:false,correctPreposition:'',prepositionSentence:'',wordFamily:[],wordFormationSentence:'',wordFormationAnswer:'',isCollocation:false,collocationSentence:'',collocationAnswer:'',collocationDistractors:[],isVerb:false,pastSimple:'',pastParticiple:'',verbSentence:'',verbAnswer:''};
-const MODES=['matching','listening','fillLetters','letterScramble','phraseBuilder','questionAnswer','questionAnswerListen'];
+const MODES=['matching','listening','fillLetters','letterScramble'];
 function makeSet(wordList,decList,topic){ const items=[]; let k=1;
   wordList.forEach(w=>items.push({...base,id:'item_'+(k++),type:'word',text:w.text,definition:w.definition,example:w.example,phonetic:w.phonetic}));
-  decList.filter(d=>d.practice!==false&&!d.neutral&&d.q).forEach(d=>items.push({...base,id:'item_'+(k++),type:'phrase',text:d.q,example:d.q+' '+d.good[0],chunks:d.q.split(' '),phraseSplitIndex:1,qaAnswer:d.good[0],qaWrong:d.wrong.slice(0,2)}));
   return {topic,fromGame:SLUG,level:meta.level,modes:MODES,antonymPairs:[],items}; }
 let nSets=0;
 if(hasDays){ [...new Set(words.map(w=>w.day))].forEach(d=>{ const vs=makeSet(words.filter(w=>w.day===d),meta.decisions.filter(x=>x.day===d),meta.title+' \u00b7 part '+d+' (words from the game)'); fs.writeFileSync(path.join(out,SLUG+'-words-'+d+'.json'),JSON.stringify(vs,null,2)); nSets++; }); }
