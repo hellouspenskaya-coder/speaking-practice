@@ -15,9 +15,10 @@ const game={kind:'storyGame',slug:SLUG,topic:meta.title,title:meta.title,level:m
 if(hasDays){ delete game.practiceSet; game.practiceSets={}; [...new Set(words.map(w=>w.day))].forEach(d=>{ game.practiceSets[d]=SLUG+'-words-'+d; }); }
 fs.writeFileSync(path.join(out,SLUG+'.json'),JSON.stringify(game,null,2));
 const base={id:'',type:'word',text:'',definition:'',example:'',phonetic:'',chunks:[],phraseSplitIndex:1,image:null,audio:null,imageHint:'',imageQuery:'',illustrable:false,wantsImage:false,requiresPreposition:false,correctPreposition:'',prepositionSentence:'',wordFamily:[],wordFormationSentence:'',wordFormationAnswer:'',isCollocation:false,collocationSentence:'',collocationAnswer:'',collocationDistractors:[],isVerb:false,pastSimple:'',pastParticiple:'',verbSentence:'',verbAnswer:''};
-const MODES=['matching','listening','fillLetters','letterScramble'];
+const MODES=['multipleChoice','multipleChoiceReverse','matching','matchingDef','listening','contextGap','fillLetters','letterScramble'];
 function makeSet(wordList,decList,topic){ const items=[]; let k=1;
-  wordList.forEach(w=>items.push({...base,id:'item_'+(k++),type:'word',text:w.text,definition:w.definition,example:w.example,phonetic:w.phonetic}));
+  const gapOf=w=>{ const ex=w.example||''; const t=w.text; const esc=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); let m=ex.match(new RegExp('(?<![A-Za-z-])'+esc(t)+'[a-z]{0,3}(?![A-Za-z-])','i')); if(!m&&t.length>4){ const st=t.replace(/(e|y)$/,''); m=ex.match(new RegExp('(?<![A-Za-z-])'+esc(st)+'[a-z]{1,4}(?![A-Za-z-])','i')); } return m?m[0]:''; };
+  wordList.forEach(w=>{ const g=gapOf(w); items.push({...base,id:'item_'+(k++),type:'word',text:w.text,definition:w.definition,example:w.example,phonetic:w.phonetic,...(g?{gapForm:g}:{})}); });
   return {topic,fromGame:SLUG,level:meta.level,modes:MODES,antonymPairs:[],items}; }
 let nSets=0;
 if(hasDays){ [...new Set(words.map(w=>w.day))].forEach(d=>{ const vs=makeSet(words.filter(w=>w.day===d),meta.decisions.filter(x=>x.day===d),meta.title+' \u00b7 part '+d+' (words from the game)'); fs.writeFileSync(path.join(out,SLUG+'-words-'+d+'.json'),JSON.stringify(vs,null,2)); nSets++; }); }

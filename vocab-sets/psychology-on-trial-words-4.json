@@ -3,8 +3,12 @@
   "fromGame": "psychology-on-trial",
   "level": "B2",
   "modes": [
+    "multipleChoice",
+    "multipleChoiceReverse",
     "matching",
+    "matchingDef",
     "listening",
+    "contextGap",
     "fillLetters",
     "letterScramble"
   ],
@@ -39,7 +43,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "judgement"
     },
     {
       "id": "item_2",
@@ -70,7 +75,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "trial"
     },
     {
       "id": "item_3",
@@ -101,7 +107,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "majority"
     },
     {
       "id": "item_4",
@@ -132,7 +139,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "unanimous"
     },
     {
       "id": "item_5",
@@ -163,7 +171,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "yielded"
     },
     {
       "id": "item_6",
@@ -194,7 +203,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "conformity"
     },
     {
       "id": "item_7",
@@ -225,7 +235,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "tension"
     },
     {
       "id": "item_8",
@@ -256,7 +267,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "distort"
     },
     {
       "id": "item_9",
@@ -287,7 +299,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "ambiguous"
     },
     {
       "id": "item_10",
@@ -318,7 +331,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "estimates"
     },
     {
       "id": "item_11",
@@ -349,7 +363,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "obvious"
     }
   ]
 }

@@ -3,8 +3,12 @@
   "fromGame": "psychology-on-trial",
   "level": "B2",
   "modes": [
+    "multipleChoice",
+    "multipleChoiceReverse",
     "matching",
+    "matchingDef",
     "listening",
+    "contextGap",
     "fillLetters",
     "letterScramble"
   ],
@@ -39,7 +43,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "variations"
     },
     {
       "id": "item_2",
@@ -70,7 +75,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "safeguard"
     },
     {
       "id": "item_3",
@@ -101,7 +107,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "significant"
     },
     {
       "id": "item_4",
@@ -132,7 +139,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "replication"
     },
     {
       "id": "item_5",
@@ -163,7 +171,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "caveat"
     },
     {
       "id": "item_6",
@@ -194,7 +203,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "claims"
     },
     {
       "id": "item_7",
@@ -225,7 +235,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "robust"
     },
     {
       "id": "item_8",
@@ -256,7 +267,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "generalised"
     },
     {
       "id": "item_9",
@@ -287,7 +299,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "contemporary"
     },
     {
       "id": "item_10",
@@ -318,7 +331,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "remain"
     },
     {
       "id": "item_11",
@@ -349,7 +363,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "reproduced"
     },
     {
       "id": "item_12",
@@ -380,7 +395,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "ethical"
     }
   ]
 }

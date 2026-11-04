@@ -3,8 +3,12 @@
   "fromGame": "psychology-on-trial",
   "level": "B2",
   "modes": [
+    "multipleChoice",
+    "multipleChoiceReverse",
     "matching",
+    "matchingDef",
     "listening",
+    "contextGap",
     "fillLetters",
     "letterScramble"
   ],
@@ -39,7 +43,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "submission"
     },
     {
       "id": "item_2",
@@ -70,7 +75,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "limitations"
     },
     {
       "id": "item_3",
@@ -101,7 +107,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "hypothesis"
     },
     {
       "id": "item_4",
@@ -132,7 +139,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "whereas"
     },
     {
       "id": "item_5",
@@ -163,7 +171,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "Similarly"
     },
     {
       "id": "item_6",
@@ -194,7 +203,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "In contrast"
     },
     {
       "id": "item_7",
@@ -225,7 +235,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "tendency"
     },
     {
       "id": "item_8",
@@ -256,7 +267,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "adaptation"
     }
   ]
 }

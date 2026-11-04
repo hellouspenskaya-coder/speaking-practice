@@ -3,8 +3,12 @@
   "fromGame": "psychology-on-trial",
   "level": "B2",
   "modes": [
+    "multipleChoice",
+    "multipleChoiceReverse",
     "matching",
+    "matchingDef",
     "listening",
+    "contextGap",
     "fillLetters",
     "letterScramble"
   ],
@@ -39,7 +43,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "ally"
     },
     {
       "id": "item_2",
@@ -101,7 +106,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "sample"
     },
     {
       "id": "item_4",
@@ -132,7 +138,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "meta-analysis"
     },
     {
       "id": "item_5",
@@ -163,7 +170,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "collectivist"
     },
     {
       "id": "item_6",
@@ -194,7 +202,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "declined"
     },
     {
       "id": "item_7",
@@ -225,7 +234,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "headline"
     },
     {
       "id": "item_8",
@@ -256,7 +266,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "stereotype"
     },
     {
       "id": "item_9",
@@ -287,7 +298,8 @@
       "pastSimple": "",
       "pastParticiple": "",
       "verbSentence": "",
-      "verbAnswer": ""
+      "verbAnswer": "",
+      "gapForm": "exert"
     }
   ]
 }
