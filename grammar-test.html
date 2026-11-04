@@ -41,10 +41,16 @@ button{font:inherit;border-radius:12px;padding:12px 22px;cursor:pointer;border:1
 .primary:hover{filter:brightness(.92)}
 .ghost{background:transparent;color:var(--accent);padding:8px 14px;font-size:14px;border-color:var(--line)}
 .ghost:hover{background:var(--accent-soft)}
-#status{font-size:14px;color:var(--ok);min-height:1.4em}
-#fallback{display:none;margin-top:10px}
-#fallback p{margin:0 0 6px;font-size:14px;color:var(--muted)}
-#fallback textarea{width:100%;min-height:220px;font-size:14px}
+#sendHint{width:100%;margin:2px 0 0;font-size:14px;color:var(--muted)}
+#sendDone{width:100%;border:1px solid var(--ok);color:var(--ok);border-radius:12px;padding:14px 16px;font-size:18px;font-weight:600;text-align:center}
+#sendDone.warn{border-color:var(--line);color:var(--ink)}
+#sendLink{width:100%;height:34px;font-size:12px;color:var(--muted);padding:0 10px}
+.locked{opacity:.6}
+.res{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:10px 0;padding:6px 10px;border-radius:10px;border:1px solid var(--line)}
+.res.ok{border-color:var(--ok)}.res.bad{border-color:#c0392b}
+.res .t{flex:1;min-width:0}.res .m{font-weight:700}.res.ok .m{color:var(--ok)}.res.bad .m{color:#c0392b}
+.res .none{color:var(--muted)}
+.scoreline{font-size:19px;font-weight:600;margin:0 0 6px}
 .msg{text-align:center;padding:60px 0}
 .key{display:none}
 @media print{
@@ -52,7 +58,7 @@ button{font:inherit;border-radius:12px;padding:12px 22px;cursor:pointer;border:1
   :root{--bg:#fff;--card:#fff;--line:#000;--ink:#000;--muted:#333;--field:#fff;--accent:#000;--accent-soft:#fff}
   body{background:#fff;color:#000;font-size:10.5pt;line-height:1.4}
   .wrap{max-width:none;padding:0}
-  .brand,.actions,#fallback,#status{display:none!important}
+  .brand,.actions,#sendHint,#sendDone,#sendLink{display:none!important}
   h1{font-size:18pt;margin:0 0 2px}
   .lead{margin:0 0 6px;font-size:10pt}
   .part{border:none;border-radius:0;padding:0;margin:8px 0 0;background:none}
@@ -99,7 +105,8 @@ button{font:inherit;border-radius:12px;padding:12px 22px;cursor:pointer;border:1
     .then(function (data) {
       if (!data || data.kind !== 'grammarTest' || !Array.isArray(data.parts)) throw 0;
       T = data;
-      render();
+      var code = new URLSearchParams(location.search).get('r');
+      if (code) renderResults(code); else render();
     })
     .catch(function () { fail(); });
 
@@ -195,42 +202,37 @@ button{font:inherit;border-radius:12px;padding:12px 22px;cursor:pointer;border:1
     });
 
     var actions = el('div', 'actions');
-    var copyBtn = el('button', 'primary', 'Copy my answers');
+    var copyBtn = el('button', 'primary', 'Copy link for teacher');
     copyBtn.type = 'button';
     var printBtn = el('button', 'ghost', 'Print');
     printBtn.type = 'button';
-    var status = el('span'); status.id = 'status'; status.setAttribute('role', 'status');
-    actions.appendChild(copyBtn); actions.appendChild(printBtn); actions.appendChild(status);
+    actions.appendChild(copyBtn); actions.appendChild(printBtn);
+    var hint = el('p', null, 'Last step: copy the link and send it in the Zoom chat.');
+    hint.id = 'sendHint';
+    actions.appendChild(hint);
     form.appendChild(actions);
-
-    var fb = el('div'); fb.id = 'fallback';
-    fb.appendChild(el('p', null, 'Your browser did not allow automatic copying. Select all the text below, copy it and paste it into the chat.'));
-    var fbt = el('textarea'); fbt.id = 'fallbackText'; fbt.readOnly = true;
-    fb.appendChild(fbt);
-    form.appendChild(fb);
     app.appendChild(form);
 
     app.appendChild(renderKey());
 
-    function say(m) { status.textContent = m; setTimeout(function () { status.textContent = ''; }, 4000); }
-    function legacyCopy(text) {
-      var ta = document.createElement('textarea');
-      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-      document.body.appendChild(ta); ta.select();
-      var done = false;
-      try { done = document.execCommand('copy'); } catch (e) {}
-      document.body.removeChild(ta);
-      return done;
-    }
     copyBtn.addEventListener('click', function () {
-      var text = buildCopy();
-      function fall() {
-        if (legacyCopy(text)) say('Copied! Paste it into the chat.');
-        else { fb.style.display = 'block'; fbt.value = text; fbt.focus(); fbt.select(); }
-      }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () { fb.style.display = 'none'; say('Copied! Paste it into the chat.'); }, fall);
-      } else { fall(); }
+      copyBtn.disabled = true;
+      var linkP = packResult(collect()).then(resultLink);
+      copyPromised(linkP).then(function (ok) {
+        linkP.then(function (link) {
+          form.classList.add('locked');
+          form.querySelectorAll('input,textarea').forEach(function (i) { i.disabled = true; });
+          actions.textContent = '';
+          var done = el('div', ok ? null : 'warn', ok
+            ? "\u2713 Link copied. Paste it into the Zoom chat and send. You're done!"
+            : "Select the link below, copy it, and paste it into the Zoom chat. Then send. You're done!");
+          done.id = 'sendDone';
+          var f = el('input'); f.type = 'text'; f.readOnly = true; f.id = 'sendLink'; f.value = link;
+          f.addEventListener('focus', function () { f.select(); });
+          actions.appendChild(done); actions.appendChild(f);
+          if (!ok) { f.focus(); f.select(); }
+        });
+      });
     });
     printBtn.addEventListener('click', function () { window.print(); });
   }
@@ -239,32 +241,154 @@ button{font:inherit;border-radius:12px;padding:12px 22px;cursor:pointer;border:1
   function radio(name) { var e = document.querySelector('input[name="' + name + '"]:checked'); return e ? e.value : ''; }
   function blank(s) { return s ? '[' + s + ']' : '[ - ]'; }
 
-  function buildCopy() {
-    var out = [];
-    out.push((T.topic || 'Grammar') + ' test - ' + new Date().toLocaleDateString('en-GB'));
-    T.parts.forEach(function (part, pi) {
-      out.push('');
-      out.push('Part ' + (pi + 1));
+  // What the student answered, part by part: choice -> chosen option number
+  // (-1 for none), everything else -> the typed text.
+  function collect() {
+    var parts = [];
+    T.parts.forEach(function (part) {
       if (part.type === 'choice') {
-        part.items.forEach(function (it) { out.push(it.n + '. ' + it.q.replace('___', blank(radio('q' + it.n)))); });
+        parts.push(part.items.map(function (it) {
+          var v = radio('q' + it.n);
+          return it.options.indexOf(v);
+        }));
       } else if (part.type === 'gap') {
-        part.items.forEach(function (it) {
-          out.push(it.n + '. ' + [it.pre, blank(field('q' + it.n)), it.post].filter(Boolean).join(' '));
+        parts.push(part.items.map(function (it) { return field('q' + it.n); }));
+      } else if (part.type === 'fix') {
+        parts.push(part.items.map(function (it) { return field('q' + it.n); }));
+      } else if (part.type === 'write') {
+        parts.push(part.items.map(function (it, j) { return field('q' + part.n + LET[j]); }));
+      } else { parts.push([]); }
+    });
+    return { t: 'g', p: parts };
+  }
+
+  // --- The link carries the answers; nothing is stored anywhere. ---
+  async function packResult(obj) {
+    var bytes = new TextEncoder().encode(JSON.stringify(obj));
+    var out = bytes, prefix = 'p';
+    if (window.CompressionStream) {
+      try {
+        var cs = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+        out = new Uint8Array(await new Response(cs).arrayBuffer());
+        prefix = 'z';
+      } catch (e) { out = bytes; prefix = 'p'; }
+    }
+    var bin = '';
+    out.forEach(function (b) { bin += String.fromCharCode(b); });
+    return prefix + btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  async function unpackResult(code) {
+    var prefix = code.charAt(0);
+    var b64 = code.slice(1).replace(/-/g, '+').replace(/_/g, '/');
+    var bin = atob(b64 + '==='.slice((b64.length + 3) % 4));
+    var bytes = Uint8Array.from(bin, function (c) { return c.charCodeAt(0); });
+    if (prefix === 'z') {
+      var ds = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+      bytes = new Uint8Array(await new Response(ds).arrayBuffer());
+    } else if (prefix !== 'p') { throw new Error('bad code'); }
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+  function resultLink(code) {
+    var q = new URLSearchParams(location.search);
+    q.set('r', code);
+    return location.origin + location.pathname + '?' + q.toString();
+  }
+  function legacyCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var done = false;
+    try { done = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return done;
+  }
+  // A clipboard item that takes a promise keeps Safari happy.
+  function copyPromised(textPromise) {
+    if (navigator.clipboard && window.ClipboardItem && navigator.clipboard.write) {
+      try {
+        return navigator.clipboard.write([new ClipboardItem({ 'text/plain': textPromise.then(function (t) { return new Blob([t], { type: 'text/plain' }); }) })])
+          .then(function () { return true; }, function () { return textPromise.then(legacyCopy, function () { return false; }); });
+      } catch (e) {}
+    }
+    return textPromise.then(function (t) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(t).then(function () { return true; }, function () { return legacyCopy(t); });
+      }
+      return legacyCopy(t);
+    }, function () { return false; });
+  }
+
+  // --- Teacher's view: read-only, tick or cross, never the right answers.
+  function norm(v) {
+    return String(v || '').toLowerCase().replace(/[‘’]/g, "'").replace(/n't\b/g, ' not')
+      .replace(/\s+/g, ' ').replace(/[.!?\s]+$/, '').trim();
+  }
+  async function renderResults(code) {
+    var data;
+    try { data = await unpackResult(code); } catch (e) { data = null; }
+    if (!data || data.t !== 'g' || !Array.isArray(data.p)) { fail('Ask the student to send the link again.'); return; }
+    document.title = (T.topic || 'Grammar') + ': results';
+    app.textContent = '';
+    app.appendChild(el('div', 'brand', 'Anna | WeTalk'));
+    app.appendChild(el('h1', null, (T.topic || 'Grammar') + ': student\'s answers'));
+    var scoreEl = el('p', 'scoreline');
+    app.appendChild(scoreEl);
+    var right = 0, total = 0, hasWrite = false, counter = 1;
+
+    function row(sec, n, text, ok) {
+      var r = el('div', 'res ' + (ok === null ? '' : ok ? 'ok' : 'bad'));
+      var t = el('div', 't');
+      t.appendChild(el('span', 'num', n + '.'));
+      if (text) t.appendChild(document.createTextNode(text)); else t.appendChild(el('span', 'none', '—'));
+      r.appendChild(t);
+      if (ok !== null) r.appendChild(el('span', 'm', ok ? '✓' : '✗'));
+      sec.appendChild(r);
+    }
+
+    T.parts.forEach(function (part, pi) {
+      var sec = el('section', 'part');
+      var h = el('h2', null, 'Part ' + (pi + 1) + '. ' + part.title + ' ');
+      sec.appendChild(h);
+      var given = data.p[pi] || [];
+      if (part.type === 'choice') {
+        part.items.forEach(function (it, j) {
+          var n = counter++, k = given[j];
+          var chosen = (typeof k === 'number' && k >= 0) ? it.options[k] : '';
+          var ok = chosen !== '' && k === it.answer;
+          total++; if (ok) right++;
+          row(sec, n, it.q.replace('___', chosen ? '[' + chosen + ']' : '[ — ]'), ok);
+        });
+      } else if (part.type === 'gap') {
+        part.items.forEach(function (it, j) {
+          var n = counter++, v = String(given[j] || '');
+          var ok = v !== '' && norm(v) === norm(it.answer);
+          total++; if (ok) right++;
+          row(sec, n, [it.pre, v ? '[' + v + ']' : '[ — ]', it.post].filter(Boolean).join(' '), ok);
         });
       } else if (part.type === 'fix') {
-        part.items.forEach(function (it) {
-          var v = field('q' + it.n);
-          out.push(it.n + '. ' + it.sentence);
-          out.push('   -> ' + (v === '' || v === it.sentence ? '(no change)' : v));
+        part.items.forEach(function (it, j) {
+          var n = counter++, v = String(given[j] || '');
+          var ok = v !== '' && norm(v) === norm(it.corrected);
+          total++; if (ok) right++;
+          row(sec, n, v, ok);
         });
       } else if (part.type === 'write') {
+        hasWrite = true;
+        var n = counter++;
         part.items.forEach(function (it, j) {
-          var v = field('q' + part.n + LET[j]);
-          out.push(part.n + LET[j] + '. ' + (v || '[ - ]'));
+          var box = el('div', 'q');
+          box.appendChild(el('div', 'sub', n + LET[j] + ') ' + it.prompt));
+          var v = String(given[j] || '');
+          var r = el('div', 'res');
+          var t = el('div', 't');
+          if (v) t.textContent = v; else t.appendChild(el('span', 'none', '—'));
+          r.appendChild(t); box.appendChild(r); sec.appendChild(box);
         });
       }
+      app.appendChild(sec);
     });
-    return out.join('\n');
+    scoreEl.textContent = right + ' / ' + total + ' correct' + (hasWrite ? ' (the writing part is not scored here)' : '');
+    app.appendChild(el('p', 'hint', 'Read-only view. Nothing is saved anywhere.'));
   }
 
   // Teacher's key: hidden on screen, always the last page when printing.

@@ -253,7 +253,9 @@ async function init() {
     app.innerHTML = `<div class="center-msg">Could not load this word set.</div>`;
     return;
   }
-  if (isWorksheet) {
+  if (isWorksheet && params.get('r')) {
+    renderWorksheetResults(params.get('r'));
+  } else if (isWorksheet) {
     renderWorksheet();
   } else if (setData.passage && setData.passage.text) {
     try { history.replaceState({ t: 'reading' }, ''); } catch (e) { /* ignore */ }
@@ -412,40 +414,130 @@ function printVerbList(verbItems) {
   printWindow.onload = () => printWindow.print();
 }
 
+// --- "Copy link for teacher": the student's answers travel inside the link
+// itself (compressed, URL-safe). Nothing is stored anywhere; the teacher's
+// page just decodes the link and shows it read-only.
+async function packResult(obj) {
+  const bytes = new TextEncoder().encode(JSON.stringify(obj));
+  let out = bytes, prefix = 'p';
+  if (window.CompressionStream) {
+    try {
+      const cs = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+      out = new Uint8Array(await new Response(cs).arrayBuffer());
+      prefix = 'z';
+    } catch (e) { out = bytes; prefix = 'p'; }
+  }
+  let bin = '';
+  out.forEach(b => { bin += String.fromCharCode(b); });
+  return prefix + btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+async function unpackResult(code) {
+  const prefix = code.charAt(0);
+  const b64 = code.slice(1).replace(/-/g, '+').replace(/_/g, '/');
+  const bin = atob(b64 + '==='.slice((b64.length + 3) % 4));
+  let bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+  if (prefix === 'z') {
+    const ds = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    bytes = new Uint8Array(await new Response(ds).arrayBuffer());
+  } else if (prefix !== 'p') {
+    throw new Error('bad code');
+  }
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+
+function resultLink(code) {
+  const q = new URLSearchParams(window.location.search);
+  q.set('r', code);
+  return window.location.origin + window.location.pathname + '?' + q.toString();
+}
+
+function legacyCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  let done = false;
+  try { done = document.execCommand('copy'); } catch (e) { /* ignore */ }
+  document.body.removeChild(ta);
+  return done;
+}
+
+// Copies the text a promise resolves to. A clipboard item that takes a
+// promise keeps Safari happy (the copy must start inside the click).
+function copyPromised(textPromise) {
+  if (navigator.clipboard && window.ClipboardItem && navigator.clipboard.write) {
+    try {
+      return navigator.clipboard.write([new ClipboardItem({ 'text/plain': textPromise.then(t => new Blob([t], { type: 'text/plain' })) })])
+        .then(() => true, () => textPromise.then(legacyCopy, () => false));
+    } catch (e) { /* fall through */ }
+  }
+  return textPromise.then(t => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(t).then(() => true, () => legacyCopy(t));
+    }
+    return legacyCopy(t);
+  }, () => false);
+}
+
+// Mounts the single "Copy link for teacher" button into `box`. `getPayload`
+// reads the answers; `lock` freezes the sheet once the link is made.
+function mountSendBar(box, getPayload, lock) {
+  box.innerHTML = `
+    <button class="primary wide" id="sendBtn" style="padding:14px;font-size:17px;">Copy link for teacher</button>
+    <p style="font-size:14px;color:var(--muted);text-align:center;margin:10px 0 0;">Last step: copy the link and send it in the Zoom chat.</p>
+  `;
+  document.getElementById('sendBtn').addEventListener('click', () => {
+    const btn = document.getElementById('sendBtn');
+    btn.disabled = true;
+    const linkP = packResult(getPayload()).then(resultLink);
+    copyPromised(linkP).then(ok => linkP.then(link => {
+      lock();
+      box.innerHTML = `
+        <div id="sendDone" style="background:var(--success-light);border:1px solid var(--success);color:var(--success);border-radius:10px;padding:16px;font-size:18px;font-weight:600;text-align:center;"></div>
+        <input type="text" id="sendLink" readonly style="width:100%;box-sizing:border-box;margin-top:10px;height:34px;font-size:12px;color:var(--muted);padding:0 10px;border:1px solid var(--border);border-radius:8px;" />
+      `;
+      const done = document.getElementById('sendDone');
+      const field = document.getElementById('sendLink');
+      field.value = link;
+      done.textContent = ok
+        ? "✓ Link copied. Paste it into the Zoom chat and send. You're done!"
+        : 'Select the link below, copy it, and paste it into the Zoom chat. Then send. You\'re done!';
+      if (!ok) { done.style.background = 'var(--teal-light)'; done.style.borderColor = 'var(--border)'; done.style.color = 'inherit'; field.focus(); field.select(); }
+      field.addEventListener('focus', () => field.select());
+    }));
+  });
+}
+
+// Read-only look at a student's inputs: shaded and frozen.
+function lockSheet(gridId) {
+  const g = document.getElementById(gridId);
+  g.style.opacity = '0.6';
+  g.querySelectorAll('input').forEach(i => { i.disabled = true; });
+}
+
 // --- Worksheet: a secret, non-linked screen for quick in-class checks.
 // Reachable only via &worksheet=1 in the URL — never shown or linked from
 // the regular practice page, so students can't stumble onto it themselves.
+// One worksheet entry for one item (null when nothing usable). Used both to
+// build the student's sheet and to rebuild it from ids on the teacher's
+// results page, so the two always agree on what was asked.
+function worksheetEntry(item) {
+  if (item.image) return { kind: 'pic', item, prompt: '', answer: item.text };
+  if (item.definition) return { kind: 'def', item, prompt: item.definition, answer: item.text };
+  // No picture or definition - fall back to whichever B1+ gap-sentence this
+  // item happens to have, so grammar-only sets still produce a usable sheet.
+  if (item.prepositionSentence && item.correctPreposition) return { kind: 'sent', item, prompt: item.prepositionSentence, answer: item.correctPreposition };
+  if (item.collocationSentence && item.collocationAnswer) return { kind: 'sent', item, prompt: item.collocationSentence, answer: item.collocationAnswer };
+  if (item.wordFormationSentence && item.wordFormationAnswer) return { kind: 'sent', item, prompt: item.wordFormationSentence, answer: item.wordFormationAnswer };
+  if (item.verbSentence && item.verbAnswer) return { kind: 'sent', item, prompt: item.verbSentence, answer: item.verbAnswer };
+  return null;
+}
+
 function buildWorksheetItems(allItems) {
   const eligible = [];
   allItems.forEach(item => {
-    if (item.image) {
-      eligible.push({ kind: 'pic', item, prompt: '', answer: item.text });
-      return;
-    }
-    if (item.definition) {
-      eligible.push({ kind: 'def', item, prompt: item.definition, answer: item.text });
-      return;
-    }
-    // No picture or definition — fall back to whichever B1+ gap-sentence
-    // this item happens to have, so grammar-only sets (Skip images + Skip
-    // definitions) still produce a usable worksheet instead of an empty one.
-    if (item.prepositionSentence && item.correctPreposition) {
-      eligible.push({ kind: 'sent', item, prompt: item.prepositionSentence, answer: item.correctPreposition });
-      return;
-    }
-    if (item.collocationSentence && item.collocationAnswer) {
-      eligible.push({ kind: 'sent', item, prompt: item.collocationSentence, answer: item.collocationAnswer });
-      return;
-    }
-    if (item.wordFormationSentence && item.wordFormationAnswer) {
-      eligible.push({ kind: 'sent', item, prompt: item.wordFormationSentence, answer: item.wordFormationAnswer });
-      return;
-    }
-    if (item.verbSentence && item.verbAnswer) {
-      eligible.push({ kind: 'sent', item, prompt: item.verbSentence, answer: item.verbAnswer });
-      return;
-    }
-    // Nothing usable for this item at all — it's simply left off the sheet.
+    const e = worksheetEntry(item);
+    if (e) eligible.push(e);
   });
   return eligible.length > 10 ? shuffle(eligible).slice(0, 10) : eligible;
 }
@@ -478,8 +570,7 @@ function renderWorksheet() {
       <button id="printWorksheetBtn" style="padding:8px 16px;font-size:15px;">Print</button>
     </div>
     <div id="worksheetGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;"></div>
-    <button class="primary wide" id="checkWorksheetBtn" style="padding:14px;font-size:17px;">Check</button>
-    <p id="worksheetScore" style="font-size:19px;font-weight:600;text-align:center;margin:14px 0 0;display:none;"></p>
+    <div id="sendBox"></div>
   `;
 
   const grid = document.getElementById('worksheetGrid');
@@ -516,39 +607,11 @@ function renderWorksheet() {
     grid.appendChild(card);
   });
 
-  document.getElementById('checkWorksheetBtn').addEventListener('click', () => {
-    // Deliberately no "fill everything in first" gate — a blank answer is
-    // just a wrong one. Forcing a guess before checking would only make
-    // the student type nonsense for words they genuinely don't know yet.
-    let correctCount = 0;
-    worksheetItems.forEach((w, idx) => {
-      const input = document.getElementById('wk' + idx);
-      const val = input.value.trim().toLowerCase();
-      const ok = val === w.answer.trim().toLowerCase();
-      if (ok) correctCount++;
-      input.disabled = true;
-      if (ok) {
-        input.style.borderColor = 'var(--success)';
-        input.style.background = 'var(--success-light)';
-      } else {
-        // Keep the student's own attempt visible instead of overwriting it
-        // with the correct answer — the teacher needs to see what they
-        // actually wrote (a misspelling vs. a wrong word vs. nothing at
-        // all), not just that it was wrong.
-        input.style.borderColor = 'var(--danger)';
-        input.style.background = 'var(--danger-light)';
-        const note = document.createElement('p');
-        note.textContent = 'Correct: ' + w.answer;
-        note.style.cssText = 'font-size:13px;color:var(--danger);margin:6px 0 0;';
-        input.insertAdjacentElement('afterend', note);
-      }
-    });
-    document.getElementById('checkWorksheetBtn').disabled = true;
-    const scoreEl = document.getElementById('worksheetScore');
-    scoreEl.textContent = `${correctCount} / ${worksheetItems.length} correct`;
-    scoreEl.style.color = correctCount === worksheetItems.length ? 'var(--success)' : 'inherit';
-    scoreEl.style.display = 'block';
-  });
+  mountSendBar(
+    document.getElementById('sendBox'),
+    () => ({ t: 'w', i: worksheetItems.map(w => w.item.id), a: worksheetItems.map((_, idx) => document.getElementById('wk' + idx).value.trim()) }),
+    () => lockSheet('worksheetGrid')
+  );
 
   document.getElementById('printWorksheetBtn').addEventListener('click', () => printWorksheet(worksheetItems));
 }
@@ -576,8 +639,7 @@ function renderVerbWorksheet(verbItems) {
       <button id="printWorksheetBtn" style="padding:8px 16px;font-size:15px;">Print</button>
     </div>
     <div id="worksheetGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;"></div>
-    <button class="primary wide" id="checkWorksheetBtn" style="padding:14px;font-size:17px;">Check</button>
-    <p id="worksheetScore" style="font-size:19px;font-weight:600;text-align:center;margin:14px 0 0;display:none;"></p>
+    <div id="sendBox"></div>
   `;
 
   const grid = document.getElementById('worksheetGrid');
@@ -591,12 +653,11 @@ function renderVerbWorksheet(verbItems) {
         <div style="flex:1;min-width:0;">
           <p class="mode-label" style="margin:0 0 4px;">Past simple</p>
           <input type="text" id="wkp${idx}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="..." style="${inputStyle}" />
-          <div id="wkpn${idx}"></div>
+    
         </div>
         <div style="flex:1;min-width:0;">
           <p class="mode-label" style="margin:0 0 4px;">Past participle</p>
           <input type="text" id="wkq${idx}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="..." style="${inputStyle}" />
-          <div id="wkqn${idx}"></div>
         </div>
       </div>
     `;
@@ -614,48 +675,77 @@ function renderVerbWorksheet(verbItems) {
     });
   });
 
-  const norm = v => (v || '').trim().toLowerCase();
-  document.getElementById('checkWorksheetBtn').addEventListener('click', () => {
-    // A blank answer is just a wrong one - no "fill everything first" gate.
-    let verbsRight = 0;
-    verbItems.forEach((item, idx) => {
-      const alts = VERB_FORM_ALTS[norm(item.text)] || {};
-      const pairs = [
-        { input: document.getElementById('wkp' + idx), note: document.getElementById('wkpn' + idx), answer: item.pastSimple, extra: alts.past || [] },
-        { input: document.getElementById('wkq' + idx), note: document.getElementById('wkqn' + idx), answer: item.pastParticiple, extra: alts.part || [] }
-      ];
-      let both = true;
-      pairs.forEach(pr => {
-        const accepted = [pr.answer].concat(pr.extra).map(norm);
-        const ok = accepted.includes(norm(pr.input.value));
-        pr.input.disabled = true;
-        if (ok) {
-          pr.input.style.borderColor = 'var(--success)';
-          pr.input.style.background = 'var(--success-light)';
-        } else {
-          both = false;
-          // Keep the student's own attempt visible, add the right form below.
-          pr.input.style.borderColor = 'var(--danger)';
-          pr.input.style.background = 'var(--danger-light)';
-          const note = document.createElement('p');
-          note.textContent = 'Correct: ' + pr.answer;
-          note.style.cssText = 'font-size:13px;color:var(--danger);margin:6px 0 0;';
-          pr.note.appendChild(note);
-        }
-      });
-      if (both) verbsRight++;
-    });
-    document.getElementById('checkWorksheetBtn').disabled = true;
-    const scoreEl = document.getElementById('worksheetScore');
-    scoreEl.textContent = `${verbsRight} / ${verbItems.length} verbs correct`;
-    scoreEl.style.color = verbsRight === verbItems.length ? 'var(--success)' : 'inherit';
-    scoreEl.style.display = 'block';
-  });
+  mountSendBar(
+    document.getElementById('sendBox'),
+    () => ({ t: 'v', i: verbItems.map(v => v.id), a: verbItems.map((_, idx) => [document.getElementById('wkp' + idx).value.trim(), document.getElementById('wkq' + idx).value.trim()]) }),
+    () => lockSheet('worksheetGrid')
+  );
 
   // printVerbList only reshuffles when given more than 10, so the picked
   // verbs go through unchanged.
   document.getElementById('printWorksheetBtn').addEventListener('click', () => printVerbList(verbItems));
   if (fields[0]) fields[0].focus();
+}
+
+// --- Teacher's results page (&worksheet=1&r=...): read-only. Shows what the
+// student typed with a tick or a cross - never the correct answers.
+async function renderWorksheetResults(code) {
+  app.classList.remove('wrap');
+  app.style.maxWidth = '900px';
+  app.style.margin = '0 auto';
+  let data;
+  try { data = await unpackResult(code); } catch (e) { data = null; }
+  if (!data || !Array.isArray(data.i) || !Array.isArray(data.a)) {
+    app.innerHTML = `<div class="center-msg">This results link is not valid. Ask the student to send it again.</div>`;
+    return;
+  }
+  const norm = v => (v || '').trim().toLowerCase();
+  const byId = {};
+  (setData.items || []).forEach(it => { byId[it.id] = it; });
+  const rows = [];
+  data.i.forEach((id, idx) => {
+    const item = byId[id];
+    if (!item) return;
+    if (data.t === 'v') {
+      const alts = VERB_FORM_ALTS[norm(item.text)] || {};
+      const given = data.a[idx] || ['', ''];
+      const okP = [item.pastSimple].concat(alts.past || []).map(norm).includes(norm(given[0]));
+      const okQ = [item.pastParticiple].concat(alts.part || []).map(norm).includes(norm(given[1]));
+      rows.push({ verb: true, item, given, okP, okQ, ok: okP && okQ });
+    } else {
+      const e = worksheetEntry(item);
+      if (!e) return;
+      const given = data.a[idx] || '';
+      rows.push({ verb: false, e, given, ok: norm(given) === norm(e.answer) });
+    }
+  });
+  if (!rows.length) {
+    app.innerHTML = `<div class="center-msg">The results do not match this set any more.</div>`;
+    return;
+  }
+  const right = rows.filter(r => r.ok).length;
+  const mark = ok => ok ? '<span style="color:var(--success);font-weight:700;">✓</span>' : '<span style="color:var(--danger);font-weight:700;">✗</span>';
+  const box = (txt, ok) => `<div style="min-height:44px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 12px;border:1px solid ${ok ? 'var(--success)' : 'var(--danger)'};background:${ok ? 'var(--success-light)' : 'var(--danger-light)'};border-radius:8px;font-size:16px;"><span style="${txt ? '' : 'color:var(--muted);'}">${txt ? escapeHtml(txt) : '—'}</span>${mark(ok)}</div>`;
+  const cards = rows.map((r, idx) => {
+    if (r.verb) {
+      return `<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;">
+        <p style="font-size:24px;font-weight:600;margin:0 0 10px;">${idx + 1}. ${escapeHtml(r.item.text)}</p>
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;min-width:0;"><p class="mode-label" style="margin:0 0 4px;">Past simple</p>${box(r.given[0], r.okP)}</div>
+          <div style="flex:1;min-width:0;"><p class="mode-label" style="margin:0 0 4px;">Past participle</p>${box(r.given[1], r.okQ)}</div>
+        </div></div>`;
+    }
+    const top = r.e.kind === 'pic'
+      ? `<div style="height:90px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:10px;"><img src="${escapeAttr(r.e.item.image)}" alt="" style="max-width:100%;max-height:100%;object-fit:contain;background:#fff;" /></div>`
+      : `<p style="font-size:16px;color:var(--muted);margin:0 0 10px;line-height:1.4;">${escapeHtml(r.e.prompt)}</p>`;
+    return `<div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;">${top}${box(r.given, r.ok)}</div>`;
+  }).join('');
+  app.innerHTML = `
+    <p style="font-size:20px;font-weight:600;margin:0 0 4px;">${escapeHtml(setData.topic || 'Word set')} — student's answers</p>
+    <p style="font-size:19px;font-weight:600;margin:0 0 14px;color:${right === rows.length ? 'var(--success)' : 'inherit'};">${right} / ${rows.length} ${data.t === 'v' ? 'verbs ' : ''}correct</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">${cards}</div>
+    <p style="font-size:13px;color:var(--muted);text-align:center;">Read-only view. Nothing is saved anywhere.</p>
+  `;
 }
 
 function printWorksheet(worksheetItems) {
