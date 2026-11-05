@@ -1957,7 +1957,7 @@ function renderFillLetters(container, item, onDone) {
     }
   });
 
-  // Typing moves on by itself: letter -> next empty box, Backspace -> back, last letter -> check.
+  // Typing moves on by itself: letter -> next empty box, Backspace -> back; after the last letter the student checks the word and taps Check (or Enter).
   const blankInputs = () => [...boxes.querySelectorAll('input')];
   let locked = false;
   const focusBox = el => { if (!el) return; el.focus(); try { el.setSelectionRange(0, el.value.length); } catch (e) {} };
@@ -1978,7 +1978,7 @@ function renderFillLetters(container, item, onDone) {
       setBox(input, letter.toLowerCase());
       const next = all.slice(k + 1).find(b => b.dataset.had !== '1') || all.find(b => b.dataset.had !== '1');
       if (next) focusBox(next);
-      else { input.blur(); setTimeout(() => { if (!locked) document.getElementById('checkBtn').click(); }, 350); }
+      else { input.blur(); const cb = document.getElementById('checkBtn'); cb.focus({ preventScroll: true }); }   // word complete: the student looks it over, then taps Check
     });
     input.addEventListener('keydown', e => {
       if (e.key === 'Enter') { e.preventDefault(); document.getElementById('checkBtn').click(); }
