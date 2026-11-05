@@ -51,6 +51,9 @@ body {
 h1 { font-weight: 500; font-style: italic; font-size: clamp(2.2rem, 8vw, 3.2rem); line-height: 1.1; margin: 3rem 0 1rem; text-wrap: balance; }
 .lead { font-size: 1.1rem; margin: 0 0 1.2rem; }
 .meta { font-family: var(--sans); font-size: 14px; color: var(--muted); margin: 0 0 1.4rem; }
+.howbox { font-family: var(--sans); font-size: 14px; margin: 1.2rem 0 0.6rem; }
+.howbox summary { cursor: pointer; color: var(--muted); padding: 4px 0; }
+.howbox .how { margin: 8px 0 0.4rem; }
 .how { font-family: var(--sans); font-size: 15px; margin: 0 0 1.6rem; padding: 0; list-style: none; display: grid; gap: 8px; }
 .how li { padding-left: 1.6rem; position: relative; }
 .how li::before { content: attr(data-i); position: absolute; left: 0; top: 0; font-weight: 600; color: var(--tint); }
@@ -77,7 +80,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .say .who { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 2px; }
 .say.you { border-left-color: transparent; border-right: 4px solid var(--tint); background: var(--soft); align-self: flex-end; max-width: 90%; text-align: right; }
 .say.you .who { justify-content: flex-end; }
-.spk { font-family: var(--sans); font-size: 12px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--muted); padding: 2px 10px; }
+.spk { font-family: var(--sans); font-size: 13px; border: 1px solid var(--tint); border-radius: 999px; background: transparent; color: var(--ink); padding: 3px 12px; }
+.spk.new { animation: spkpulse 1.8s ease-in-out infinite; }
+@keyframes spkpulse { 0%,100% { box-shadow: 0 0 0 0 transparent; } 50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--tint) 25%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .spk.new { animation: none; } }
 .spk:hover { border-color: var(--tint); color: var(--ink); }
 .w { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer;
   border-bottom: 2px dotted var(--tint); font-weight: 500; }
@@ -215,15 +221,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
     <h1 id="g-title"></h1>
     <p class="lead" id="g-lead"></p>
     <p class="meta" id="g-meta"></p>
-    <ul class="how" id="g-how">
-      <li data-i="1">You are the traveller. Choose what you say.</li>
-      <li data-i="2">Green ✓ is right. Red ✕ is not this one. You can try again and you will see what to say. Right the first time? You get a star ★.</li>
-      <li data-i="3">Tap an underlined word to see what it means.</li>
-    </ul>
     <div class="row">
       <button class="btn accent" id="btn-new" type="button">Start</button>
       <button class="btn ghost" id="btn-cont" type="button" hidden>Continue where I stopped</button>
     </div>
+    <details class="howbox"><summary>How it works</summary>
+    <ul class="how" id="g-how">
+        <li data-i="1">You are the traveller. Choose what you say.</li>
+        <li data-i="2">Green ✓ is right. Red ✕ is not this one. You can try again and you will see what to say. Right the first time? You get a star ★.</li>
+        <li data-i="3">Tap an underlined word to see what it means.</li>
+      </ul>
+    </details>
     <p class="foot">The game saves itself. Your progress stays only in this browser.</p>
     <div id="start-practice" hidden>
       <h3>Only the words</h3>
@@ -308,7 +316,9 @@ window.__GAME__ = /*GAME_DATA*/null;
   function spkBtn(text, label) {
     var b = el('button', 'spk', label || '🔊 Listen'); b.type = 'button';
     b.setAttribute('aria-label', 'Listen: ' + text.replace(/[‹›]/g, ''));
-    b.addEventListener('click', function () { speak(text); });
+    var seen = false; try { seen = !!localStorage.getItem('spk-seen'); } catch (e) {}
+    if (!seen) b.className += ' new';
+    b.addEventListener('click', function () { speak(text); try { localStorage.setItem('spk-seen', '1'); } catch (e) {} document.querySelectorAll('.spk.new').forEach(function (x) { x.classList.remove('new'); }); });
     return b;
   }
 
@@ -469,6 +479,7 @@ window.__GAME__ = /*GAME_DATA*/null;
   function showPartEnd() {
     var n = partEnd, pe = $('partend'); pe.hidden = false;
     putPartState(n + 1);
+    try { var pr = JSON.parse(localStorage.getItem('practice-progress-v1') || '{}') || {}, dd = new Date(), k = dd.getFullYear() + '-' + String(dd.getMonth() + 1).padStart(2, '0') + '-' + String(dd.getDate()).padStart(2, '0'); pr.days = pr.days || {}; pr.days[k] = 1; localStorage.setItem('practice-progress-v1', JSON.stringify(pr)); } catch (e) {}
     $('pe-title').textContent = 'Part ' + n + ' done';
     var hasNotes = log.some(function (x) { return x.t === 'write' && String(x.part) === String(n); });
     $('pe-lead').textContent = hasNotes ? 'Your notes are optional. Copy them and bring them to the lesson, or keep them to yourself.' : (G.endOfDayText || '');

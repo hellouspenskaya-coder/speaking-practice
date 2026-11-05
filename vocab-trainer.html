@@ -68,6 +68,9 @@
   }
   button:hover { background: #f1f5f9; }
   button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.listen-new { border-color: var(--teal); animation: listenpulse 1.8s ease-in-out infinite; }
+  @keyframes listenpulse { 0%,100% { box-shadow: 0 0 0 0 transparent; } 50% { box-shadow: 0 0 0 5px rgba(13,148,116,.25); } }
+  @media (prefers-reduced-motion: reduce) { button.listen-new { animation: none; } }
   button.primary { background: var(--teal); color: #fff; border-color: var(--teal); }
   button.primary:hover { background: #0c8069; }
   button.wide { width: 100%; margin-top: 14px; }
@@ -1693,7 +1696,9 @@ function speakText(text) {
 }
 
 function listenButton(id, label) {
-  return `<button id="${id}"><span class="icon">&#128266;</span> ${label || 'Listen'}</button>`;
+  let seen = false; try { seen = !!localStorage.getItem('spk-seen'); } catch (e) {}
+  setTimeout(() => { const b = document.getElementById(id); if (b) b.addEventListener('click', () => { try { localStorage.setItem('spk-seen', '1'); } catch (e) {} b.classList.remove('listen-new'); }); }, 0);
+  return `<button id="${id}" class="${seen ? '' : 'listen-new'}"><span class="icon">&#128266;</span> ${label || 'Listen'}</button>`;
 }
 
 // --- Multiple choice: word/phrase shown, choose the right image ---
@@ -1938,8 +1943,11 @@ function renderFillLetters(container, item, onDone) {
     if (blanks.has(i)) {
       const input = document.createElement('input');
       input.className = 'fill-box';
-      input.maxLength = 1;
       input.dataset.index = i;
+      input.value = '\u200b';            // invisible placeholder so Backspace on an empty box still fires an event
+      input.dataset.had = '0';
+      input.autocomplete = 'off'; input.autocapitalize = 'off'; input.spellcheck = false;
+      input.setAttribute('autocorrect', 'off'); input.setAttribute('enterkeyhint', 'next');
       wordEl.appendChild(input);
     } else {
       const div = document.createElement('div');
@@ -1949,12 +1957,44 @@ function renderFillLetters(container, item, onDone) {
     }
   });
 
+  // Typing moves on by itself: letter -> next empty box, Backspace -> back, last letter -> check.
+  const blankInputs = () => [...boxes.querySelectorAll('input')];
+  let locked = false;
+  const focusBox = el => { if (!el) return; el.focus(); try { el.setSelectionRange(0, el.value.length); } catch (e) {} };
+  const valueOf = el => el.value.replace(/\u200b/g, '');
+  const setBox = (el, letter) => { el.value = letter || '\u200b'; el.dataset.had = letter ? '1' : '0'; };
+  blankInputs().forEach((input, k, all) => {
+    input.addEventListener('focus', () => { try { input.setSelectionRange(0, input.value.length); } catch (e) {} });
+    input.addEventListener('input', () => {
+      if (locked) return;
+      const v = valueOf(input);
+      const letter = (v.match(/[a-z]/gi) || []).pop();
+      if (!letter) {
+        const hadLetter = input.dataset.had === '1';
+        setBox(input, '');
+        if (!hadLetter && v === '' && k > 0) { setBox(all[k - 1], ''); focusBox(all[k - 1]); }
+        return;
+      }
+      setBox(input, letter.toLowerCase());
+      const next = all.slice(k + 1).find(b => b.dataset.had !== '1') || all.find(b => b.dataset.had !== '1');
+      if (next) focusBox(next);
+      else { input.blur(); setTimeout(() => { if (!locked) document.getElementById('checkBtn').click(); }, 350); }
+    });
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('checkBtn').click(); }
+    });
+  });
+  setTimeout(() => focusBox(blankInputs()[0]), 50);
+
   document.getElementById('checkBtn').addEventListener('click', () => {
+    if (locked) return;
+    locked = true;
     const inputs = boxes.querySelectorAll('input');
     let correct = true;
     inputs.forEach(input => {
       const idx = Number(input.dataset.index);
-      if (input.value.toLowerCase() !== letters[idx]) { correct = false; input.style.borderColor = 'var(--danger)'; }
+      input.readOnly = true;
+      if (valueOf(input).toLowerCase() !== letters[idx]) { correct = false; input.style.borderColor = 'var(--danger)'; }
       else { input.style.borderColor = 'var(--success)'; }
     });
     const feedback = document.getElementById('feedback');
@@ -3685,6 +3725,26 @@ function renderStoryTap(container, story, onFinish) {
   });
 }
 
+
+// --- Soft progress: practice days (this week, last 14 days kept) and a personal comparison per set. Browser only. ---
+const PROG_KEY = 'practice-progress-v1', WEEK_GOAL = 3;
+function progLoad() { try { return JSON.parse(localStorage.getItem(PROG_KEY) || '{}') || {}; } catch (e) { return {}; } }
+function progDay(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function progMarkToday(extra) {
+  try {
+    const p = progLoad(); p.days = p.days || {}; p.days[progDay()] = 1;
+    const cut = progDay(new Date(Date.now() - 14 * 864e5)); Object.keys(p.days).forEach(k => { if (k < cut) delete p.days[k]; });
+    if (extra) extra(p);
+    localStorage.setItem(PROG_KEY, JSON.stringify(p));
+  } catch (e) {}
+}
+function progWeekDays() {
+  const p = progLoad(), days = p.days || {}, now = new Date(), dow = (now.getDay() + 6) % 7, out = [];
+  for (let i = 0; i <= dow; i++) { const d = new Date(now); d.setDate(now.getDate() - dow + i); if (days[progDay(d)]) out.push(1); }
+  return out.length;
+}
+
+let miniRun = false;
 function renderDone() {
   stopAllSpeech();
   pushNav({ t: 'done' });
@@ -3696,6 +3756,21 @@ function renderDone() {
   ).join('');
 
   const reviewItems = setData.items.filter(i => wrongItemIds.has(i.id));
+
+  // soft progress: compare with the previous full run of this set, count the day
+  const setKey = params.get('set') || setData.topic || 'set';
+  const missedNow = reviewItems.length;
+  let prevMissed = null;
+  if (!miniRun) {
+    const prev = (progLoad().sets || {})[setKey];
+    if (prev && typeof prev.w === 'number') prevMissed = prev.w;
+    progMarkToday(p => { p.sets = p.sets || {}; p.sets[setKey] = { w: missedNow, t: setData.items.length }; });
+  } else { progMarkToday(); }
+  const wkDays = Math.min(progWeekDays(), 7);
+  const dots = Array.from({ length: WEEK_GOAL }, (_, i) => `<span style="color:${i < wkDays ? 'var(--teal)' : '#cbd5e1'}">&#9679;</span>`).join(' ');
+  const cmpLine = prevMissed === null ? '' :
+    `<p class="final-label">Last time you missed ${prevMissed} ${prevMissed === 1 ? 'word' : 'words'} in this set. This time: ${missedNow}.${missedNow < prevMissed ? ' Nice progress.' : ''}</p>`;
+  const weekLine = `<p class="final-label">This week: ${dots} &nbsp;${wkDays >= WEEK_GOAL ? 'weekly goal done' : wkDays + ' of ' + WEEK_GOAL + ' days of practice'}</p>`;
 
   app.innerHTML = `
     <div class="done-screen">
@@ -3715,6 +3790,8 @@ function renderDone() {
           <div class="stat-label">best streak</div>
         </div>
       </div>
+
+      ${cmpLine}${weekLine}
 
       ${reviewItems.length
         ? `<p class="final-label">Practise these again — tap a word to see it:</p>
@@ -3746,6 +3823,7 @@ function renderDone() {
       // eligibility still look at the full word set (via the global setData
       // that eligibleSingleModes reads), so small review rounds stay just as
       // reliable as the main session.
+      miniRun = true;
       const reviewData = { ...setData, items: reviewItems };
       wrongItemIds = new Set();
       score = 0;
@@ -3777,6 +3855,7 @@ function renderDone() {
   }
 
   document.getElementById('restartBtn').addEventListener('click', () => {
+    miniRun = false;
     wrongItemIds = new Set();
     score = 0;
     streak = 0;
