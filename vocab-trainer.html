@@ -1949,6 +1949,29 @@ function renderFillLetters(container, item, onDone) {
     }
   });
 
+  // Typing a letter jumps to the next empty box; Backspace on an empty box goes back; Enter checks.
+  const fillInputs = Array.from(boxes.querySelectorAll('input'));
+  fillInputs.forEach((input, n) => {
+    input.setAttribute('autocomplete', 'off');
+    input.setAttribute('autocapitalize', 'off');
+    input.setAttribute('autocorrect', 'off');
+    input.setAttribute('spellcheck', 'false');
+    input.addEventListener('input', () => {
+      if (!input.value) return;
+      input.value = input.value.slice(-1);
+      const next = fillInputs.slice(n + 1).find(b => !b.value) || fillInputs.slice(0, n).find(b => !b.value);
+      if (next) next.focus();
+    });
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !input.value && n > 0) { e.preventDefault(); fillInputs[n - 1].focus(); fillInputs[n - 1].value = ''; }
+      else if (e.key === 'ArrowLeft' && n > 0) { e.preventDefault(); fillInputs[n - 1].focus(); }
+      else if (e.key === 'ArrowRight' && n < fillInputs.length - 1) { e.preventDefault(); fillInputs[n + 1].focus(); }
+      else if (e.key === 'Enter') { e.preventDefault(); document.getElementById('checkBtn').click(); }
+    });
+    input.addEventListener('focus', () => { try { input.select(); } catch (err) {} });
+  });
+  if (fillInputs[0]) fillInputs[0].focus();
+
   document.getElementById('checkBtn').addEventListener('click', () => {
     const inputs = boxes.querySelectorAll('input');
     let correct = true;
