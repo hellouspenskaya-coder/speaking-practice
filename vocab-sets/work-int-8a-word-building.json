@@ -1,0 +1,640 @@
+{
+  "topic": "Work Int 8A Word-building",
+  "level": "B1",
+  "modes": [
+    "multipleChoice",
+    "multipleChoiceReverse",
+    "matchingDef",
+    "listening",
+    "contextGap",
+    "fillLetters",
+    "letterScramble",
+    "wordFormation",
+    "dictationNoImage"
+  ],
+  "antonymPairs": [],
+  "items": [
+    {
+      "id": "item_1",
+      "type": "word",
+      "text": "promotion",
+      "definition": "a move to a more important job",
+      "example": "She got a promotion last year and now she manages a team.",
+      "phonetic": "ˌprɒmɪˈəʊʃn",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "gapSentence": "She got a promotion last year and now she manages a team.",
+      "gapForm": "promotion",
+      "gapRivals": [],
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "promote",
+          "pos": "verb"
+        },
+        {
+          "form": "promotion",
+          "pos": "noun"
+        },
+        {
+          "form": "promotional",
+          "pos": "adjective"
+        }
+      ],
+      "wordFormationSentence": "She got a ___ last year and now she manages a team.",
+      "wordFormationAnswer": "promotion",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_2",
+      "type": "word",
+      "text": "application",
+      "definition": "a formal request for something, for example a job",
+      "example": "I sent an application to three companies.",
+      "phonetic": "ˌæplɪˈkeɪʃn",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "gapSentence": "I sent an application to three companies.",
+      "gapForm": "application",
+      "gapRivals": [],
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "apply",
+          "pos": "verb"
+        },
+        {
+          "form": "application",
+          "pos": "noun"
+        },
+        {
+          "form": "applicant",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "I sent an ___ to three companies.",
+      "wordFormationAnswer": "application",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_3",
+      "type": "word",
+      "text": "retirement",
+      "definition": "the time when you stop working because of your age",
+      "example": "He is looking forward to his retirement next year.",
+      "phonetic": "rɪˈtaɪəmənt",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "gapSentence": "He is looking forward to his retirement next year.",
+      "gapForm": "retirement",
+      "gapRivals": [],
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "retire",
+          "pos": "verb"
+        },
+        {
+          "form": "retirement",
+          "pos": "noun"
+        },
+        {
+          "form": "retired",
+          "pos": "adjective"
+        }
+      ],
+      "wordFormationSentence": "He is looking forward to his ___ next year.",
+      "wordFormationAnswer": "retirement",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_4",
+      "type": "word",
+      "text": "employment",
+      "definition": "having a paid job",
+      "example": "It's hard to find employment in a small town.",
+      "phonetic": "ɪmˈplɔɪmənt",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "gapSentence": "It's hard to find employment in a small town.",
+      "gapForm": "employment",
+      "gapRivals": [],
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "employ",
+          "pos": "verb"
+        },
+        {
+          "form": "employment",
+          "pos": "noun"
+        },
+        {
+          "form": "employee",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "It's hard to find ___ in a small town.",
+      "wordFormationAnswer": "employment",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_5",
+      "type": "word",
+      "text": "qualification",
+      "definition": "an exam or course that you have passed",
+      "example": "You need a qualification in teaching to work here.",
+      "phonetic": "ˌkwɒlɪfɪˈkeɪʃn",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "gapSentence": "You need a qualification in teaching to work here.",
+      "gapForm": "qualification",
+      "gapRivals": [],
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "qualify",
+          "pos": "verb"
+        },
+        {
+          "form": "qualification",
+          "pos": "noun"
+        },
+        {
+          "form": "qualified",
+          "pos": "adjective"
+        }
+      ],
+      "wordFormationSentence": "You need a ___ in teaching to work here.",
+      "wordFormationAnswer": "qualification",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_6",
+      "type": "word",
+      "text": "resignation",
+      "definition": "a letter or decision to leave your job",
+      "example": "The director handed in his resignation yesterday.",
+      "phonetic": "ˌrezɪɡˈneɪʃn",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "gapSentence": "The director handed in his resignation yesterday.",
+      "gapForm": "resignation",
+      "gapRivals": [],
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "resign",
+          "pos": "verb"
+        },
+        {
+          "form": "resignation",
+          "pos": "noun"
+        },
+        {
+          "form": "resigned",
+          "pos": "adjective"
+        }
+      ],
+      "wordFormationSentence": "The director handed in his ___ yesterday.",
+      "wordFormationAnswer": "resignation",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_7",
+      "type": "word",
+      "text": "scientist",
+      "definition": "a person who works in science",
+      "example": "Her sister is a scientist who studies climate change.",
+      "phonetic": "ˈsaɪəntɪst",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "gapSentence": "Her sister is a scientist who studies climate change.",
+      "gapForm": "scientist",
+      "gapRivals": [],
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "science",
+          "pos": "noun"
+        },
+        {
+          "form": "scientist",
+          "pos": "noun"
+        },
+        {
+          "form": "scientific",
+          "pos": "adjective"
+        }
+      ],
+      "wordFormationSentence": "Her sister is a ___ who studies climate change.",
+      "wordFormationAnswer": "scientist",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_8",
+      "type": "word",
+      "text": "lawyer",
+      "definition": "a person who gives advice about the law",
+      "example": "My lawyer read the contract carefully.",
+      "phonetic": "ˈlɔːjə",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "gapSentence": "My lawyer read the contract carefully.",
+      "gapForm": "lawyer",
+      "gapRivals": [],
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "law",
+          "pos": "noun"
+        },
+        {
+          "form": "lawyer",
+          "pos": "noun"
+        },
+        {
+          "form": "legal",
+          "pos": "adjective"
+        }
+      ],
+      "wordFormationSentence": "My ___ read the contract carefully.",
+      "wordFormationAnswer": "lawyer",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_9",
+      "type": "word",
+      "text": "musician",
+      "definition": "a person who plays or writes music",
+      "example": "He is a musician in the city orchestra.",
+      "phonetic": "mjuˈzɪʃn",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "gapSentence": "He is a musician in the city orchestra.",
+      "gapForm": "musician",
+      "gapRivals": [],
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "music",
+          "pos": "noun"
+        },
+        {
+          "form": "musician",
+          "pos": "noun"
+        },
+        {
+          "form": "musical",
+          "pos": "adjective"
+        }
+      ],
+      "wordFormationSentence": "He is a ___ in the city orchestra.",
+      "wordFormationAnswer": "musician",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_10",
+      "type": "word",
+      "text": "pharmacist",
+      "definition": "a person who prepares and sells medicines",
+      "example": "Ask the pharmacist which tablets are best for a cold.",
+      "phonetic": "ˈfɑːməsɪst",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "gapSentence": "Ask the pharmacist which tablets are best for a cold.",
+      "gapForm": "pharmacist",
+      "gapRivals": [],
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "pharmacy",
+          "pos": "noun"
+        },
+        {
+          "form": "pharmacist",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "Ask the ___ which tablets are best for a cold.",
+      "wordFormationAnswer": "pharmacist",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_11",
+      "type": "word",
+      "text": "farmer",
+      "definition": "a person who owns or runs a farm",
+      "example": "The farmer gets up at five to milk the cows.",
+      "phonetic": "ˈfɑːmə",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "gapSentence": "The farmer gets up at five to milk the cows.",
+      "gapForm": "farmer",
+      "gapRivals": [],
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "farm",
+          "pos": "noun"
+        },
+        {
+          "form": "farmer",
+          "pos": "noun"
+        },
+        {
+          "form": "farming",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "The ___ gets up at five to milk the cows.",
+      "wordFormationAnswer": "farmer",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    },
+    {
+      "id": "item_12",
+      "type": "word",
+      "text": "translator",
+      "definition": "a person whose job is to change words from one language into another",
+      "example": "She works as a translator of French novels.",
+      "phonetic": "trænzˈleɪtə",
+      "chunks": [],
+      "phraseSplitIndex": 1,
+      "image": null,
+      "audio": null,
+      "imageHint": "",
+      "imageQuery": "",
+      "illustrable": false,
+      "wantsImage": false,
+      "gapSentence": "She works as a translator of French novels.",
+      "gapForm": "translator",
+      "gapRivals": [],
+      "requiresPreposition": false,
+      "correctPreposition": "",
+      "prepositionSentence": "",
+      "wordFamily": [
+        {
+          "form": "translate",
+          "pos": "verb"
+        },
+        {
+          "form": "translator",
+          "pos": "noun"
+        },
+        {
+          "form": "translation",
+          "pos": "noun"
+        }
+      ],
+      "wordFormationSentence": "She works as a ___ of French novels.",
+      "wordFormationAnswer": "translator",
+      "isCollocation": false,
+      "collocationSentence": "",
+      "collocationAnswer": "",
+      "collocationDistractors": [],
+      "isVerb": false,
+      "pastSimple": "",
+      "pastParticiple": "",
+      "verbSentence": "",
+      "verbAnswer": ""
+    }
+  ],
+  "stories": [
+    {
+      "stories": [
+        {
+          "src": "claude",
+          "label": "Put each word in the right form",
+          "strip": [],
+          "text": "Ewa finished university with an excellent {1} in chemistry, but finding {2} was not easy. She sent an {3} to a big hospital and became a {4} there. After two years she got a {5}, and now she is in charge of the whole department. Her brother Tom is a {6} who works on climate change, and her sister Anna is a {7} in a large law firm. Her best friend is a {8} in an orchestra, and her uncle is a {9} with three hundred cows. Her aunt works as a {10} of French novels. Last month the family went to a party for Grandpa's {11}, and on the same day the director of the hospital sent his {12}: he is moving to Canada.",
+          "gaps": [
+            {
+              "a": "qualification",
+              "b": "qualify"
+            },
+            {
+              "a": "employment",
+              "b": "employ"
+            },
+            {
+              "a": "application",
+              "b": "apply"
+            },
+            {
+              "a": "pharmacist",
+              "b": "pharmacy"
+            },
+            {
+              "a": "promotion",
+              "b": "promote"
+            },
+            {
+              "a": "scientist",
+              "b": "science"
+            },
+            {
+              "a": "lawyer",
+              "b": "law"
+            },
+            {
+              "a": "musician",
+              "b": "music"
+            },
+            {
+              "a": "farmer",
+              "b": "farm"
+            },
+            {
+              "a": "translator",
+              "b": "translate"
+            },
+            {
+              "a": "retirement",
+              "b": "retire"
+            },
+            {
+              "a": "resignation",
+              "b": "resign"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
