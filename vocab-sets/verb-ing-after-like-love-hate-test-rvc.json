@@ -1,0 +1,158 @@
+{
+  "kind": "grammarTest",
+  "topic": "Verb+ing after like/love/hate",
+  "level": "A1",
+  "intro": "Tests verb+ing with like, love, hate, enjoy, don't mind, don't like vs. present simple",
+  "parts": [
+    {
+      "type": "choice",
+      "title": "Choose the correct option.",
+      "max": 5,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "q": "She ___ cooking dinner every evening.",
+          "options": [
+            "enjoying",
+            "enjoys",
+            "enjoy"
+          ],
+          "answer": 1,
+          "why": "Third-person singular present simple; subject is she."
+        },
+        {
+          "q": "I love ___ to music before bed.",
+          "options": [
+            "listening",
+            "listen",
+            "listens"
+          ],
+          "answer": 0,
+          "why": "After love, use verb+ing."
+        },
+        {
+          "q": "He doesn't mind ___ the dishes after dinner.",
+          "options": [
+            "washing",
+            "washes",
+            "wash"
+          ],
+          "answer": 0,
+          "why": "After don't/doesn't mind, use verb+ing."
+        },
+        {
+          "q": "They ___ walking to school every day.",
+          "options": [
+            "enjoy",
+            "enjoyment",
+            "enjoys"
+          ],
+          "answer": 0,
+          "why": "Subject is they; base form enjoy, then verb+ing follows."
+        },
+        {
+          "q": "I hate ___ up early on weekends.",
+          "options": [
+            "gets",
+            "getting",
+            "get"
+          ],
+          "answer": 1,
+          "why": "After hate, use verb+ing."
+        }
+      ]
+    },
+    {
+      "type": "gap",
+      "title": "Complete the sentences with the correct form.",
+      "max": 6,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "pre": "I don't like",
+          "hint": "(wake)",
+          "post": "up late on school days.",
+          "answer": "waking",
+          "why": "After don't like, use verb+ing."
+        },
+        {
+          "pre": "My brother",
+          "hint": "(play)",
+          "post": "football every Saturday.",
+          "answer": "plays",
+          "why": "Third-person singular present simple; no verb+ing needed."
+        },
+        {
+          "pre": "She enjoys",
+          "hint": "(read)",
+          "post": "books in the evening.",
+          "answer": "reading",
+          "why": "After enjoy, use verb+ing."
+        },
+        {
+          "pre": "I don't mind",
+          "hint": "(wait)",
+          "post": "for the bus in the morning.",
+          "answer": "waiting",
+          "why": "After don't mind, use verb+ing."
+        },
+        {
+          "pre": "We",
+          "hint": "(love)",
+          "post": "swimming in the sea in summer.",
+          "answer": "love",
+          "why": "Subject is we; use base form love, then verb+ing follows."
+        },
+        {
+          "pre": "I hate",
+          "hint": "(do)",
+          "post": "homework at night.",
+          "answer": "doing",
+          "why": "After hate, use verb+ing."
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "title": "Find and correct the mistake in each sentence.",
+      "max": 3,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "sentence": "I enjoy to drink tea in the morning.",
+          "corrected": "I enjoy drinking tea in the morning.",
+          "why": "After enjoy, use verb+ing, not to+infinitive."
+        },
+        {
+          "sentence": "She love watching films at the weekend.",
+          "corrected": "She loves watching films at the weekend.",
+          "why": "Third-person singular present simple needs -s on love."
+        },
+        {
+          "sentence": "I don't mind to help you with the shopping.",
+          "corrected": "I don't mind helping you with the shopping.",
+          "why": "After don't mind, use verb+ing, not to+infinitive."
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "title": "Write your own sentences.",
+      "max": 2,
+      "pointsLabel": "2 points: 1 for correct form, 1 for meaning and use",
+      "prompt": "Write two sentences:",
+      "items": [
+        {
+          "prompt": "Write one sentence about an activity you like doing in your free time.",
+          "criteria": "Accept any sentence using I like/love/enjoy + verb+ing with correct spelling.",
+          "example": "I like playing video games in the evening."
+        },
+        {
+          "prompt": "Write one sentence about something you hate or don't like doing at home.",
+          "criteria": "Accept any sentence using I hate/don't like + verb+ing with correct spelling.",
+          "example": "I hate cleaning the bathroom every week."
+        }
+      ]
+    }
+  ]
+}
