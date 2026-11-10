@@ -5,11 +5,9 @@
     "multipleChoice",
     "multipleChoiceReverse",
     "matching",
-    "matchingDef",
     "listening",
     "fillLetters",
     "phraseBuilder",
-    "whatsMissing",
     "phraseMatch"
   ],
   "antonymPairs": [],
