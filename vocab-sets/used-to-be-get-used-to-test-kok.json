@@ -1,0 +1,158 @@
+{
+  "kind": "grammarTest",
+  "topic": "used to, be/get used to",
+  "level": "B1",
+  "intro": "Tests used to, be used to, get used to, Past Simple, and Present Simple habits",
+  "parts": [
+    {
+      "type": "choice",
+      "title": "Choose the correct option.",
+      "max": 5,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "q": "When I was a child, I ___ walk to school every day, but now I take the bus.",
+          "options": [
+            "am used to",
+            "got used to",
+            "used to"
+          ],
+          "answer": 2,
+          "why": "used to describes a past habit that no longer happens"
+        },
+        {
+          "q": "She ___ working night shifts now — she doesn't mind them at all.",
+          "options": [
+            "is used to",
+            "gets used to",
+            "used to work"
+          ],
+          "answer": 0,
+          "why": "be used to + gerund means she is now accustomed to it"
+        },
+        {
+          "q": "It took him a few weeks, but he finally ___ driving on the left.",
+          "options": [
+            "got used to",
+            "used to drive",
+            "was used to"
+          ],
+          "answer": 0,
+          "why": "get used to + gerund describes the process of becoming accustomed"
+        },
+        {
+          "q": "I usually ___ my keys on the kitchen table every evening.",
+          "options": [
+            "am used to putting",
+            "put",
+            "used to put"
+          ],
+          "answer": 1,
+          "why": "Present Simple is correct for a current regular habit"
+        },
+        {
+          "q": "Last summer, the electricity ___ during the storm on Tuesday night.",
+          "options": [
+            "used to go out",
+            "was used to going out",
+            "went out"
+          ],
+          "answer": 2,
+          "why": "Past Simple is used for a single completed past event"
+        }
+      ]
+    },
+    {
+      "type": "gap",
+      "title": "Complete the sentences with the correct form.",
+      "max": 6,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "pre": "My grandfather",
+          "hint": "(smoke)",
+          "post": "a pipe every evening when he was young, but he quit decades ago.",
+          "answer": "used to smoke",
+          "why": "used to + infinitive for a past habit that stopped"
+        },
+        {
+          "pre": "After moving to a cold country, she slowly",
+          "hint": "(get / wake up)",
+          "post": "waking up in the dark every morning.",
+          "answer": "got used to waking up",
+          "why": "get used to + gerund for the process of becoming accustomed"
+        },
+        {
+          "pre": "The children",
+          "hint": "(be used to / eat)",
+          "post": "dinner late because their parents always worked long hours.",
+          "answer": "are used to eating",
+          "why": "be used to + gerund for a current state of being accustomed"
+        },
+        {
+          "pre": "He",
+          "hint": "(drop)",
+          "post": "his phone on the floor once during the meeting yesterday and everyone looked up.",
+          "answer": "dropped",
+          "why": "Past Simple for a single completed event in the past"
+        },
+        {
+          "pre": "She",
+          "hint": "(check)",
+          "post": "her email first thing every morning — it's just what she does.",
+          "answer": "checks",
+          "why": "Present Simple for a current repeated habit"
+        },
+        {
+          "pre": "I",
+          "hint": "(be used to / live)",
+          "post": "alone at first, but eventually I started enjoying it.",
+          "answer": "wasn't used to living",
+          "why": "be used to + gerund following a modal construction"
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "title": "Find and correct the mistake in each sentence.",
+      "max": 3,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "sentence": "When he moved abroad, he couldn't get used to eat such spicy food.",
+          "corrected": "When he moved abroad, he couldn't get used to eating such spicy food.",
+          "why": "get used to must be followed by a gerund, not a bare infinitive"
+        },
+        {
+          "sentence": "She used to works in a bakery before she became a teacher.",
+          "corrected": "She used to work in a bakery before she became a teacher.",
+          "why": "used to is always followed by the bare infinitive, not a conjugated verb"
+        },
+        {
+          "sentence": "I am used to wake up early because my job starts at six.",
+          "corrected": "I am used to waking up early because my job starts at six.",
+          "why": "be used to must be followed by a gerund, not a bare infinitive"
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "title": "Write your own sentences.",
+      "max": 2,
+      "pointsLabel": "2 points: 1 for correct form, 1 for meaning and use",
+      "prompt": "Write two sentences:",
+      "items": [
+        {
+          "prompt": "Write one sentence about something you used to do as a child but no longer do now.",
+          "criteria": "Accept sentences using used to + bare infinitive referring to a past habit that has stopped; present tense contrast is a bonus",
+          "example": "I used to collect football stickers when I was young, but I stopped when I turned twelve."
+        },
+        {
+          "prompt": "Write one sentence about something that was difficult at first but that you are now used to doing in your daily life.",
+          "criteria": "Accept sentences using be used to or get used to + gerund, showing familiarity with something that took adjustment",
+          "example": "I got used to commuting by bicycle after a few months, and now I actually enjoy it."
+        }
+      ]
+    }
+  ]
+}
