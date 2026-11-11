@@ -645,6 +645,14 @@ async function saveSet(req, res) {
   });
 }
 
+// Grammar tests are filed in Assignments as "<topic> · test", so they cannot be mistaken
+// for a Twee set or word set with the same topic (To send / Sent to pick sets by title).
+function testRowTitle(topic) {
+  const t = String(topic || '').trim();
+  if (!t) return '';
+  return /[·\-–]\s*test$/i.test(t) ? t : t + ' · test';
+}
+
 async function addToAssignmentsDatabase(data, fullLink, delivery = {}) {
   const dbId = process.env.NOTION_ASSIGNMENTS_DATABASE_ID;
 
@@ -679,7 +687,7 @@ async function addToAssignmentsDatabase(data, fullLink, delivery = {}) {
     body: JSON.stringify({
       parent: { database_id: dbId },
       properties: {
-        'Assignment Title': { title: [{ text: { content: data.topic || 'Untitled set' } }] },
+        'Assignment Title': { title: [{ text: { content: (isGrammarTest ? testRowTitle(data.topic) : data.topic) || 'Untitled set' } }] },
         'Format': { select: { name: 'Individual' } },
         'Platform': { select: { name: 'practice' } },
         'Skill': { multi_select: isGrammarTest ? [{ name: 'grammar' }] : (isTextSet || isStoryGame) ? [{ name: 'reading' }, { name: 'vocabulary' }] : [{ name: 'vocabulary' }] },

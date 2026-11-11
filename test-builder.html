@@ -304,7 +304,7 @@ $('publishBtn').addEventListener('click', async () => {
     $('linkBox').classList.remove('hidden');
     const n = $('notionNote');
     if (result.notion && result.notion.attempted) {
-      n.textContent = result.notion.ok ? 'Added to Assignments in Notion (type: test).' : 'Link created, but Notion failed: ' + result.notion.error;
+      n.textContent = result.notion.ok ? 'Added to Assignments in Notion as "' + (($('dTopic').value || '').trim() + ' · test') + '" (type: test). Tests always get the "· test" ending, so they are not mixed up with Twee or word sets of the same topic.' : 'Link created, but Notion failed: ' + result.notion.error;
       n.style.color = result.notion.ok ? 'var(--success)' : 'var(--danger)';
     } else {
       n.textContent = 'Not logged in Notion (the Notion connection is not configured).';
