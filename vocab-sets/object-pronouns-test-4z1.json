@@ -1,0 +1,151 @@
+{
+  "kind": "grammarTest",
+  "topic": "Object Pronouns",
+  "level": "A1",
+  "intro": "Tests object pronouns (me, him, etc.), possessive adjectives (my, his, etc.), and subject pronouns (I, he, etc.)",
+  "parts": [
+    {
+      "type": "choice",
+      "title": "Choose the correct option.",
+      "max": 5,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "q": "This is my brother. I love ___.",
+          "options": [
+            "he",
+            "him",
+            "his"
+          ],
+          "answer": 1,
+          "why": "Object pronoun needed after verb love."
+        },
+        {
+          "q": "___ is a student. She studies every day.",
+          "options": [
+            "Hers",
+            "Her",
+            "She"
+          ],
+          "answer": 2,
+          "why": "Subject pronoun needed at start of sentence."
+        },
+        {
+          "q": "Can you help ___? I don't understand the question.",
+          "options": [
+            "me",
+            "I",
+            "my"
+          ],
+          "answer": 0,
+          "why": "Object pronoun needed after verb help."
+        },
+        {
+          "q": "This is ___ dog. His name is Max.",
+          "options": [
+            "his",
+            "he",
+            "him"
+          ],
+          "answer": 0,
+          "why": "Possessive adjective needed before a noun."
+        },
+        {
+          "q": "We like the teacher. ___ explains very clearly.",
+          "options": [
+            "Her",
+            "Him",
+            "She"
+          ],
+          "answer": 2,
+          "why": "Subject pronoun needed as subject of the sentence."
+        }
+      ]
+    },
+    {
+      "type": "gap",
+      "title": "Complete the sentences with the correct form.",
+      "max": 5,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "pre": "Please call",
+          "hint": "I",
+          "post": "tonight. I am at home.",
+          "answer": "me",
+          "why": "Object pronoun replaces subject pronoun after a verb."
+        },
+        {
+          "pre": "This is",
+          "hint": "she",
+          "post": "bag. It is red.",
+          "answer": "her",
+          "why": "Possessive adjective shows the bag belongs to her."
+        },
+        {
+          "pre": "",
+          "hint": "they",
+          "post": "are my friends. I see them every day.",
+          "answer": "They",
+          "why": "Subject pronoun needed as the subject of the sentence."
+        },
+        {
+          "pre": "I have a brother.",
+          "hint": "he",
+          "post": "name is Tom.",
+          "answer": "His",
+          "why": "Possessive adjective needed before the noun name."
+        },
+        {
+          "pre": "The teacher is talking to",
+          "hint": "we",
+          "post": "right now.",
+          "answer": "us",
+          "why": "Object pronoun needed after preposition to."
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "title": "Find and correct the mistake in each sentence.",
+      "max": 3,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "sentence": "I see she every morning at the bus stop.",
+          "corrected": "I see her every morning at the bus stop.",
+          "why": "Object pronoun her needed after verb, not subject pronoun she."
+        },
+        {
+          "sentence": "This is my sister. Her is very funny.",
+          "corrected": "This is my sister. She is very funny.",
+          "why": "Subject pronoun she needed as subject, not possessive adjective her."
+        },
+        {
+          "sentence": "Can you give the book to I?",
+          "corrected": "Can you give the book to me?",
+          "why": "Object pronoun me needed after preposition, not subject pronoun I."
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "title": "Write your own sentences.",
+      "max": 2,
+      "pointsLabel": "2 points: 1 for correct form, 1 for meaning and use",
+      "prompt": "Write two sentences:",
+      "items": [
+        {
+          "prompt": "Write one sentence about something that belongs to you, for example a book, a bag, or a phone.",
+          "criteria": "Accept any sentence using a possessive adjective correctly, e.g. my, your, his, her.",
+          "example": "My bag is on the table."
+        },
+        {
+          "prompt": "Write one sentence about a friend or family member. Say what you do with them or for them.",
+          "criteria": "Accept any sentence using an object pronoun correctly, e.g. me, him, her, us, them.",
+          "example": "I call her every weekend."
+        }
+      ]
+    }
+  ]
+}
