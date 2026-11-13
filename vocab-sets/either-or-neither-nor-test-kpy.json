@@ -1,0 +1,136 @@
+{
+  "kind": "grammarTest",
+  "topic": "Either...or / Neither...nor",
+  "level": "B1",
+  "intro": "Tests correct use of either...or and neither...nor in everyday sentences",
+  "parts": [
+    {
+      "type": "choice",
+      "title": "Choose the correct option.",
+      "max": 4,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "q": "___ my brother nor my sister likes spicy food.",
+          "options": [
+            "Neither",
+            "Both",
+            "Either"
+          ],
+          "answer": 0,
+          "why": "Neither...nor links two negative subjects correctly."
+        },
+        {
+          "q": "You can pay ___ by card or by cash.",
+          "options": [
+            "both",
+            "either",
+            "neither"
+          ],
+          "answer": 1,
+          "why": "Either...or presents two positive alternatives."
+        },
+        {
+          "q": "I don't like ___ tea nor coffee in the morning.",
+          "options": [
+            "both",
+            "neither",
+            "either"
+          ],
+          "answer": 1,
+          "why": "Neither...nor is the correct negative correlative pair."
+        },
+        {
+          "q": "Either you apologise ___ I am leaving this conversation.",
+          "options": [
+            "and",
+            "or",
+            "nor"
+          ],
+          "answer": 1,
+          "why": "Either...or pairs positive alternatives; 'or' completes the structure."
+        }
+      ]
+    },
+    {
+      "type": "gap",
+      "title": "Complete the sentences with the correct form.",
+      "max": 5,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "pre": "She doesn't speak",
+          "hint": "",
+          "post": "French or Spanish.",
+          "answer": "either",
+          "why": "Either...or introduces two alternative choices."
+        },
+        {
+          "pre": "___ the food nor the service was good at that restaurant.",
+          "hint": "",
+          "post": "",
+          "answer": "Neither",
+          "why": "Neither...nor negates both elements; starts the sentence."
+        },
+        {
+          "pre": "You can sit",
+          "hint": "",
+          "post": "next to me or next to the window — your choice.",
+          "answer": "either",
+          "why": "Either...or offers two positive options."
+        },
+        {
+          "pre": "Neither my phone",
+          "hint": "",
+          "post": "my laptop is working properly today.",
+          "answer": "nor",
+          "why": "Nor is the second part of the neither...nor structure."
+        },
+        {
+          "pre": "We can go",
+          "hint": "",
+          "post": "to the cinema or to the park this afternoon.",
+          "answer": "either",
+          "why": "Either...or presents two equal alternatives."
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "title": "Find and correct the mistake in each sentence.",
+      "max": 2,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "sentence": "Neither my colleague or I knew the answer to the question.",
+          "corrected": "Neither my colleague nor I knew the answer to the question.",
+          "why": "Neither must be paired with nor, not or."
+        },
+        {
+          "sentence": "Either she calls him, neither she sends an email.",
+          "corrected": "Either she calls him, or she sends an email.",
+          "why": "Either must be paired with or, not neither."
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "title": "Write your own sentences.",
+      "max": 2,
+      "pointsLabel": "2 points: 1 for correct form, 1 for meaning and use",
+      "prompt": "Write two sentences:",
+      "items": [
+        {
+          "prompt": "Write one sentence about two activities you do not enjoy, using neither...nor.",
+          "criteria": "Correct neither...nor structure; both activities clearly stated; verb agrees with nearer subject.",
+          "example": "Neither watching reality TV nor playing video games interests me very much."
+        },
+        {
+          "prompt": "Write one sentence about two options you are happy to choose between, using either...or.",
+          "criteria": "Correct either...or structure; two clear alternatives; natural everyday vocabulary.",
+          "example": "I can either walk to work or take the bus — both options are fine with me."
+        }
+      ]
+    }
+  ]
+}
