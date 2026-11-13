@@ -301,7 +301,7 @@ function renderGallery() {
       <div style="display:flex;gap:8px;">
         ${setData.passage && setData.passage.text ? `<button id="backToText" style="padding:10px 14px;font-size:14px;">&lsaquo; Text</button>` : ''}
         ${verbItems.length ? `<button id="printBtn" style="padding:10px 14px;font-size:14px;">Print list</button>` : ''}
-        ${setData.passage && setData.passage.text ? `<button id="printTextBtn" style="padding:10px 14px;font-size:14px;">&#128424; Print</button>` : (verbItems.length ? '' : `<button id="printWordsBtn" style="padding:10px 14px;font-size:14px;">&#128424; Print</button>`)}
+        ${setData.passage && setData.passage.text ? `<button id="printTextBtn" style="padding:10px 14px;font-size:14px;">&#128424; Print</button>` : `<button id="printWordsBtn" style="padding:10px 14px;font-size:14px;">&#128424; Print worksheet</button>`}
         <button class="primary" id="startBtn" style="padding:10px 18px;font-size:14px;">Start practice</button>
       </div>
     </div>
@@ -994,54 +994,165 @@ function printWordSet() {
     }
     return a;
   };
-  const letters = 'abcdef';
+  const letters = 'abcdefghijklmnopqrstuvwxyz';
   const defOf = (it) => String(it.definition || '').trim();
   const hasPic = (it) => it.image && typeof it.image === 'string';
-  const cards = items.map(it => {
-    const d = defOf(it);
-    const pic = hasPic(it)
-      ? `<div class="pic"><img src="${escapeAttr(it.image)}" alt="" /></div>`
-      : (d ? `<div class="pic nopic">${esc(d)}</div>` : '');
-    const cap = `<div class="w">${esc(it.text)}</div>` + (hasPic(it) && d ? `<div class="d">${esc(d)}</div>` : '');
-    return `<div class="card">${pic}${cap}</div>`;
-  }).join('');
+  const blankIn = (sentence, form) => {
+    const re = new RegExp('(?<![A-Za-z-])' + escapeRegex(form) + '(?![A-Za-z-])', 'i');
+    return re.test(sentence) ? sentence.replace(re, '________') : null;
+  };
+  const gapify = (s) => esc(s).replace(/_{2,}/g, '________');
+  const title = esc(setData.topic || 'Word set');
+  const level = esc(setData.level || '');
 
-  // A: write the word under the picture (only words that have a picture)
+  // ---- Page 1: all the words
+  const anyPic = items.some(hasPic);
+  let listHtml;
+  if (anyPic) {
+    listHtml = '<div class="grid">' + items.map(it => {
+      const d = defOf(it);
+      const pic = hasPic(it)
+        ? `<div class="pic"><img src="${escapeAttr(it.image)}" alt="" /></div>`
+        : (d ? `<div class="pic nopic">${esc(d)}</div>` : '');
+      const forms = it.isVerb && it.pastSimple && it.pastParticiple ? `<div class="d">${esc(it.pastSimple)} &middot; ${esc(it.pastParticiple)}</div>` : '';
+      const cap = `<div class="w">${esc(it.text)}</div>${forms}` + (hasPic(it) && d ? `<div class="d">${esc(d)}</div>` : '');
+      return `<div class="card">${pic}${cap}</div>`;
+    }).join('') + '</div>';
+  } else {
+    listHtml = '<table class="wl"><tr><th>Word</th><th>Meaning</th><th>Example</th></tr>' + items.map(it => {
+      const bits = [];
+      if (it.phonetic) bits.push('/' + esc(it.phonetic) + '/');
+      if (it.isVerb && it.pastSimple && it.pastParticiple) bits.push(esc(it.pastSimple) + ' &middot; ' + esc(it.pastParticiple));
+      const sub = bits.length ? `<div class="f">${bits.join(' &nbsp; ')}</div>` : '';
+      return `<tr><td><b>${esc(it.text)}</b>${sub}</td><td>${esc(defOf(it))}</td><td><i>${esc(it.example || '')}</i></td></tr>`;
+    }).join('') + '</table>';
+  }
+
+  // ---- Exercises (each one only when the set has the data for it)
+  let ex = 'A';
+  const secs = [];
+  const ans = [];
+  const add = (head, instr, body, answerHtml, keep) => {
+    const L = ex; ex = String.fromCharCode(ex.charCodeAt(0) + 1);
+    secs.push(`<div class="sec${keep ? ' keep' : ''}"><h2 class="ex">${L}. ${head}</h2>${instr ? `<p class="in">${instr}</p>` : ''}${body}</div>`);
+    ans.push(`<p><b>${L}. ${head}:</b> ${answerHtml}</p>`);
+  };
+
+  // pictures
   const picItems = items.filter(hasPic).slice(0, 8);
-  const bank = seeded(picItems, 3).map(it => esc(it.text)).join(' &middot; ');
-  const picGrid = picItems.map(it => `<div><div class="p"><img src="${escapeAttr(it.image)}" alt="" /></div><div class="line"></div></div>`).join('');
+  if (picItems.length >= 3) {
+    const bank = seeded(picItems, 3).map(it => esc(it.text)).join(' &middot; ');
+    const picGrid = picItems.map(it => `<div><div class="p"><img src="${escapeAttr(it.image)}" alt="" /></div><div class="line"></div></div>`).join('');
+    add('Write the word under the picture', '', `<div class="bank">${bank}</div><div class="sq">${picGrid}</div>`,
+      picItems.map((it, i) => (i + 1) + ') ' + esc(it.text)).join(' &nbsp; '));
+  }
 
-  // B: match words and definitions
-  const matchItems = seeded(items.filter(it => defOf(it)), 11).slice(0, 6);
-  const defs = seeded(matchItems, 5);
-  const matchWords = matchItems.map((it, i) => `<div>${i + 1}. ${esc(it.text)}</div>`).join('');
-  const matchDefs = defs.map((it, i) => `<div>${letters[i]}) ${esc(defOf(it))}</div>`).join('');
+  // match words and definitions (every word with a definition, in rounds of up to 8)
+  const defItems = seeded(items.filter(it => defOf(it)), 11);
+  if (defItems.length >= 3) {
+    const parts = Math.min(3, Math.ceil(defItems.length / 8));
+    const size = Math.ceil(defItems.length / parts);
+    for (let c = 0; c < parts; c++) {
+      const chunk = defItems.slice(c * size, (c + 1) * size);
+      if (chunk.length < 3) continue;
+      const defs = seeded(chunk, 5 + c);
+      add('Match the words and the definitions' + (parts > 1 ? ` (${c + 1})` : ''), '',
+        `<div class="cols"><div>${chunk.map((it, i) => `<div>${i + 1}. ${esc(it.text)}</div>`).join('')}</div><div>${defs.map((it, i) => `<div>${letters[i]}) ${esc(defOf(it))}</div>`).join('')}</div></div><p>Answers: ${chunk.map((it, i) => (i + 1) + '___').join('&nbsp;&nbsp;')}</p>`,
+        chunk.map((it, i) => (i + 1) + '-' + letters[defs.indexOf(it)]).join(' &nbsp; '));
+    }
+  }
 
-  // C: missing letters (single words; the vowels are taken out)
-  const lettersItems = seeded(items.filter(it => /^[A-Za-z]{4,}$/.test(it.text)), 17).slice(0, 6);
-  const lettersHtml = lettersItems.map(it =>
-    `<li>${esc(it.text.split('').map((c, i) => (i > 0 && /[aeiou]/i.test(c)) ? '_' : c).join(' '))}</li>`).join('');
+  // complete the sentences (the same gap sentences as the trainer)
+  const gapItems = seeded(items.filter(it => it.gapSentence && it.gapForm && blankIn(it.gapSentence, it.gapForm)), 23).slice(0, 12);
+  if (gapItems.length >= 4) {
+    const bank = seeded(gapItems, 29).map(it => esc(it.gapForm)).join(' &middot; ');
+    add('Complete the sentences', 'Use the words in the box.',
+      `<div class="bank">${bank}</div><ol class="sent">${gapItems.map(it => `<li>${gapify(blankIn(it.gapSentence, it.gapForm))}</li>`).join('')}</ol>`,
+      gapItems.map((it, i) => (i + 1) + ') ' + esc(it.gapForm)).join(' &nbsp; '));
+  }
 
-  // optional "Complete the story" (only sets that have one): first story of the first pair
-  let storyHtml = '';
-  let storyAns = '';
+  // prepositions
+  const prepItems = seeded(items.filter(it => it.requiresPreposition && it.correctPreposition && it.prepositionSentence), 31).slice(0, 12);
+  if (prepItems.length >= 3) {
+    add('Write the missing preposition', '',
+      `<ol class="sent">${prepItems.map(it => `<li>${gapify(it.prepositionSentence)}</li>`).join('')}</ol>`,
+      prepItems.map((it, i) => (i + 1) + ') ' + esc(it.correctPreposition)).join(' &nbsp; '));
+  }
+
+  // word formation
+  const wfItems = seeded(items.filter(it => Array.isArray(it.wordFamily) && it.wordFamily.length >= 2 && it.wordFormationSentence && it.wordFormationAnswer), 37).slice(0, 12);
+  if (wfItems.length >= 3) {
+    add('Choose the right form of the word', '',
+      `<ol class="sent">${wfItems.map(it => {
+        const forms = Array.from(new Set(it.wordFamily.map(f => String(f.form || '').trim()).filter(Boolean)));
+        return `<li>${gapify(it.wordFormationSentence)}<div class="opt">${seeded(forms, 3).map(esc).join(' / ')}</div></li>`;
+      }).join('')}</ol>`,
+      wfItems.map((it, i) => (i + 1) + ') ' + esc(it.wordFormationAnswer)).join(' &nbsp; '));
+  }
+
+  // collocations
+  const colItems = seeded(items.filter(it => it.isCollocation && it.collocationSentence && it.collocationAnswer && Array.isArray(it.collocationDistractors) && it.collocationDistractors.length >= 3), 41).slice(0, 12);
+  if (colItems.length >= 3) {
+    add('Choose the right word', '',
+      `<ol class="sent">${colItems.map((it, i) => {
+        const opts = seeded([it.collocationAnswer].concat(it.collocationDistractors.slice(0, 3)), 7 + i);
+        return `<li>${gapify(it.collocationSentence)}<div class="opt">${opts.map((o, k) => letters[k] + ') ' + esc(o)).join(' &nbsp; ')}</div></li>`;
+      }).join('')}</ol>`,
+      colItems.map((it, i) => (i + 1) + ') ' + esc(it.collocationAnswer)).join(' &nbsp; '));
+  }
+
+  // verb forms table
+  const vItems = items.filter(it => it.isVerb && it.pastSimple && it.pastParticiple).slice(0, 16);
+  if (vItems.length >= 3) {
+    add('Write the verb forms', '',
+      `<table class="vt"><tr><th></th><th>Infinitive</th><th>Past simple</th><th>Past participle</th></tr>${vItems.map((it, i) => `<tr><td>${i + 1}</td><td><b>${esc(it.text)}</b></td><td></td><td></td></tr>`).join('')}</table>`,
+      vItems.map((it, i) => (i + 1) + ') ' + esc(it.text) + ' &ndash; ' + esc(it.pastSimple) + ' &ndash; ' + esc(it.pastParticiple)).join('<br>'), true);
+  }
+
+  // opposites
+  const byText = (t) => items.find(i => i.text.toLowerCase() === String(t).toLowerCase());
+  const pairs = (Array.isArray(setData.antonymPairs) ? setData.antonymPairs : []).filter(p => byText(p[0]) && byText(p[1]));
+  if (pairs.length >= 2) {
+    add('Write the opposite', '',
+      `<ol class="sent" style="columns:2;">${pairs.map(p => `<li>${esc(p[0])} &rarr; ______________</li>`).join('')}</ol>`,
+      pairs.map((p, i) => (i + 1) + ') ' + esc(p[1])).join(' &nbsp; '));
+  }
+
+  // missing letters
+  const lettersItems = seeded(items.filter(it => /^[A-Za-z]{4,}$/.test(it.text)), 17).slice(0, 8);
+  if (lettersItems.length >= 3) {
+    add('Missing letters', '',
+      `<ol style="columns:3;">${lettersItems.map(it => `<li>${esc(it.text.split('').map((c, i) => (i > 0 && /[aeiou]/i.test(c)) ? '_' : c).join(' '))}</li>`).join('')}</ol>`,
+      lettersItems.map((it, i) => (i + 1) + ') ' + esc(it.text)).join(' &nbsp; '));
+  }
+
+  // the story
   const pair = Array.isArray(setData.stories) && setData.stories[0];
   const story = pair && Array.isArray(pair.stories) && pair.stories[0];
-  let ex = 'A';
-  const nextEx = () => { const c = ex; ex = String.fromCharCode(ex.charCodeAt(0) + 1); return c; };
   if (story && story.text && Array.isArray(story.gaps) && story.gaps.length) {
     const sbank = seeded(story.gaps.map(g => g.b), 7).map(esc).join(' &middot; ');
     const sbody = esc(story.text).replace(/\{(\d+)\}/g, (m, n) => `<span style="white-space:nowrap">(${n}) ____________</span>`);
-    storyHtml = `<h2 class="ex">${nextEx()}. Complete the story</h2><div class="bank">${sbank}</div><p style="line-height:1.9;margin:1mm 0">${sbody}</p>`;
-    storyAns = story.gaps.map((g, i) => (i + 1) + ') ' + esc(g.a)).join(' &nbsp; ');
+    const typed = story.gaps.some(g => g.a !== g.b);
+    add('Complete the story', typed ? 'Put each word or phrase in the right form.' : 'Use the words in the box.',
+      `<div class="bank">${sbank}</div><p style="line-height:2;margin:1mm 0">${sbody}</p>`,
+      story.gaps.map((g, i) => (i + 1) + ') ' + esc(g.a)).join(' &nbsp; '), true);
   }
-  const title = esc(setData.topic || 'Word set');
-  const level = esc(setData.level || '');
+
+  // free writing
+  const wl = ex; ex = String.fromCharCode(ex.charCodeAt(0) + 1);
+  secs.push(`<div class="sec"><h2 class="ex">${wl}. Write</h2><p class="in">Write 3 sentences. Use three new words.</p><div class="line"></div><div class="line"></div><div class="line"></div></div>`);
+  ans.push(`<p><b>${wl}. Write:</b> free answer.</p>`);
+
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><title>${title}</title>
 <style>
 @page { size: A4; margin: 13mm 16mm; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: Arial, sans-serif; color: #111; font-size: 11pt; line-height: 1.5; }
+.bar { position: sticky; top: 0; background: #f1f5f9; border-bottom: 1px solid #cbd5e1; padding: 10px 16px; display: flex; gap: 10px; align-items: center; font-size: 14px; }
+.bar button { padding: 8px 14px; font-size: 14px; cursor: pointer; }
+.page { padding: 0; }
+@media screen { .page { max-width: 190mm; margin: 0 auto; padding: 8mm 6mm; } }
+@media print { .bar { display: none; } }
 .tag { font-size: 9pt; letter-spacing: .08em; text-transform: uppercase; color: #555; }
 h1 { font: 700 18pt Georgia, serif; margin: 1mm 0 2mm; }
 .meta { display: flex; justify-content: space-between; font-size: 10pt; border-bottom: 1.5px solid #111; padding-bottom: 2.5mm; margin-bottom: 4mm; }
@@ -1053,7 +1164,15 @@ h1 { font: 700 18pt Georgia, serif; margin: 1mm 0 2mm; }
 .nopic { font-size: 10pt; padding: 2mm; font-style: italic; line-height: 1.3; }
 .w { font-weight: 700; font-size: 13pt; margin-top: 2mm; }
 .d { font-size: 9pt; color: #333; line-height: 1.3; margin-top: 1mm; }
-h2.ex { font-size: 11pt; margin: 5mm 0 2mm; background: #111; color: #fff; padding: 1mm 3mm; border-radius: 1.5mm; break-after: avoid; }
+table.wl { width: 100%; border-collapse: collapse; font-size: 10.5pt; }
+table.wl th { text-align: left; border-bottom: 1.5px solid #111; padding: 1.5mm 2mm; font-size: 9pt; text-transform: uppercase; letter-spacing: .06em; color: #555; }
+table.wl td { border-bottom: 1px solid #ccc; padding: 1.3mm 2mm; vertical-align: top; line-height: 1.35; }
+table.wl tr { break-inside: avoid; }
+.f { font-size: 9pt; color: #555; }
+.sec { break-inside: auto; }
+h2.ex { font-size: 11pt; margin: 5mm 0 2mm; background: #111; color: #fff; padding: 1mm 3mm; border-radius: 1.5mm; break-after: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.keep { break-inside: avoid; }
+p.in { margin: 0 0 2mm; font-style: italic; color: #333; }
 .bank { border: 1px dashed #111; padding: 1.5mm 3mm; margin: 1mm 0 2mm; text-align: center; font-weight: 700; }
 .line { border-bottom: 1px solid #555; height: 7mm; }
 .pb { break-before: page; }
@@ -1061,39 +1180,46 @@ h2.ex { font-size: 11pt; margin: 5mm 0 2mm; background: #111; color: #fff; paddi
 .sq .p { height: 22mm; background: #f4f4f4; border-radius: 2mm; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .sq .p img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .cols { display: grid; grid-template-columns: 1fr 1.6fr; gap: 6mm; line-height: 1.7; }
-ol { margin: 0; padding-left: 5mm; line-height: 1.8; }
-.foot { margin-top: 5mm; font-size: 8.5pt; color: #777; }
+ol { margin: 0; padding-left: 6mm; line-height: 1.8; }
+ol.sent li { margin-bottom: 2.2mm; break-inside: avoid; }
+.opt { font-size: 10pt; color: #333; margin-top: .5mm; }
+table.vt { width: 100%; border-collapse: collapse; }
+table.vt th { text-align: left; font-size: 9pt; text-transform: uppercase; letter-spacing: .06em; color: #555; border-bottom: 1.5px solid #111; padding: 1.5mm 2mm; }
+table.vt td { border-bottom: 1px solid #999; padding: 2.4mm 2mm; height: 9mm; }
+table.vt td:first-child { width: 8mm; color: #777; }
 </style></head><body>
-<div class="tag">The English Hub${level ? ' &middot; ' + level : ''}</div>
+<div class="bar"><button id="printPlain">Print worksheet</button><button id="printAns">Print worksheet + answers</button><span>The answers are on the last page.</span></div>
+<div class="page">
+<div class="tag">Vocabulary${level ? ' &middot; ' + level : ''}</div>
 <h1>${title}</h1>
 <div class="meta"><span>Name: <u></u></span><span>Date: <u></u></span></div>
-<p style="margin:0 0 4mm">${picItems.length ? 'Look at the pictures. Learn the words.' : 'Read the words and the definitions. Learn the words.'}</p>
-<div class="grid">${cards}</div>
+<p style="margin:0 0 4mm">${anyPic ? 'Look at the pictures. Learn the words.' : 'Read the words, the meanings and the examples. Learn the words.'}</p>
+${listHtml}
 <div class="pb"></div>
 <div class="tag">${title} &middot; exercises</div>
-${picItems.length >= 3 ? `<h2 class="ex">${nextEx()}. Write the word under the picture</h2><div class="bank">${bank}</div><div class="sq">${picGrid}</div>` : ''}
-${matchItems.length >= 3 ? `<h2 class="ex">${nextEx()}. Match the words and the definitions</h2><div class="cols"><div>${matchWords}</div><div>${matchDefs}</div></div><p>Answers: ${matchItems.map((it, i) => (i + 1) + '___').join('&nbsp;&nbsp;')}</p>` : ''}
-${lettersHtml ? `<h2 class="ex">${nextEx()}. Missing letters</h2><ol style="columns:3;">${lettersHtml}</ol>` : ''}
-${storyHtml}
-<h2 class="ex">${nextEx()}. Write</h2>
-<p style="margin:0 0 2mm">Write 3 sentences. Use two new words.</p>
-<div class="line"></div><div class="line"></div><div class="line"></div>
-<div class="pb"></div>
+<div class="meta"><span>Name: <u></u></span><span>Date: <u></u></span></div>
+${secs.join('\n')}
+<div class="answers pb">
 <div class="tag">${title}</div>
 <h1>Answers</h1>
-<div class="meta"><span>The English Hub</span><span></span></div>
-${picItems.length >= 3 ? `<p><b>Write the word under the picture:</b> ${picItems.map((it, i) => (i + 1) + ') ' + esc(it.text)).join(' &nbsp; ')}</p>` : ''}
-${matchItems.length >= 3 ? `<p><b>Match:</b> ${matchItems.map((it, i) => (i + 1) + '-' + letters[defs.indexOf(it)]).join(' &nbsp; ')}</p>` : ''}
-${lettersHtml ? `<p><b>Missing letters:</b> ${lettersItems.map((it, i) => (i + 1) + ') ' + esc(it.text)).join(' &nbsp; ')}</p>` : ''}
-${storyAns ? `<p><b>Complete the story:</b> ${storyAns}</p>` : ''}
-<p><b>Write:</b> free answer.</p>
-<div class="foot">The English Hub</div>
+${ans.join('\n')}
+</div>
+</div>
 </body></html>`;
   const w = window.open('', '_blank');
   if (!w) { alert('The print window was blocked. Allow pop-ups for this page and try again.'); return; }
   w.document.write(html);
   w.document.close();
-  w.onload = () => w.print();
+  const run = (withAnswers) => {
+    const el = w.document.querySelector('.answers');
+    if (el) el.style.display = withAnswers ? '' : 'none';
+    w.print();
+    if (el) setTimeout(() => { el.style.display = ''; }, 500);
+  };
+  const b1 = w.document.getElementById('printPlain');
+  const b2 = w.document.getElementById('printAns');
+  if (b1) b1.onclick = () => run(false);
+  if (b2) b2.onclick = () => run(true);
 }
 
 function openOverlay(item, hideExample) {
@@ -1338,7 +1464,13 @@ function buildSession(data) {
     // (they stay exclusive); phrasal verbs ("take off") are phrases, so these two are just one more option among the others.
     const specialized = pool.filter(m => SPECIALIZED_MODES.includes(m)
       && !(item.type === 'phrase' && (m === 'verbFormsTyping' || m === 'verbFormsDictation')));
-    const finalPool = specialized.length ? specialized : pool;
+    let finalPool = specialized.length ? specialized : pool;
+    // Verb items (irregular forms, confusing verbs) would otherwise only ever get the verb-form exercises;
+    // when they also have a gap sentence, "choose the word in context" joins the rotation (twice for phrases,
+    // whose pool is otherwise wide).
+    if (item.isVerb && pool.includes('contextGap')) {
+      finalPool = finalPool.filter(m => m !== 'contextGap').concat(item.type === 'phrase' ? ['contextGap', 'contextGap'] : ['contextGap']);
+    }
     singleSteps.push({ kind: 'single', item, pool: finalPool, phase: 'practice' });
   });
 

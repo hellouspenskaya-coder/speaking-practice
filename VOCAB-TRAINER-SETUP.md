@@ -117,3 +117,13 @@ The trainer falls back to the browser's built-in speech synthesis whenever a set
   (a second AI call removes wrong replies that would also fit). Every phrase card has "Right answer" / "Wrong answers" fields
   (separate the two wrong ones with `|`) for editing; leave them empty for phrases that are not questions. Ticking again only
   fills phrases that have no answer yet. The airport sets (airport-2, -3, -6, -7, -9) were written by hand.
+
+## Printable worksheet (every word set)
+
+The set page has a **Print worksheet** button for every word set. It opens a preview with two buttons: "Print worksheet" (no answers) and "Print worksheet + answers". The answers are always on a separate last page.
+
+Page 1 is the word list (meaning and example; pictures if the set has them; verb forms for verbs). The exercises are built from whatever the set contains: match words and definitions, complete the sentences (the same gap sentences as the context mode), prepositions, word formation, collocations, verb forms table, opposites, missing letters, the story, free writing.
+
+## Verbs and the context mode
+
+For verb items (irregular verbs, confusing verbs) the context mode ("choose the word in context") now joins the rotation next to the verb-form exercises, whenever the item has a gap sentence.
