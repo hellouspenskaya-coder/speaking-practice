@@ -922,11 +922,16 @@ li { break-inside: avoid; margin-bottom: 1.2mm; }
 .line { border-bottom: 1px solid #555; height: 7mm; }
 .story, .cloze { font-family: Arial, sans-serif; font-size: 10.5pt; line-height: 1.9; margin: 1mm 0; }
 .tight .story, .tight .cloze { line-height: 1.7; } .tighter .story, .tighter .cloze { line-height: 1.55; font-size: 10pt; }
+.bar { position: sticky; top: 0; background: #f1f5f9; border-bottom: 1px solid #cbd5e1; padding: 10px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font: 14px Arial, sans-serif; }
+.bar button { padding: 8px 14px; font-size: 14px; cursor: pointer; }
+@media print { .bar { display: none; } }
 .pagebreak { break-before: page; }
 .foot { margin-top: 5mm; font-family: Arial, sans-serif; font-size: 8.5pt; color: #777; }
 </style></head><body>
+<div class="bar"><button id="printPlain">Print worksheet</button><button id="printKeys">Print the keys</button><button id="printBoth">Print both</button></div>
+<div id="pre">
 <div id="p1">
-<div class="tag">The English Hub${level ? ' &middot; ' + level : ''}</div>
+<div class="tag">Vocabulary${level ? ' &middot; ' + level : ''}</div>
 <h1>${title}</h1>
 <div class="meta"><span>Name: <u></u></span><span>Date: <u></u></span></div>
 <p class="passage">${textHtml}</p>
@@ -947,11 +952,12 @@ ${storyHtml}
 <div class="line"></div><div class="line"></div><div class="line"></div>
 </div>
 </div>
-<div class="pagebreak"></div>
+</div>
+<div id="keys">
+<div class="pagebreak" id="kbreak"></div>
 <div class="ex-body" id="ans">
 <div class="tag">${title}</div>
 <h1>Answers</h1>
-<div class="meta"><span>The English Hub</span><span></span></div>
 ${qHtml ? `<p><b>Questions about the text:</b><br>${qAns.map((a, i) => (i + 1) + '. ' + esc(a)).join('<br>')}</p>` : ''}
 ${gapHtml ? `<p><b>Fill in the gaps:</b> ${gapItems.map((it, i) => (i + 1) + ') ' + esc(it.passageForm)).join(' &nbsp; ')}</p>` : ''}
 ${matchItems.length >= 3 ? `<p><b>Match:</b> ${matchItems.map((it, i) => (i + 1) + '-' + letters[defs.indexOf(it)]).join(' &nbsp; ')}</p>` : ''}
@@ -960,7 +966,7 @@ ${clozeHtml ? `<p><b>Complete the text:</b> ${clozeForms.map((f, i) => (i + 1) +
 ${storyAns ? `<p><b>Complete the story:</b> ${storyAns}</p>` : ''}
 <p><b>Write:</b> free answer.</p>
 </div>
-<div class="foot">The English Hub</div>
+</div>
 <script>
 // keep page 1 on one sheet: if it is too tall, use smaller type (two steps)
 (function () {
@@ -976,7 +982,19 @@ ${storyAns ? `<p><b>Complete the story:</b> ${storyAns}</p>` : ''}
   if (!w) { alert('The print window was blocked. Allow pop-ups for this page and try again.'); return; }
   w.document.write(html);
   w.document.close();
-  w.onload = () => w.print();
+  const run = (mode) => {
+    const pre = w.document.getElementById('pre');
+    const keys = w.document.getElementById('keys');
+    const kb = w.document.getElementById('kbreak');
+    if (mode === 'sheet' && keys) keys.style.display = 'none';
+    if (mode === 'keys') { if (pre) pre.style.display = 'none'; if (kb) kb.style.display = 'none'; }
+    w.print();
+    setTimeout(() => { if (pre) pre.style.display = ''; if (keys) keys.style.display = ''; if (kb) kb.style.display = ''; }, 500);
+  };
+  [['printPlain', 'sheet'], ['printKeys', 'keys'], ['printBoth', 'both']].forEach(([id, mode]) => {
+    const b = w.document.getElementById(id);
+    if (b) b.onclick = () => run(mode);
+  });
 }
 
 // Printable sheet for an ordinary word set (A4): page 1 = picture cards (a picture, the word and its
@@ -1148,8 +1166,9 @@ function printWordSet() {
 @page { size: A4; margin: 13mm 16mm; }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: Arial, sans-serif; color: #111; font-size: 11pt; line-height: 1.5; }
-.bar { position: sticky; top: 0; background: #f1f5f9; border-bottom: 1px solid #cbd5e1; padding: 10px 16px; display: flex; gap: 10px; align-items: center; font-size: 14px; }
+.bar { position: sticky; top: 0; background: #f1f5f9; border-bottom: 1px solid #cbd5e1; padding: 10px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font: 14px Arial, sans-serif; }
 .bar button { padding: 8px 14px; font-size: 14px; cursor: pointer; }
+@media print { .bar { display: none; } }
 .page { padding: 0; }
 @media screen { .page { max-width: 190mm; margin: 0 auto; padding: 8mm 6mm; } }
 @media print { .bar { display: none; } }
@@ -1188,8 +1207,9 @@ table.vt th { text-align: left; font-size: 9pt; text-transform: uppercase; lette
 table.vt td { border-bottom: 1px solid #999; padding: 2.4mm 2mm; height: 9mm; }
 table.vt td:first-child { width: 8mm; color: #777; }
 </style></head><body>
-<div class="bar"><button id="printPlain">Print worksheet</button><button id="printAns">Print worksheet + answers</button><span>The answers are on the last page.</span></div>
+<div class="bar"><button id="printPlain">Print worksheet</button><button id="printKeys">Print the keys</button><button id="printBoth">Print both</button></div>
 <div class="page">
+<div id="pre">
 <div class="tag">Vocabulary${level ? ' &middot; ' + level : ''}</div>
 <h1>${title}</h1>
 <div class="meta"><span>Name: <u></u></span><span>Date: <u></u></span></div>
@@ -1199,10 +1219,14 @@ ${listHtml}
 <div class="tag">${title} &middot; exercises</div>
 <div class="meta"><span>Name: <u></u></span><span>Date: <u></u></span></div>
 ${secs.join('\n')}
-<div class="answers pb">
+</div>
+<div id="keys">
+<div class="pb" id="kbreak"></div>
+<div class="answers">
 <div class="tag">${title}</div>
 <h1>Answers</h1>
 ${ans.join('\n')}
+</div>
 </div>
 </div>
 </body></html>`;
@@ -1210,16 +1234,19 @@ ${ans.join('\n')}
   if (!w) { alert('The print window was blocked. Allow pop-ups for this page and try again.'); return; }
   w.document.write(html);
   w.document.close();
-  const run = (withAnswers) => {
-    const el = w.document.querySelector('.answers');
-    if (el) el.style.display = withAnswers ? '' : 'none';
+  const run = (mode) => {
+    const pre = w.document.getElementById('pre');
+    const keys = w.document.getElementById('keys');
+    const kb = w.document.getElementById('kbreak');
+    if (mode === 'sheet' && keys) keys.style.display = 'none';
+    if (mode === 'keys') { if (pre) pre.style.display = 'none'; if (kb) kb.style.display = 'none'; }
     w.print();
-    if (el) setTimeout(() => { el.style.display = ''; }, 500);
+    setTimeout(() => { if (pre) pre.style.display = ''; if (keys) keys.style.display = ''; if (kb) kb.style.display = ''; }, 500);
   };
-  const b1 = w.document.getElementById('printPlain');
-  const b2 = w.document.getElementById('printAns');
-  if (b1) b1.onclick = () => run(false);
-  if (b2) b2.onclick = () => run(true);
+  [['printPlain', 'sheet'], ['printKeys', 'keys'], ['printBoth', 'both']].forEach(([id, mode]) => {
+    const b = w.document.getElementById(id);
+    if (b) b.onclick = () => run(mode);
+  });
 }
 
 function openOverlay(item, hideExample) {
