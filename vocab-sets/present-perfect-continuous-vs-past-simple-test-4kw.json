@@ -1,0 +1,141 @@
+{
+  "kind": "grammarTest",
+  "topic": "Present Perfect Continuous vs Past Simple",
+  "level": "B1",
+  "intro": "Covers choosing and forming Present Perfect Continuous and Past Simple in context",
+  "parts": [
+    {
+      "type": "choice",
+      "title": "Choose the correct option.",
+      "max": 4,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "q": "She ___ for three hours and she still isn't finished.",
+          "options": [
+            "studied",
+            "has been studying",
+            "was studying"
+          ],
+          "answer": 1,
+          "why": "Ongoing activity with duration up to now needs Present Perfect Continuous."
+        },
+        {
+          "q": "I ___ my keys this morning and had to call a locksmith.",
+          "options": [
+            "was losing",
+            "have been losing",
+            "lost"
+          ],
+          "answer": 2,
+          "why": "Completed event at a specific past time needs Past Simple."
+        },
+        {
+          "q": "Why are your shoes wet? ___ you been walking in the rain?",
+          "options": [
+            "Did",
+            "Were",
+            "Have"
+          ],
+          "answer": 2,
+          "why": "Recent activity with present evidence uses Present Perfect Continuous."
+        },
+        {
+          "q": "How long ___ you been waiting for the bus?",
+          "options": [
+            "were",
+            "have",
+            "did"
+          ],
+          "answer": 1,
+          "why": "Duration of an activity continuing up to now uses Present Perfect Continuous."
+        }
+      ]
+    },
+    {
+      "type": "gap",
+      "title": "Complete the sentences with the correct form.",
+      "max": 5,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "pre": "Look at the mechanic — he",
+          "hint": "work",
+          "post": "on that engine since early morning.",
+          "answer": "has been working",
+          "why": "Activity in progress from a past point up to now."
+        },
+        {
+          "pre": "I",
+          "hint": "finish",
+          "post": "the report an hour ago and sent it to my manager.",
+          "answer": "finished",
+          "why": "Completed action at a specific past time uses Past Simple."
+        },
+        {
+          "pre": "Your eyes are red. How long",
+          "hint": "you / cry",
+          "post": "?",
+          "answer": "have you been crying",
+          "why": "Asking about duration of a recent emotional activity."
+        },
+        {
+          "pre": "We",
+          "hint": "paint",
+          "post": "the living room all weekend, so we're exhausted now.",
+          "answer": "have been painting",
+          "why": "Recent prolonged activity explaining a present result."
+        },
+        {
+          "pre": "He",
+          "hint": "not sleep",
+          "post": "well last night because of the noise from next door.",
+          "answer": "didn't sleep",
+          "why": "Specific completed past period uses Past Simple negative."
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "title": "Find and correct the mistake in each sentence.",
+      "max": 3,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "sentence": "I have been seeing that film last Saturday with my friend.",
+          "corrected": "I saw that film last Saturday with my friend.",
+          "why": "Specific past time expression requires Past Simple, not Perfect Continuous."
+        },
+        {
+          "sentence": "She works in the garden all afternoon and now she's really tired.",
+          "corrected": "She has been working in the garden all afternoon and now she's really tired.",
+          "why": "Activity with present result and duration needs Present Perfect Continuous."
+        },
+        {
+          "sentence": "How long did you been learning English?",
+          "corrected": "How long have you been learning English?",
+          "why": "Duration up to now uses 'have' not 'did' in Present Perfect Continuous."
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "title": "Write your own sentences.",
+      "max": 2,
+      "pointsLabel": "2 points: 1 for correct form, 1 for meaning and use",
+      "prompt": "Write two sentences:",
+      "items": [
+        {
+          "prompt": "Describe something you started doing recently and are still doing now. Say how long you have been doing it.",
+          "criteria": "Accept Present Perfect Continuous with a time expression, e.g. 'for' or 'since'.",
+          "example": "I have been learning to cook for the past few weeks and I really enjoy it."
+        },
+        {
+          "prompt": "Describe something you did at a specific time in the past that is now completely finished.",
+          "criteria": "Accept Past Simple with a clear past time reference or finished context.",
+          "example": "I visited my grandmother last weekend and we had a lovely dinner together."
+        }
+      ]
+    }
+  ]
+}
