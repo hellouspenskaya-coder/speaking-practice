@@ -1,0 +1,158 @@
+{
+  "kind": "grammarTest",
+  "topic": "Past Perfect",
+  "level": "B1",
+  "intro": "Covers forming and using the past perfect (had + past participle) in context.",
+  "parts": [
+    {
+      "type": "choice",
+      "title": "Choose the correct option.",
+      "max": 5,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "q": "By the time we arrived at the cinema, the film ___.",
+          "options": [
+            "had already started",
+            "already started",
+            "was already starting"
+          ],
+          "answer": 0,
+          "why": "Past perfect shows the film finished before another past event."
+        },
+        {
+          "q": "She felt sick because she ___ too much at the party.",
+          "options": [
+            "was eating",
+            "ate",
+            "had eaten"
+          ],
+          "answer": 2,
+          "why": "Past perfect shows the cause happened before the result."
+        },
+        {
+          "q": "___ you ever visited that city before you moved there?",
+          "options": [
+            "Did",
+            "Had",
+            "Were"
+          ],
+          "answer": 1,
+          "why": "Past perfect question form uses had + subject + past participle."
+        },
+        {
+          "q": "He didn't recognise her because they ___ for twenty years.",
+          "options": [
+            "haven't met",
+            "hadn't met",
+            "didn't meet"
+          ],
+          "answer": 1,
+          "why": "Negative past perfect: hadn't + past participle for earlier unfulfilled action."
+        },
+        {
+          "q": "After the guests ___, we started cleaning the house.",
+          "options": [
+            "had left",
+            "left",
+            "were leaving"
+          ],
+          "answer": 0,
+          "why": "Past perfect in after-clause shows the first completed action."
+        }
+      ]
+    },
+    {
+      "type": "gap",
+      "title": "Complete the sentences with the correct form.",
+      "max": 6,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "pre": "When I got to the station, the train",
+          "hint": "(already / leave)",
+          "post": "and I had to wait an hour.",
+          "answer": "had already left",
+          "why": "Past perfect shows the train left before the speaker arrived."
+        },
+        {
+          "pre": "They couldn't get in because they",
+          "hint": "(forget)",
+          "post": "their tickets at home.",
+          "answer": "had forgotten",
+          "why": "Past perfect explains the reason for a past situation."
+        },
+        {
+          "pre": "I",
+          "hint": "(never / try)",
+          "post": "sushi before I went to Japan.",
+          "answer": "had never tried",
+          "why": "Negative past perfect with never before a past experience."
+        },
+        {
+          "pre": "By the time she was thirty, she",
+          "hint": "(live)",
+          "post": "in five different countries.",
+          "answer": "had lived",
+          "why": "Past perfect with by the time shows completion before a past point."
+        },
+        {
+          "pre": "He noticed that someone",
+          "hint": "(move)",
+          "post": "his keys from the table.",
+          "answer": "had moved",
+          "why": "Past perfect shows an earlier unnoticed action affecting the present past moment."
+        },
+        {
+          "pre": "We",
+          "hint": "(just / finish)",
+          "post": "dinner when the phone rang.",
+          "answer": "had just finished",
+          "why": "Just with past perfect shows very recent completion before another past event."
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "title": "Find and correct the mistake in each sentence.",
+      "max": 3,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "sentence": "She already left when her friend called her.",
+          "corrected": "She had already left when her friend called her.",
+          "why": "Past perfect needed to show departure happened before the phone call."
+        },
+        {
+          "sentence": "By the time he arrived, we waited for two hours.",
+          "corrected": "By the time he arrived, we had waited for two hours.",
+          "why": "By the time signals the first action must use past perfect."
+        },
+        {
+          "sentence": "I didn't eat lunch because I have had a big breakfast.",
+          "corrected": "I didn't eat lunch because I had had a big breakfast.",
+          "why": "Past perfect, not present perfect, needed to link two past events."
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "title": "Write your own sentences.",
+      "max": 2,
+      "pointsLabel": "2 points: 1 for correct form, 1 for meaning and use",
+      "prompt": "Write two sentences:",
+      "items": [
+        {
+          "prompt": "Write a sentence about something you had already done before you started learning English.",
+          "criteria": "Correct use of past perfect (had + past participle); a clear time reference to a past moment.",
+          "example": "I had already studied French for two years before I started learning English."
+        },
+        {
+          "prompt": "Write a sentence describing how you felt after something had happened to you in the past, explaining the reason with the past perfect.",
+          "criteria": "Two past events in correct sequence; past perfect for the earlier event; a cause-and-effect link.",
+          "example": "I felt exhausted because I had worked twelve hours without a break."
+        }
+      ]
+    }
+  ]
+}
