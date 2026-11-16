@@ -1,0 +1,158 @@
+{
+  "kind": "grammarTest",
+  "topic": "Past Perfect vs Present Perfect",
+  "level": "B1",
+  "intro": "Tests correct use of past perfect and present perfect in context",
+  "parts": [
+    {
+      "type": "choice",
+      "title": "Choose the correct option.",
+      "max": 5,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "q": "By the time the film started, we ___ our popcorn already.",
+          "options": [
+            "have eaten",
+            "had eaten",
+            "ate"
+          ],
+          "answer": 1,
+          "why": "Past perfect shows action completed before another past event."
+        },
+        {
+          "q": "I can't find my keys. I think I ___ them somewhere.",
+          "options": [
+            "lost",
+            "had lost",
+            "have lost"
+          ],
+          "answer": 2,
+          "why": "Present perfect links a past action to a present situation."
+        },
+        {
+          "q": "She ___ never visited a foreign country before that trip.",
+          "options": [
+            "have",
+            "had",
+            "has"
+          ],
+          "answer": 1,
+          "why": "Past perfect with 'before that trip' refers to experience up to a past point."
+        },
+        {
+          "q": "We ___ just finished dinner when the guests arrived.",
+          "options": [
+            "had",
+            "have",
+            "has"
+          ],
+          "answer": 0,
+          "why": "Past perfect shows the meal ended just before another past event."
+        },
+        {
+          "q": "He looks tired because he ___ been working all day.",
+          "options": [
+            "have",
+            "has",
+            "had"
+          ],
+          "answer": 1,
+          "why": "Present perfect explains a present result of a recent past action."
+        }
+      ]
+    },
+    {
+      "type": "gap",
+      "title": "Complete the sentences with the correct form.",
+      "max": 6,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "pre": "I",
+          "hint": "already / eat",
+          "post": "already, so I wasn't hungry at the restaurant.",
+          "answer": "had already eaten",
+          "why": "Past perfect shows eating was completed before the past restaurant visit."
+        },
+        {
+          "pre": "She",
+          "hint": "live",
+          "post": "in three different countries since she finished university.",
+          "answer": "has lived",
+          "why": "Present perfect with 'since' connects past experience to the present."
+        },
+        {
+          "pre": "When I arrived at the station, the train",
+          "hint": "already / leave",
+          "post": "",
+          "answer": "had already left",
+          "why": "Past perfect shows the train left before the speaker arrived."
+        },
+        {
+          "pre": "They",
+          "hint": "never / try",
+          "post": "sushi before they went to Japan last year.",
+          "answer": "had never tried",
+          "why": "Past perfect shows zero experience before a specific past point."
+        },
+        {
+          "pre": "I",
+          "hint": "just / send",
+          "post": "you the document, so please check your email.",
+          "answer": "have just sent",
+          "why": "Present perfect with 'just' describes a very recent action with present relevance."
+        },
+        {
+          "pre": "By the time he was thirty, he",
+          "hint": "start",
+          "post": "his own business.",
+          "answer": "had started",
+          "why": "Past perfect describes an action completed before a past deadline."
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "title": "Find and correct the mistake in each sentence.",
+      "max": 3,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "sentence": "I have finished my homework before my mum called me for dinner.",
+          "corrected": "I had finished my homework before my mum called me for dinner.",
+          "why": "Past perfect needed; the homework was done before another past event."
+        },
+        {
+          "sentence": "She had never seen that actor before, but she had heard of him.",
+          "corrected": "She had never seen that actor before, but she has heard of him.",
+          "why": "Present perfect needed; she still knows him now, linking past to present."
+        },
+        {
+          "sentence": "We have already left the house when it started to snow.",
+          "corrected": "We had already left the house when it started to snow.",
+          "why": "Past perfect needed; leaving happened before another completed past event."
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "title": "Write your own sentences.",
+      "max": 2,
+      "pointsLabel": "2 points: 1 for correct form, 1 for meaning and use",
+      "prompt": "Write two sentences:",
+      "items": [
+        {
+          "prompt": "Write one sentence about a skill or activity you have learned or tried for the first time in your life so far.",
+          "criteria": "Accept any grammatically correct sentence using present perfect, e.g. 'I have never ridden a horse' or 'I have always wanted to learn Spanish'.",
+          "example": "I have always wanted to learn how to play the guitar."
+        },
+        {
+          "prompt": "Write one sentence describing something you had already done before an important event in your past, for example before starting school or before moving to a ne",
+          "criteria": "Accept any grammatically correct sentence using past perfect before or alongside a simple past event.",
+          "example": "I had already learned to read before I started primary school."
+        }
+      ]
+    }
+  ]
+}
