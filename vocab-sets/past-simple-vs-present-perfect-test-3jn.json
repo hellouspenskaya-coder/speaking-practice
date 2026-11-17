@@ -1,0 +1,148 @@
+{
+  "kind": "grammarTest",
+  "topic": "Past Simple vs Present Perfect",
+  "level": "B1",
+  "intro": "Covers past simple and present perfect with ago, last, yesterday, already, just, yet",
+  "parts": [
+    {
+      "type": "choice",
+      "title": "Choose the correct option.",
+      "max": 4,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "q": "I ___ my keys. I can't find them anywhere!",
+          "options": [
+            "lost",
+            "was losing",
+            "have lost"
+          ],
+          "answer": 2,
+          "why": "No time given; result relevant now — present perfect."
+        },
+        {
+          "q": "We ___ the report yet. We'll finish it tomorrow.",
+          "options": [
+            "didn't finish",
+            "haven't finished",
+            "don't finish"
+          ],
+          "answer": 1,
+          "why": "'Yet' in negatives signals present perfect."
+        },
+        {
+          "q": "He ___ just arrived at the station, so he's still there.",
+          "options": [
+            "did",
+            "was",
+            "has"
+          ],
+          "answer": 2,
+          "why": "'Just' with a current result uses present perfect."
+        },
+        {
+          "q": "They ___ that film last Friday.",
+          "options": [
+            "watched",
+            "were watching",
+            "have watched"
+          ],
+          "answer": 0,
+          "why": "'Last Friday' is a finished past time — past simple."
+        }
+      ]
+    },
+    {
+      "type": "gap",
+      "title": "Complete the sentences with the correct form.",
+      "max": 6,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "pre": "I",
+          "hint": "already / eat",
+          "post": "lunch, so I'm not hungry.",
+          "answer": "have already eaten",
+          "why": "'Already' with a result felt now — present perfect."
+        },
+        {
+          "pre": "She",
+          "hint": "leave",
+          "post": "the office two hours ago.",
+          "answer": "left",
+          "why": "'Ago' marks a finished past moment — past simple."
+        },
+        {
+          "pre": "We",
+          "hint": "not see",
+          "post": "that new exhibition yet.",
+          "answer": "haven't seen",
+          "why": "'Yet' in negatives signals present perfect."
+        },
+        {
+          "pre": "He",
+          "hint": "buy",
+          "post": "a new laptop last week.",
+          "answer": "bought",
+          "why": "'Last week' is a specific past time — past simple."
+        },
+        {
+          "pre": "I",
+          "hint": "just / finish",
+          "post": "the book. It was great!",
+          "answer": "have just finished",
+          "why": "'Just' describing a very recent action — present perfect."
+        },
+        {
+          "pre": "They",
+          "hint": "not call",
+          "post": "me yesterday, so I was worried.",
+          "answer": "didn't call",
+          "why": "'Yesterday' is a finished time — past simple negative."
+        }
+      ]
+    },
+    {
+      "type": "fix",
+      "title": "Find and correct the mistake in each sentence.",
+      "max": 3,
+      "pointsLabel": "1 point each",
+      "items": [
+        {
+          "sentence": "I have seen that doctor last Monday.",
+          "corrected": "I saw that doctor last Monday.",
+          "why": "'Last Monday' is a specific past time; past simple required."
+        },
+        {
+          "sentence": "She didn't call me yet.",
+          "corrected": "She hasn't called me yet.",
+          "why": "'Yet' in negatives uses present perfect, not past simple."
+        },
+        {
+          "sentence": "We already finished the homework an hour ago.",
+          "corrected": "We finished the homework an hour ago.",
+          "why": "'Ago' needs past simple; drop 'already' or change tense."
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "title": "Write your own sentences.",
+      "max": 2,
+      "pointsLabel": "2 points: 1 for correct form, 1 for meaning and use",
+      "prompt": "Write two sentences:",
+      "items": [
+        {
+          "prompt": "Write one sentence about something you have already done today.",
+          "criteria": "Present perfect with 'already'; no specific clock time needed.",
+          "example": "I have already cleaned my room this morning."
+        },
+        {
+          "prompt": "Write one sentence about something you did yesterday evening.",
+          "criteria": "Past simple with 'yesterday'; a clear completed action in the past.",
+          "example": "I watched a documentary about nature yesterday evening."
+        }
+      ]
+    }
+  ]
+}
